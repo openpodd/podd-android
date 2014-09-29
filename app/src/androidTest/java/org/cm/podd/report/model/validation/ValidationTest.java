@@ -27,10 +27,10 @@ public class ValidationTest extends TestCase {
     public void testRequireValidation() {
         IValidation<String> v = new RequireValidation<String>();
 
-        ValidationResult result = v.validate("any string");
+        ValidationResult result = v.validate("any string", null);
         assertTrue(result.isSuccess());
 
-        result = v.validate(null);
+        result = v.validate(null, null);
         assertFalse(result.isSuccess());
     }
 
@@ -38,17 +38,17 @@ public class ValidationTest extends TestCase {
         String message = "ค่าต้องมากกว่า 10";
         IValidation<Integer> v = new MinValidation<Integer>(10, message);
 
-        ValidationResult result = v.validate(20);
+        ValidationResult result = v.validate(20, null);
         assertTrue(result.isSuccess());
 
-        result = v.validate(10);
+        result = v.validate(10, null);
         assertTrue(result.isSuccess());
         assertNull(result.getMessage());
 
-        result = v.validate(9);
+        result = v.validate(9, null);
         assertFalse(result.isSuccess());
 
-        result = v.validate(-10);
+        result = v.validate(-10, null);
         assertFalse(result.isSuccess());
         assertEquals(message, result.getMessage());
     }
@@ -57,17 +57,17 @@ public class ValidationTest extends TestCase {
         String message = "ค่าต้องน้อยกว่า 120";
         IValidation<Integer> v = new MaxValidation<Integer>(120, message);
 
-        ValidationResult result = v.validate(20);
+        ValidationResult result = v.validate(20, null);
         assertTrue(result.isSuccess());
 
-        result = v.validate(119);
+        result = v.validate(119, null);
         assertTrue(result.isSuccess());
         assertNull(result.getMessage());
 
-        result = v.validate(120);
+        result = v.validate(120, null);
         assertFalse(result.isSuccess());
 
-        result = v.validate(121);
+        result = v.validate(121, null);
         assertFalse(result.isSuccess());
         assertEquals(message, result.getMessage());
     }

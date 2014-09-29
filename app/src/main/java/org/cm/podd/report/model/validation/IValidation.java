@@ -17,6 +17,8 @@
 
 package org.cm.podd.report.model.validation;
 
+import org.cm.podd.report.model.Question;
+
 import java.util.Map;
 
 /**
@@ -26,6 +28,6 @@ public interface IValidation<T> {
 
     public static ValidationResult SUCCESS = new ValidationResult(true, null);
 
-    public ValidationResult validate(T value);
+    public ValidationResult validate(T value, Question<T> question);
 
 }

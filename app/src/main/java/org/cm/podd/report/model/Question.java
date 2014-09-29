@@ -82,7 +82,7 @@ public class Question<T> {
 
         try {
             for (IValidation<T> v : validations) {
-                ValidationResult result = v.validate(data);
+                ValidationResult result = v.validate(data, this);
                 if (! result.isSuccess()) {
                     results.add(result);
                 }
@@ -107,7 +107,7 @@ public class Question<T> {
     }
 
     public boolean isDirty() {
-        Log.d("-----", String.format("old:%s, new:%s", oldData, data));
+        Log.d("Question", String.format("old:%s, new:%s", oldData, data));
         if (data == null) {
             if (oldData == null) {
                 return false;

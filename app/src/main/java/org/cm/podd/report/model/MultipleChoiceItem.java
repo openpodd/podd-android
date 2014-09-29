@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.cm.podd.report.model.validation;
-
-import org.cm.podd.report.model.Question;
-
-import java.util.Map;
+package org.cm.podd.report.model;
 
 /**
- * Created by pphetra on 9/25/14 AD.
+ * Created by pphetra on 9/29/14 AD.
  */
-public class MinValidation<T> implements IValidation<T> {
+public class MultipleChoiceItem<T> {
+    private T id;
+    private String text;
 
-    private T minValue;
-    private String message;
-
-    public MinValidation(T minValue, String message) {
-        this.minValue = minValue;
-        this.message = message;
+    public MultipleChoiceItem(T id, String text) {
+        this.id = id;
+        this.text = text;
     }
 
-    @Override
-    public ValidationResult validate(T value, Question<T> question) {
-        if (value instanceof Comparable) {
-            if (((Comparable) value).compareTo(minValue) >= 0) {
-                return SUCCESS;
-            }
-        }
+    public T getId() {
+        return id;
+    }
 
-        return new ValidationResult(false, message);
+    public void setId(T id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

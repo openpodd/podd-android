@@ -17,31 +17,29 @@
 
 package org.cm.podd.report.model.validation;
 
+import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Question;
 
-import java.util.Map;
-
 /**
- * Created by pphetra on 9/25/14 AD.
+ * Created by pphetra on 9/29/14 AD.
  */
-public class MinValidation<T> implements IValidation<T> {
+public class SingleChoiceValidation<T extends String> implements IValidation<T> {
 
-    private T minValue;
     private String message;
 
-    public MinValidation(T minValue, String message) {
-        this.minValue = minValue;
+    public SingleChoiceValidation(String message) {
         this.message = message;
     }
 
     @Override
     public ValidationResult validate(T value, Question<T> question) {
-        if (value instanceof Comparable) {
-            if (((Comparable) value).compareTo(minValue) >= 0) {
-                return SUCCESS;
+        MultipleChoiceQuestion mQuestion = (MultipleChoiceQuestion) question;
+        if (value != null) {
+            if (! mQuestion.containKey(value)) {
+                return new ValidationResult(false, message);
             }
         }
-
-        return new ValidationResult(false, message);
+        return SUCCESS;
     }
+
 }
