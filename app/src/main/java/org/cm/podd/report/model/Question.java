@@ -32,6 +32,7 @@ public class Question<T> {
     private int id;
     private String title;
     private String name;
+    private DataType dataType;
     private List<IValidation<T>> validations;
 
     private T data;
@@ -87,6 +88,18 @@ public class Question<T> {
         }
 
         return results;
+    }
+
+    public T getValue() {
+        return data;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
 
 }

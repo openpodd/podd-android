@@ -21,6 +21,7 @@ import org.cm.podd.report.model.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pphetra on 9/26/14 AD.
@@ -56,5 +57,28 @@ public class Page {
             results.addAll(q.validate());
         }
         return results;
+    }
+
+    public void setData(Map<String, Object> values) {
+        for (Question q : questions) {
+            q.setData(values.get(q.getName()));
+        }
+    }
+
+    public void setRawData(Map<String, String> values) {
+        for (Question q : questions) {
+            String key = q.getName();
+            String value = values.get(key);
+            q.setData(q.getDataType().parseFromString(value));
+        }
+    }
+
+    public Question getQuestion(int questionId) {
+        for (Question q : questions) {
+            if (q.getId() == questionId) {
+                return q;
+            }
+        }
+        return null;
     }
 }

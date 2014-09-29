@@ -24,6 +24,7 @@ import org.cm.podd.report.model.validation.MinValidation;
 import org.cm.podd.report.model.validation.RequireValidation;
 import org.cm.podd.report.model.validation.ValidationResult;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -47,6 +48,7 @@ public class PageTest extends TestCase {
         question1.setId(1);
         question1.setTitle("How old are you?");
         question1.setName("age");
+        question1.setDataType(DataType.INTEGER);
 
         minValidationMessage = "Age must be greater than one year old";
         question1.addValidation(new MinValidation<Integer>(1, minValidationMessage));
@@ -62,6 +64,7 @@ public class PageTest extends TestCase {
         question2.setId(2);
         question2.setTitle("What is your name?");
         question2.setName("name");
+        question2.setDataType(DataType.STRING);
         page.addQuestion(question2);
     }
 
@@ -90,5 +93,32 @@ public class PageTest extends TestCase {
 
         List<ValidationResult> validates = page.validate();
         assertEquals(1, validates.size());
+    }
+
+    public void testSetData() {
+        HashMap<String, Object> values = new HashMap<String, Object>();
+        values.put("age", 15);
+        values.put("name", "pphetra");
+
+        page.setData(values);
+
+        assertEquals(15, ((Integer) page.getQuestion(1).getValue()).intValue());
+        assertEquals("pphetra", (String) page.getQuestion(2).getValue());
+    }
+
+    public void testSetRawData() {
+        HashMap<String, String> values = new HashMap<String, String>();
+        values.put("age", "15");
+        values.put("name", "pphetra");
+
+        page.setRawData(values);
+
+        assertEquals(15, ((Integer) page.getQuestion(1).getValue()).intValue());
+        assertEquals("pphetra", (String) page.getQuestion(2).getValue());
+    }
+
+    public void testGetDataType() {
+        assertEquals(DataType.INTEGER, page.getQuestion(1).getDataType());
+        assertEquals(DataType.STRING, page.getQuestion(2).getDataType());
     }
 }
