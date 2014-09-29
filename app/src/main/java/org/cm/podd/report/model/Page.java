@@ -20,6 +20,7 @@ package org.cm.podd.report.model;
 import org.cm.podd.report.model.validation.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,11 @@ public class Page {
         for (Question q : questions) {
             String key = q.getName();
             String value = values.get(key);
-            q.setData(q.getDataType().parseFromString(value));
+            if (value != null) {
+                q.setData(q.getDataType().parseFromString(value));
+            } else {
+                q.setData(null);
+            }
         }
     }
 
@@ -80,5 +85,22 @@ public class Page {
             }
         }
         return null;
+    }
+
+    public boolean isDirty() {
+        boolean dirty = false;
+        for (Question q : questions) {
+            dirty = dirty || q.isDirty();
+        }
+
+        return dirty;
+    }
+
+    public void getData(HashMap<String, Object> data) {
+        for (Question q : questions) {
+            String key = q.getName();
+            Object value = q.getValue();
+            data.put(key, value);
+        }
     }
 }

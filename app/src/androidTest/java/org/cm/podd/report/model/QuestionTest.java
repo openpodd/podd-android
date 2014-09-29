@@ -94,4 +94,23 @@ public class QuestionTest extends TestCase {
         ValidationResult result = results.get(0);
         assertEquals(maxValidationMessage, result.getMessage());
     }
+
+    public void testDirty() {
+        assertFalse(question1.isDirty());
+
+        question1.setData(30);
+        assertTrue(question1.isDirty());
+
+        question1.setData(17);
+        assertTrue(question1.isDirty());
+
+        question1.setData(17);
+        assertFalse(question1.isDirty());
+
+        question1.setData(null);
+        assertTrue(question1.isDirty());
+
+        question1.setData(null);
+        assertFalse(question1.isDirty());
+    }
 }

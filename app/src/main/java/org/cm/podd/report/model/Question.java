@@ -17,6 +17,8 @@
 
 package org.cm.podd.report.model;
 
+import android.util.Log;
+
 import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.ValidationResult;
 
@@ -36,6 +38,7 @@ public class Question<T> {
     private List<IValidation<T>> validations;
 
     private T data;
+    private T oldData;
 
     public Question() {
         validations = new ArrayList<IValidation<T>>();
@@ -70,7 +73,8 @@ public class Question<T> {
     }
 
     public void setData(T value) {
-        this.data = value;
+        oldData = data;
+        data = value;
     }
 
     public List<ValidationResult> validate() {
@@ -100,6 +104,23 @@ public class Question<T> {
 
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
+    }
+
+    public boolean isDirty() {
+        Log.d("-----", String.format("old:%s, new:%s", oldData, data));
+        if (data == null) {
+            if (oldData == null) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            if (oldData == null) {
+                return true;
+            } else {
+                return ! data.equals(oldData);
+            }
+        }
     }
 
 }

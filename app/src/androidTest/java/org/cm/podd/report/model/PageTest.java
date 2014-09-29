@@ -121,4 +121,12 @@ public class PageTest extends TestCase {
         assertEquals(DataType.INTEGER, page.getQuestion(1).getDataType());
         assertEquals(DataType.STRING, page.getQuestion(2).getDataType());
     }
+
+    public void testDirtyPage() {
+        assertFalse(page.isDirty());
+
+        question1.setData(30);
+        assertTrue(page.isDirty());
+    }
+
 }

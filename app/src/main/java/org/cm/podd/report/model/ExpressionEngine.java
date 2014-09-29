@@ -77,4 +77,8 @@ public class ExpressionEngine {
     public void setStringArray(String name, List<String> values) {
         scope.put(name, scope, values);
     }
+
+    public void setObject(String name, Object value) {
+        scope.put(name, scope, value);
+    }
 }

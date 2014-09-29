@@ -41,6 +41,13 @@ public enum DataType {
         Object parseFromString(String value) {
             return Double.parseDouble(value);
         }
+    },
+
+    BOOLEAN() {
+        @Override
+        Object parseFromString(String value) {
+            return Boolean.parseBoolean(value);
+        }
     };
 
     abstract Object parseFromString(String value);
