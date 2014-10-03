@@ -34,6 +34,35 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
     private List<MultipleChoiceItem> items = new ArrayList<MultipleChoiceItem>();
     private HashMap<T, MultipleChoiceItem> itemMap = new HashMap<T, MultipleChoiceItem>();
     private MultipleChoiceSelection selectionType;
+    private boolean freeTextChoiceEnable = false;
+
+    public String getFreeTextText() {
+        return freeTextText;
+    }
+
+    public void setFreeTextText(String freeTextText) {
+        this.freeTextText = freeTextText;
+    }
+
+    public String getFreeTextName() {
+        return freeTextName;
+    }
+
+    public void setFreeTextName(String freeTextName) {
+        this.freeTextName = freeTextName;
+    }
+
+    public String getFreeTextId() {
+        return freeTextId;
+    }
+
+    public void setFreeTextId(String freeTextId) {
+        this.freeTextId = freeTextId;
+    }
+
+    private String freeTextText;
+    private String freeTextName;
+    private String freeTextId;
 
     public MultipleChoiceQuestion(MultipleChoiceSelection selectionType) {
         this.selectionType = selectionType;
@@ -48,8 +77,13 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
         }
     }
 
-    public void addItems(T id, String text) {
+    public void addItem(T id, String text) {
+        addItem(id, text, false);
+    }
+
+    public void addItem(T id, String text, boolean flag) {
         MultipleChoiceItem item = new MultipleChoiceItem(id, text);
+        item.setChecked(flag);
         items.add(item);
         itemMap.put(id, item);
     }
@@ -69,4 +103,19 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
     public boolean containKey(T value) {
         return itemMap.containsKey(value);
     }
+
+    public void clearAllItemChecked() {
+        for (MultipleChoiceItem item: items) {
+            item.setChecked(false);
+        }
+    }
+
+    public boolean isFreeTextChoiceEnable() {
+        return freeTextChoiceEnable;
+    }
+
+    public void setFreeTextChoiceEnable(boolean freeTextChoiceEnable) {
+        this.freeTextChoiceEnable = freeTextChoiceEnable;
+    }
+
 }

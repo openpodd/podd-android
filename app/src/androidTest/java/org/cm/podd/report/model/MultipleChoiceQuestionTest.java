@@ -28,9 +28,9 @@ public class MultipleChoiceQuestionTest extends TestCase {
 
     public void testSingleSelection() {
         MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
-        q1.addItems("1", "item 1");
-        q1.addItems("2", "item 2");
-        q1.addItems("3", "item 3");
+        q1.addItem("1", "item 1");
+        q1.addItem("2", "item 2");
+        q1.addItem("3", "item 3");
 
         q1.setData("4");
         assertEquals(1, q1.validate().size());
@@ -42,9 +42,9 @@ public class MultipleChoiceQuestionTest extends TestCase {
 
     public void testMultipleSelection() {
         MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
-        q1.addItems("1", "item 1");
-        q1.addItems("2", "item 2");
-        q1.addItems("3", "item 3");
+        q1.addItem("1", "item 1");
+        q1.addItem("2", "item 2");
+        q1.addItem("3", "item 3");
 
         q1.setData("4");
         assertEquals(1, q1.validate().size());
@@ -61,9 +61,9 @@ public class MultipleChoiceQuestionTest extends TestCase {
 
     public void testCombineWithRequireValidation() {
         MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
-        q1.addItems("1", "item 1");
-        q1.addItems("2", "item 2");
-        q1.addItems("3", "item 3");
+        q1.addItem("1", "item 1");
+        q1.addItem("2", "item 2");
+        q1.addItem("3", "item 3");
 
         assertEquals(0, q1.validate().size());
         q1.addValidation(new RequireValidation<String>());

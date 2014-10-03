@@ -1,0 +1,121 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.cm.podd.report.model.view;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckedTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import org.cm.podd.report.model.MultipleChoiceItem;
+import org.cm.podd.report.model.MultipleChoiceQuestion;
+import org.cm.podd.report.model.MultipleChoiceSelection;
+
+import java.util.List;
+
+/**
+ * Created by pphetra on 10/3/14 AD.
+ */
+public class MultipleChoiceQuestionView extends LinearLayout {
+
+    private final MultipleChoiceQuestion question;
+    private EditText editText;
+
+    public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question) {
+        super(context);
+        this.question = question;
+
+        setOrientation(VERTICAL);
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        setLayoutParams(params);
+
+        TextView titleView = new TextView(context);
+        titleView.setText(question.getTitle());
+        titleView.setLayoutParams(params);
+        addView(titleView);
+
+        ListView listView = new ListView(context);
+        switch (question.getSelectionType()) {
+            case SINGLE:
+                listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                break;
+            case MULTIPLE:
+                listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                break;
+        }
+
+        MultipleChoiceQuestionAdapter adapter = new MultipleChoiceQuestionAdapter(context, question);
+        listView.setAdapter(adapter);
+        listView.setLayoutParams(params);
+
+
+        List<MultipleChoiceItem> items = question.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            listView.setItemChecked(i, items.get(i).isChecked());
+        }
+
+        editText = null;
+        if (question.isFreeTextChoiceEnable()) {
+            question.addItem(question.getFreeTextId(), question.getFreeTextText());
+            editText = new EditText(context);
+            editText.setLayoutParams(params);
+            editText.setVisibility(INVISIBLE);
+        }
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                if (question.getSelectionType() == MultipleChoiceSelection.SINGLE) {
+                    question.clearAllItemChecked();
+                    Log.d("---", "clear all checked");
+                }
+
+                List items = question.getItems();
+                MultipleChoiceItem item = (MultipleChoiceItem) items.get(i);
+                CheckedTextView tv = (CheckedTextView) view;
+                item.setChecked(tv.isChecked());
+                Log.d("---", String.format("click %d, %s, %s, size %d", i, item.getId(), tv.isChecked(), items.size()));
+
+                if (question.isFreeTextChoiceEnable()) {
+                    MultipleChoiceItem freeTextItem = (MultipleChoiceItem) items.get(items.size() - 1);
+                    if (freeTextItem.isChecked()) {
+                        editText.setVisibility(VISIBLE);
+                    } else {
+                        editText.setVisibility(INVISIBLE);
+                        editText.setText("");
+                    }
+                }
+            }
+        });
+
+        addView(listView);
+        if (editText != null) {
+            addView(editText);
+        }
+
+
+    }
+}

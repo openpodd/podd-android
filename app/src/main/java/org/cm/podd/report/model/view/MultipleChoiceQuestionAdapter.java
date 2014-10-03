@@ -1,0 +1,74 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.cm.podd.report.model.view;
+
+import android.R;
+import android.content.Context;
+import android.database.DataSetObserver;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckedTextView;
+import android.widget.ListAdapter;
+
+import org.cm.podd.report.model.MultipleChoiceItem;
+import org.cm.podd.report.model.MultipleChoiceQuestion;
+
+/**
+ * Created by pphetra on 10/3/14 AD.
+ */
+public class MultipleChoiceQuestionAdapter extends BaseAdapter {
+
+    private final MultipleChoiceQuestion question;
+    private final Context context;
+
+    public MultipleChoiceQuestionAdapter(Context context, MultipleChoiceQuestion question) {
+        this.context = context;
+        this.question = question;
+    }
+
+    @Override
+    public int getCount() {
+        return question.getItems().size();
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return question.getItems().get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.simple_list_item_multiple_choice, viewGroup, false);
+        }
+        CheckedTextView ctv = (CheckedTextView) view;
+        MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
+        ctv.setText(item.getText());
+        return ctv;
+    }
+
+
+}

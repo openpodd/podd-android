@@ -24,32 +24,25 @@ public enum DataType {
 
     STRING() {
         @Override
-        Object parseFromString(String value) {
+        public Object parseFromString(String value) {
             return value;
         }
     },
 
     INTEGER() {
         @Override
-        Object parseFromString(String value) {
+        public Object parseFromString(String value) {
             return Integer.parseInt(value);
         }
     },
 
     DOUBLE() {
         @Override
-        Object parseFromString(String value) {
+        public Object parseFromString(String value) {
             return Double.parseDouble(value);
-        }
-    },
-
-    BOOLEAN() {
-        @Override
-        Object parseFromString(String value) {
-            return Boolean.parseBoolean(value);
         }
     };
 
-    abstract Object parseFromString(String value);
+    public abstract Object parseFromString(String value);
 
 }

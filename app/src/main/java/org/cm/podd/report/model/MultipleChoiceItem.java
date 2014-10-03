@@ -23,6 +23,7 @@ package org.cm.podd.report.model;
 public class MultipleChoiceItem<T> {
     private T id;
     private String text;
+    private boolean checked = false;
 
     public MultipleChoiceItem(T id, String text) {
         this.id = id;
@@ -44,4 +45,14 @@ public class MultipleChoiceItem<T> {
     public void setText(String text) {
         this.text = text;
     }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+
 }
