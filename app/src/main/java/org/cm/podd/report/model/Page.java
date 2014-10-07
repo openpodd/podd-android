@@ -19,6 +19,7 @@ package org.cm.podd.report.model;
 
 import org.cm.podd.report.model.validation.ValidationResult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.Map;
 /**
  * Created by pphetra on 9/26/14 AD.
  */
-public class Page {
+public class Page implements Serializable {
 
     private int id;
     private List<Question> questions = new ArrayList<Question>();
