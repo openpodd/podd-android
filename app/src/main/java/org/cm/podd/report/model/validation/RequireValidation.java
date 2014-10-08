@@ -1,5 +1,6 @@
 package org.cm.podd.report.model.validation;
 
+import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 
 /**
@@ -23,5 +24,17 @@ public class RequireValidation<T> implements IValidation<T> {
             return new ValidationResult(false, message);
         }
         return SUCCESS;
+    }
+
+    public static RequireValidation newInstance(DataType dataType, String message) {
+        switch (dataType) {
+            case STRING:
+                return new RequireValidation<String>(message);
+            case INTEGER:
+                return new RequireValidation<Integer>(message);
+            case DOUBLE:
+                return new RequireValidation<Double>(message);
+        }
+        return null;
     }
 }

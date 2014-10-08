@@ -24,7 +24,6 @@ import org.cm.podd.report.model.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pphetra on 9/25/14 AD.
@@ -109,18 +108,13 @@ public class Question<T> {
     public boolean isDirty() {
         Log.d("Question", String.format("old:%s, new:%s", oldData, data));
         if (data == null) {
-            if (oldData == null) {
-                return false;
-            } else {
-                return true;
-            }
+            return oldData != null;
         } else {
-            if (oldData == null) {
-                return true;
-            } else {
-                return ! data.equals(oldData);
-            }
+            return oldData == null || !data.equals(oldData);
         }
     }
 
+    public List<IValidation<T>> getValidations() {
+        return validations;
+    }
 }

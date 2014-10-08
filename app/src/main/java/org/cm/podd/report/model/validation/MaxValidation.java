@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.model.validation;
 
+import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 
 /**
@@ -41,5 +42,17 @@ public class MaxValidation<T> implements IValidation<T> {
         }
 
         return new ValidationResult(false, message);
+    }
+
+    public static MaxValidation newInstance(DataType dataType, String value, String message) {
+        switch (dataType) {
+            case STRING:
+                return new MaxValidation<String>(value, message);
+            case INTEGER:
+                return new MaxValidation<Integer>(Integer.parseInt(value), message);
+            case DOUBLE:
+                return new MaxValidation<Double>(Double.parseDouble(value), message);
+        }
+        return null;
     }
 }

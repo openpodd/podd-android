@@ -17,9 +17,12 @@
 
 package org.cm.podd.report.model.validation;
 
+import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 
 import java.util.Map;
+
+import static org.cm.podd.report.model.DataType.*;
 
 /**
  * Created by pphetra on 9/25/14 AD.
@@ -43,5 +46,17 @@ public class MinValidation<T> implements IValidation<T> {
         }
 
         return new ValidationResult(false, message);
+    }
+
+    public static MinValidation newInstance(DataType dataType, String minValue, String message) {
+        switch (dataType) {
+            case STRING:
+                return new MinValidation<String>(minValue, message);
+            case INTEGER:
+                return new MinValidation<Integer>(Integer.parseInt(minValue), message);
+            case DOUBLE:
+                return new MinValidation<Double>(Double.parseDouble(minValue), message);
+        }
+        return null;
     }
 }

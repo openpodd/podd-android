@@ -1,0 +1,75 @@
+{
+    startPageId: 1,
+    questions: [
+        {
+            id: 1,
+            name: "age",
+            title: "How old are you",
+            type: "integer",
+            validations: [
+                {
+                    type: "require",
+                    message: "Age is required"
+                },
+                {
+                    type: "min",
+                    value: 10,
+                    message: "Age must greater than 10"
+                }
+            ]
+        },
+        {
+            id: 2,
+            name: "name",
+            title: "What is your name",
+            type: "text",
+            validations: [
+                {
+                    type: "require",
+                    message: "Name is required"
+                }
+            ]
+        },
+        {
+            id: 3,
+            name: "pet_type",
+            title: "Kind of pet",
+            type: "multiple",
+            items: [
+                { id: "dog", text: "dog" },
+                { id: "cat", text: "cat" },
+                { id: "bird", text: "bird" }
+            ],
+            freeTextChoiceEnable: true,
+            freeTextText: "Other",
+            freeTextName: "pet_type_other",
+            freeTextId: "other"
+        }
+    ],
+    pages: [
+        {
+            id: 1,
+            questions: [1]
+        },
+        {
+            id: 2,
+            questions: [2]
+        },
+        {
+            id: 3,
+            questions: [3]
+        }
+    ],
+    transitions: [
+        {
+            from: 1,
+            to: 2,
+            expression: "true"
+        },
+        {
+            from: 2,
+            to: 3,
+            expression: "true"
+        }
+    ]
+}
