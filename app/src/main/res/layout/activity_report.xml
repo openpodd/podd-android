@@ -12,25 +12,26 @@ android:orientation="vertical">
         tools:context="org.cm.podd.report.activity.ReportActivity"
         tools:ignore="MergeRootFrame" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/controlBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true">
 
         <Button
             android:id="@+id/prevBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:text="Prev" />
 
         <Button
             android:id="@+id/nextBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:text="Next" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

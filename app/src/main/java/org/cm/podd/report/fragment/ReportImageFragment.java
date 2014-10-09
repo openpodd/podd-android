@@ -20,6 +20,8 @@ public class ReportImageFragment extends Fragment {
 
     private long reportId;
 
+    private ReportNavigationInterface navigationInterface;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -45,6 +47,8 @@ public class ReportImageFragment extends Fragment {
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
+        navigationInterface.setPrevVisible(false);
+        navigationInterface.setNextEnable(true);
     }
 
     @Override
@@ -57,11 +61,13 @@ public class ReportImageFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        navigationInterface = (ReportNavigationInterface) activity;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        navigationInterface = null;
     }
 
 

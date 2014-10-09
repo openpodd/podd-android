@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import org.cm.podd.report.R;
 
@@ -27,7 +28,7 @@ public class ReportConfirmFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private long reportId;
 
-    private OnFragmentInteractionListener mListener;
+    private ReportNavigationInterface navigationInterface;
 
     /**
      * Use this factory method to create a new instance of
@@ -54,25 +55,45 @@ public class ReportConfirmFragment extends Fragment {
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
+        navigationInterface.setPrevEnable(true);
+        navigationInterface.setNextVisible(false);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_report_confirm, container, false);
+        View view = inflater.inflate(R.layout.fragment_report_confirm, container, false);
+        Button confirmBtn = (Button) view.findViewById(R.id.confirmBtn);
+        Button cancelBtn = (Button) view.findViewById(R.id.cancelBtn);
+
+
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO mark report status to "ready to send to server"
+                navigationInterface.finishReport();
+            }
+        });
+
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navigationInterface.finishReport();
+            }
+        });
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        navigationInterface = (ReportNavigationInterface) activity;
 //        try {
 //            mListener = (OnFragmentInteractionListener) activity;
 //        } catch (ClassCastException e) {
@@ -84,7 +105,7 @@ public class ReportConfirmFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        navigationInterface = null;
     }
 
     /**

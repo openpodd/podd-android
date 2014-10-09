@@ -1,9 +1,10 @@
 package org.cm.podd.report.activity;
 
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.fragment.ReportConfirmFragment;
 import org.cm.podd.report.fragment.ReportImageFragment;
 import org.cm.podd.report.fragment.ReportLocationFragment;
+import org.cm.podd.report.fragment.ReportNavigationInterface;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.validation.ValidationResult;
@@ -28,7 +30,7 @@ import java.util.List;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class ReportActivity extends ActionBarActivity {
+public class ReportActivity extends ActionBarActivity implements ReportNavigationInterface {
 
     private Button prevBtn;
     private Button nextBtn;
@@ -87,6 +89,7 @@ public class ReportActivity extends ActionBarActivity {
                 currentFragment = null;
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = "dynamicForm";
+                setNextVisible(true);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
                     currentFragment = ReportLocationFragment.class.getName();
@@ -112,6 +115,11 @@ public class ReportActivity extends ActionBarActivity {
 
             } else {
                 isDynamicForm = true;
+
+                setNextVisible(true);
+                setPrevVisible(true);
+                setNextEnable(true);
+                setPrevEnable(true);
 
                 // case I
                 // just come into this dynamic form
@@ -203,6 +211,39 @@ public class ReportActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setNextEnable(boolean flag) {
+        nextBtn.setEnabled(flag);
+    }
+
+    @Override
+    public void setPrevEnable(boolean flag) {
+        prevBtn.setEnabled(flag);
+    }
+
+    @Override
+    public void setNextVisible(boolean flag) {
+        if (flag) {
+            nextBtn.setVisibility(View.VISIBLE);
+        } else {
+            nextBtn.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void setPrevVisible(boolean flag) {
+        if (flag) {
+            prevBtn.setVisibility(View.VISIBLE);
+        } else {
+            prevBtn.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void finishReport() {
+        NavUtils.navigateUpFromSameTask(this);
     }
 
     /**

@@ -2,6 +2,7 @@ package org.cm.podd.report.fragment;
 
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.cm.podd.report.R;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +24,10 @@ public class ReportLocationFragment extends Fragment {
 
     private static final String ARG_REPORT_ID = "reportId";
     private long reportId;
+
+    private ReportNavigationInterface navigationInterface;
+
+    private Timer timeoutTimer;
 
 
     /**
@@ -47,6 +55,22 @@ public class ReportLocationFragment extends Fragment {
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
+        navigationInterface.setPrevVisible(true);
+        navigationInterface.setPrevEnable(true);
+        navigationInterface.setNextEnable(false);
+
+        timeoutTimer = new Timer();
+        timeoutTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        navigationInterface.setNextEnable(true);
+                    }
+                });
+            }
+        }, 5000);
     }
 
     @Override
@@ -56,5 +80,16 @@ public class ReportLocationFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_report_location, container, false);
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        navigationInterface = (ReportNavigationInterface) activity;
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        navigationInterface = null;
+        timeoutTimer.cancel();
+    }
 }
