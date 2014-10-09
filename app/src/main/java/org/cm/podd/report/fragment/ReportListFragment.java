@@ -27,6 +27,7 @@ public class ReportListFragment extends ListFragment {
     OnReportSelectListener mListener;
 
     ReportDataSource reportDataSource;
+    private ReportCursorAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,7 +41,8 @@ public class ReportListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         reportDataSource = new ReportDataSource(this.getActivity());
-        setListAdapter(new ReportCursorAdapter(this.getActivity(), reportDataSource.getAll()));
+        adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAll());
+        setListAdapter(adapter);
     }
 
 
@@ -67,7 +69,7 @@ public class ReportListFragment extends ListFragment {
         super.onListItemClick(l, v, position, id);
 
         if (null != mListener) {
-//            mListener.onReportSelect(DummyContent.ITEMS.get(position).id);
+            mListener.onReportSelect(id);
         }
     }
 
@@ -82,7 +84,7 @@ public class ReportListFragment extends ListFragment {
     * >Communicating with Other Fragments</a> for more information.
     */
     public interface OnReportSelectListener {
-        public void onReportSelect(int reportId);
+        public void onReportSelect(long reportId);
     }
 
 

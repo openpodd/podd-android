@@ -22,6 +22,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by pphetra on 10/8/14 AD.
  */
@@ -29,6 +32,9 @@ public class ReportDataSource {
 
     private ReportDatabaseHelper reportDatabaseHelper;
     private ReportImageDatabaseHelper reportImageDatabaseHelper;
+
+    private SQLiteDatabase readableDB;
+
 
     public ReportDataSource(Context context) {
         reportDatabaseHelper = new ReportDatabaseHelper(context);
@@ -45,7 +51,24 @@ public class ReportDataSource {
     }
 
     public Cursor getAll() {
-        return reportDatabaseHelper.getReadableDatabase().rawQuery("SELECT * FROM report", null);
+        return getReadableDB().rawQuery("SELECT * FROM report order by _id desc", null);
+    }
+
+    public Map getById(long id) {
+        Cursor cursor = getReadableDB().rawQuery("SELECT * FROM report where _id = ?", new String[] {Long.toString(id)});
+        cursor.moveToFirst();
+        HashMap map = new HashMap();
+        map.put("id", new Long(id));
+        map.put("type", new Integer(1)); //TODO change to report_type column
+        cursor.close();
+        return map;
+    }
+
+    private SQLiteDatabase getReadableDB() {
+        if (readableDB == null) {
+            readableDB = reportDatabaseHelper.getReadableDatabase();
+        }
+        return readableDB;
     }
 
 }

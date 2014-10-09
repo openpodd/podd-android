@@ -1,5 +1,6 @@
 package org.cm.podd.report.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -45,8 +46,9 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        reportType = getIntent().getIntExtra("reportType", 0);
+        Intent intent = getIntent();
+        reportType = intent.getIntExtra("reportType", 0);
+        reportId = intent.getLongExtra("reportId", -99);
 
         setContentView(R.layout.activity_report);
         if (savedInstanceState == null) {
@@ -74,7 +76,9 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
 
         reportDataSource = new ReportDataSource(this);
-        reportId = reportDataSource.createDraftReport();
+        if (reportId == -99) {
+            reportId = reportDataSource.createDraftReport();
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,12 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ReportListFragment.OnReportSelectListener {
 
+    public static final String TAG = "HomeActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -31,6 +35,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
+
+    ReportDataSource reportDataSource;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -75,6 +81,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        reportDataSource = new ReportDataSource(this);
     }
 
 
@@ -95,12 +103,16 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             return true;
         }
         if (id == R.id.action_new_event) {
-            Intent intent = new Intent(this, ReportActivity.class);
-            intent.putExtra("reportType", 1); // mock
-            startActivity(intent);
+            newReport();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void newReport() {
+        Intent intent = new Intent(this, ReportActivity.class);
+        intent.putExtra("reportType", 1); // mock
+        startActivity(intent);
     }
 
     @Override
@@ -158,8 +170,13 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
-    public void onReportSelect(int reportId) {
-
+    public void onReportSelect(long reportId) {
+        Map result = reportDataSource.getById(reportId);
+        Log.d(TAG, "onReportSelect " + reportId + " type = " + result.get("type"));
+        Intent intent = new Intent(this, ReportActivity.class);
+        intent.putExtra("reportType", (Integer) result.get("type")); // mock
+        intent.putExtra("reportId", reportId);
+        startActivity(intent);
     }
 
     /**
