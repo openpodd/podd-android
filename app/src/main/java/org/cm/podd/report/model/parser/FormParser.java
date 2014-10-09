@@ -209,10 +209,10 @@ public class FormParser {
         MultipleChoiceQuestion question = null;
         String type = q.getString("type");
         if (type.equals("single")) {
-            question = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
+            question = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
             question.setDataType(DataType.STRING);
         } else if (type.equals("multiple")) {
-            question = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
+            question = new MultipleChoiceQuestion(MultipleChoiceSelection.MULTIPLE);
             question.setDataType(DataType.STRING);
         }
 

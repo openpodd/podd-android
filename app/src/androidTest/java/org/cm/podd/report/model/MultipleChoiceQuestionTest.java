@@ -27,7 +27,7 @@ import org.cm.podd.report.model.validation.RequireValidation;
 public class MultipleChoiceQuestionTest extends TestCase {
 
     public void testSingleSelection() {
-        MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
+        MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
         q1.addItem("1", "item 1");
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
@@ -41,7 +41,7 @@ public class MultipleChoiceQuestionTest extends TestCase {
     }
 
     public void testMultipleSelection() {
-        MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
+        MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(MultipleChoiceSelection.MULTIPLE);
         q1.addItem("1", "item 1");
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
@@ -60,13 +60,13 @@ public class MultipleChoiceQuestionTest extends TestCase {
     }
 
     public void testCombineWithRequireValidation() {
-        MultipleChoiceQuestion<String> q1 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
+        MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
         q1.addItem("1", "item 1");
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
 
         assertEquals(0, q1.validate().size());
-        q1.addValidation(new RequireValidation<String>());
+        q1.addValidation(new RequireValidation());
         assertEquals(1, q1.validate().size());
 
 

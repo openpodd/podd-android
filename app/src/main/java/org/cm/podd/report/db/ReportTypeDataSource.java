@@ -61,7 +61,7 @@ public class ReportTypeDataSource {
         q2.setDataType(DataType.STRING);
         form.addQuestion(q2);
 
-        MultipleChoiceQuestion<String> q3 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
+        MultipleChoiceQuestion q3 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
         q3.setTitle("Type of animal");
         q3.setName("animal_type");
         q3.setDataType(DataType.STRING);
@@ -71,9 +71,9 @@ public class ReportTypeDataSource {
         q3.addItem("bird", "bird");
         form.addQuestion(q3);
 
-        MultipleChoiceQuestion<String> q4 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
+        MultipleChoiceQuestion q4 = new MultipleChoiceQuestion(MultipleChoiceSelection.MULTIPLE);
         q4.setTitle("symptom");
-        q4.setName("animal_type");
+        q4.setName("symptom");
         q4.setDataType(DataType.STRING);
         q4.setId(4);
         q4.addItem("cough", "cough");

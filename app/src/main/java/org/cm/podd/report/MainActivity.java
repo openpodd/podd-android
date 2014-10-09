@@ -1,18 +1,13 @@
 package org.cm.podd.report;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-
-import org.cm.podd.report.model.MultipleChoiceQuestion;
-import org.cm.podd.report.model.MultipleChoiceSelection;
-import org.cm.podd.report.model.view.MultipleChoiceQuestionView;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -60,23 +55,23 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            MultipleChoiceQuestion<String> question = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
-            question.setTitle("choose one");
-            question.addItem("first", "first");
-            question.addItem("second", "second");
-            question.addItem("third", "third");
-            question.setFreeTextChoiceEnable(true);
-            question.setFreeTextId("other");
-            question.setFreeTextName("other");
-            question.setFreeTextText("other");
-
-//            Question<Integer> q1 = new Question<Integer>();
-//            q1.setDataType(DataType.INTEGER);
-//            q1.setTitle("How old are you?");
-//            q1.setName("age");
+//            MultipleChoiceQuestion<String> question = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
+//            question.setTitle("choose one");
+//            question.addItem("first", "first");
+//            question.addItem("second", "second");
+//            question.addItem("third", "third");
+//            question.setFreeTextChoiceEnable(true);
+//            question.setFreeTextId("other");
+//            question.setFreeTextName("other");
+//            question.setFreeTextText("other");
 //
-            RelativeLayout v = (RelativeLayout) rootView;
-            v.addView(new MultipleChoiceQuestionView(getActivity(), question));
+////            Question<Integer> q1 = new Question<Integer>();
+////            q1.setDataType(DataType.INTEGER);
+////            q1.setTitle("How old are you?");
+////            q1.setName("age");
+////
+//            RelativeLayout v = (RelativeLayout) rootView;
+//            v.addView(new MultipleChoiceQuestionView(getActivity(), question));
 
             return rootView;
         }

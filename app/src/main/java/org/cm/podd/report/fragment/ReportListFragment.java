@@ -15,6 +15,8 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 
+import java.util.Date;
+
 /**
  * A fragment representing a list of Items.
  * <p />
@@ -105,7 +107,13 @@ public class ReportListFragment extends ListFragment {
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             TextView tv = (TextView) view.findViewById(R.id.report_date);
-            tv.setText(Long.toString(cursor.getLong(cursor.getColumnIndex("_id"))));
+            StringBuilder builder = new StringBuilder();
+            builder.append(cursor.getLong(cursor.getColumnIndex("_id")));
+            Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
+            builder.append(" ").append(date);
+            builder.append(" ").append(cursor.getInt(cursor.getColumnIndex("draft")));
+            builder.append(" ").append(cursor.getInt(cursor.getColumnIndex("submit")));
+            tv.setText(builder.toString());
         }
     }
 

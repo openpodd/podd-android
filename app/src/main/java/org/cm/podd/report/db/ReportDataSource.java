@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,11 @@ public class ReportDataSource {
      */
     public long createDraftReport() {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
-        return db.insert("report", "form_data", new ContentValues());
+        ContentValues values = new ContentValues();
+        values.put("date", new Date().getTime());
+        values.put("draft", 1);
+        values.put("submit", 0);
+        return db.insert("report", null, values);
     }
 
     public Cursor getAll() {
@@ -62,6 +67,14 @@ public class ReportDataSource {
         map.put("type", new Integer(1)); //TODO change to report_type column
         cursor.close();
         return map;
+    }
+
+    public void updateData(long reportId, String jsonStr) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("form_data", jsonStr);
+        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.close();
     }
 
     private SQLiteDatabase getReadableDB() {

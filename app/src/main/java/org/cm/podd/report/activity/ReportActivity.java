@@ -25,14 +25,17 @@ import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
+import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ReportActivity extends ActionBarActivity implements ReportNavigationInterface {
 
+    private static final String TAG = "ReportActivity";
     private Button prevBtn;
     private Button nextBtn;
 
@@ -247,7 +250,15 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
     @Override
     public void finishReport() {
+        saveForm();
         NavUtils.navigateUpFromSameTask(this);
+    }
+
+    private void saveForm() {
+        Map<String, Object> data = formIterator.getData();
+        String jsonData = new JSONObject(data).toString();
+        Log.d(TAG, jsonData);
+        reportDataSource.updateData(reportId, jsonData);
     }
 
     /**

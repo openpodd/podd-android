@@ -19,9 +19,7 @@ package org.cm.podd.report.model;
 
 import org.cm.podd.report.model.validation.MultipleChoiceValidation;
 import org.cm.podd.report.model.validation.SingleChoiceValidation;
-import org.cm.podd.report.model.validation.ValidationResult;
 
-import java.security.cert.CertPathValidatorException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +27,10 @@ import java.util.List;
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class MultipleChoiceQuestion<T extends String> extends Question<T> {
+public class MultipleChoiceQuestion extends Question<String> {
 
     private List<MultipleChoiceItem> items = new ArrayList<MultipleChoiceItem>();
-    private HashMap<T, MultipleChoiceItem> itemMap = new HashMap<T, MultipleChoiceItem>();
+    private HashMap<String, MultipleChoiceItem> itemMap = new HashMap<String, MultipleChoiceItem>();
     private MultipleChoiceSelection selectionType;
     private boolean freeTextChoiceEnable = false;
 
@@ -69,19 +67,19 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
         this.setDataType(DataType.STRING);
         switch(selectionType) {
             case SINGLE:
-                addValidation(new SingleChoiceValidation<T>("Value must be present in the giving list."));
+                addValidation(new SingleChoiceValidation("Value must be present in the giving list."));
                 break;
             case MULTIPLE:
-                addValidation(new MultipleChoiceValidation<T>("Value must be present in the giving list."));
+                addValidation(new MultipleChoiceValidation("Value must be present in the giving list."));
                 break;
         }
     }
 
-    public void addItem(T id, String text) {
+    public void addItem(String id, String text) {
         addItem(id, text, false);
     }
 
-    public void addItem(T id, String text, boolean flag) {
+    public void addItem(String id, String text, boolean flag) {
         MultipleChoiceItem item = new MultipleChoiceItem(id, text);
         item.setChecked(flag);
         items.add(item);
@@ -100,7 +98,7 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
         this.selectionType = selectionType;
     }
 
-    public boolean containKey(T value) {
+    public boolean containKey(String value) {
         return itemMap.containsKey(value);
     }
 
@@ -118,4 +116,20 @@ public class MultipleChoiceQuestion<T extends String> extends Question<T> {
         this.freeTextChoiceEnable = freeTextChoiceEnable;
     }
 
+    @Override
+    public String getValue() {
+        StringBuilder builder = new StringBuilder();
+        boolean isFirst = true;
+        for (MultipleChoiceItem item : items) {
+            if (item.isChecked()) {
+                if (!isFirst) {
+                    builder.append(",");
+                }
+                builder.append(item.getId());
+                isFirst = false;
+            }
+        }
+        return builder.toString();
+
+    }
 }

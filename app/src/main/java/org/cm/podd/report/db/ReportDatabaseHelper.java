@@ -34,8 +34,12 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  latitude REAL,"
             + "  longitude REAL,"
             + "  date INTEGER,"
-            + "  form_data TEXT"
+            + "  form_data TEXT,"
+            + "  draft INTEGER,"
+            + "  submit INTEGER"
             + ")";
+
+    private static final String DROP_TABLE = "drop table report";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,6 +52,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        // no-op
+        sqLiteDatabase.execSQL(DROP_TABLE);
     }
 }

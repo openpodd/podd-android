@@ -1,17 +1,14 @@
 package org.cm.podd.report.activity;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.Button;
 
 import org.cm.podd.report.R;
@@ -139,7 +136,7 @@ public class TestFormActivity extends ActionBarActivity {
         q2.setDataType(DataType.STRING);
         form.addQuestion(q2);
 
-        MultipleChoiceQuestion<String> q3 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.SINGLE);
+        MultipleChoiceQuestion q3 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
         q3.setTitle("Type of animal");
         q3.setName("animal_type");
         q3.setDataType(DataType.STRING);
@@ -149,7 +146,7 @@ public class TestFormActivity extends ActionBarActivity {
         q3.addItem("bird", "bird");
         form.addQuestion(q3);
 
-        MultipleChoiceQuestion<String> q4 = new MultipleChoiceQuestion<String>(MultipleChoiceSelection.MULTIPLE);
+        MultipleChoiceQuestion q4 = new MultipleChoiceQuestion(MultipleChoiceSelection.MULTIPLE);
         q4.setTitle("symptom");
         q4.setName("animal_type");
         q4.setDataType(DataType.STRING);

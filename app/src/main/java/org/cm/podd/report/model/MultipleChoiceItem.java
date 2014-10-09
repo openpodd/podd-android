@@ -20,21 +20,21 @@ package org.cm.podd.report.model;
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class MultipleChoiceItem<T> {
-    private T id;
+public class MultipleChoiceItem {
+    private String id;
     private String text;
     private boolean checked = false;
 
-    public MultipleChoiceItem(T id, String text) {
+    public MultipleChoiceItem(String id, String text) {
         this.id = id;
         this.text = text;
     }
 
-    public T getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(T id) {
+    public void setId(String id) {
         this.id = id;
     }
 
