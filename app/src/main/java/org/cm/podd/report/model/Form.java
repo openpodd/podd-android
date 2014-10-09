@@ -33,12 +33,14 @@ public class Form {
 
     private Map<Integer, Question> questionMap = new HashMap<Integer, Question>();
     private Map<Integer, Page> pageMap = new HashMap<Integer, Page>();
+    private Map<String, Question> questionMapByName = new HashMap<String, Question>();
 
     private int startPageId;
 
     public void addQuestion(Question question) {
         questions.add(question);
         questionMap.put(question.getId(), question);
+        questionMapByName.put(question.getName(), question);
     }
 
     public void addPage(Page page) {
@@ -53,6 +55,8 @@ public class Form {
     public Question getQuestion(int id) {
         return questionMap.get(id);
     }
+
+    public Question getQuestion(String name) { return questionMapByName.get(name); }
 
     public Page getPage(int id) {
         return pageMap.get(id);

@@ -21,12 +21,16 @@ import org.cm.podd.report.fragment.ReportConfirmFragment;
 import org.cm.podd.report.fragment.ReportImageFragment;
 import org.cm.podd.report.fragment.ReportLocationFragment;
 import org.cm.podd.report.fragment.ReportNavigationInterface;
+import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
+import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -81,13 +85,42 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         reportDataSource = new ReportDataSource(this);
         if (reportId == -99) {
             reportId = reportDataSource.createDraftReport();
+        } else {
+            loadFormData();
         }
+    }
+
+    private void loadFormData() {
+
+        Form form = formIterator.getForm();
+
+        Map result = reportDataSource.getById(reportId);
+        String formDataStr = (String) result.get("form_data");
+        if (formDataStr != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(formDataStr);
+                Iterator<String> keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    Question question = form.getQuestion(key);
+                    if (question != null) {
+                        question.setData(jsonObject.get(key));
+                    } else {
+                        Log.d(TAG, "Question not found. key= " + key);
+                    }
+                }
+
+            } catch (JSONException e) {
+                Log.e(TAG, "error parsing form_data", e);
+            }
+        }
+
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.d("----", "from fragment = " + currentFragment);
+        Log.d(TAG, "from fragment = " + currentFragment);
 
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
@@ -103,7 +136,7 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
                 }
             }
         }
-        Log.d("----", "back to fragment = " + currentFragment);
+        Log.d(TAG, "back to fragment = " + currentFragment);
     }
 
     private void nextScreen() {

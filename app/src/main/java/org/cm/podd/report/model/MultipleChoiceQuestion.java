@@ -132,4 +132,17 @@ public class MultipleChoiceQuestion extends Question<String> {
         return builder.toString();
 
     }
+
+    @Override
+    public void setData(String value) {
+        String[] strings = value.split(",");
+        clearAllItemChecked();
+        for (String s: strings) {
+            for (MultipleChoiceItem item : items) {
+                if (item.getId().equals(s)) {
+                    item.setChecked(true);
+                }
+            }
+        }
+    }
 }

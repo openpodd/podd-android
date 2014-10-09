@@ -142,4 +142,7 @@ public class FormIterator {
         return data;
     }
 
+    public Form getForm() {
+        return form;
+    }
 }
