@@ -1,26 +1,26 @@
 package org.cm.podd.report.activity;
 
-import java.util.Locale;
-
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import org.cm.podd.report.R;
 
-public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener {
+import org.cm.podd.report.R;
+import org.cm.podd.report.fragment.ReportListFragment;
+
+import java.util.Locale;
+
+public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ReportListFragment.OnReportSelectListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -132,7 +132,12 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            if (position == 0) {
+                return new ReportListFragment();
+            } else {
+                return PlaceholderFragment.newInstance(position + 1);
+            }
+
         }
 
         @Override
@@ -150,6 +155,11 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             }
             return null;
         }
+    }
+
+    @Override
+    public void onReportSelect(int reportId) {
+
     }
 
     /**

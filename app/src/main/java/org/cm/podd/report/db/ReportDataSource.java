@@ -19,9 +19,8 @@ package org.cm.podd.report.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
-import java.util.Hashtable;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -43,6 +42,10 @@ public class ReportDataSource {
     public long createDraftReport() {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         return db.insert("report", "form_data", new ContentValues());
+    }
+
+    public Cursor getAll() {
+        return reportDatabaseHelper.getReadableDatabase().rawQuery("SELECT * FROM report", null);
     }
 
 }
