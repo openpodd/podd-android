@@ -25,8 +25,12 @@ import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.MultipleChoiceSelection;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.model.Transition;
 import org.cm.podd.report.model.validation.RequireValidation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -37,8 +41,15 @@ public class ReportTypeDataSource {
 
     }
 
-    public Form getForm(int formId) {
+    public Form getForm(long formId) {
         return createSampleForm1();
+    }
+
+    public List<ReportType> getAll() {
+        ArrayList<ReportType> results = new ArrayList<ReportType>();
+        results.add(new ReportType(1, "sick/death"));
+        results.add(new ReportType(2, "food"));
+        return results;
     }
 
     private Form createSampleForm1() {

@@ -18,44 +18,36 @@
 package org.cm.podd.report.model;
 
 /**
- * Created by pphetra on 9/29/14 AD.
+ * Created by pphetra on 10/10/14 AD.
  */
-public class MultipleChoiceItem {
-    private String id;
-    private String text;
-    private boolean checked = false;
+public class ReportType {
 
-    public MultipleChoiceItem(String id, String text) {
+    private long id;
+    private String name;
+
+    public ReportType(long id, String name) {
         this.id = id;
-        this.text = text;
+        this.name = name;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getText() {
-        return text;
+    public String getName() {
+        return name;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return text;
+        return name;
     }
 }

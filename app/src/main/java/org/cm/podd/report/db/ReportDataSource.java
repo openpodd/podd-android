@@ -64,7 +64,7 @@ public class ReportDataSource {
         cursor.moveToFirst();
         HashMap map = new HashMap();
         map.put("id", new Long(id));
-        map.put("type", new Integer(1)); //TODO change to report_type column
+        map.put("type", new Long(1)); //TODO change to report_type column
         map.put("form_data", cursor.getString(cursor.getColumnIndex("form_data")));
         cursor.close();
         return map;
