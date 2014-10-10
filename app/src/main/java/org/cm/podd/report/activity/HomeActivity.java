@@ -26,7 +26,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +37,6 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 
 import java.util.Locale;
-import java.util.Map;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ReportListFragment.OnReportSelectListener {
 
@@ -183,16 +181,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             }
             return null;
         }
-    }
-
-    @Override
-    public void onReportSelect(long reportId) {
-        Map result = reportDataSource.getById(reportId);
-        Log.d(TAG, "onReportSelect " + reportId + " type = " + result.get("type"));
-        Intent intent = new Intent(this, ReportActivity.class);
-        intent.putExtra("reportType", (Long) result.get("type")); // mock
-        intent.putExtra("reportId", reportId);
-        startActivity(intent);
     }
 
     /**

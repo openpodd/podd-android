@@ -2,9 +2,11 @@ package org.cm.podd.report.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -26,10 +30,14 @@ import java.util.Date;
  */
 public class ReportListFragment extends ListFragment {
 
+    private static final String TAG = "ReportListFragment";
+    public static final int REQUEST_FOR_EDIT = 1;
     OnReportSelectListener mListener;
 
     ReportDataSource reportDataSource;
     private ReportCursorAdapter adapter;
+
+    private boolean skipRefreshAdapter = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,12 +49,20 @@ public class ReportListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         reportDataSource = new ReportDataSource(this.getActivity());
-        adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAll());
-        setListAdapter(adapter);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume skipRefreshAdapter = " + skipRefreshAdapter);
+        if (! skipRefreshAdapter) {
+            Log.d(TAG, "refresh adapter");
+            adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAll());
+            setListAdapter(adapter);
+        }
+        skipRefreshAdapter = false;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -65,14 +81,26 @@ public class ReportListFragment extends ListFragment {
         mListener = null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_FOR_EDIT) {
+            skipRefreshAdapter = true;
+        }
+        Log.d(TAG, "request code = " + requestCode + " result code = " + resultCode);
+    }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+    public void onListItemClick(ListView l, View v, int position, long reportId) {
+        super.onListItemClick(l, v, position, reportId);
 
-        if (null != mListener) {
-            mListener.onReportSelect(id);
-        }
+        Map result = reportDataSource.getById(reportId);
+        Log.d(TAG, "onReportSelect " + reportId + " type = " + result.get("type"));
+        Intent intent = new Intent(getActivity(), ReportActivity.class);
+        intent.putExtra("reportType", (Long) result.get("type")); // mock
+        intent.putExtra("reportId", reportId);
+        startActivityForResult(intent, REQUEST_FOR_EDIT);
+
     }
 
     /**
@@ -86,7 +114,7 @@ public class ReportListFragment extends ListFragment {
     * >Communicating with Other Fragments</a> for more information.
     */
     public interface OnReportSelectListener {
-        public void onReportSelect(long reportId);
+
     }
 
 
