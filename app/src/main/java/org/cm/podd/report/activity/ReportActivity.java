@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +41,7 @@ import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
 import org.json.JSONException;
@@ -101,7 +101,7 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
         reportDataSource = new ReportDataSource(this);
         if (reportId == -99) {
-            reportId = reportDataSource.createDraftReport();
+            reportId = reportDataSource.createDraftReport(reportType);
         } else {
             loadFormData();
         }
@@ -111,8 +111,8 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
         Form form = formIterator.getForm();
 
-        Map result = reportDataSource.getById(reportId);
-        String formDataStr = (String) result.get("form_data");
+        Report report = reportDataSource.getById(reportId);
+        String formDataStr = report.getFormData();
         if (formDataStr != null) {
             try {
                 JSONObject jsonObject = new JSONObject(formDataStr);
@@ -302,14 +302,17 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     @Override
     public void finishReport() {
         saveForm();
-        NavUtils.navigateUpFromSameTask(this);
+
+        Intent returnIntent = new Intent();
+        setResult(RESULT_OK, returnIntent);
+        finish();
     }
 
     private void saveForm() {
         Map<String, Object> data = formIterator.getData();
         String jsonData = new JSONObject(data).toString();
         Log.d(TAG, jsonData);
-        reportDataSource.updateData(reportId, jsonData);
+        reportDataSource.updateData(reportId, jsonData, 0 /* draft = 0*/);
     }
 
     /**

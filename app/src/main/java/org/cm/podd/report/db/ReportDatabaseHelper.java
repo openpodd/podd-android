@@ -31,12 +31,14 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE = "create table report"
             + "("
             + "  _id INTEGER PRIMARY KEY,"
+            + "  type INTEGER,"
             + "  latitude REAL,"
             + "  longitude REAL,"
             + "  date INTEGER,"
             + "  form_data TEXT,"
-            + "  draft INTEGER,"
-            + "  submit INTEGER"
+            + "  negative INTEGER,"   // 1 -> found incident, 0 -> no incident
+            + "  draft INTEGER,"      // 1 -> save for edit, 0 -> ready to send to server
+            + "  submit INTEGER"     // already submit to server
             + ")";
 
     private static final String DROP_TABLE = "drop table report";

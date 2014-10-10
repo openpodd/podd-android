@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
 
@@ -41,6 +42,7 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
     private ListView listView;
     private ProgressBar progressBar;
     private ReportTypeDataSource dataSource;
+    private ReportDataSource reportDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
         progressBar = (ProgressBar) findViewById(R.id.report_type_progress_bar);
 
         dataSource = new ReportTypeDataSource(this);
+        reportDataSource = new ReportDataSource(this);
 
         ArrayList<ReportType> items = new ArrayList<ReportType>();
         items.add(new ReportType(0, "No report"));
@@ -87,6 +90,10 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
         if (item.getId() == -99) {
             listView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
+        } else if (item.getId() == 0) {
+            reportDataSource.createPositiveReport();
+            finish();
+            
         } else {
             Intent intent = new Intent(this, ReportActivity.class);
             intent.putExtra("reportType", item.getId());

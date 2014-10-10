@@ -17,9 +17,12 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.model.Report;
 
 import java.util.Date;
-import java.util.Map;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * A fragment representing a list of Items.
@@ -85,7 +88,11 @@ public class ReportListFragment extends ListFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_FOR_EDIT) {
-            skipRefreshAdapter = true;
+            if (resultCode == Activity.RESULT_OK) {
+                skipRefreshAdapter = false;
+            } else {
+                skipRefreshAdapter = true;
+            }
         }
         Log.d(TAG, "request code = " + requestCode + " result code = " + resultCode);
     }
@@ -94,12 +101,26 @@ public class ReportListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long reportId) {
         super.onListItemClick(l, v, position, reportId);
 
-        Map result = reportDataSource.getById(reportId);
-        Log.d(TAG, "onReportSelect " + reportId + " type = " + result.get("type"));
-        Intent intent = new Intent(getActivity(), ReportActivity.class);
-        intent.putExtra("reportType", (Long) result.get("type")); // mock
-        intent.putExtra("reportId", reportId);
-        startActivityForResult(intent, REQUEST_FOR_EDIT);
+        Report report = reportDataSource.getById(reportId);
+        Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
+        if (report.getNegative() == report.TRUE) {
+            Intent intent = new Intent(getActivity(), ReportActivity.class);
+            intent.putExtra("reportType", report.getType());
+            intent.putExtra("reportId", reportId);
+            startActivityForResult(intent, REQUEST_FOR_EDIT);
+        } else {
+            StringBuffer buff = new StringBuffer();
+            buff.append("report on ").append(report.getDate()).append("\n");
+            buff.append("positive report");
+            final Crouton crouton = Crouton.makeText(getActivity(), buff.toString(), Style.INFO);
+            crouton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Crouton.hide(crouton);
+                }
+            });
+            crouton.show();
+        }
 
     }
 
