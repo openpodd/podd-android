@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.cm.podd.report" >
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,7 +32,8 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,7 +43,9 @@
         <activity
             android:name=".activity.ReportActivity"
             android:label="@string/title_activity_report"
-            android:parentActivityName=".activity.HomeActivity" >
+            android:launchMode="singleTop"
+            android:parentActivityName=".activity.HomeActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -42,7 +54,25 @@
             android:name=".activity.ReportTypeActivity"
             android:label="@string/title_activity_report_type"
             android:noHistory="true"
-            android:theme="@android:style/Theme.Dialog">
+            android:parentActivityName=".activity.HomeActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.HomeActivity" />
+        </activity>
+
+        <service
+            android:name=".service.LocationBackgroundService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".activity.ImageActivity"
+            android:label="@string/title_activity_image"
+            android:parentActivityName=".activity.ReportActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.ReportActivity" />
         </activity>
     </application>
 

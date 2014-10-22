@@ -20,7 +20,7 @@ public class RequireValidation<T> implements IValidation<T> {
 
     @Override
     public ValidationResult validate(T value, Question<T> question) {
-        if (value == null) {
+        if (value == null || value.toString().equals("")) {
             return new ValidationResult(false, message);
         }
         return SUCCESS;

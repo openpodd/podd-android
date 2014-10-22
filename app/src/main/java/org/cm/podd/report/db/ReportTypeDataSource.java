@@ -18,6 +18,8 @@
 package org.cm.podd.report.db;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Form;
@@ -27,8 +29,13 @@ import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.model.Transition;
+import org.cm.podd.report.model.parser.FormParser;
 import org.cm.podd.report.model.validation.RequireValidation;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,19 +44,52 @@ import java.util.List;
  */
 public class ReportTypeDataSource {
 
-    public ReportTypeDataSource(Context context) {
+    private static final String TAG = "ReportTypeDataSource";
+    Context context;
 
+    public ReportTypeDataSource(Context context) {
+        this.context = context;
     }
 
     public Form getForm(long formId) {
+
+        if (formId == 1) return parseForm("podd.json");
+        if (formId == 2) return parseForm("podd2.json");
+        if (formId == 3) return parseForm("podd3.json");
+        if (formId == 4) return parseForm("podd4.json");
         return createSampleForm1();
+
     }
 
     public List<ReportType> getAll() {
         ArrayList<ReportType> results = new ArrayList<ReportType>();
-        results.add(new ReportType(1, "sick/death"));
-        results.add(new ReportType(2, "food"));
+        results.add(new ReportType(1, "สัตว์ป่วย/ตาย 1"));
+        results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
+        results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
+        results.add(new ReportType(4, "สัตว์ป่วย/ตาย 4"));
+        results.add(new ReportType(5, "สัมผัสสัตว์"));
+        results.add(new ReportType(6, "อาหาร"));
         return results;
+    }
+
+    private Form parseForm(String name) {
+        AssetManager assetManager = context.getAssets();
+        try {
+            InputStream stream = assetManager.open(name);
+            StringBuilder builder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            FormParser formParser = new FormParser();
+            formParser.parse(new JSONObject(builder.toString()));
+
+            return formParser.getForm();
+        } catch (Exception e) {
+            Log.e(TAG, "error while parsing form", e);
+        }
+        return null;
     }
 
     private Form createSampleForm1() {

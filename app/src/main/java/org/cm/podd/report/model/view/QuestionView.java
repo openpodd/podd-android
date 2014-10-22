@@ -21,7 +21,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -51,7 +51,7 @@ public class QuestionView extends LinearLayout {
         titleView.setLayoutParams(params);
         addView(titleView);
 
-        EditText editView = new EditText(context);
+        final EditText editView = new EditText(context);
         editView.setLayoutParams(params);
         int type = 0;
         if (question.getDataType() == DataType.INTEGER) {
@@ -84,6 +84,15 @@ public class QuestionView extends LinearLayout {
             @Override
             public void afterTextChanged(Editable editable) {
                 question.setData(question.getDataType().parseFromString(editable.toString()));
+            }
+        });
+
+        editView.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (! hasFocus) {
+                    question.setData(question.getDataType().parseFromString(editView.getText().toString()));
+                }
             }
         });
     }

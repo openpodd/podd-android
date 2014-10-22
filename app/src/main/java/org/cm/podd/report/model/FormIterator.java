@@ -21,6 +21,7 @@ import android.util.Log;
 
 import org.cm.podd.report.model.validation.ValidationResult;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,12 @@ import java.util.Stack;
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class FormIterator {
+public class FormIterator implements Serializable{
 
+    private static final String TAG = "FormIterator";
     private final Form form;
     private Page currentPage;
-    private ExpressionEngine expressionEngine;
+    private transient ExpressionEngine expressionEngine;
 
     private Stack<Page> visited = new Stack<Page>();
 
@@ -78,7 +80,7 @@ public class FormIterator {
         List<Transition> transitionList = form.getTransitionsForPage(currentPageId);
         int nextPageId = -99;
         for (Transition t: transitionList) {
-            if (expressionEngine.evaluateBooleanExpression(t.getExpression())) {
+            if (getExpressionEngine().evaluateBooleanExpression(t.getExpression())) {
                 nextPageId = t.getToPage();
                 break;
             }
@@ -112,8 +114,9 @@ public class FormIterator {
     }
 
     private void recreateExpressionEngine() {
+        Log.d(TAG, "recreateExpressionEngine");
         expressionEngine = new ExpressionEngine();
-        for (Map.Entry<String, Object> ks: getData().entrySet()) {
+        for (Map.Entry<String, Object> ks: getData(true).entrySet()) {
             expressionEngine.setObject(ks.getKey(), ks.getValue());
         }
     }
@@ -128,21 +131,28 @@ public class FormIterator {
 
     private void setPageDataToExpressionEngine(Page page) {
         for (Question q : page.getQuestions()) {
-            expressionEngine.setObject(q.getName(), q.getValue());
+            getExpressionEngine().setObject(q.getName(), q.getValue());
         }
     }
 
-    public Map<String, Object> getData() {
+    public Map<String, Object> getData(boolean keyAsName) {
         HashMap<String, Object> data = new HashMap<String, Object>();
         for (Page p : visited) {
-            p.getData(data);
+            p.getData(data, keyAsName);
         }
 
-        currentPage.getData(data);
+        currentPage.getData(data, keyAsName);
         return data;
     }
 
     public Form getForm() {
         return form;
+    }
+
+    private ExpressionEngine getExpressionEngine() {
+        if (expressionEngine == null) {
+            recreateExpressionEngine();
+        }
+        return expressionEngine;
     }
 }

@@ -39,6 +39,7 @@ import java.util.List;
  */
 public class MultipleChoiceQuestionView extends LinearLayout {
 
+    private static final String TAG = "MultipleChoiceQuestionView";
     private final MultipleChoiceQuestion question;
     private EditText editText;
 
@@ -73,6 +74,7 @@ public class MultipleChoiceQuestionView extends LinearLayout {
 
         List<MultipleChoiceItem> items = question.getItems();
         for (int i = 0; i < items.size(); i++) {
+            Log.d(TAG, "item id = " + items.get(i).getId() + " , check = " + items.get(i).isChecked());
             listView.setItemChecked(i, items.get(i).isChecked());
         }
 

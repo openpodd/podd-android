@@ -22,13 +22,14 @@ import android.util.Log;
 import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.ValidationResult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by pphetra on 9/25/14 AD.
  */
-public class Question<T> {
+public class Question<T> implements Serializable {
 
     private int id;
     private String title;

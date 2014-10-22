@@ -17,6 +17,8 @@
 
 package org.cm.podd.report.model.validation;
 
+import android.util.Log;
+
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Question;
 
@@ -34,8 +36,9 @@ public class SingleChoiceValidation<T extends String> implements IValidation<T> 
     @Override
     public ValidationResult validate(T value, Question<T> question) {
         MultipleChoiceQuestion mQuestion = (MultipleChoiceQuestion) question;
-        if (value != null) {
+        if (value != null && ! value.equals("")) {
             if (! mQuestion.containKey(value)) {
+                Log.d("SingleChoiceValidation", "key: " + value + " not found");
                 return new ValidationResult(false, message);
             }
         }

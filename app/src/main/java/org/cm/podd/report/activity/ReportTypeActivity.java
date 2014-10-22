@@ -55,9 +55,9 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
         reportDataSource = new ReportDataSource(this);
 
         ArrayList<ReportType> items = new ArrayList<ReportType>();
-        items.add(new ReportType(0, "No report"));
+        items.add(new ReportType(0, "ปกติ"));
         items.addAll(dataSource.getAll());
-        items.add(new ReportType(-99, "Reload Type"));
+        items.add(new ReportType(-99, "ดึงแบบฟอร์มใหม่"));
         adapter = new ArrayAdapter<ReportType>(this, android.R.layout.simple_list_item_1, items);
         listView.setAdapter(adapter);
 
@@ -88,8 +88,10 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         ReportType item = adapter.getItem(position);
         if (item.getId() == -99) {
+
             listView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
+
         } else if (item.getId() == 0) {
             reportDataSource.createPositiveReport();
             finish();

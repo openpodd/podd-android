@@ -21,10 +21,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.model.ReportImage;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -32,14 +36,12 @@ import java.util.Date;
 public class ReportDataSource {
 
     private ReportDatabaseHelper reportDatabaseHelper;
-    private ReportImageDatabaseHelper reportImageDatabaseHelper;
 
     private SQLiteDatabase readableDB;
 
 
     public ReportDataSource(Context context) {
         reportDatabaseHelper = new ReportDatabaseHelper(context);
-        reportImageDatabaseHelper = new ReportImageDatabaseHelper(context);
     }
 
     /**
@@ -54,7 +56,9 @@ public class ReportDataSource {
         values.put("draft", 1);
         values.put("negative", 1);
         values.put("submit", 0);
-        return db.insert("report", null, values);
+        long id = db.insert("report", null, values);
+        db.close();
+        return id;
     }
 
     /*
@@ -68,7 +72,7 @@ public class ReportDataSource {
         values.put("negative", 0);
         values.put("submit", 0);
         db.insert("report", null, values);
-
+        db.close();
         //TODO submit data to server
     }
 
@@ -85,9 +89,13 @@ public class ReportDataSource {
         int negative = cursor.getInt(cursor.getColumnIndex("negative"));
         int draft = cursor.getInt(cursor.getColumnIndex("draft"));
         int submit = cursor.getInt(cursor.getColumnIndex("submit"));
+        double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+        double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
 
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
+        report.setLatitude(latitude);
+        report.setLongitude(longitude);
         cursor.close();
         return report;
     }
@@ -101,11 +109,52 @@ public class ReportDataSource {
         db.close();
     }
 
+    public void updateLocation(long reportId, double latitude, double longitude) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("latitude", latitude);
+        values.put("longitude", longitude);
+        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.close();
+    }
+
     private SQLiteDatabase getReadableDB() {
         if (readableDB == null) {
             readableDB = reportDatabaseHelper.getReadableDatabase();
         }
         return readableDB;
+    }
+
+    public ReportImage saveImage(long reportId, String imageUri, byte[] bytes) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("report_id", reportId);
+        values.put("image_uri", imageUri);
+        values.put("image_thumbnail", bytes);
+        long id = db.insert("report_image", null, values);
+        db.close();
+
+        ReportImage ret = new ReportImage(id, imageUri);
+        ret.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+
+        return ret;
+    }
+
+    public List<ReportImage> getAllImage(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        ArrayList<ReportImage> images = new ArrayList<ReportImage>();
+        Cursor cursor = db.rawQuery("SELECT * from report_image where report_id = ?", new String[]{Long.toString(reportId)});
+        while (cursor.moveToNext()) {
+            String uri = cursor.getString(cursor.getColumnIndex("image_uri"));
+            long id = cursor.getLong(cursor.getColumnIndex("_id"));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
+            ReportImage image = new ReportImage(id, uri);
+            image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            images.add(image);
+        }
+        cursor.close();
+        db.close();
+        return images;
     }
 
 }

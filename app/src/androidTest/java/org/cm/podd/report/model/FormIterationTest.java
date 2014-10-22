@@ -107,7 +107,7 @@ public class FormIterationTest extends TestCase {
         assertFalse(fi.nextPage());
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "30");
+        d1.put("1@@@age", "30");
         fi.getCurrentPage().setRawData(d1);
 
         assertTrue(fi.nextPage());
@@ -124,7 +124,7 @@ public class FormIterationTest extends TestCase {
         FormIterator fi = new FormIterator(f);
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "30");
+        d1.put("1@@@age", "30");
         fi.getCurrentPage().setRawData(d1);
 
         fi.nextPage();
@@ -136,7 +136,7 @@ public class FormIterationTest extends TestCase {
         FormIterator fi = new FormIterator(f);
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "30");
+        d1.put("1@@@age", "30");
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
 
@@ -153,7 +153,7 @@ public class FormIterationTest extends TestCase {
         FormIterator fi = new FormIterator(f);
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "19");
+        d1.put("1@@@age", "19");
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
 
@@ -170,7 +170,7 @@ public class FormIterationTest extends TestCase {
         FormIterator fi = new FormIterator(f);
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "19");
+        d1.put("1@@@age", "19");
         fi.getCurrentPage().setRawData(d1);
         assertTrue(fi.nextPage());
 
@@ -182,22 +182,22 @@ public class FormIterationTest extends TestCase {
         FormIterator fi = new FormIterator(f);
 
         HashMap<String, String> d1 = new HashMap<String, String>();
-        d1.put("age", "30");
+        d1.put("1@@@age", "30");
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
         assertEquals(2, fi.getCurrentPage().getId());
 
         d1 = new HashMap<String, String>();
-        d1.put("name", "pphetra");
+        d1.put("2@@@name", "pphetra");
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
         assertEquals(3, fi.getCurrentPage().getId());
 
         d1 = new HashMap<String, String>();
-        d1.put("spouse_name", "bunny");
+        d1.put("3@@@spouse_name", "bunny");
         fi.getCurrentPage().setRawData(d1);
 
-        Map<String, Object> data = fi.getData();
+        Map<String, Object> data = fi.getData(true);
         assertEquals(30, data.get("age"));
         assertEquals("pphetra", data.get("name"));
         assertEquals("bunny", data.get("spouse_name"));
@@ -209,23 +209,23 @@ public class FormIterationTest extends TestCase {
         fi.previousPage();
 
         d1 = new HashMap<String, String>();
-        d1.put("age", "12");
+        d1.put("1@@@age", "12");
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
         assertEquals(2, fi.getCurrentPage().getId());
 
         d1 = new HashMap<String, String>();
-        d1.put("name", null);
+        d1.put("2@@@name", null);
         fi.getCurrentPage().setRawData(d1);
         fi.nextPage();
         assertEquals(4, fi.getCurrentPage().getId());
 
 
         d1 = new HashMap<String, String>();
-        d1.put("parent_name", "John");
+        d1.put("4@@@parent_name", "John");
         fi.getCurrentPage().setRawData(d1);
 
-        data = fi.getData();
+        data = fi.getData(true);
         assertEquals(12, data.get("age"));
         assertNull(data.get("name"));
         assertEquals("John", data.get("parent_name"));

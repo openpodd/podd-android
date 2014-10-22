@@ -34,6 +34,9 @@ public class Report {
     private int draft;
     private int submit;
 
+    private double latitude = 0.00;
+    private double longitude = 0.00;
+
     private String formData;
 
     public Report(long id, long type, Date date, int negative, int draft, int submit) {
@@ -99,5 +102,21 @@ public class Report {
 
     public void setType(long type) {
         this.type = type;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

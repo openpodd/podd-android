@@ -4,10 +4,32 @@
     android:layout_height="match_parent"
     tools:context="org.cm.podd.report.fragment.ReportLocationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Location" />
+    <ProgressBar
+        android:id="@+id/report_location_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible"/>
+
+        <LinearLayout
+            android:id="@+id/report_location_info"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
+            <TextView
+                android:id="@+id/latitude_info"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Latitude"/>
+
+            <TextView
+                android:id="@+id/longitude_info"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Longitude"/>
+
+        </LinearLayout>
 
 </FrameLayout>

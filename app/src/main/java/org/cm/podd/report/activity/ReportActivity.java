@@ -17,10 +17,14 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import org.cm.podd.report.R;
@@ -35,7 +40,6 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.fragment.ReportConfirmFragment;
 import org.cm.podd.report.fragment.ReportImageFragment;
-import org.cm.podd.report.fragment.ReportLocationFragment;
 import org.cm.podd.report.fragment.ReportNavigationInterface;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
@@ -44,6 +48,7 @@ import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
+import org.cm.podd.report.service.LocationBackgroundService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,6 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -67,28 +73,36 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     private long reportType;
     private FormIterator formIterator;
 
+    protected double currentLatitude = 0.00;
+    protected double currentLongitude = 0.00;
+    protected String currentLocationProvider;
+
+    protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentLatitude = intent.getDoubleExtra("Latitude", 0.00);
+            currentLongitude = intent.getDoubleExtra("Longitude", 0.00);
+            currentLocationProvider = intent.getStringExtra("Provider");
+
+            Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
+            reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+            stopLocationService();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        reportType = intent.getLongExtra("reportType", 0);
-        reportId = intent.getLongExtra("reportId", -99);
 
         setContentView(R.layout.activity_report);
-        if (savedInstanceState == null) {
-            nextScreen();
-        }
-
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
-
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 nextScreen();
             }
         });
-
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,15 +110,48 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
             }
         });
 
-        reportTypeDataSource = new ReportTypeDataSource(this);
-        formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
-
         reportDataSource = new ReportDataSource(this);
-        if (reportId == -99) {
-            reportId = reportDataSource.createDraftReport(reportType);
+        reportTypeDataSource = new ReportTypeDataSource(this);
+
+
+        if (savedInstanceState != null) {
+            currentFragment = savedInstanceState.getString("currentFragment");
+            reportId = savedInstanceState.getLong("reportId");
+            reportType = savedInstanceState.getLong("reportType");
+            formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
+
+            currentLatitude = savedInstanceState.getDouble("currentLatitude");
+            currentLongitude = savedInstanceState.getDouble("currentLongitude");
+            if (currentLongitude == 0.00 && currentLatitude == 0.00) {
+                startLocationService();
+            }
+
         } else {
-            loadFormData();
+            Intent intent = getIntent();
+            reportType = intent.getLongExtra("reportType", 0);
+            reportId = intent.getLongExtra("reportId", -99);
+            formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
+
+            if (reportId == -99) {
+                reportId = reportDataSource.createDraftReport(reportType);
+                startLocationService();
+            } else {
+                loadFormData();
+            }
+
+            nextScreen();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("currentFragment", currentFragment);
+        outState.putLong("reportId", reportId);
+        outState.putLong("reportType", reportType);
+        outState.putSerializable("formIterator", formIterator);
+        outState.putDouble("currentLatitude", currentLatitude);
+        outState.putDouble("currentLongitude", currentLongitude);
+        super.onSaveInstanceState(outState);
     }
 
     private void loadFormData() {
@@ -113,15 +160,21 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
         Report report = reportDataSource.getById(reportId);
         String formDataStr = report.getFormData();
+        Log.d(TAG, "form data = " + formDataStr);
         if (formDataStr != null) {
             try {
                 JSONObject jsonObject = new JSONObject(formDataStr);
                 Iterator<String> keys = jsonObject.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    Question question = form.getQuestion(key);
+                    String[] ary = key.split("@@@");
+                    int qid = Integer.parseInt(ary[0]);
+                    Question question = form.getQuestion(qid);
                     if (question != null) {
-                        question.setData(jsonObject.get(key));
+                        String value = jsonObject.getString(key);
+                        if (value != null) {
+                            question.setData(question.getDataType().parseFromString(value));
+                        }
                     } else {
                         Log.d(TAG, "Question not found. key= " + key);
                     }
@@ -132,6 +185,10 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
             }
         }
 
+        if (report.getLatitude() == 0.00 && report.getLongitude() == 0.00) {
+            startLocationService();
+        }
+
     }
 
     @Override
@@ -140,17 +197,19 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         Log.d(TAG, "from fragment = " + currentFragment);
 
         if (currentFragment != null) {
-            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
-                currentFragment = ReportImageFragment.class.getName();
-                setPrevVisible(false);
-            } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
+//            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+//                currentFragment = ReportImageFragment.class.getName();
+//                setPrevVisible(false);
+//            } else
+            if (currentFragment.equals(ReportImageFragment.class.getName())) {
                 currentFragment = null;
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = "dynamicForm";
                 setNextVisible(true);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
-                    currentFragment = ReportLocationFragment.class.getName();
+                    //currentFragment = ReportLocationFragment.class.getName();
+                    currentFragment = ReportImageFragment.class.getName();
                 }
             }
         }
@@ -161,14 +220,18 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         Fragment fragment = null;
         boolean isDynamicForm = false;
 
+        hideKeyboard();
+
         if (currentFragment == null) { /* first screen */
+            Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
         } else {
-            if (currentFragment.equals(ReportImageFragment.class.getName())) {
-
-                fragment = ReportLocationFragment.newInstance(reportId);
-
-            } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
+//            if (currentFragment.equals(ReportImageFragment.class.getName())) {
+//                fragment = ReportLocationFragment.newInstance(reportId);
+//
+//            } else
+//
+            if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 /* do nothing */
 
             } else {
@@ -189,7 +252,8 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
                 // case III
                 // we are at last page
                 // so we skip to ReportConfirmFragment
-                if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+                //if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+                if (currentFragment.equals(ReportImageFragment.class.getName())) {
                     // no-op
                     fragment = getPageFramgment(formIterator.getCurrentPage());
                 } else if (formIterator.isAtLastPage()) {
@@ -200,18 +264,26 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
                         // validation case
                         List<ValidationResult> validateResults = formIterator.getCurrentPage().validate();
-                        StringBuffer buff = new StringBuffer();
-                        for (ValidationResult vr : validateResults) {
-                            buff.append(vr.getMessage()).append("\n");
-                        }
-                        final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
-                        crouton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Crouton.hide(crouton);
+                        if (validateResults.size() > 0) {
+                            StringBuffer buff = new StringBuffer();
+                            for (ValidationResult vr : validateResults) {
+                                buff.append(vr.getMessage()).append("\n");
                             }
-                        });
-                        crouton.show();
+                            final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
+                            crouton.setConfiguration(new Configuration.Builder().setDuration(1000).build());
+                            crouton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Crouton.hide(crouton);
+                                }
+                            });
+                            crouton.show();
+
+                        } else {
+                            // end if no valid transition and no validation results
+                            fragment = ReportConfirmFragment.newInstance(reportId);
+                            isDynamicForm = false;
+                        }
 
                     } else {
 
@@ -224,10 +296,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         }
 
         if (fragment != null) {
+
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if (currentFragment == null) {
+                Log.d(TAG, "add fragment");
                 transaction.add(R.id.container, fragment);
             } else {
+                Log.d(TAG, "replace fragment");
                 transaction.replace(R.id.container, fragment);
                 transaction.addToBackStack(fragment.getClass().getName());
             }
@@ -308,11 +383,30 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopLocationService();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
     private void saveForm() {
-        Map<String, Object> data = formIterator.getData();
+        Map<String, Object> data = formIterator.getData(false);
         String jsonData = new JSONObject(data).toString();
         Log.d(TAG, jsonData);
         reportDataSource.updateData(reportId, jsonData, 0 /* draft = 0*/);
+    }
+
+    public void startLocationService() {
+        Log.i(TAG, "startLocationService");
+        startService(new Intent(this, LocationBackgroundService.class));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter(LocationBackgroundService.BROADCAST_ACTION));
+    }
+
+    public void stopLocationService() {
+        Log.i(TAG, "stopLocationService");
+        stopService(new Intent(this, LocationBackgroundService.class));
     }
 
     /**
@@ -336,8 +430,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
                                  Bundle savedInstanceState) {
             Bundle arguments = getArguments();
             Page page = (Page) arguments.get("page");
-            return new PageView(getActivity(), page);
+            PageView pageView = new PageView(getActivity(), page);
+            return pageView;
         }
+    }
 
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
     }
 }

@@ -17,10 +17,12 @@
 
 package org.cm.podd.report.model;
 
+import java.io.Serializable;
+
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class MultipleChoiceItem {
+public class MultipleChoiceItem implements Serializable{
     private String id;
     private String text;
     private boolean checked = false;

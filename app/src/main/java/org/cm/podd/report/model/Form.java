@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class Form {
+public class Form implements Serializable {
 
     private List<Question> questions = new ArrayList<Question>();;
     private List<Page> pages = new ArrayList<Page>();;

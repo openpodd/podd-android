@@ -17,44 +17,52 @@
 
 package org.cm.podd.report.model;
 
-import java.io.Serializable;
+import android.graphics.Bitmap;
 
 /**
- * Created by pphetra on 9/26/14 AD.
+ * Created by pphetra on 10/11/14 AD.
  */
-public class Transition implements Serializable {
+public class ReportImage {
 
-    private int fromPage;
-    private int toPage;
-    private String expression;
+    private long id;
+    private String imageUri;
+    private String note;
+    private Bitmap thumbnail;
 
-    public Transition(int fromPage, int toPage, String expression) {
-        this.fromPage = fromPage;
-        this.toPage = toPage;
-        this.expression = expression;
+    public ReportImage(long id, String imageUri) {
+        this.id = id;
+        this.imageUri = imageUri;
     }
 
-    public int getFromPage() {
-        return fromPage;
+    public long getId() {
+        return id;
     }
 
-    public void setFromPage(int fromPage) {
-        this.fromPage = fromPage;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public int getToPage() {
-        return toPage;
+    public String getImageUri() {
+        return imageUri;
     }
 
-    public void setToPage(int toPage) {
-        this.toPage = toPage;
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
     }
 
-    public String getExpression() {
-        return expression;
+    public String getNote() {
+        return note;
     }
 
-    public void setExpression(String expression) {
-        this.expression = expression;
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Bitmap getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(Bitmap thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

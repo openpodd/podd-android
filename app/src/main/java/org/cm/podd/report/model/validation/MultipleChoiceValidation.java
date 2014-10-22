@@ -34,7 +34,7 @@ public class MultipleChoiceValidation<T extends String> implements IValidation<T
     @Override
     public ValidationResult validate(T value, Question<T> question) {
         MultipleChoiceQuestion mQuestion = (MultipleChoiceQuestion) question;
-        if (value != null) {
+        if (value != null && ! value.equals("")) {
             for (String v : value.split(",")) {
                 if (! mQuestion.containKey(v)) {
                     return new ValidationResult(false, message);

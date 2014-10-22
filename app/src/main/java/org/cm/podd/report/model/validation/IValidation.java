@@ -19,12 +19,12 @@ package org.cm.podd.report.model.validation;
 
 import org.cm.podd.report.model.Question;
 
-import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Created by pphetra on 9/25/14 AD.
  */
-public interface IValidation<T> {
+public interface IValidation<T> extends Serializable {
 
     public static ValidationResult SUCCESS = new ValidationResult(true, null);
 

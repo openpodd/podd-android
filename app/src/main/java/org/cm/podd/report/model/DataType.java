@@ -32,6 +32,9 @@ public enum DataType {
     INTEGER() {
         @Override
         public Object parseFromString(String value) {
+            if (value.equals("")) {
+                return 0;
+            }
             return Integer.parseInt(value);
         }
     },
@@ -39,6 +42,9 @@ public enum DataType {
     DOUBLE() {
         @Override
         public Object parseFromString(String value) {
+            if (value.equals("")) {
+                return 0.00;
+            }
             return Double.parseDouble(value);
         }
     };

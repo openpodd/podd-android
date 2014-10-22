@@ -97,8 +97,8 @@ public class PageTest extends TestCase {
 
     public void testSetData() {
         HashMap<String, Object> values = new HashMap<String, Object>();
-        values.put("age", 15);
-        values.put("name", "pphetra");
+        values.put("1@@@age", 15);
+        values.put("2@@@name", "pphetra");
 
         page.setData(values);
 
@@ -108,8 +108,8 @@ public class PageTest extends TestCase {
 
     public void testSetRawData() {
         HashMap<String, String> values = new HashMap<String, String>();
-        values.put("age", "15");
-        values.put("name", "pphetra");
+        values.put("1@@@age", "15");
+        values.put("2@@@name", "pphetra");
 
         page.setRawData(values);
 

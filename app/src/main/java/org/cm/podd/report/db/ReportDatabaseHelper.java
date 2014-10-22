@@ -32,8 +32,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "("
             + "  _id INTEGER PRIMARY KEY,"
             + "  type INTEGER,"
-            + "  latitude REAL,"
-            + "  longitude REAL,"
+            + "  latitude REAL default 0.0,"
+            + "  longitude REAL default 0.0,"
             + "  date INTEGER,"
             + "  form_data TEXT,"
             + "  negative INTEGER,"   // 1 -> found incident, 0 -> no incident
@@ -41,7 +41,17 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  submit INTEGER"     // already submit to server
             + ")";
 
+    private static final String CREATE_TABLE_IMAGE = "create table report_image"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  report_id INTEGER,"
+            + "  image_uri TEXT,"
+            + "  image_thumbnail BLOB,"
+            + "  note TEXT"
+            + ")";
+
     private static final String DROP_TABLE = "drop table report";
+    private static final String DROP_TABLE_IMAGE = "drop table report_image";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -49,11 +59,15 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
         sqLiteDatabase.execSQL(CREATE_TABLE);
+        sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL(DROP_TABLE);
+        sqLiteDatabase.execSQL(DROP_TABLE_IMAGE);
     }
 }

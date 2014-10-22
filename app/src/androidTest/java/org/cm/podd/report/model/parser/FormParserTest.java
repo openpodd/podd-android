@@ -22,6 +22,8 @@ import android.content.res.AssetManager;
 import android.test.InstrumentationTestCase;
 
 import org.cm.podd.report.model.DataType;
+import org.cm.podd.report.model.Form;
+import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
@@ -30,9 +32,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -193,6 +197,43 @@ public class FormParserTest extends InstrumentationTestCase {
         } catch (JSONException e) {
             fail();
         }
+
+    }
+
+    public void testParseForm2() throws IOException, PackageManager.NameNotFoundException {
+        AssetManager assetManager = getInstrumentation().getContext().getAssets();
+        InputStream stream = assetManager.open("podd.json");
+        assertNotNull(stream);
+
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+
+        FormParser formParser = new FormParser();
+        try {
+            formParser.parse(new JSONObject(builder.toString()));
+        } catch (JSONException e) {
+            fail();
+        }
+
+        Form form = formParser.getForm();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(bos);
+        os.writeObject(form);
+        os.flush();
+        bos.close();
+
+        FormIterator iterator = new FormIterator(form);
+        iterator.nextPage();
+
+        bos = new ByteArrayOutputStream();
+        os = new ObjectOutputStream(bos);
+        os.writeObject(iterator);
+        os.flush();
+        bos.close();
 
     }
 }

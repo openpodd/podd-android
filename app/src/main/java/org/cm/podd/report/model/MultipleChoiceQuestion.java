@@ -17,8 +17,12 @@
 
 package org.cm.podd.report.model;
 
+import android.util.Log;
+
+import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.MultipleChoiceValidation;
 import org.cm.podd.report.model.validation.SingleChoiceValidation;
+import org.cm.podd.report.model.validation.ValidationResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +33,7 @@ import java.util.List;
  */
 public class MultipleChoiceQuestion extends Question<String> {
 
+    private static final String TAG = "MultipleChoiceQuestion";
     private List<MultipleChoiceItem> items = new ArrayList<MultipleChoiceItem>();
     private HashMap<String, MultipleChoiceItem> itemMap = new HashMap<String, MultipleChoiceItem>();
     private MultipleChoiceSelection selectionType;
@@ -135,14 +140,31 @@ public class MultipleChoiceQuestion extends Question<String> {
 
     @Override
     public void setData(String value) {
+        Log.d(TAG, "question id:" + getId() + ", value = " + value);
+        super.setData(value);
         String[] strings = value.split(",");
         clearAllItemChecked();
         for (String s: strings) {
             for (MultipleChoiceItem item : items) {
                 if (item.getId().equals(s)) {
+                    Log.d(TAG, "check on item:" + item.getId());
                     item.setChecked(true);
                 }
             }
         }
+    }
+
+    @Override
+    public List<ValidationResult> validate() {
+        ArrayList<ValidationResult> results = new ArrayList<ValidationResult>();
+
+        for (IValidation v : getValidations()) {
+            ValidationResult result = v.validate(getValue(), this);
+            if (! result.isSuccess()) {
+                results.add(result);
+            }
+        }
+
+        return results;
     }
 }
