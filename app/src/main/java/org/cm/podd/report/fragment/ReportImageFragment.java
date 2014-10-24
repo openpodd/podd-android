@@ -1,19 +1,27 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +32,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
@@ -121,10 +130,74 @@ public class ReportImageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_report_image, container, false);
-        final Button takePictureBtn = (Button) view.findViewById(R.id.take_picture_btn);
-        takePictureBtn.setOnClickListener(new View.OnClickListener() {
+        gridView = (GridView) view.findViewById(R.id.image_grid_view);
+        allImage = reportDataSource.getAllImage(reportId);
+        // add empty image at the end to be rendered as an 'add' button
+        allImage.add(createEmptyThumb());
+
+        final Fragment targetFragment = this;
+        imageAdapter = new ImageAdapter(getActivity(), allImage);
+        gridView.setAdapter(imageAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                ReportImage ri = (ReportImage) imageAdapter.getItem(position);
+
+                if (ri.getId() == 0) {
+                    // click on add button
+                    MediaChoiceDialog dlg = new MediaChoiceDialog();
+                    dlg.setTargetFragment(targetFragment, 0);
+                    dlg.show(getActivity().getSupportFragmentManager(), "MediaChoiceDialog");
+                } else {
+                    /* use android default viewer
+                    Uri uri = Uri.parse(ri.getImageUri());
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
+                    startActivity(intent);
+                    */
+
+                    Intent intent = new Intent(getActivity(), ImageActivity.class);
+                    intent.putExtra("imagePath", ri.getImageUri());
+                    startActivity(intent);
+                }
+            }
+        });
+
+        navigationInterface.setPrevVisible(false);
+        navigationInterface.setNextEnable(true);
+
+        return view;
+
+    }
+
+    private ReportImage createEmptyThumb() {
+        ReportImage image = new ReportImage(0, null);
+        Bitmap output = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
+        Rect rect = new Rect(0, 0, 128, 128);
+        RectF rectF = new RectF(rect);
+        Paint paint = new Paint();
+        paint.setColor(0xffffccaa);
+        Canvas canvas = new Canvas(output);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawRoundRect(rectF, 0, 0, paint);
+        image.setThumbnail(output);
+        return image;
+    }
+
+    /**
+     * Handle dialog click on media selection
+     * @param requestCode
+     */
+    private void onMediaChoiceRequest(int requestCode) {
+        switch (requestCode) {
+            case CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE:
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
+                break;
+
+            case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 File photoFile = null;
                 try {
@@ -138,47 +211,8 @@ public class ReportImageFragment extends Fragment {
                     intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
                 }
-            }
-        });
-
-        final Button choosePictureBtn = (Button) view.findViewById(R.id.choose_picture_btn);
-        choosePictureBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
-            }
-        });
-
-        gridView = (GridView) view.findViewById(R.id.image_grid_view);
-        allImage = reportDataSource.getAllImage(reportId);
-        imageAdapter = new ImageAdapter(getActivity(), allImage);
-        gridView.setAdapter(imageAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ReportImage ri = (ReportImage) imageAdapter.getItem(position);
-
-                /* use android default viewer
-                Uri uri = Uri.parse(ri.getImageUri());
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
-                startActivity(intent);
-                */
-
-                Intent intent = new Intent(getActivity(), ImageActivity.class);
-                intent.putExtra("imagePath", ri.getImageUri());
-                startActivity(intent);
-            }
-        });
-
-        navigationInterface.setPrevVisible(false);
-        navigationInterface.setNextEnable(true);
-
-        return view;
-
+                break;
+        }
     }
 
     @Override
@@ -193,7 +227,9 @@ public class ReportImageFragment extends Fragment {
         navigationInterface = null;
 
         for (ReportImage ri : allImage) {
-            ri.getThumbnail().recycle();
+            if (ri.getThumbnail() != null) {
+                ri.getThumbnail().recycle();
+            }
         }
     }
 
@@ -233,7 +269,8 @@ public class ReportImageFragment extends Fragment {
         } catch (IOException e) {
             Log.e(TAG, "error when closing stream", e);
         }
-        allImage.add(reportImage);
+        // add new image before 'add' button
+        allImage.add(allImage.size() - 1, reportImage);
         imageAdapter.notifyDataSetChanged();
     }
 
@@ -328,15 +365,57 @@ public class ReportImageFragment extends Fragment {
         }
 
         private void bindView(int i, View view) {
-            ImageView imageView = (ImageView) view;
-            imageView.setImageBitmap(images.get(i).getThumbnail());
+            ViewHolder holder = (ViewHolder) view.getTag();
+            ImageView imageView = holder.imageView;
+            TextView addButton = holder.addButton;
 
+            imageView.setImageBitmap(images.get(i).getThumbnail());
+            if (!isLastItem(i)) {
+                addButton.setVisibility(View.GONE);
+            } else {
+                addButton.setVisibility(View.VISIBLE);
+            }
         }
 
         private View newView(ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            ImageView v = (ImageView) inflater.inflate(R.layout.image_item, parent, false);
+            View v = inflater.inflate(R.layout.image_item, parent, false);
+            ViewHolder holder = new ViewHolder();
+            holder.imageView = (ImageView) v.findViewById(R.id.image_view);
+            holder.addButton = (TextView) v.findViewById(R.id.add_button);
+            v.setTag(holder);
             return v;
+        }
+
+        private boolean isLastItem(int pos) {
+            return images.get(pos).getId() == 0;
+        }
+
+        class ViewHolder {
+            ImageView imageView;
+            TextView addButton;
+        }
+    }
+
+    /**
+     * Dialog for image selection methods
+     */
+    public static class MediaChoiceDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.title_pick_media_options)
+                    .setItems(R.array.pick_media_selection, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
+                            fragment.onMediaChoiceRequest(which == 0 ?
+                                    CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE : CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 }

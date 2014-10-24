@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pick_media_selection">
+        <item>ภาพจากคลังรูปภาพ</item>
+        <item>ถ่ายภาพใหม่</item>
+    </string-array>
+</resources>

@@ -13,5 +13,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_report_type">เลือกประเภทการรายงาน</string>
     <string name="title_activity_image">ImageActivity</string>
+    <string name="title_pick_media_options">เลือกรูปภาพ</string>
 
 </resources>

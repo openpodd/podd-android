@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-</ImageView>
+    <ImageView android:id="@id/image_view"
+        android:layout_width="match_parent" android:layout_height="match_parent">
+
+    </ImageView>
+
+    <TextView
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="+"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_draw_circle"
+        android:visibility="gone" />
+</RelativeLayout>
