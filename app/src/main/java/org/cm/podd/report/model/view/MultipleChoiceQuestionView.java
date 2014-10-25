@@ -18,6 +18,8 @@
 package org.cm.podd.report.model.view;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,7 @@ import java.util.List;
 public class MultipleChoiceQuestionView extends LinearLayout {
 
     private static final String TAG = "MultipleChoiceQuestionView";
-    private final MultipleChoiceQuestion question;
+    private MultipleChoiceQuestion question;
     private EditText editText;
 
     public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question) {
@@ -78,12 +80,42 @@ public class MultipleChoiceQuestionView extends LinearLayout {
             listView.setItemChecked(i, items.get(i).isChecked());
         }
 
-        editText = null;
         if (question.isFreeTextChoiceEnable()) {
-            question.addItem(question.getFreeTextId(), question.getFreeTextText());
             editText = new EditText(context);
             editText.setLayoutParams(params);
-            editText.setVisibility(INVISIBLE);
+            editText.setText(question.getFreeTextValue());
+            if (question.getFreeTextValue() != null && ! question.getFreeTextValue().equals("")) {
+                editText.setVisibility(VISIBLE);
+            } else {
+                editText.setVisibility(INVISIBLE);
+            }
+
+
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    question.setFreeTextValue(editable.toString());
+                }
+            });
+
+            editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    if (! hasFocus) {
+                        question.setFreeTextValue(editText.getText().toString());
+                    }
+                }
+            });
         }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

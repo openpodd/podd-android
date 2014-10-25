@@ -1,0 +1,28 @@
+{
+    "startPageId": 1,
+    "questions": [
+        {
+            "id": 1,
+            "title": "สัตว์ที่กัด",
+            "name": "animal_type",
+            "type": "multiple",
+            "items": [
+                {"id": "หมา", "text": "หมา"},
+                {"id": "แมว", "text": "แมว"}
+            ],
+            "freeTextText": "อื่นๆ",
+            "freeTextName": "animal_type_other",
+            "freeTextId": "อื่นๆ",
+            "freeTextChoiceEnable": true
+        }
+    ],
+    "pages": [
+        {
+            "id": 1,
+            "questions": [1]
+        }
+    ],
+    "transitions": [
+
+    ]
+}

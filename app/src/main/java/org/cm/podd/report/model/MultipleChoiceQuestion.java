@@ -27,6 +27,7 @@ import org.cm.podd.report.model.validation.ValidationResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pphetra on 9/29/14 AD.
@@ -39,33 +40,11 @@ public class MultipleChoiceQuestion extends Question<String> {
     private MultipleChoiceSelection selectionType;
     private boolean freeTextChoiceEnable = false;
 
-    public String getFreeTextText() {
-        return freeTextText;
-    }
-
-    public void setFreeTextText(String freeTextText) {
-        this.freeTextText = freeTextText;
-    }
-
-    public String getFreeTextName() {
-        return freeTextName;
-    }
-
-    public void setFreeTextName(String freeTextName) {
-        this.freeTextName = freeTextName;
-    }
-
-    public String getFreeTextId() {
-        return freeTextId;
-    }
-
-    public void setFreeTextId(String freeTextId) {
-        this.freeTextId = freeTextId;
-    }
 
     private String freeTextText;
     private String freeTextName;
     private String freeTextId;
+    private String freeTextValue;
 
     public MultipleChoiceQuestion(MultipleChoiceSelection selectionType) {
         this.selectionType = selectionType;
@@ -166,5 +145,71 @@ public class MultipleChoiceQuestion extends Question<String> {
         }
 
         return results;
+    }
+
+
+    public String getFreeTextText() {
+        return freeTextText;
+    }
+
+    public void setFreeTextText(String freeTextText) {
+        this.freeTextText = freeTextText;
+    }
+
+    public String getFreeTextName() {
+        return freeTextName;
+    }
+
+    public void setFreeTextName(String freeTextName) {
+        this.freeTextName = freeTextName;
+    }
+
+    public String getFreeTextId() {
+        return freeTextId;
+    }
+
+    public void setFreeTextId(String freeTextId) {
+        this.freeTextId = freeTextId;
+    }
+
+    public String getFreeTextValue() {
+        return freeTextValue;
+    }
+
+    public void setFreeTextValue(String freeTextValue) {
+        this.freeTextValue = freeTextValue;
+    }
+
+    @Override
+    public void setData(String name, String value) {
+        if (name.equals(getFreeTextName())) {
+            setFreeTextValue(value);
+        } else {
+            super.setData(name, value);
+        }
+    }
+
+    @Override
+    public void getData(Map data, boolean keyAsName) {
+        super.getData(data, keyAsName);
+
+        if (isFreeTextChoiceEnable() && isFreeTextChoiceTick()) {
+            String key = null;
+            if (keyAsName) {
+                key = getName();
+            } else {
+                key = getId() + "@@@" + getFreeTextName();
+            }
+            data.put(key, getFreeTextValue());
+        }
+    }
+
+    private boolean isFreeTextChoiceTick() {
+        for (MultipleChoiceItem item: items) {
+            if (item.getId().equals(getFreeTextId()) && item.isChecked()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -63,13 +63,13 @@ public class Page implements Serializable {
 
     public void setData(Map<String, Object> values) {
         for (Question q : questions) {
-            q.setData(values.get(getKey(q)));
+            q.setData(values.get(q.getKey()));
         }
     }
 
     public void setRawData(Map<String, String> values) {
         for (Question q : questions) {
-            String key = getKey(q);
+            String key = q.getKey();
             String value = values.get(key);
             if (value != null) {
                 q.setData(q.getDataType().parseFromString(value));
@@ -102,18 +102,9 @@ public class Page implements Serializable {
      */
     public void getData(HashMap<String, Object> data, boolean keyAsName) {
         for (Question q : questions) {
-            String key = null;
-            if (keyAsName) {
-                key = q.getName();
-            } else {
-                key = getKey(q);
-            }
-            Object value = q.getValue();
-            data.put(key, value);
+            q.getData(data, keyAsName);
         }
     }
 
-    private String getKey(Question question) {
-        return question.getId() + "@@@" + question.getName();
-    }
+
 }

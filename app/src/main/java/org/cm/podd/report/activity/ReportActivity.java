@@ -169,11 +169,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
                     String key = keys.next();
                     String[] ary = key.split("@@@");
                     int qid = Integer.parseInt(ary[0]);
+                    String name = ary[1];
+
                     Question question = form.getQuestion(qid);
                     if (question != null) {
                         String value = jsonObject.getString(key);
                         if (value != null) {
-                            question.setData(question.getDataType().parseFromString(value));
+                            question.setData(name, question.getDataType().parseFromString(value));
                         }
                     } else {
                         Log.d(TAG, "Question not found. key= " + key);

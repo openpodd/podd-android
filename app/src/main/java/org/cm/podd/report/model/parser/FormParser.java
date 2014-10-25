@@ -247,6 +247,10 @@ public class FormParser {
                     item.getString("text"));
         }
 
+        if (question.isFreeTextChoiceEnable()) {
+            question.addItem(question.getFreeTextId(), question.getFreeTextText());
+        }
+
         form.addQuestion(question);
     }
 

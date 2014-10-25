@@ -25,6 +25,7 @@ import org.cm.podd.report.model.validation.ValidationResult;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pphetra on 9/25/14 AD.
@@ -77,6 +78,12 @@ public class Question<T> implements Serializable {
         data = value;
     }
 
+    public void setData(String name, T value) {
+        if (name.equals(this.name)) {
+            setData(value);
+        }
+    }
+
     public List<ValidationResult> validate() {
         ArrayList<ValidationResult> results = new ArrayList<ValidationResult>();
 
@@ -117,5 +124,20 @@ public class Question<T> implements Serializable {
 
     public List<IValidation<T>> getValidations() {
         return validations;
+    }
+
+    public void getData(Map data, boolean keyAsName) {
+        String key = null;
+        if (keyAsName) {
+            key = getName();
+        } else {
+            key = getKey();
+        }
+        Object value = getValue();
+        data.put(key, value);
+    }
+
+    public String getKey() {
+        return getId() + "@@@" + getName();
     }
 }

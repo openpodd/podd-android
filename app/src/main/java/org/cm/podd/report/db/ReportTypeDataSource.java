@@ -57,6 +57,7 @@ public class ReportTypeDataSource {
         if (formId == 2) return parseForm("podd2.json");
         if (formId == 3) return parseForm("podd3.json");
         if (formId == 4) return parseForm("podd4.json");
+        if (formId == 6) return parseForm("podd5.json");
         return createSampleForm1();
 
     }
@@ -67,8 +68,9 @@ public class ReportTypeDataSource {
         results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
         results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
         results.add(new ReportType(4, "สัตว์ป่วย/ตาย 4"));
-        results.add(new ReportType(5, "สัมผัสสัตว์"));
-        results.add(new ReportType(6, "อาหาร"));
+        results.add(new ReportType(5, "ป่วยจากการสัมผัสสัตว์"));
+        results.add(new ReportType(7, "ป่วยจากการกินสัตว์"));
+        results.add(new ReportType(6, "สัตว์กัด"));
         return results;
     }
 
