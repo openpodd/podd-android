@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 
+import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.ReportImage;
 
@@ -91,11 +92,21 @@ public class ReportDataSource {
         int submit = cursor.getInt(cursor.getColumnIndex("submit"));
         double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
         double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+        Date startDate = null;
+        if (! cursor.isNull(cursor.getColumnIndex("start_date"))) {
+            long t = cursor.getLong(cursor.getColumnIndex("start_date"));
+            startDate = new Date(t);
+        }
+        long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
+        String remark = cursor.getString(cursor.getColumnIndex("remark"));
 
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
         report.setLatitude(latitude);
         report.setLongitude(longitude);
+        report.setStartDate(startDate);
+        report.setRegionId(regionId);
+        report.setRemark(remark);
         cursor.close();
         return report;
     }
@@ -157,4 +168,21 @@ public class ReportDataSource {
         return images;
     }
 
+    public List<Region> getAllRegion() {
+        ArrayList<Region> regions = new ArrayList<Region>();
+        regions.add(new Region(1, "หมู่บ้านสันปง"));
+        regions.add(new Region(2, "หมู่บ้านสันทราย"));
+        regions.add(new Region(3, "หมู่บ้านสันตอง"));
+        return regions;
+    }
+
+    public void updateReport(long reportId, Date reportDate, long regionId, String remark) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("region_id", regionId);
+        values.put("start_date", reportDate.getTime());
+        values.put("remark", remark);
+        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.close();
+    }
 }

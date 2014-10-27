@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -39,12 +40,16 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.fragment.ReportConfirmFragment;
+import org.cm.podd.report.fragment.ReportDataInterface;
 import org.cm.podd.report.fragment.ReportImageFragment;
+import org.cm.podd.report.fragment.ReportLocationFragment;
+import org.cm.podd.report.fragment.ReportNavigationChangeCallbackInterface;
 import org.cm.podd.report.fragment.ReportNavigationInterface;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
@@ -52,6 +57,7 @@ import org.cm.podd.report.service.LocationBackgroundService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +66,7 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class ReportActivity extends ActionBarActivity implements ReportNavigationInterface {
+public class ReportActivity extends ActionBarActivity implements ReportNavigationInterface, ReportDataInterface {
 
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
@@ -73,9 +79,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     private long reportType;
     private FormIterator formIterator;
 
-    protected double currentLatitude = 0.00;
-    protected double currentLongitude = 0.00;
-    protected String currentLocationProvider;
+    private double currentLatitude = 0.00;
+    private double currentLongitude = 0.00;
+    private String currentLocationProvider;
+
+    private Date reportDate;
+    private long reportRegionId;
+    private String remark;
 
     protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -159,6 +169,10 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         Form form = formIterator.getForm();
 
         Report report = reportDataSource.getById(reportId);
+        reportDate = report.getStartDate();
+        reportRegionId = report.getRegionId();
+        remark = report.getRemark();
+
         String formDataStr = report.getFormData();
         Log.d(TAG, "form data = " + formDataStr);
         if (formDataStr != null) {
@@ -195,22 +209,26 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
     @Override
     public void onBackPressed() {
+        Fragment oldFragment = getVisibleFragment();
+        if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
+            ((ReportNavigationChangeCallbackInterface) oldFragment).onPrevious();
+        }
+
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
 
+
+
         if (currentFragment != null) {
-//            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
-//                currentFragment = ReportImageFragment.class.getName();
-//                setPrevVisible(false);
-//            } else
-            if (currentFragment.equals(ReportImageFragment.class.getName())) {
+            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+                currentFragment = "dynamicForm";
+            } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
                 currentFragment = null;
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
-                currentFragment = "dynamicForm";
+                currentFragment = ReportLocationFragment.class.getName();
                 setNextVisible(true);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
-                    //currentFragment = ReportLocationFragment.class.getName();
                     currentFragment = ReportImageFragment.class.getName();
                 }
             }
@@ -224,16 +242,20 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
         hideKeyboard();
 
+        Fragment oldFragment = getVisibleFragment();
+        if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
+            ((ReportNavigationChangeCallbackInterface) oldFragment).onNext();
+        }
+
         if (currentFragment == null) { /* first screen */
             Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
         } else {
-//            if (currentFragment.equals(ReportImageFragment.class.getName())) {
-//                fragment = ReportLocationFragment.newInstance(reportId);
-//
-//            } else
-//
-            if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
+
+            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+                fragment = ReportConfirmFragment.newInstance(reportId);
+
+            }else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 /* do nothing */
 
             } else {
@@ -257,9 +279,9 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
                 //if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 if (currentFragment.equals(ReportImageFragment.class.getName())) {
                     // no-op
-                    fragment = getPageFramgment(formIterator.getCurrentPage());
+                    fragment = getPageFragment(formIterator.getCurrentPage());
                 } else if (formIterator.isAtLastPage()) {
-                    fragment = ReportConfirmFragment.newInstance(reportId);
+                    fragment = ReportLocationFragment.newInstance(reportId);
                     isDynamicForm = false;
                 } else {
                     if (! formIterator.nextPage()) {
@@ -283,13 +305,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
                         } else {
                             // end if no valid transition and no validation results
-                            fragment = ReportConfirmFragment.newInstance(reportId);
+                            fragment = ReportLocationFragment.newInstance(reportId);
                             isDynamicForm = false;
                         }
 
                     } else {
 
-                        fragment = getPageFramgment(formIterator.getCurrentPage());
+                        fragment = getPageFragment(formIterator.getCurrentPage());
 
                     }
                 }
@@ -321,7 +343,7 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         Log.d("----", "current fragment = " + currentFragment);
     }
 
-    private Fragment getPageFramgment(Page page) {
+    private Fragment getPageFragment(Page page) {
         FormPageFragment fragment = new FormPageFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("page", formIterator.getCurrentPage());
@@ -379,6 +401,8 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     @Override
     public void finishReport() {
         saveForm();
+
+        reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
 
         Intent returnIntent = new Intent();
         setResult(RESULT_OK, returnIntent);
@@ -440,5 +464,49 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+    }
+
+    private Fragment getVisibleFragment(){
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragments != null) {
+            for(Fragment fragment : fragments){
+                if(fragment != null && fragment.isVisible())
+                    return fragment;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Date getDate() {
+        return reportDate;
+    }
+
+    @Override
+    public void setDate(Date date) {
+        reportDate = date;
+        Log.d(TAG, "set date with " + date);
+    }
+
+    @Override
+    public long getRegionId() {
+        return reportRegionId;
+    }
+
+    @Override
+    public void setRegionId(long regionId) {
+        reportRegionId = regionId;
+    }
+
+    @Override
+    public String getRemark() {
+        return remark;
+    }
+
+    @Override
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

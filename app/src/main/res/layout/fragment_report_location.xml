@@ -4,32 +4,34 @@
     android:layout_height="match_parent"
     tools:context="org.cm.podd.report.fragment.ReportLocationFragment">
 
-    <ProgressBar
-        android:id="@+id/report_location_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible"/>
+    <LinearLayout
+        android:id="@+id/report_location_info"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    >
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="วันที่เกิดเหตุ"/>
 
-        <LinearLayout
-            android:id="@+id/report_location_info"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:visibility="gone"
-        >
-            <TextView
-                android:id="@+id/latitude_info"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Latitude"/>
+        <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false">
+        </DatePicker>
 
-            <TextView
-                android:id="@+id/longitude_info"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Longitude"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="สถานที่เกิดเหตุ"/>
 
-        </LinearLayout>
+        <Spinner
+            android:id="@+id/regions_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </FrameLayout>

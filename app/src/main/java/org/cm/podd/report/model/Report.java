@@ -30,6 +30,9 @@ public class Report {
     private long id;
     private long type;
     private java.util.Date date;
+    private java.util.Date startDate;
+    private long regionId;
+    private String remark;
     private int negative;
     private int draft;
     private int submit;
@@ -118,5 +121,29 @@ public class Report {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(long regionId) {
+        this.regionId = regionId;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

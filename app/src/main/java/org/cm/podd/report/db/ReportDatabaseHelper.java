@@ -35,6 +35,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  latitude REAL default 0.0,"
             + "  longitude REAL default 0.0,"
             + "  date INTEGER,"
+            + "  start_date INTEGER default 0,"
+            + "  region_id INTEGER,"    // incident region in case of no latitude, longitude provided
+            + "  remark TEXT,"
             + "  form_data TEXT,"
             + "  negative INTEGER,"   // 1 -> found incident, 0 -> no incident
             + "  draft INTEGER,"      // 1 -> save for edit, 0 -> ready to send to server
