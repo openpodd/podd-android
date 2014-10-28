@@ -166,8 +166,10 @@ public class ReportDataSource {
             String uri = cursor.getString(cursor.getColumnIndex("image_uri"));
             long id = cursor.getLong(cursor.getColumnIndex("_id"));
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
+            String note = cursor.getString(cursor.getColumnIndex("note"));
             ReportImage image = new ReportImage(id, uri);
             image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            image.setNote(note);
             images.add(image);
         }
         cursor.close();
@@ -190,6 +192,14 @@ public class ReportDataSource {
         values.put("start_date", reportDate.getTime());
         values.put("remark", remark);
         db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.close();
+    }
+
+    public void saveNote(long id, String note) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("note", note);
+        db.update("report_image", values, "_id = ?", new String[] {Long.toString(id)});
         db.close();
     }
 }

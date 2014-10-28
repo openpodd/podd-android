@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,6 +70,7 @@ public class ReportImageFragment extends Fragment {
 
     long mReportImageId;
     String mCurrentPhotoPath;
+    String mImageNote;
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -173,6 +174,7 @@ public class ReportImageFragment extends Fragment {
                 if (ri.getId() > 0) {
                     mCurrentPhotoPath = ri.getImageUri();
                     mReportImageId = ri.getId();
+                    mImageNote = ri.getNote();
                     // show action options
                     ImageEditDialog dlg = new ImageEditDialog();
                     dlg.setTargetFragment(targetFragment, 0);
@@ -242,6 +244,9 @@ public class ReportImageFragment extends Fragment {
             case 0:
                 deleteImage();
                 break;
+            case 1:
+                saveNote();
+                break;
         }
     }
 
@@ -261,6 +266,21 @@ public class ReportImageFragment extends Fragment {
             Log.d(TAG, "Image file removed: path= " + filePath);
         }
         imageAdapter.removeItem(mReportImageId);
+        imageAdapter.notifyDataSetChanged();
+    }
+
+    private void saveNote() {
+        NoteEditDialog dlg2 = NoteEditDialog.newInstance(mImageNote);
+        dlg2.setTargetFragment(this, 0);
+        dlg2.show(getActivity().getSupportFragmentManager(), "NoteEditDialog");
+    }
+
+    private void onNoteSave(String note) {
+        Log.d(TAG, "on note save id=" + mReportImageId + " / text=" + note);
+        int pos = imageAdapter.getPositionById(mReportImageId);
+        ReportImage item = (ReportImage) imageAdapter.getItem(pos);
+        item.setNote(note);
+        reportDataSource.saveNote(mReportImageId, note);
         imageAdapter.notifyDataSetChanged();
     }
 
@@ -440,6 +460,11 @@ public class ReportImageFragment extends Fragment {
         }
 
         public void removeItem(long id) {
+            int pos = getPositionById(id);
+            images.remove(pos);
+        }
+
+        public int getPositionById(long id) {
             int pos = 0, i = 0;
             for (ReportImage item : images) {
                 if (item.getId() == id) {
@@ -447,7 +472,7 @@ public class ReportImageFragment extends Fragment {
                 }
                 i++;
             }
-            images.remove(pos);
+            return pos;
         }
 
         class ViewHolder {
@@ -491,6 +516,46 @@ public class ReportImageFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
                             fragment.onImageEditActionClick(which);
+                        }
+                    });
+            return builder.create();
+        }
+    }
+
+    /**
+     * Dialog to input note message for selected picture
+     */
+    public static class NoteEditDialog extends DialogFragment {
+        EditText mEdit;
+
+        public static NoteEditDialog newInstance(String note) {
+            NoteEditDialog dlg = new NoteEditDialog();
+            Bundle args = new Bundle();
+            args.putString("note", note);
+            dlg.setArguments(args);
+            return  dlg;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            String note = getArguments().getString("note");
+            mEdit = new EditText(this.getActivity());
+            mEdit.setText(note);
+            mEdit.setHint(R.string.enter_image_note);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setView(mEdit);
+
+            builder.setTitle(R.string.title_image_note_edit)
+                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
+                            fragment.onNoteSave(String.valueOf(mEdit.getText()));
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dismiss();
                         }
                     });
             return builder.create();

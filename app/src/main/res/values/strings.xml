@@ -15,5 +15,9 @@
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_pick_media_options">เลือกรูปภาพ</string>
     <string name="title_image_edit_action">จัดการรูปภาพ</string>
+    <string name="enter_image_note">ใส่คำบรรยายภาพ</string>
+    <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
+    <string name="save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
 
 </resources>
