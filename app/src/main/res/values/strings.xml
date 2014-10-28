@@ -14,5 +14,6 @@
     <string name="title_activity_report_type">เลือกประเภทการรายงาน</string>
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_pick_media_options">เลือกรูปภาพ</string>
+    <string name="title_image_edit_action">จัดการรูปภาพ</string>
 
 </resources>

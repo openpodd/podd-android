@@ -4,4 +4,8 @@
         <item>ภาพจากคลังรูปภาพ</item>
         <item>ถ่ายภาพใหม่</item>
     </string-array>
+    <string-array name="image_edit_action_selection">
+        <item>ลบรูปออก</item>
+        <item>แก้ไขคำบรรยายรูป</item>
+    </string-array>
 </resources>

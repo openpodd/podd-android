@@ -68,6 +68,7 @@ public class ReportImageFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private List<ReportImage> allImage;
 
+    long mReportImageId;
     String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
@@ -165,6 +166,21 @@ public class ReportImageFragment extends Fragment {
                 }
             }
         });
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ReportImage ri = (ReportImage) imageAdapter.getItem(position);
+                if (ri.getId() > 0) {
+                    mCurrentPhotoPath = ri.getImageUri();
+                    mReportImageId = ri.getId();
+                    // show action options
+                    ImageEditDialog dlg = new ImageEditDialog();
+                    dlg.setTargetFragment(targetFragment, 0);
+                    dlg.show(getActivity().getSupportFragmentManager(), "ImageEditDialog");
+                }
+                return false;
+            }
+        });
 
         navigationInterface.setPrevVisible(false);
         navigationInterface.setNextEnable(true);
@@ -215,6 +231,37 @@ public class ReportImageFragment extends Fragment {
                 }
                 break;
         }
+    }
+
+    /*
+     * Handle click on image edit option list
+     * @param index
+     */
+    private void onImageEditActionClick(int index) {
+        switch (index) {
+            case 0:
+                deleteImage();
+                break;
+        }
+    }
+
+    private void deleteImage() {
+        Log.d(TAG, "Delete image id=" + mReportImageId);
+        reportDataSource.delete(mReportImageId);
+
+        // remove image file if it was taken from capture camera, not from media list
+        Uri uri = Uri.parse(mCurrentPhotoPath);
+        Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+
+        // Uri is not content://path
+        if (cursor == null) {
+            String filePath = uri.getPath();
+            File f = new File(filePath);
+            f.delete();
+            Log.d(TAG, "Image file removed: path= " + filePath);
+        }
+        imageAdapter.removeItem(mReportImageId);
+        imageAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -392,6 +439,17 @@ public class ReportImageFragment extends Fragment {
             return images.get(pos).getId() == 0;
         }
 
+        public void removeItem(long id) {
+            int pos = 0, i = 0;
+            for (ReportImage item : images) {
+                if (item.getId() == id) {
+                    pos = i;
+                }
+                i++;
+            }
+            images.remove(pos);
+        }
+
         class ViewHolder {
             ImageView imageView;
             TextView addButton;
@@ -416,6 +474,25 @@ public class ReportImageFragment extends Fragment {
                         }
                     });
             // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    /**
+     * Dialog for image item edit options, when long press on image thumbnail
+     */
+    public static class ImageEditDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.title_image_edit_action)
+                    .setItems(R.array.image_edit_action_selection, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
+                            fragment.onImageEditActionClick(which);
+                        }
+                    });
             return builder.create();
         }
     }

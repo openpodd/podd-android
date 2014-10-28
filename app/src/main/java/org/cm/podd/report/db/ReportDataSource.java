@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.provider.BaseColumns;
 
 import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
@@ -149,6 +150,12 @@ public class ReportDataSource {
         ret.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
 
         return ret;
+    }
+
+    public void delete(long imageId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        db.delete("report_image", BaseColumns._ID + "=?", new String[] { Long.toString(imageId) });
+        db.close();
     }
 
     public List<ReportImage> getAllImage(long reportId) {
