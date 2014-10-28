@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,34 +8,14 @@
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/image_grid_view"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:numColumns="auto_fit"
         android:verticalSpacing="10dp"
         android:horizontalSpacing="10dp"
         android:columnWidth="90dp"
         android:stretchMode="columnWidth"
         android:gravity="center"
-        android:layout_above="@id/controlBar"
+        android:padding="10dp"
         />
 
-    <LinearLayout
-        android:id="@+id/controlBar"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/take_picture_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Take Image" />
-
-        <Button
-            android:id="@+id/choose_picture_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Choose Image" />
-    </LinearLayout>
-
-
-</RelativeLayout>
+</FrameLayout>
