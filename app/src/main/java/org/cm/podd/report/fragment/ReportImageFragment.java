@@ -83,7 +83,9 @@ public class ReportImageFragment extends Fragment {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        // file:///storage/sdcard/Pictures/xxx.jpg
+        mCurrentPhotoPath = Uri.fromFile(image).toString();
+
         return image;
     }
 
@@ -262,7 +264,7 @@ public class ReportImageFragment extends Fragment {
         Bitmap thumbnailBitmap = createThumbnail(uri);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        ReportImage reportImage = reportDataSource.saveImage(reportId, mCurrentPhotoPath, stream.toByteArray());
+        ReportImage reportImage = reportDataSource.saveImage(reportId, uri.toString(), stream.toByteArray());
         try {
             stream.close();
             thumbnailBitmap.recycle();
@@ -273,7 +275,6 @@ public class ReportImageFragment extends Fragment {
         allImage.add(allImage.size() - 1, reportImage);
         imageAdapter.notifyDataSetChanged();
     }
-
 
     protected Bitmap createThumbnail(Uri uri) {
         Log.d(TAG, "image uri = " + uri.toString());
