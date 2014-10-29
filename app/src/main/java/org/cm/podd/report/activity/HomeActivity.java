@@ -18,11 +18,14 @@
 package org.cm.podd.report.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -35,6 +38,8 @@ import android.view.ViewGroup;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
+import org.cm.podd.report.service.ConnectivityChangeReceiver;
+import org.cm.podd.report.service.DataSubmitService;
 
 import java.util.Locale;
 
@@ -98,6 +103,10 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         reportDataSource = new ReportDataSource(this);
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
+            new ConnectivityChangeReceiver(),
+            new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
 

@@ -41,7 +41,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  form_data TEXT,"
             + "  negative INTEGER,"   // 1 -> found incident, 0 -> no incident
             + "  draft INTEGER,"      // 1 -> save for edit, 0 -> ready to send to server
-            + "  submit INTEGER"     // already submit to server
+            + "  submit INTEGER,"     // already submit to server
+            + "  guid TEXT"           // uuid that tells this report is added into submit queue list
             + ")";
 
     private static final String CREATE_TABLE_IMAGE = "create table report_image"
@@ -50,11 +51,22 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  report_id INTEGER,"
             + "  image_uri TEXT,"
             + "  image_thumbnail BLOB,"
-            + "  note TEXT"
+            + "  note TEXT,"
+            + "  guid TEXT"         // reference to report guid
+            + ")";
+
+    private static final String CREATE_TABLE_QUEUE = "create table report_queue"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  report_id INTEGER,"
+            + "  data_type TEXT,"       // report_data, report_image
+            + "  guid TEXT,"
+            + "  created_at INTEGER"
             + ")";
 
     private static final String DROP_TABLE = "drop table report";
     private static final String DROP_TABLE_IMAGE = "drop table report_image";
+    private static final String DROP_TABLE_QUEUE = "drop table report_queue";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -65,6 +77,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(CREATE_TABLE);
         sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
+        sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
 
     }
 
@@ -72,5 +85,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL(DROP_TABLE);
         sqLiteDatabase.execSQL(DROP_TABLE_IMAGE);
+        sqLiteDatabase.execSQL(DROP_TABLE_QUEUE);
     }
 }

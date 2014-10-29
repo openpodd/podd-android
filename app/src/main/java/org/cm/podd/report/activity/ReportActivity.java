@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +39,7 @@ import android.widget.Button;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.fragment.ReportConfirmFragment;
 import org.cm.podd.report.fragment.ReportDataInterface;
@@ -75,6 +77,8 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
     private String currentFragment;
     private ReportDataSource reportDataSource;
     private ReportTypeDataSource reportTypeDataSource;
+    private ReportQueueDataSource reportQueueDataSource;
+
     private long reportId;
     private long reportType;
     private FormIterator formIterator;
@@ -122,7 +126,7 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
         reportDataSource = new ReportDataSource(this);
         reportTypeDataSource = new ReportTypeDataSource(this);
-
+        reportQueueDataSource = new ReportQueueDataSource(this);
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString("currentFragment");
@@ -403,6 +407,11 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         saveForm();
 
         reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
+        reportQueueDataSource.addQueue(reportId);
+
+        // Broadcasts the Intent to network receiver
+        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
 
         Intent returnIntent = new Intent();
         setResult(RESULT_OK, returnIntent);

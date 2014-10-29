@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
@@ -37,6 +38,7 @@ import java.util.List;
  */
 public class ReportDataSource {
 
+    private static final String TAG = "ReportDataSource";
     private ReportDatabaseHelper reportDatabaseHelper;
 
     private SQLiteDatabase readableDB;
@@ -200,6 +202,16 @@ public class ReportDataSource {
         ContentValues values = new ContentValues();
         values.put("note", note);
         db.update("report_image", values, "_id = ?", new String[] {Long.toString(id)});
+        db.close();
+    }
+
+    public void assignGuid(long reportId, String guid) {
+        Log.d(TAG, String.format("assign guid %s to report/image with report_id %d", guid, reportId));
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("guid", guid);
+        db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
+        db.update("report_image", values, "report_id = ?", new String[] {Long.toString(reportId)});
         db.close();
     }
 }
