@@ -28,6 +28,9 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // 'Submit service' broadcasts this same intent back after it's finished its job.
+        // This intent extra makes calling to submit service one at a time,
+        // must wait for service to end before making another call
         if (intent.hasExtra("SubmitDone")) {
             isPending = false;
             return;
@@ -49,7 +52,7 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
             }
 
         } else {
-            // Do nothing or notify user somehow
+            // Do nothing
             Log.d(TAG, "BadConnection - " + Long.toString(System.currentTimeMillis()));
         }
 

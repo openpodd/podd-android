@@ -14,25 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cm.podd.report.model;
 
-import android.graphics.Bitmap;
+import java.util.Date;
 
-/**
- * Created by pphetra on 10/11/14 AD.
- */
-public class ReportImage {
-
+public class Queue {
     private long id;
-    private String imageUri;
-    private String note;
-    private Bitmap thumbnail;
+    private String type;
+    private long reportId;
     private String guid;
+    private long created_at;
 
-    public ReportImage(long id, String imageUri) {
-        this.id = id;
-        this.imageUri = imageUri;
+    public Queue(long reportId, String type, String guid) {
+        this.type = type;
+        this.reportId = reportId;
+        this.guid = guid;
+        this.created_at = new Date().getTime();
     }
 
     public long getId() {
@@ -43,28 +40,20 @@ public class ReportImage {
         this.id = id;
     }
 
-    public String getImageUri() {
-        return imageUri;
+    public String getType() {
+        return type;
     }
 
-    public void setImageUri(String imageUri) {
-        this.imageUri = imageUri;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getNote() {
-        return note;
+    public long getReportId() {
+        return reportId;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Bitmap getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setReportId(long reportId) {
+        this.reportId = reportId;
     }
 
     public String getGuid() {
@@ -75,4 +64,11 @@ public class ReportImage {
         this.guid = guid;
     }
 
+    public long getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(long created_at) {
+        this.created_at = created_at;
+    }
 }

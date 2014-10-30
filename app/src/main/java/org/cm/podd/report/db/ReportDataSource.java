@@ -102,6 +102,7 @@ public class ReportDataSource {
         }
         long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
         String remark = cursor.getString(cursor.getColumnIndex("remark"));
+        String guid = cursor.getString(cursor.getColumnIndex("guid"));
 
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
@@ -110,6 +111,7 @@ public class ReportDataSource {
         report.setStartDate(startDate);
         report.setRegionId(regionId);
         report.setRemark(remark);
+        report.setGuid(guid);
         cursor.close();
         return report;
     }
@@ -169,9 +171,12 @@ public class ReportDataSource {
             long id = cursor.getLong(cursor.getColumnIndex("_id"));
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
             String note = cursor.getString(cursor.getColumnIndex("note"));
+            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
             ReportImage image = new ReportImage(id, uri);
             image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
             image.setNote(note);
+            image.setGuid(guid);
             images.add(image);
         }
         cursor.close();
@@ -212,6 +217,14 @@ public class ReportDataSource {
         values.put("guid", guid);
         db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
         db.update("report_image", values, "report_id = ?", new String[] {Long.toString(reportId)});
+        db.close();
+    }
+
+    public void updateSubmit(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("submit", 1);
+        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
         db.close();
     }
 }

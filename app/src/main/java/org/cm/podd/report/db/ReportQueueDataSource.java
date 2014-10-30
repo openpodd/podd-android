@@ -22,12 +22,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.cm.podd.report.model.Queue;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class ReportQueueDataSource {
-    private static final String DATA_TYPE = "report_data";
-    private static final String IMAGE_TYPE = "report_image";
+    public static final String DATA_TYPE = "report_data";
+    public static final String IMAGE_TYPE = "report_image";
     private static final String TAG = "ReportQueueDataSource";
 
     private ReportDatabaseHelper mDbHelper;
@@ -58,8 +62,29 @@ public class ReportQueueDataSource {
         db.close();
     }
 
-    public Cursor getAllQueues() {
+    public List<Queue> getAllQueues() {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        return db.rawQuery("select * from report_queue", null);
+        List<Queue> queues = new ArrayList<Queue>();
+
+        Cursor cursor = db.rawQuery("select * from report_queue", null);
+        while (cursor.moveToNext()) {
+            long id = cursor.getLong(cursor.getColumnIndex("_id"));
+            String type = cursor.getString(cursor.getColumnIndex("data_type"));
+            long reportId = cursor.getLong(cursor.getColumnIndex("report_id"));
+            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
+            Queue q = new Queue(reportId, type, guid);
+            q.setId(id);
+            queues.add(q);
+        }
+        cursor.close();
+        return queues;
+    }
+
+    public void remove(long id) {
+        Log.d(TAG, "remove queue id=" + id);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.delete("report_queue", "_id = ?", new String[] {Long.toString(id)});
+        db.close();
     }
 }

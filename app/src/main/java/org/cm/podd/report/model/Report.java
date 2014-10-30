@@ -37,6 +37,8 @@ public class Report {
     private int draft;
     private int submit;
 
+    private String guid;
+
     private double latitude = 0.00;
     private double longitude = 0.00;
 
@@ -146,4 +148,13 @@ public class Report {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
 }
