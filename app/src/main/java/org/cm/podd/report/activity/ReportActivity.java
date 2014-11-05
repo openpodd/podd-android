@@ -21,7 +21,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +31,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -162,9 +165,13 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                // different devices' screens have normal height diff differently
+                // eg, roughly 5.5", 4.5" has 110px, 4", 3.5" has 75px
                 int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
-                if (heightDiff > 100) {
-                    // if more than 100 pixels, its probably a keyboard...
+                Log.d(TAG, String.format("diff height=%d", heightDiff));
+
+                if (heightDiff > 150) {
+                    // if more than 150 pixels, its probably a keyboard...
                     // then hide a control bar (prev/next)
                     controlBar.setVisibility(View.GONE);
                 } else {
