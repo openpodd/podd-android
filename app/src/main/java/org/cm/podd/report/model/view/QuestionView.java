@@ -21,6 +21,7 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -45,6 +46,8 @@ public class QuestionView extends LinearLayout {
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(params);
+        setTag(q.getName());
+        setId(q.getId());
 
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
@@ -95,6 +98,27 @@ public class QuestionView extends LinearLayout {
                 }
             }
         });
+
+        editView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (listener != null) {
+                    return listener.onAction(v, actionId, event);
+                }
+                return false;
+            }
+        });
+    }
+
+
+    private QuestionKeyHandler listener;
+
+    public void setListener(QuestionKeyHandler listener) {
+        this.listener = listener;
+    }
+
+    public interface QuestionKeyHandler {
+        public boolean onAction(TextView view, int actionId, KeyEvent event);
     }
 
 }

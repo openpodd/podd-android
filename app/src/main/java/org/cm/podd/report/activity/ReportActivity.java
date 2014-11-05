@@ -32,14 +32,18 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -59,6 +63,7 @@ import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
+import org.cm.podd.report.model.view.QuestionView;
 import org.cm.podd.report.service.LocationBackgroundService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +77,8 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class ReportActivity extends ActionBarActivity implements ReportNavigationInterface, ReportDataInterface {
+public class ReportActivity extends ActionBarActivity
+        implements ReportNavigationInterface, ReportDataInterface, QuestionView.QuestionKeyHandler {
 
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
@@ -468,6 +474,31 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
         stopService(new Intent(this, LocationBackgroundService.class));
     }
 
+    /*
+     * Handle action from softkeyboard input (DONE) button
+     */
+    @Override
+    public boolean onAction(TextView view, int actionId, KeyEvent event) {
+        switch (actionId) {
+            case EditorInfo.IME_ACTION_NEXT:
+                Log.d(TAG, "action NEXT");
+                View nextTextView = view.focusSearch(View.FOCUS_DOWN);
+                if (nextTextView != null) {
+                    nextTextView.requestFocus();
+                    if (!(nextTextView instanceof EditText)) {
+                        hideKeyboard();
+                    }
+                    return true;
+                }
+            case EditorInfo.IME_ACTION_DONE:
+                Log.d(TAG, "action DONE");
+                nextScreen();
+                hideKeyboard();
+                return true;
+        }
+        return false;
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -490,6 +521,7 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
             Bundle arguments = getArguments();
             Page page = (Page) arguments.get("page");
             PageView pageView = new PageView(getActivity(), page);
+            pageView.setListener((QuestionView.QuestionKeyHandler) getActivity());
             return pageView;
         }
     }

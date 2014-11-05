@@ -29,6 +29,8 @@ import org.cm.podd.report.model.Question;
 
 import java.util.List;
 
+import static org.cm.podd.report.model.view.QuestionView.QuestionKeyHandler;
+
 /**
  * Created by pphetra on 10/3/14 AD.
  */
@@ -65,5 +67,25 @@ public class PageView extends ScrollView {
         }
     }
 
+
+    private QuestionKeyHandler listener;
+
+    public void setListener(QuestionKeyHandler listener) {
+        this.listener = listener;
+        LinearLayout lo = (LinearLayout) getChildAt(0);
+        List<Question> questions = page.getQuestions();
+        QuestionView lastView = null;
+        for (Question q : questions) {
+            if (!(q instanceof MultipleChoiceQuestion)) {
+                QuestionView qView = (QuestionView) lo.findViewWithTag(q.getName());
+                qView.setListener(listener);
+                if (lastView != null) {
+                    lastView.setNextFocusDownId(qView.getId());
+                }
+                lastView = qView;
+            }
+
+        }
+    }
 
 }
