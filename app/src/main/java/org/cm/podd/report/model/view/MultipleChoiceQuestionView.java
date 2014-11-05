@@ -152,4 +152,20 @@ public class MultipleChoiceQuestionView extends LinearLayout {
 
 
     }
+
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // HACK! TAKE THAT ANDROID!
+        // Calculate entire height by providing a very large height hint.
+        // View.MEASURED_SIZE_MASK represents the larg
+        //
+        //
+        // est height possible.
+        int expandSpec = MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK,
+                View.MeasureSpec.AT_MOST);
+        super.onMeasure(widthMeasureSpec, expandSpec);
+
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.height = getMeasuredHeight();
+    }
 }

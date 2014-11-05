@@ -21,6 +21,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Page;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Created by pphetra on 10/3/14 AD.
  */
-public class PageView extends LinearLayout {
+public class PageView extends ScrollView {
 
     private final Page page;
 
@@ -39,10 +40,17 @@ public class PageView extends LinearLayout {
         super(context);
         this.page = page;
 
-        setOrientation(VERTICAL);
+        ViewGroup.LayoutParams matchParent = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        setLayoutParams(matchParent);
 
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        setLayoutParams(params);
+        LinearLayout scrollViewContent = new LinearLayout(context);
+        scrollViewContent.setLayoutParams(matchParent);
+        scrollViewContent.setOrientation(LinearLayout.VERTICAL);
+
+        // only one child as a content for scroll view
+        addView(scrollViewContent);
+
+        ViewGroup.LayoutParams wrapContent = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         List<Question> questions = page.getQuestions();
         for (Question q : questions) {
@@ -52,8 +60,8 @@ public class PageView extends LinearLayout {
             } else {
                 qView = new QuestionView(context, q);
             }
-            qView.setLayoutParams(params);
-            addView(qView);
+            qView.setLayoutParams(wrapContent);
+            scrollViewContent.addView(qView);
         }
     }
 

@@ -61,7 +61,9 @@ import java.util.List;
 public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
-    private static final String SERVER_HOST = "63c206cc.ngrok.com";
+    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
+//    private static final String SERVER_HOST = "128.1.1.237";
+    private static final int SERVER_PORT = 80;
     private Charset utf8Charset = Charset.forName("UTF-8");
 
     public DataSubmitService() {
@@ -168,7 +170,7 @@ public class DataSubmitService extends IntentService {
 
         try {
             String query = String.format("type=data&reportId=%d&guid=%s", reportId, guid);
-            URI http = URIUtils.createURI("http", SERVER_HOST, 80, "/report", query, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/report", query, null);
             Log.i(TAG, "submit report url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
@@ -203,7 +205,7 @@ public class DataSubmitService extends IntentService {
 
         try {
             String query = String.format("type=image&imageId=%d&guid=%s", reportId, guid);
-            URI http = URIUtils.createURI("http", SERVER_HOST, 80, "/image", query, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/image", query, null);
             Log.i(TAG, "submit report image url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);

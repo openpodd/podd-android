@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
@@ -155,6 +156,22 @@ public class ReportActivity extends ActionBarActivity implements ReportNavigatio
 
             nextScreen();
         }
+
+        final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
+        final View controlBar = findViewById(R.id.controlBar);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
+                if (heightDiff > 100) {
+                    // if more than 100 pixels, its probably a keyboard...
+                    // then hide a control bar (prev/next)
+                    controlBar.setVisibility(View.GONE);
+                } else {
+                    controlBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override
