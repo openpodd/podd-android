@@ -103,7 +103,7 @@ public class QuestionView extends LinearLayout {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (listener != null) {
-                    return listener.onAction(v, actionId, event);
+                    return listener.onSoftKeyAction(v, actionId, event);
                 }
                 return false;
             }
@@ -111,14 +111,14 @@ public class QuestionView extends LinearLayout {
     }
 
 
-    private QuestionKeyHandler listener;
+    private SoftKeyActionHandler listener;
 
-    public void setListener(QuestionKeyHandler listener) {
+    public void setListener(SoftKeyActionHandler listener) {
         this.listener = listener;
     }
 
-    public interface QuestionKeyHandler {
-        public boolean onAction(TextView view, int actionId, KeyEvent event);
+    public interface SoftKeyActionHandler {
+        public boolean onSoftKeyAction(TextView view, int actionId, KeyEvent event);
     }
 
 }

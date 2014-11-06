@@ -21,9 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
 import android.net.ConnectivityManager;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,7 +29,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -59,7 +56,6 @@ import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
-import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
@@ -78,7 +74,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ReportActivity extends ActionBarActivity
-        implements ReportNavigationInterface, ReportDataInterface, QuestionView.QuestionKeyHandler {
+        implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler {
 
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
@@ -478,7 +474,7 @@ public class ReportActivity extends ActionBarActivity
      * Handle action from softkeyboard input (DONE) button
      */
     @Override
-    public boolean onAction(TextView view, int actionId, KeyEvent event) {
+    public boolean onSoftKeyAction(TextView view, int actionId, KeyEvent event) {
         switch (actionId) {
             case EditorInfo.IME_ACTION_NEXT:
                 Log.d(TAG, "action NEXT");
@@ -521,7 +517,7 @@ public class ReportActivity extends ActionBarActivity
             Bundle arguments = getArguments();
             Page page = (Page) arguments.get("page");
             PageView pageView = new PageView(getActivity(), page);
-            pageView.setListener((QuestionView.QuestionKeyHandler) getActivity());
+            pageView.setQuestionActionListener((QuestionView.SoftKeyActionHandler) getActivity());
             return pageView;
         }
     }
