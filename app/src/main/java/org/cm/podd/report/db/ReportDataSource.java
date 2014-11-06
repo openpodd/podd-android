@@ -184,6 +184,55 @@ public class ReportDataSource {
         return images;
     }
 
+    public List<ReportImage> getSubmitPendingImages(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        ArrayList<ReportImage> images = new ArrayList<ReportImage>();
+        Cursor cursor = db.rawQuery(
+                "SELECT * from report_image where report_id = ? and guid is null",
+                new String[]{Long.toString(reportId)});
+
+        while (cursor.moveToNext()) {
+            String uri = cursor.getString(cursor.getColumnIndex("image_uri"));
+            long id = cursor.getLong(cursor.getColumnIndex("_id"));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
+            String note = cursor.getString(cursor.getColumnIndex("note"));
+            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
+            ReportImage image = new ReportImage(id, uri);
+            image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            image.setNote(note);
+            image.setGuid(guid);
+            images.add(image);
+        }
+        cursor.close();
+        db.close();
+        return images;
+    }
+
+    public ReportImage getImageById(long id) {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * from report_image where _id = ?",
+                new String[]{Long.toString(id)});
+        ReportImage image = null;
+
+        if (cursor.moveToFirst()) {
+            String uri = cursor.getString(cursor.getColumnIndex("image_uri"));
+            byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
+            String note = cursor.getString(cursor.getColumnIndex("note"));
+            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
+            image = new ReportImage(id, uri);
+            image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+            image.setNote(note);
+            image.setGuid(guid);
+        }
+
+        cursor.close();
+        db.close();
+        return image;
+    }
+
     public List<Region> getAllRegion() {
         ArrayList<Region> regions = new ArrayList<Region>();
         regions.add(new Region(1, "หมู่บ้านสันปง"));
@@ -210,13 +259,18 @@ public class ReportDataSource {
         db.close();
     }
 
-    public void assignGuid(long reportId, String guid) {
-        Log.d(TAG, String.format("assign guid %s to report/image with report_id %d", guid, reportId));
+    public void assignGuid(long id, String type, String guid) {
+        Log.d(TAG, String.format("assign guid %s to %s with id %d", guid, type, id));
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put("guid", guid);
-        db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
-        db.update("report_image", values, "report_id = ?", new String[] {Long.toString(reportId)});
+
+        if (type.equals(ReportQueueDataSource.DATA_TYPE)) {
+            db.update("report", values, "_id = ?", new String[]{Long.toString(id)});
+        } else if (type.equals(ReportQueueDataSource.IMAGE_TYPE)) {
+            db.update("report_image", values, "_id = ?", new String[] {Long.toString(id)});
+        }
         db.close();
     }
 

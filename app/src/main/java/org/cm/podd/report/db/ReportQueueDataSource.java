@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.cm.podd.report.model.Queue;
+import org.cm.podd.report.model.ReportImage;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,24 +46,36 @@ public class ReportQueueDataSource {
     public void addDataQueue(long reportId) {
         Log.d(TAG, "add queue report id=" + reportId);
         String guid = String.valueOf(UUID.randomUUID());
-        mReportDataSource.assignGuid(reportId, guid);
-        insertQueue(reportId, DATA_TYPE, guid);
+        mReportDataSource.assignGuid(reportId, DATA_TYPE, guid);
+        insertQueue(reportId, 0, DATA_TYPE);
     }
 
     public void addImageQueue(long reportId) {
         Log.d(TAG, "add image queue for report id=" + reportId);
-        // loop thru all images that have not submitted to server yet (no guid from s3 assigned)
-//        insertQueue(reportId, IMAGE_TYPE, guid);
+        // loop thru all images that are not in a queue list
+        List<ReportImage> images = mReportDataSource.getSubmitPendingImages(reportId);
+        for (ReportImage image : images) {
+            long imageId = image.getId();
+
+            // use temp guid to indicate that this image is already added into queue
+            // it will be replaced with returned key from s3, after successfully submit to server
+            String tmpGuid = "xxx";
+            mReportDataSource.assignGuid(imageId, IMAGE_TYPE, tmpGuid);
+
+            insertQueue(reportId, imageId, IMAGE_TYPE);
+        }
     }
 
-    private void insertQueue(long reportId, String dataType, String guid) {
+    private void insertQueue(long reportId, long imageId, String dataType) {
         Log.d(TAG, "insert queue type=" + dataType);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put("report_id", reportId);
+        values.put("image_id", imageId);
         values.put("data_type", dataType);
         values.put("created_at", new Date().getTime());
-        values.put("guid", guid);
+
         db.insert("report_queue", null, values);
         db.close();
     }
@@ -71,14 +84,15 @@ public class ReportQueueDataSource {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         List<Queue> queues = new ArrayList<Queue>();
 
-        Cursor cursor = db.rawQuery("select * from report_queue", null);
+        Cursor cursor = db.rawQuery("select * from report_queue order by created_at asc", null);
         while (cursor.moveToNext()) {
             long id = cursor.getLong(cursor.getColumnIndex("_id"));
             String type = cursor.getString(cursor.getColumnIndex("data_type"));
             long reportId = cursor.getLong(cursor.getColumnIndex("report_id"));
-            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+            long imageId = cursor.getLong(cursor.getColumnIndex("image_id"));
+            long createdAt = cursor.getLong(cursor.getColumnIndex("created_at"));
 
-            Queue q = new Queue(reportId, type, guid);
+            Queue q = new Queue(reportId, imageId, type, createdAt);
             q.setId(id);
             queues.add(q);
         }

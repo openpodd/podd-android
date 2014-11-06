@@ -55,15 +55,14 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
-    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
-//    private static final String SERVER_HOST = "128.1.1.237";
-    private static final int SERVER_PORT = 80;
+//    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
+    private static final String SERVER_HOST = "128.1.1.237";
+    private static final int SERVER_PORT = 5000;
     private Charset utf8Charset = Charset.forName("UTF-8");
 
     public DataSubmitService() {
@@ -94,9 +93,9 @@ public class DataSubmitService extends IntentService {
                 long id = que.getId();
                 String type = que.getType();
                 long reportId = que.getReportId();
-                String guid = que.getGuid();
+                long imageId = que.getImageId();
 
-                Log.d(TAG, String.format("type= %s, report id= %d, guid= %s", type, reportId, guid));
+                Log.d(TAG, String.format("type= %s, report id= %d, image id= %d", type, reportId, imageId));
                 boolean success = false;
 
                 if (type.equals(ReportQueueDataSource.DATA_TYPE)) {
@@ -108,13 +107,12 @@ public class DataSubmitService extends IntentService {
                         // mark report as done submitting to server
                         reportDataSource.updateSubmit(reportId);
                     }
-                } else if (type.equals(ReportQueueDataSource.IMAGE_TYPE)) {
-                    // get all images in a report
-                    List<ReportImage> images = reportDataSource.getAllImage(reportId);
-                    List<byte[]> filesData = new ArrayList<byte[]>();
-                    List<String> notes = new ArrayList<String>();
 
-                    for (ReportImage image : images) {
+                } else if (type.equals(ReportQueueDataSource.IMAGE_TYPE)) {
+                    // get image data
+                    ReportImage image = reportDataSource.getImageById(imageId);
+
+                    if (image != null) {
                         String uriStr = image.getImageUri();
                         Uri uri = Uri.parse(uriStr);
                         String filePath;
@@ -131,15 +129,31 @@ public class DataSubmitService extends IntentService {
                         }
 
                         // convert file to bytes
-                        filesData.add(getImageByte(filePath));
-                        notes.add(image.getNote());
+                        byte[] imageByte = getImageByte(filePath);
+                        String note = image.getNote();
+
+                        // TODO
+                        /*
+                         * Get guid (some key returned from s3 image upload)
+                         */
+                        String guid = "s3";
+
+                        // submit image bytes
+                        success = submitImages(imageByte, note, reportId, guid);
+                        if (success) {
+                            // set s3 image guid
+                            reportDataSource.assignGuid(imageId, ReportQueueDataSource.IMAGE_TYPE, guid);
+                        }
+
+                    } else {
+                        // Image could be deleted by user anytime,
+                        // so just remove a queue if no image found
+                        success = true;
                     }
-                    // submit image bytes
-                    success = submitImages(filesData, notes, reportId, guid);
                 }
 
-                // After queue was submitted successfully then remove it
                 if (success) {
+                    // After queue was submitted successfully then remove it
                     Log.i(TAG, "success! submit report " + type);
                     queueDataSource.remove(id);
                 }
@@ -181,12 +195,14 @@ public class DataSubmitService extends IntentService {
             builder.addTextBody("data", body, ContentType.APPLICATION_JSON);
 
             post.setEntity(builder.build());
-            HttpResponse response = null;
+            HttpResponse response;
             response = client.execute(post);
             HttpEntity entity = response.getEntity();
 
             // Detect server complaints
-            success = response.getStatusLine().getStatusCode() == 200;
+            int statusCode = response.getStatusLine().getStatusCode();
+            Log.e(TAG, "status code=" + statusCode)
+            success = statusCode == 200;
             entity.consumeContent();
 
         } finally {
@@ -195,7 +211,7 @@ public class DataSubmitService extends IntentService {
         return success;
     }
 
-    private boolean submitImages(List<byte[]> filesData, List<String> notes, long reportId, String guid)
+    private boolean submitImages(byte[] fileData, String note, long reportId, String guid)
             throws URISyntaxException, IOException {
 
         HttpParams params = new BasicHttpParams();
@@ -204,7 +220,7 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            String query = String.format("type=image&imageId=%d&guid=%s", reportId, guid);
+            String query = String.format("type=image&reportId=%d&guid=%s", reportId, guid);
             URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/image", query, null);
             Log.i(TAG, "submit report image url=" + http.toURL());
 
@@ -214,22 +230,20 @@ public class DataSubmitService extends IntentService {
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             builder.setCharset(utf8Charset);
 
-            for (int i = 0; i < filesData.size(); i++) {
-                byte[] data = filesData.get(i);
-                String note = notes.get(i) == null ? "" : notes.get(i);
-                String fileName = String.format("IMG_%s_%d", guid, System.currentTimeMillis());
+            String fileName = String.format("IMG_%s_%d", guid, System.currentTimeMillis());
 
-                builder.addPart("image"+i, new ByteArrayBody(data, fileName));
-                Log.d(TAG, String.format("note%d= %s", i, note));
-                builder.addTextBody("note" + i, note, ContentType.create("plain/text", utf8Charset));
-            }
+            builder.addPart("image", new ByteArrayBody(fileData, fileName));
+            builder.addTextBody("note", note == null ? "" : note,
+                    ContentType.create("plain/text", utf8Charset));
 
             post.setEntity(builder.build());
-            HttpResponse response = null;
+            HttpResponse response;
             response = client.execute(post);
             HttpEntity entity = response.getEntity();
 
-            success = response.getStatusLine().getStatusCode() == 200;
+            int statusCode = response.getStatusLine().getStatusCode();
+            Log.e(TAG, "status code=" + statusCode);
+            success = statusCode == 200;
             // Detect server complaints
             entity.consumeContent();
 

@@ -16,20 +16,18 @@
  */
 package org.cm.podd.report.model;
 
-import java.util.Date;
-
 public class Queue {
     private long id;
     private String type;
     private long reportId;
-    private String guid;
-    private long created_at;
+    private long imageId;
+    private long createdAt;
 
-    public Queue(long reportId, String type, String guid) {
+    public Queue(long reportId, long imageId, String type, long createdAt) {
         this.type = type;
         this.reportId = reportId;
-        this.guid = guid;
-        this.created_at = new Date().getTime();
+        this.imageId = imageId;
+        this.createdAt = createdAt;
     }
 
     public long getId() {
@@ -56,19 +54,19 @@ public class Queue {
         this.reportId = reportId;
     }
 
-    public String getGuid() {
-        return guid;
+    public long getImageId() {
+        return imageId;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setImageId(long imageId) {
+        this.imageId = imageId;
     }
 
-    public long getCreated_at() {
-        return created_at;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(long created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 }
