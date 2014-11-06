@@ -4,12 +4,24 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/controlBar"
-        tools:context="org.cm.podd.report.activity.ReportActivity"
-        tools:ignore="MergeRootFrame" />
+        android:layout_above="@+id/controlBar" >
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="org.cm.podd.report.activity.ReportActivity"
+            tools:ignore="MergeRootFrame" />
+        <View
+            android:id="@+id/disableMask"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:alpha="0.2"
+            android:clickable="true" />
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/controlBar"

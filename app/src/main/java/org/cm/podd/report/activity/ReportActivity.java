@@ -40,6 +40,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -79,6 +81,7 @@ public class ReportActivity extends ActionBarActivity
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
     private Button nextBtn;
+    private View disableMaskView;
 
     private String currentFragment;
     private ReportDataSource reportDataSource;
@@ -96,6 +99,7 @@ public class ReportActivity extends ActionBarActivity
     private Date reportDate;
     private long reportRegionId;
     private String remark;
+    private int doneSubmitReport;
 
     protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -129,6 +133,7 @@ public class ReportActivity extends ActionBarActivity
                 onBackPressed();
             }
         });
+        disableMaskView = findViewById(R.id.disableMask);
 
         reportDataSource = new ReportDataSource(this);
         reportTypeDataSource = new ReportTypeDataSource(this);
@@ -162,6 +167,7 @@ public class ReportActivity extends ActionBarActivity
             nextScreen();
         }
 
+        /* check softkeyboard visibility */
         final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
         final View controlBar = findViewById(R.id.controlBar);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -202,6 +208,7 @@ public class ReportActivity extends ActionBarActivity
         reportDate = report.getStartDate();
         reportRegionId = report.getRegionId();
         remark = report.getRemark();
+        doneSubmitReport = report.getSubmit();
 
         String formDataStr = report.getFormData();
         Log.d(TAG, "form data = " + formDataStr);
@@ -252,14 +259,20 @@ public class ReportActivity extends ActionBarActivity
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 currentFragment = "dynamicForm";
+                showHideDisableMask(doneSubmitReport == 1);
             } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
                 currentFragment = null;
+                showHideDisableMask(false);
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = ReportLocationFragment.class.getName();
                 setNextVisible(true);
+                showHideDisableMask(doneSubmitReport == 1);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
                     currentFragment = ReportImageFragment.class.getName();
+                    showHideDisableMask(false);
+                } else {
+                    showHideDisableMask(doneSubmitReport == 1);
                 }
             }
         }
@@ -280,10 +293,12 @@ public class ReportActivity extends ActionBarActivity
         if (currentFragment == null) { /* first screen */
             Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
+            showHideDisableMask(false);
         } else {
 
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 fragment = ReportConfirmFragment.newInstance(reportId);
+                showHideDisableMask(false);
 
             }else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 /* do nothing */
@@ -310,9 +325,13 @@ public class ReportActivity extends ActionBarActivity
                 if (currentFragment.equals(ReportImageFragment.class.getName())) {
                     // no-op
                     fragment = getPageFragment(formIterator.getCurrentPage());
+                    showHideDisableMask(doneSubmitReport == 1);
+
                 } else if (formIterator.isAtLastPage()) {
                     fragment = ReportLocationFragment.newInstance(reportId);
                     isDynamicForm = false;
+                    showHideDisableMask(doneSubmitReport == 1);
+
                 } else {
                     if (! formIterator.nextPage()) {
 
@@ -338,11 +357,10 @@ public class ReportActivity extends ActionBarActivity
                             fragment = ReportLocationFragment.newInstance(reportId);
                             isDynamicForm = false;
                         }
-
                     } else {
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
-
+                        showHideDisableMask(doneSubmitReport == 1);
                     }
                 }
 
@@ -570,4 +588,9 @@ public class ReportActivity extends ActionBarActivity
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    private void showHideDisableMask(boolean shown) {
+        disableMaskView.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
+    }
+
 }
