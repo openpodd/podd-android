@@ -40,8 +40,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -99,7 +97,7 @@ public class ReportActivity extends ActionBarActivity
     private Date reportDate;
     private long reportRegionId;
     private String remark;
-    private int doneSubmitReport;
+    private int reportSubmit;
 
     protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -208,7 +206,7 @@ public class ReportActivity extends ActionBarActivity
         reportDate = report.getStartDate();
         reportRegionId = report.getRegionId();
         remark = report.getRemark();
-        doneSubmitReport = report.getSubmit();
+        reportSubmit = report.getSubmit();
 
         String formDataStr = report.getFormData();
         Log.d(TAG, "form data = " + formDataStr);
@@ -259,20 +257,20 @@ public class ReportActivity extends ActionBarActivity
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 currentFragment = "dynamicForm";
-                showHideDisableMask(doneSubmitReport == 1);
+                showHideDisableMask(reportSubmit == 1);
             } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
                 currentFragment = null;
                 showHideDisableMask(false);
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = ReportLocationFragment.class.getName();
                 setNextVisible(true);
-                showHideDisableMask(doneSubmitReport == 1);
+                showHideDisableMask(reportSubmit == 1);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
                     currentFragment = ReportImageFragment.class.getName();
                     showHideDisableMask(false);
                 } else {
-                    showHideDisableMask(doneSubmitReport == 1);
+                    showHideDisableMask(reportSubmit == 1);
                 }
             }
         }
@@ -325,12 +323,12 @@ public class ReportActivity extends ActionBarActivity
                 if (currentFragment.equals(ReportImageFragment.class.getName())) {
                     // no-op
                     fragment = getPageFragment(formIterator.getCurrentPage());
-                    showHideDisableMask(doneSubmitReport == 1);
+                    showHideDisableMask(reportSubmit == 1);
 
                 } else if (formIterator.isAtLastPage()) {
                     fragment = ReportLocationFragment.newInstance(reportId);
                     isDynamicForm = false;
-                    showHideDisableMask(doneSubmitReport == 1);
+                    showHideDisableMask(reportSubmit == 1);
 
                 } else {
                     if (! formIterator.nextPage()) {
@@ -360,7 +358,7 @@ public class ReportActivity extends ActionBarActivity
                     } else {
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
-                        showHideDisableMask(doneSubmitReport == 1);
+                        showHideDisableMask(reportSubmit == 1);
                     }
                 }
 
@@ -447,15 +445,26 @@ public class ReportActivity extends ActionBarActivity
     }
 
     @Override
-    public void finishReport() {
-        saveForm();
+    public void finishReport(int action) {
+        // Reload report to get current submit status
+        Report report = reportDataSource.getById(reportId);
+        reportSubmit = report.getSubmit();
 
-        reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
-        reportQueueDataSource.addQueue(reportId);
+        if (action != ReportDataInterface.CANCEL_ACTION) {
+            if (reportSubmit == 0) {
+                saveForm();
+                reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
 
-        // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+                if (action == ReportDataInterface.CONFIRM_ACTION) {
+                    reportQueueDataSource.addQueue(reportId);
+
+                    // Broadcasts the Intent to network receiver
+                    Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+                }
+            }
+
+        }
 
         Intent returnIntent = new Intent();
         setResult(RESULT_OK, returnIntent);
@@ -587,6 +596,11 @@ public class ReportActivity extends ActionBarActivity
     @Override
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Override
+    public boolean isDoneSubmit() {
+        return this.reportSubmit == 1;
     }
 
     private void showHideDisableMask(boolean shown) {

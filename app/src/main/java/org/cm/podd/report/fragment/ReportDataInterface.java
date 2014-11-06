@@ -26,6 +26,10 @@ import java.util.Date;
  */
 public interface ReportDataInterface {
 
+    public static final int CONFIRM_ACTION = 1;
+    public static final int DRAFT_ACTION = 2;
+    public static final int CANCEL_ACTION = 0;
+
     public Date getDate();
 
     public void setDate(Date date);
@@ -38,4 +42,5 @@ public interface ReportDataInterface {
 
     public void setRemark(String remark);
 
+    public boolean isDoneSubmit();
 }

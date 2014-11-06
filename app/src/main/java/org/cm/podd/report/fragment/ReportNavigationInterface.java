@@ -30,6 +30,6 @@ public interface ReportNavigationInterface {
 
     public void setPrevVisible(boolean flag);
 
-    public void finishReport();
+    public void finishReport(int action);
 
 }

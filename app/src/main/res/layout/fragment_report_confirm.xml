@@ -16,7 +16,11 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Confirm"></Button>
-
+        <Button
+            android:id="@+id/draftBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Save as draft"></Button>
         <Button
             android:id="@+id/cancelBtn"
             android:layout_width="fill_parent"

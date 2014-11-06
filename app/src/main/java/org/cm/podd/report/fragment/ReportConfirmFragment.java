@@ -29,6 +29,7 @@ public class ReportConfirmFragment extends Fragment {
     private long reportId;
 
     private ReportNavigationInterface navigationInterface;
+    private ReportDataInterface dataInterface;
 
     /**
      * Use this factory method to create a new instance of
@@ -66,20 +67,32 @@ public class ReportConfirmFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_report_confirm, container, false);
         Button confirmBtn = (Button) view.findViewById(R.id.confirmBtn);
         Button cancelBtn = (Button) view.findViewById(R.id.cancelBtn);
+        Button draftBtn = (Button) view.findViewById(R.id.draftBtn);
 
+        if (dataInterface.isDoneSubmit()) {
+            draftBtn.setVisibility(View.GONE);
+        }
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // TODO mark report status to "ready to send to server"
-                navigationInterface.finishReport();
+                navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
+            }
+        });
+
+        draftBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO mark report status to "ready to send to server"
+                navigationInterface.finishReport(ReportDataInterface.DRAFT_ACTION);
             }
         });
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigationInterface.finishReport();
+                navigationInterface.finishReport(ReportDataInterface.CANCEL_ACTION);
             }
         });
 
@@ -94,6 +107,7 @@ public class ReportConfirmFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         navigationInterface = (ReportNavigationInterface) activity;
+        dataInterface = (ReportDataInterface) activity;
 //        try {
 //            mListener = (OnFragmentInteractionListener) activity;
 //        } catch (ClassCastException e) {
