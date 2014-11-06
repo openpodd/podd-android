@@ -42,12 +42,17 @@ public class ReportQueueDataSource {
         mReportDataSource = new ReportDataSource(context);
     }
 
-    public void addQueue(long reportId) {
+    public void addDataQueue(long reportId) {
         Log.d(TAG, "add queue report id=" + reportId);
         String guid = String.valueOf(UUID.randomUUID());
         mReportDataSource.assignGuid(reportId, guid);
         insertQueue(reportId, DATA_TYPE, guid);
-        insertQueue(reportId, IMAGE_TYPE, guid);
+    }
+
+    public void addImageQueue(long reportId) {
+        Log.d(TAG, "add image queue for report id=" + reportId);
+        // loop thru all images that have not submitted to server yet (no guid from s3 assigned)
+//        insertQueue(reportId, IMAGE_TYPE, guid);
     }
 
     private void insertQueue(long reportId, String dataType, String guid) {

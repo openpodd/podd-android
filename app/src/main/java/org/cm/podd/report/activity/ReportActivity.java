@@ -456,14 +456,19 @@ public class ReportActivity extends ActionBarActivity
                 reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
-                    reportQueueDataSource.addQueue(reportId);
+                    reportQueueDataSource.addDataQueue(reportId);
+                    reportQueueDataSource.addImageQueue(reportId);
 
-                    // Broadcasts the Intent to network receiver
-                    Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+                    broadcastReportSubmision();
+
+                } else if (action == ReportDataInterface.DRAFT_ACTION) {
+                    // nothing here
                 }
+            } else {
+                // if report already submitted before, now only submit images that has no guid
+                reportQueueDataSource.addImageQueue(reportId);
+                broadcastReportSubmision();
             }
-
         }
 
         Intent returnIntent = new Intent();
@@ -607,4 +612,9 @@ public class ReportActivity extends ActionBarActivity
         disableMaskView.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
     }
 
+    private void broadcastReportSubmision() {
+        // Broadcasts the Intent to network receiver
+        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+    }
 }

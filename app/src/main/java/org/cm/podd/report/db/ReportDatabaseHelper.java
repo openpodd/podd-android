@@ -52,7 +52,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  image_uri TEXT,"
             + "  image_thumbnail BLOB,"
             + "  note TEXT,"
-            + "  guid TEXT"         // reference to report guid
+            + "  guid TEXT" // url or key returned from aws s3 image upload, also mark as submit to podd server
             + ")";
 
     private static final String CREATE_TABLE_QUEUE = "create table report_queue"
