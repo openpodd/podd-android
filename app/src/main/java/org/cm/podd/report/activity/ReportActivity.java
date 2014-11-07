@@ -172,12 +172,13 @@ public class ReportActivity extends ActionBarActivity
             @Override
             public void onGlobalLayout() {
                 // different devices' screens have normal height diff differently
-                // eg, roughly 5.5", 4.5" has 110px, 4", 3.5" has 75px
+                // eg, roughly 5.5" xxhdpi has 220px, 4.5" xhdpi has 110px, 4", 3.5" hdpi has 75px
                 int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
-                Log.d(TAG, String.format("diff height=%d", heightDiff));
+                int limitHeightPx = (int) (getResources().getDisplayMetrics().density * 100);
+                Log.d(TAG, String.format("diff height=%d, limit height=%d", heightDiff, limitHeightPx));
 
-                if (heightDiff > 150) {
-                    // if more than 150 pixels, its probably a keyboard...
+                if (heightDiff > limitHeightPx) {
+                    // if more than limitHeightPx, its probably a keyboard...
                     // then hide a control bar (prev/next)
                     controlBar.setVisibility(View.GONE);
                 } else {
