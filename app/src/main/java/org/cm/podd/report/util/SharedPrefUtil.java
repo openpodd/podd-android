@@ -23,6 +23,8 @@ public class SharedPrefUtil {
 
     private static final String APP_SHARED_PREFS = "podd_preferences";
     public static final String ACCESS_TOKEN_KEY = "access_token";
+    public static final String USERNAME = "username";
+    public static final String SERVER_ADDRESS = "server_address";
 
     private static SharedPreferences sharedPrefs;
 
@@ -40,4 +42,14 @@ public class SharedPrefUtil {
     public static String getAccessToken() {
         return sharedPrefs.getString(ACCESS_TOKEN_KEY, null);
     }
+
+    public static String getUserName() {
+        return sharedPrefs.getString(USERNAME, null);
+    }
+
+    public static String getServerAddress() {
+        return sharedPrefs.getString(SERVER_ADDRESS, "https://where.is.it");
+    }
+
 }
+

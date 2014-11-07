@@ -85,7 +85,16 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.cm.podd.report.activity.ReportActivity" />
+                android:value="org.cm.podd.report.activity.HomeActivity" />
+        </activity>
+
+        <activity
+            android:name=".activity.SettingActivity"
+            android:label="@string/title_activity_setting"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
 
         <receiver android:name=".service.ConnectivityChangeReceiver" >

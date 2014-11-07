@@ -79,6 +79,7 @@ public class LoginActivity extends ActionBarActivity {
 
             Editor editor = sharedPrefs.edit();
             editor.putString(SharedPrefUtil.ACCESS_TOKEN_KEY, token);
+            editor.putString(SharedPrefUtil.USERNAME, usernameText.getText().toString());
             editor.commit();
 
             isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();

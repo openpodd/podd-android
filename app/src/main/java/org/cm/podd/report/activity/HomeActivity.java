@@ -40,7 +40,6 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
-import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.Locale;
@@ -130,6 +129,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            showSetting();
             return true;
         }
         if (id == R.id.action_new_event) {
@@ -137,6 +137,11 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSetting() {
+        Intent intent = new Intent(this, SettingActivity.class);
+        startActivity(intent);
     }
 
     private void newReport() {

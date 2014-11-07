@@ -23,5 +23,8 @@
     <string name="username">ชื่อบัญชีผู้ใช้</string>
     <string name="password">รหัสผ่าน</string>
     <string name="login">เข้าสู่ระบบ</string>
+    <string name="title_activity_setting">Setting</string>
+    <string name="server_address">Server address</string>
+    <string name="logout">ออกจากระบบ</string>
 
 </resources>

@@ -281,4 +281,15 @@ public class ReportDataSource {
         db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
         db.close();
     }
+
+    /*
+     * Caution!
+     */
+    public void clearAllData() {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        db.delete("report", null, null);
+        db.delete("report_image", null, null);
+        db.delete("report_queue", null, null);
+        db.close();
+    }
 }
