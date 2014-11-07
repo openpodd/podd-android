@@ -19,6 +19,7 @@ package org.cm.podd.report.activity;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.Locale;
 
@@ -58,6 +60,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     ReportDataSource reportDataSource;
 
+    private SharedPreferences sharedPref;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -67,6 +70,9 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // initialize prefs
+        sharedPref = SharedPrefUtil.getPrefs(getApplicationContext());
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
@@ -151,6 +157,16 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (! SharedPrefUtil.isUserLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
     }
 
     /**

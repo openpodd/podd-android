@@ -201,7 +201,7 @@ public class DataSubmitService extends IntentService {
 
             // Detect server complaints
             int statusCode = response.getStatusLine().getStatusCode();
-            Log.e(TAG, "status code=" + statusCode)
+            Log.e(TAG, "status code=" + statusCode);
             success = statusCode == 200;
             entity.consumeContent();
 
