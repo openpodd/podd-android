@@ -14,39 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cm.podd.report.view;
 
-package org.cm.podd.report.fragment;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.ImageView;
 
-import org.cm.podd.report.model.Region;
+public class SquareImageView extends ImageView {
 
-import java.util.Date;
+    public SquareImageView(Context context) {
+        super(context);
+    }
 
-/**
- * Created by pphetra on 10/25/14 AD.
- */
-public interface ReportDataInterface {
+    public SquareImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-    public static final int CONFIRM_ACTION = 1;
-    public static final int DRAFT_ACTION = 2;
-    public static final int CANCEL_ACTION = 0;
+    public SquareImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-    public Date getDate();
-
-    public void setDate(Date date);
-
-    public long getRegionId();
-
-    public void setRegionId(long regionId);
-
-    public String getRemark();
-
-    public void setRemark(String remark);
-
-    public boolean isDoneSubmit();
-
-    public void setCameraInteractionListener(CameraInteractionListener listener);
-
-    public interface CameraInteractionListener {
-        public void doGetImage();
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        // picture size ratio is 1:1
+        int height = getMeasuredWidth();
+        setMeasuredDimension(getMeasuredWidth(), height);
     }
 }

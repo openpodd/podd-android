@@ -8,13 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -44,8 +41,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.cm.podd.report.fragment.ReportDataInterface.CameraInteractionListener;
 
 /**
  * Use the {@link ReportImageFragment#newInstance} factory method to
@@ -58,15 +59,21 @@ public class ReportImageFragment extends Fragment {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 200;
     private static final int CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE = 500;
     private static final String TAG = "ReportImageFragment";
+    private static final int MAX_IMAGE_GUIDE = 4;
 
     private long reportId;
 
     private ReportNavigationInterface navigationInterface;
+    private ReportDataInterface dataInterface;
     private ReportDataSource reportDataSource;
 
     private GridView gridView;
     private ImageAdapter imageAdapter;
     private List<ReportImage> allImage;
+
+    private GridView gridImageGuideView;
+    private ImageAdapter imageGuideAdapter;
+    private List<ReportImage> allImageGuide;
 
     long mReportImageId;
     String mCurrentPhotoPath;
@@ -136,35 +143,41 @@ public class ReportImageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_report_image, container, false);
         gridView = (GridView) view.findViewById(R.id.image_grid_view);
         allImage = reportDataSource.getAllImage(reportId);
-        // add empty image at the end to be rendered as an 'add' button
-        allImage.add(createEmptyThumb());
+
+        /* image guide grid behind real image grid */
+        gridImageGuideView = (GridView) view.findViewById(R.id.image_place_holder);
+        allImageGuide = getAllImageGuide();
+        imageGuideAdapter = new ImageAdapter(getActivity(), allImageGuide);
+        gridImageGuideView.setAdapter(imageGuideAdapter);
 
         final Fragment targetFragment = this;
         imageAdapter = new ImageAdapter(getActivity(), allImage);
+        imageAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                // hide image guide grid so when user scroll down, the guide below images can not be seen
+                gridImageGuideView.setVisibility(allImage.size() > MAX_IMAGE_GUIDE ?
+                        View.INVISIBLE : View.VISIBLE);
+                super.onChanged();
+            }
+        });
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 ReportImage ri = (ReportImage) imageAdapter.getItem(position);
 
-                if (ri.getId() == 0) {
-                    // click on add button
-                    MediaChoiceDialog dlg = new MediaChoiceDialog();
-                    dlg.setTargetFragment(targetFragment, 0);
-                    dlg.show(getActivity().getSupportFragmentManager(), "MediaChoiceDialog");
-                } else {
-                    /* use android default viewer
-                    Uri uri = Uri.parse(ri.getImageUri());
-                    Intent intent = new Intent();
-                    intent.setAction(android.content.Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
-                    startActivity(intent);
-                    */
+                /* use android default viewer
+                Uri uri = Uri.parse(ri.getImageUri());
+                Intent intent = new Intent();
+                intent.setAction(android.content.Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
+                startActivity(intent);
+                */
 
-                    Intent intent = new Intent(getActivity(), ImageActivity.class);
-                    intent.putExtra("imagePath", ri.getImageUri());
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(getActivity(), ImageActivity.class);
+                intent.putExtra("imagePath", ri.getImageUri());
+                startActivity(intent);
             }
         });
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -191,18 +204,17 @@ public class ReportImageFragment extends Fragment {
 
     }
 
-    private ReportImage createEmptyThumb() {
-        ReportImage image = new ReportImage(0, null);
-        Bitmap output = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_8888);
-        Rect rect = new Rect(0, 0, 128, 128);
-        RectF rectF = new RectF(rect);
-        Paint paint = new Paint();
-        paint.setColor(0xffffccaa);
-        Canvas canvas = new Canvas(output);
-        canvas.drawARGB(0, 0, 0, 0);
-        canvas.drawRoundRect(rectF, 0, 0, paint);
-        image.setThumbnail(output);
-        return image;
+    private List<ReportImage> getAllImageGuide() {
+        int max = MAX_IMAGE_GUIDE, i = 0;
+        List<ReportImage> images = new ArrayList<ReportImage>(max);
+        while (i < 4) {
+            ReportImage image = new ReportImage(i, null);
+            image.setThumbnail(BitmapFactory.decodeResource(
+                    getResources(), R.drawable.gallery_default));
+            images.add(image);
+            i++;
+        }
+        return images;
     }
 
     /**
@@ -288,6 +300,17 @@ public class ReportImageFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         navigationInterface = (ReportNavigationInterface) activity;
+
+        final ReportImageFragment me = this;
+        dataInterface = (ReportDataInterface) activity;
+        dataInterface.setCameraInteractionListener(new CameraInteractionListener() {
+            @Override
+            public void doGetImage() {
+                MediaChoiceDialog dlg = new MediaChoiceDialog();
+                dlg.setTargetFragment(me, 0);
+                dlg.show(getActivity().getSupportFragmentManager(), "MediaChoiceDialog");
+            }
+        });
     }
 
     @Override
@@ -338,8 +361,7 @@ public class ReportImageFragment extends Fragment {
         } catch (IOException e) {
             Log.e(TAG, "error when closing stream", e);
         }
-        // add new image before 'add' button
-        allImage.add(allImage.size() - 1, reportImage);
+        allImage.add(reportImage);
         imageAdapter.notifyDataSetChanged();
     }
 
@@ -356,14 +378,14 @@ public class ReportImageFragment extends Fragment {
             selectedImagePath = cursor.getString(idx);
         }
 
-        Bitmap thumb1 =  ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(selectedImagePath), 128, 128);
+        Bitmap thumb1 =  ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(selectedImagePath), 400, 400);
 
         int rotate = neededRotation(new File(selectedImagePath));
         Bitmap thumb2 = null;
         if (rotate != 0) {
             Matrix m = new Matrix();
             m.postRotate(rotate);
-            thumb2 = thumb1.createBitmap(thumb1, 0, 0, 128, 128, m, true);
+            thumb2 = thumb1.createBitmap(thumb1, 0, 0, 400, 400, m, true);
             thumb1.recycle();
         } else {
             thumb2 = thumb1;
@@ -561,4 +583,5 @@ public class ReportImageFragment extends Fragment {
             return builder.create();
         }
     }
+
 }

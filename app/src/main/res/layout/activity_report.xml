@@ -23,26 +23,36 @@
             android:clickable="true" />
     </FrameLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/controlBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:paddingBottom="20dp">
 
         <Button
             android:id="@+id/prevBtn"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="Prev" />
 
         <Button
-            android:id="@+id/nextBtn"
-            android:layout_width="wrap_content"
+            android:id="@+id/cameraBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:text="Camera" />
+
+        <Button
+            android:id="@+id/nextBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:text="Next" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

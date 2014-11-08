@@ -79,6 +79,7 @@ public class ReportActivity extends ActionBarActivity
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
     private Button nextBtn;
+    private Button cameraBtn;
     private View disableMaskView;
 
     private String currentFragment;
@@ -112,6 +113,8 @@ public class ReportActivity extends ActionBarActivity
         }
     };
 
+    private CameraInteractionListener cameraInteractionListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +132,16 @@ public class ReportActivity extends ActionBarActivity
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        cameraBtn = (Button) findViewById(R.id.cameraBtn);
+        cameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cameraInteractionListener != null) {
+                    cameraInteractionListener.doGetImage();
+                }
             }
         });
         disableMaskView = findViewById(R.id.disableMask);
@@ -475,6 +488,11 @@ public class ReportActivity extends ActionBarActivity
         Intent returnIntent = new Intent();
         setResult(RESULT_OK, returnIntent);
         finish();
+    }
+
+    @Override
+    public void setCameraInteractionListener(CameraInteractionListener listener) {
+        this.cameraInteractionListener = listener;
     }
 
     @Override
