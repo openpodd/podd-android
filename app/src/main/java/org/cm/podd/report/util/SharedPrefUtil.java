@@ -48,7 +48,7 @@ public class SharedPrefUtil {
     }
 
     public static String getServerAddress() {
-        return sharedPrefs.getString(SERVER_ADDRESS, "https://where.is.it");
+        return sharedPrefs.getString(SERVER_ADDRESS, "http://private-anon-d510f140d-poddapi.apiary-mock.com");
     }
 
 }
