@@ -15,6 +15,9 @@ import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import static android.content.SharedPreferences.Editor;
 
 public class LoginActivity extends ActionBarActivity {
@@ -24,7 +27,6 @@ public class LoginActivity extends ActionBarActivity {
 
     EditText usernameText;
     EditText passwordText;
-    View progressMask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +41,24 @@ public class LoginActivity extends ActionBarActivity {
 
         usernameText = (EditText) findViewById(R.id.username);
         passwordText = (EditText) findViewById(R.id.password);
-        progressMask = findViewById(R.id.progress_mask);
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LoginTask().execute((Void[]) null);
+                String username = usernameText.getText().toString();
+                String password = passwordText.getText().toString();
+                if (username.length() > 0 && password.length() > 0) {
+                    new LoginTask().execute((Void[]) null);
+                } else {
+                    if (username.length() == 0) {
+                        Crouton.makeText(LoginActivity.this, "Required username", Style.ALERT).show();
+                        return;
+                    }
+                    if (password.length() == 0) {
+                        Crouton.makeText(LoginActivity.this, "Required password", Style.ALERT).show();
+                        return;
+                    }
+                }
             }
         });
     }
