@@ -25,6 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
             android:layout_marginBottom="8dp" />
 
         <EditText
@@ -32,6 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:layout_marginBottom="24dp" />
 
         <Button
