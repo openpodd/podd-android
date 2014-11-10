@@ -12,28 +12,28 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo_full"
-        android:layout_marginBottom="24dp" />
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:src="@drawable/logo_full"
+	android:layout_marginBottom="24dp" />
 
     <EditText
-        android:id="@+id/username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/username"
-        android:layout_marginBottom="8dp"
-        android:inputType="text"
-        android:singleLine="true" />
+	android:id="@+id/username"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:hint="@string/username"
+	android:imeOptions="actionNext"
+	android:singleLine="true"
+	android:layout_marginBottom="8dp" />
 
     <EditText
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/password"
-        android:layout_marginBottom="24dp"
-        android:inputType="textPassword"
-        android:singleLine="true" />
+	android:id="@+id/password"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:hint="@string/password"
+	android:imeOptions="actionDone"
+	android:singleLine="true"
+	android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/login"

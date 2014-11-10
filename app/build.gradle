@@ -10,7 +10,6 @@ android {
         targetSdkVersion 20
         versionCode 1
         versionName "1.0"
-        testPackageName "org.cm.podd.report.model.validation"
     }
     buildTypes {
         release {
@@ -35,6 +34,8 @@ dependencies {
     compile 'org.apache.james:apache-mime4j:0.7.2'
     compile 'org.apache.httpcomponents:httpmime:4.3.5'
     compile 'org.apache.httpcomponents:httpcore:4.3.2'
+    compile files('libs/aws-android-sdk-2.1.5-core.jar')
+    compile files('libs/aws-android-sdk-2.1.5-s3.jar')
 }
 
 configurations {

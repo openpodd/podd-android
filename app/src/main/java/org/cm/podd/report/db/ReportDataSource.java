@@ -147,6 +147,7 @@ public class ReportDataSource {
         values.put("report_id", reportId);
         values.put("image_uri", imageUri);
         values.put("image_thumbnail", bytes);
+        values.put("submit", 0);
         long id = db.insert("report_image", null, values);
         db.close();
 
@@ -188,7 +189,7 @@ public class ReportDataSource {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
         ArrayList<ReportImage> images = new ArrayList<ReportImage>();
         Cursor cursor = db.rawQuery(
-                "SELECT * from report_image where report_id = ? and guid is null",
+                "SELECT * from report_image where report_id = ? and submit != 1",
                 new String[]{Long.toString(reportId)});
 
         while (cursor.moveToNext()) {
@@ -202,6 +203,7 @@ public class ReportDataSource {
             image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
             image.setNote(note);
             image.setGuid(guid);
+            image.setReportId(reportId);
             images.add(image);
         }
         cursor.close();
@@ -221,11 +223,13 @@ public class ReportDataSource {
             byte[] bytes = cursor.getBlob(cursor.getColumnIndex("image_thumbnail"));
             String note = cursor.getString(cursor.getColumnIndex("note"));
             String guid = cursor.getString(cursor.getColumnIndex("guid"));
+            long reportId = cursor.getLong(cursor.getColumnIndex("report_id"));
 
             image = new ReportImage(id, uri);
             image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
             image.setNote(note);
             image.setGuid(guid);
+            image.setReportId(reportId);
         }
 
         cursor.close();
@@ -290,6 +294,14 @@ public class ReportDataSource {
         db.delete("report", null, null);
         db.delete("report_image", null, null);
         db.delete("report_queue", null, null);
+        db.close();
+    }
+
+    public void updateImageSubmit(long imageId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("submit", 1);
+        db.update("report_image", values, "_id = ?", new String[] {Long.toString(imageId)});
         db.close();
     }
 }

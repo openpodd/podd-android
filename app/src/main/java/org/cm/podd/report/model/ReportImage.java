@@ -29,6 +29,7 @@ public class ReportImage {
     private String note;
     private Bitmap thumbnail;
     private String guid;
+    private long reportId;
 
     public ReportImage(long id, String imageUri) {
         this.id = id;
@@ -74,5 +75,14 @@ public class ReportImage {
     public void setGuid(String guid) {
         this.guid = guid;
     }
+
+    public long getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(long reportId) {
+        this.reportId = reportId;
+    }
+
 
 }

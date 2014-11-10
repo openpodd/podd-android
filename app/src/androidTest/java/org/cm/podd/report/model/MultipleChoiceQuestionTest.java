@@ -28,12 +28,10 @@ public class MultipleChoiceQuestionTest extends TestCase {
 
     public void testSingleSelection() {
         MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
+
         q1.addItem("1", "item 1");
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
-
-        q1.setData("4");
-        assertEquals(1, q1.validate().size());
 
         q1.setData("2");
 
@@ -45,9 +43,6 @@ public class MultipleChoiceQuestionTest extends TestCase {
         q1.addItem("1", "item 1");
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
-
-        q1.setData("4");
-        assertEquals(1, q1.validate().size());
 
         q1.setData("2");
         assertEquals(0, q1.validate().size());

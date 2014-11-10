@@ -19,11 +19,17 @@ package org.cm.podd.report.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,38 +37,43 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.ReportImage;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
 //    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
-    private static final String SERVER_HOST = "128.1.1.237";
-    private static final int SERVER_PORT = 5000;
+    private static final String SERVER_HOST = "private-a6eee-poddapi.apiary-mock.com";
+    private static final int SERVER_PORT = 80;
+    private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
     private Charset utf8Charset = Charset.forName("UTF-8");
 
     public DataSubmitService() {
@@ -102,7 +113,7 @@ public class DataSubmitService extends IntentService {
                     // get report data
                     Report report = reportDataSource.getById(reportId);
 
-                    success = submitReport(report.getFormData(), report.getId(), report.getGuid());
+                    success = submitReport(report);
                     if (success) {
                         // mark report as done submitting to server
                         reportDataSource.updateSubmit(reportId);
@@ -111,6 +122,7 @@ public class DataSubmitService extends IntentService {
                 } else if (type.equals(ReportQueueDataSource.IMAGE_TYPE)) {
                     // get image data
                     ReportImage image = reportDataSource.getImageById(imageId);
+                    Report report = reportDataSource.getById(image.getReportId());
 
                     if (image != null) {
                         String uriStr = image.getImageUri();
@@ -132,19 +144,15 @@ public class DataSubmitService extends IntentService {
                         byte[] imageByte = getImageByte(filePath);
                         String note = image.getNote();
 
-                        // TODO
-                        /*
-                         * Get guid (some key returned from s3 image upload)
-                         */
-                        String guid = "s3";
+                        success = uploadToS3(image.getGuid(), filePath, image.getThumbnail());
 
                         // submit image bytes
-                        success = submitImages(imageByte, note, reportId, guid);
                         if (success) {
-                            // set s3 image guid
-                            reportDataSource.assignGuid(imageId, ReportQueueDataSource.IMAGE_TYPE, guid);
+                            success = submitImage(image, report.getGuid());
+                            if (success) {
+                                reportDataSource.updateImageSubmit(imageId);
+                            }
                         }
-
                     } else {
                         // Image could be deleted by user anytime,
                         // so just remove a queue if no image found
@@ -174,8 +182,8 @@ public class DataSubmitService extends IntentService {
 
     }
 
-    private boolean submitReport(String body, long reportId, String guid)
-            throws URISyntaxException, IOException {
+    private boolean submitReport(Report report)
+            throws URISyntaxException, IOException, JSONException {
 
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
@@ -183,18 +191,27 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            String query = String.format("type=data&reportId=%d&guid=%s", reportId, guid);
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/report", query, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reports", null, null);
             Log.i(TAG, "submit report url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
+            post.setHeader("Content-type", "application/json");
+            SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            builder.setCharset(utf8Charset);
-            builder.addTextBody("data", body, ContentType.APPLICATION_JSON);
+            JSONObject data = new JSONObject();
+            data.put("reportId", report.getId());
+            data.put("guid", report.getGuid());
+            data.put("reportTypeId", report.getType());
+            data.put("date", sdfDateTime.format(report.getDate()));
+            data.put("incidentDate", sdfDate.format(report.getStartDate()));
+            data.put("administrationAreaId", report.getRegionId());
+            data.put("remark", report.getRemark());
+            data.put("negative", report.getNegative() == 1);
+            data.put("formData", report.getSubmitJSONFormData());
 
-            post.setEntity(builder.build());
+            post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
+
             HttpResponse response;
             response = client.execute(post);
             HttpEntity entity = response.getEntity();
@@ -211,8 +228,9 @@ public class DataSubmitService extends IntentService {
         return success;
     }
 
-    private boolean submitImages(byte[] fileData, String note, long reportId, String guid)
-            throws URISyntaxException, IOException {
+    private boolean submitImage(ReportImage reportImage, String reportGuid)
+            throws URISyntaxException, IOException, JSONException {
+
 
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
@@ -220,23 +238,27 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            String query = String.format("type=image&reportId=%d&guid=%s", reportId, guid);
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/image", query, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reportImages", null, null);
             Log.i(TAG, "submit report image url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
+            post.setHeader("Content-type", "application/json");
 
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            builder.setCharset(utf8Charset);
+            String note = reportImage.getNote();
+            if (note == null) {
+                note = "";
+            }
 
-            String fileName = String.format("IMG_%s_%d", guid, System.currentTimeMillis());
 
-            builder.addPart("image", new ByteArrayBody(fileData, fileName));
-            builder.addTextBody("note", note == null ? "" : note,
-                    ContentType.create("plain/text", utf8Charset));
+            JSONObject data = new JSONObject();
+            data.put("note", note);
+            data.put("reportGuid", reportGuid);
+            data.put("guid", reportImage.getGuid());
+            data.put("imageUrl", S3IMAGE_URL_PREFIX + reportImage.getGuid());
+            data.put("thumbnailUrl", S3IMAGE_URL_PREFIX + reportImage.getGuid() + "-thumbnail");
 
-            post.setEntity(builder.build());
+            post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
+
             HttpResponse response;
             response = client.execute(post);
             HttpEntity entity = response.getEntity();
@@ -299,5 +321,57 @@ public class DataSubmitService extends IntentService {
             e.printStackTrace();
         }
         return sb.toString();
+    }
+
+    public static String toHex(byte[] bytes) {
+        BigInteger bi = new BigInteger(1, bytes);
+        return String.format("%0" + (bytes.length << 1) + "X", bi);
+    }
+
+    private boolean uploadToS3(String guid, String filePath, Bitmap thumbnail) {
+        TransferManager transferManager = new TransferManager(new BasicAWSCredentials("AKIAJC6VTXE5WL2ORRAQ", "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE"));
+
+        // upload thumbnail
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        byte[] bitmapData = bos.toByteArray();
+        ByteArrayInputStream bs = new ByteArrayInputStream(bitmapData);
+        ObjectMetadata meta = new ObjectMetadata();
+        meta.setContentLength(bitmapData.length);
+        meta.setContentType("image/jpeg");
+//        try {
+//            byte[] md5s = MessageDigest.getInstance("MD5").digest(bitmapData);
+//            meta.setContentMD5(toHex(md5s));
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+        Upload upload1 = transferManager.upload(
+                "podd-dev", // bucket
+                guid + "-thumbnail", // name
+                bs,
+                meta
+        );
+
+
+        // upload image
+        File imageFile = new File(filePath);
+        Upload upload2 = transferManager.upload(
+                "podd-dev",
+                guid,
+                imageFile
+        );
+
+        try {
+            upload1.waitForUploadResult();
+            upload2.waitForUploadResult();
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Log.e(TAG, "upload to s3 error", e);
+            return false;
+        }
+
+        return true;
+
     }
 }

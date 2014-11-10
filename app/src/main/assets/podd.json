@@ -3,7 +3,7 @@
     "questions": [
         {
             "id": 1,
-            "name": "animal_group",
+            "name": "animalGroup",
             "title": "ประเภทสัตว์",
             "type": "single",
             "items": [
@@ -17,7 +17,7 @@
         },
         {
             "id": 2,
-            "name": "animal_type",
+            "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
             "items": [
@@ -34,7 +34,7 @@
         },
         {
             "id": 3,
-            "name": "animal_type",
+            "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
             "items": [
@@ -48,7 +48,7 @@
         },
         {
             "id": 4,
-            "name": "animal_type",
+            "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
             "items": [
@@ -64,7 +64,7 @@
         },
         {
             "id": 5,
-            "name": "sick_num",
+            "name": "sickCount",
             "title": "จำนวนสัตว์ป่วย",
             "type": "integer",
             "validations": [
@@ -73,7 +73,7 @@
         },
         {
             "id": 6,
-            "name": "die_num",
+            "name": "deathCount",
             "title": "จำนวนสัตว์ตาย",
             "type": "integer",
             "validations": [
@@ -82,7 +82,7 @@
         },
         {
             "id": 7,
-            "name": "total_num",
+            "name": "totalCount",
             "title": "จำนวนสัตว์ทั้งหมด",
             "type": "integer",
             "validations": [
@@ -90,6 +90,14 @@
             ]
         },
         {
+            "id": 700,
+            "name": "nearByCount",
+            "title": "จำนวนเล้าไกล้เคียงที่มีอาการ",
+            "type": "integer",
+            "validations": [
+                { "type": "min", "value": 0, "message": "กรุณาระบุจำนวนเล้าไกล้เคียงที่มีอาการ" }
+            ]
+        },        {
             "id": 8,
             "name": "age",
             "title": "อายุสัตว์ป่วย/ตาย",
@@ -105,7 +113,7 @@
         },
         {
             "id": 9,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -118,7 +126,7 @@
         },
         {
             "id": 10,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -133,7 +141,7 @@
         },
         {
             "id": 11,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -146,7 +154,7 @@
         },
         {
             "id": 12,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -156,7 +164,7 @@
         },
         {
             "id": 13,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -167,7 +175,7 @@
         },
         {
             "id": 14,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -178,7 +186,7 @@
         },
         {
             "id": 15,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -194,7 +202,7 @@
         },
         {
             "id": 16,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -208,7 +216,7 @@
         },
         {
             "id": 17,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -224,7 +232,7 @@
         },
         {
             "id": 18,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -237,7 +245,7 @@
         },
         {
             "id": 19,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -247,7 +255,7 @@
         },
         {
             "id": 20,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -260,7 +268,7 @@
         },
         {
             "id": 21,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -270,7 +278,7 @@
         },
         {
             "id": 22,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -286,7 +294,7 @@
         },
         {
             "id": 23,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -298,7 +306,7 @@
         },
         {
             "id": 24,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -313,7 +321,7 @@
         },
         {
             "id": 25,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -325,7 +333,7 @@
         },
         {
             "id": 26,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -336,7 +344,7 @@
         },
         {
             "id": 27,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -346,7 +354,7 @@
         },
         {
             "id": 28,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -356,7 +364,7 @@
         },
         {
             "id": 29,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -388,7 +396,7 @@
         },
         {
             "id": 5,
-            "questions": [5, 6, 7]
+            "questions": [5, 6, 7, 700]
         },
         {
             "id": 6,
@@ -483,17 +491,17 @@
         {
             "from": 1,
             "to": 2,
-            "expression": "animal_group=='สัตว์ปีก'"
+            "expression": "animalGroup=='สัตว์ปีก'"
         },
         {
             "from": 1,
             "to": 3,
-            "expression": "animal_group=='สัตว์กระเพาะเดี่ยว'"
+            "expression": "animalGroup=='สัตว์กระเพาะเดี่ยว'"
         },
         {
             "from": 1,
             "to": 4,
-            "expression": "animal_group=='สัตว์กระเพาะรวม'"
+            "expression": "animalGroup=='สัตว์กระเพาะรวม'"
         },
         {
             "from": 2,
@@ -518,17 +526,17 @@
         {
             "from": 6,
             "to": 9,
-            "expression": "animal_group=='สัตว์ปีก'"
+            "expression": "animalGroup=='สัตว์ปีก'"
         },
         {
             "from": 6,
             "to": 16,
-            "expression": "animal_group=='สัตว์กระเพาะเดี่ยว'"
+            "expression": "animalGroup=='สัตว์กระเพาะเดี่ยว'"
         },
         {
             "from": 6,
             "to": 23,
-            "expression": "animal_group=='สัตว์กระเพาะรวม'"
+            "expression": "animalGroup=='สัตว์กระเพาะรวม'"
         },
         {
             "from": 9,
