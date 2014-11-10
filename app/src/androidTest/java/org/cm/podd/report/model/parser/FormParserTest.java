@@ -167,7 +167,7 @@ public class FormParserTest extends InstrumentationTestCase {
             assertEquals("pet_type", q.getName());
             assertEquals(DataType.STRING, q.getDataType());
 
-            assertEquals(3, q.getItems().size());
+            assertEquals(4, q.getItems().size()); // 3 + 1 (from other choice
 
             assertTrue(q.isFreeTextChoiceEnable());
             assertEquals("Other", q.getFreeTextText());

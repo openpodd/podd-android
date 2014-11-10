@@ -17,7 +17,11 @@
 
 package org.cm.podd.report.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Created by pphetra on 10/10/14 AD.
@@ -155,6 +159,43 @@ public class Report {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public JSONObject getSubmitJSONFormData() throws JSONException {
+        JSONObject src = new JSONObject(getFormData());
+        JSONObject target = new JSONObject();
+
+        Iterator<String> keys = src.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            // split prefix path
+            String[] tmp = key.split("@@@");
+            String targetName = tmp[1];
+
+            // check if target already has targetName
+            if (target.has(targetName)) {
+                // merge case
+                String oldValue = target.getString(targetName);
+                String newValue = src.getString(key);
+                if (newValue != null && newValue.length() > 0) {
+                    target.put(targetName, oldValue + "," + newValue);
+                }
+
+            } else {
+                Object newValue = src.get(key);
+                if (newValue instanceof String) {
+                    String stringValue = (String) newValue;
+                    if (stringValue != null && stringValue.length() > 0) {
+                        target.put(targetName, newValue);
+                    }
+                } else {
+                    target.put(targetName, newValue);
+                }
+            }
+
+        }
+
+        return target;
     }
 
 }

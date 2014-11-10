@@ -57,10 +57,8 @@ public class ReportQueueDataSource {
         for (ReportImage image : images) {
             long imageId = image.getId();
 
-            // use temp guid to indicate that this image is already added into queue
-            // it will be replaced with returned key from s3, after successfully submit to server
-            String tmpGuid = "xxx";
-            mReportDataSource.assignGuid(imageId, IMAGE_TYPE, tmpGuid);
+            String guid = String.valueOf(UUID.randomUUID());
+            mReportDataSource.assignGuid(imageId, IMAGE_TYPE, guid);
 
             insertQueue(reportId, imageId, IMAGE_TYPE);
         }

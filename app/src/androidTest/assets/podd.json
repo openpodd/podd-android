@@ -84,7 +84,7 @@
         },
         {
             "id": 9,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -97,7 +97,7 @@
         },
         {
             "id": 10,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -112,7 +112,7 @@
         },
         {
             "id": 11,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -125,7 +125,7 @@
         },
         {
             "id": 12,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -135,7 +135,7 @@
         },
         {
             "id": 13,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -146,7 +146,7 @@
         },
         {
             "id": 14,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -157,7 +157,7 @@
         },
         {
             "id": 15,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -173,7 +173,7 @@
         },
         {
             "id": 16,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -187,7 +187,7 @@
         },
         {
             "id": 17,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -203,7 +203,7 @@
         },
         {
             "id": 18,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -216,7 +216,7 @@
         },
         {
             "id": 19,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -226,7 +226,7 @@
         },
         {
             "id": 20,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -239,7 +239,7 @@
         },
         {
             "id": 21,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -249,7 +249,7 @@
         },
         {
             "id": 22,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -265,7 +265,7 @@
         },
         {
             "id": 23,
-            "name": "symptom_1",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -277,7 +277,7 @@
         },
         {
             "id": 24,
-            "name": "symptom_2",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -292,7 +292,7 @@
         },
         {
             "id": 25,
-            "name": "symptom_3",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -304,7 +304,7 @@
         },
         {
             "id": 26,
-            "name": "symptom_4",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -315,7 +315,7 @@
         },
         {
             "id": 27,
-            "name": "symptom_5",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -325,7 +325,7 @@
         },
         {
             "id": 28,
-            "name": "symptom_6",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
@@ -335,7 +335,7 @@
         },
         {
             "id": 29,
-            "name": "symptom_7",
+            "name": "symptom",
             "title": "อาการ",
             "type": "multiple",
             "items": [
