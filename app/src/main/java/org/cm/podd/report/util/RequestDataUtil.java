@@ -24,24 +24,18 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.Charset;
 
 public class RequestDataUtil {
@@ -53,58 +47,8 @@ public class RequestDataUtil {
         JSONObject jsonObj = null;
         String reqUrl = String.format("%s%s%s", SharedPrefUtil.getServerAddress(), path,
                 query == null ? "" : "?"+query);
-        Log.i(TAG, "submit report url=" + reqUrl);
-
-        HttpURLConnection urlConn = null;
-        try {
-            URL url = new URL(reqUrl);
-            urlConn = (HttpURLConnection) url.openConnection();
-
-            if (json != null) {
-                urlConn.setDoOutput(true); // HTTP Post
-                urlConn.setChunkedStreamingMode(0);
-                urlConn.setUseCaches(false);
-                urlConn.setRequestProperty("Content-Type", "application/json");
-
-                // Send POST output.
-                OutputStream out = new BufferedOutputStream(urlConn.getOutputStream());
-                out.write(json.getBytes("utf-8"));
-                out.close();
-            }
-
-            urlConn.connect();
-
-            InputStream in;
-            // if server response code is error (>400) and there is response body
-            // then it's in errror stream
-            try {
-                in = new BufferedInputStream(urlConn.getInputStream());
-            } catch (FileNotFoundException ex) {
-                in = new BufferedInputStream(urlConn.getErrorStream());
-            }
-            int resultCode = urlConn.getResponseCode();
-            // resp code not above 400 is ok
-            if (resultCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-                String respData = FileUtil.convertInputStreamToString(in);
-                jsonObj = new JSONObject(respData);
-            }
-
-        } catch (Exception e ) {
-            Log.e(TAG, e.getMessage(), e);
-
-        } finally {
-            if (urlConn != null) {
-                urlConn.disconnect();
-            }
-        }
-        return jsonObj;
-    }
-
-    public static JSONObject postMultipart(String path, String query, String name, String jsonData) {
-        JSONObject jsonObj = null;
-        String reqUrl = String.format("%s%s%s", SharedPrefUtil.getServerAddress(), path,
-                query == null ? "" : "?"+query);
-        Log.i(TAG, "submit report url=" + reqUrl);
+        Log.i(TAG, "submit url=" + reqUrl);
+        Log.i(TAG, "post data=" + json);
 
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
@@ -112,13 +56,9 @@ public class RequestDataUtil {
 
         try {
             HttpPost post = new HttpPost(reqUrl);
+            post.setHeader("Content-type", "application/json");
+            post.setEntity(new StringEntity(json, HTTP.UTF_8));
 
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            builder.setCharset(utf8Charset);
-            builder.addTextBody("data", jsonData, ContentType.APPLICATION_JSON);
-
-            post.setEntity(builder.build());
             HttpResponse response;
             response = client.execute(post);
             HttpEntity entity = response.getEntity();
@@ -126,13 +66,13 @@ public class RequestDataUtil {
             // Detect server complaints
             int statusCode = response.getStatusLine().getStatusCode();
             Log.e(TAG, "status code=" + statusCode);
-            entity.consumeContent();
 
             if (statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
                 InputStream in = entity.getContent();
                 String resp = FileUtil.convertInputStreamToString(in);
 
                 jsonObj = new JSONObject(resp);
+                entity.consumeContent();
             }
 
         } catch (ClientProtocolException e) {
@@ -147,4 +87,5 @@ public class RequestDataUtil {
         }
         return jsonObj;
     }
+
 }

@@ -1,10 +1,15 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -19,6 +24,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 import static android.content.SharedPreferences.Editor;
+import static android.provider.Settings.Secure.ANDROID_ID;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -71,19 +77,38 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
 
-    public class LoginTask extends AsyncTask<Void, Void, JSONObject> {
+    ProgressDialog pd;
 
-        ProgressDialog pd;
+    public void showProgressDialog() {
+        pd = new ProgressDialog(this);
+        pd.setTitle("กำลังส่งข้อมูล");
+        pd.setMessage("กรุณารอสักครู่");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    public void hideProgressDialog() {
+        if (pd != null && pd.isShowing()) {
+            pd.dismiss();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideProgressDialog();
+    }
+
+    /**
+     * Post login
+     */
+    public class LoginTask extends AsyncTask<Void, Void, JSONObject> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd = new ProgressDialog(LoginActivity.this);
-            pd.setTitle("กำลังส่งข้อมูล");
-            pd.setMessage("กรุณารอสักครู่");
-            pd.setCancelable(false);
-            pd.setIndeterminate(true);
-            pd.show();
+            showProgressDialog();
         }
 
         @Override
@@ -105,10 +130,6 @@ public class LoginActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(JSONObject resp) {
             super.onPostExecute(resp);
-            if (pd != null && pd.isShowing()) {
-                pd.dismiss();
-            }
-
             if (resp != null) {
                 try {
                     String token = resp.getString("token");
@@ -118,9 +139,9 @@ public class LoginActivity extends ActionBarActivity {
                     editor.putString(SharedPrefUtil.USERNAME, usernameText.getText().toString());
                     editor.commit();
 
-                    isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
-                    // goto home
-                    finish();
+                    // get configuration
+                    new ConfigTask().execute((Void[]) null);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -130,4 +151,63 @@ public class LoginActivity extends ActionBarActivity {
             }
         }
     }
+
+    /**
+     * Get preference configuration
+     */
+    public class ConfigTask extends AsyncTask<Void, Void, JSONObject> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+            // authenticate and get access token
+            String reqData = getIdentifier().toString();
+            return RequestDataUtil.post("/configuration", null, reqData);
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject resp) {
+            super.onPostExecute(resp);
+            hideProgressDialog();
+            if (resp == null)
+                return;
+
+            try {
+                Editor editor = sharedPrefs.edit();
+                editor.putString(SharedPrefUtil.FULLNAME, resp.getString("fullName"));
+                editor.putString(SharedPrefUtil.AWS_SECRET_KEY, resp.getString("awsSecretKey"));
+                editor.putString(SharedPrefUtil.AWS_ACCESS_KEY, resp.getString("awsAccessKey"));
+                editor.putString(SharedPrefUtil.ADMIN_AREA, resp.getJSONArray("administrationAreas").toString());
+                editor.commit();
+
+                // save report types data into table
+
+
+                isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
+                // goto report home
+                finish();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private JSONObject getIdentifier() {
+        Context context = this.getBaseContext();
+        JSONObject data = new JSONObject();
+        try {
+            data.put("wifiMac", ((WifiManager) context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
+            data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
+            data.put("brand", Build.BRAND);
+            data.put("model", Build.MODEL);
+            data.put("deviceId", ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
 }

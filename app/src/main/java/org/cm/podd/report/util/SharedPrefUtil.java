@@ -25,6 +25,10 @@ public class SharedPrefUtil {
     public static final String ACCESS_TOKEN_KEY = "access_token";
     public static final String USERNAME = "username";
     public static final String SERVER_ADDRESS = "server_address";
+    public static final String FULLNAME = "full_name";
+    public static final String AWS_SECRET_KEY = "aws_secret_key";
+    public static final String AWS_ACCESS_KEY = "aws_access_key";
+    public static final String ADMIN_AREA = "admin_area";
 
     private static SharedPreferences sharedPrefs;
 
