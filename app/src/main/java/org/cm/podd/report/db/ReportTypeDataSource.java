@@ -17,8 +17,11 @@
 
 package org.cm.podd.report.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.cm.podd.report.model.DataType;
@@ -31,6 +34,8 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.model.Transition;
 import org.cm.podd.report.model.parser.FormParser;
 import org.cm.podd.report.model.validation.RequireValidation;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -45,25 +50,85 @@ import java.util.List;
 public class ReportTypeDataSource {
 
     private static final String TAG = "ReportTypeDataSource";
+    private ReportDatabaseHelper dbHelper;
+
     Context context;
 
     public ReportTypeDataSource(Context context) {
         this.context = context;
+        dbHelper = new ReportDatabaseHelper(context);
+    }
+
+    public void initNewData(String reportTypes) {
+        deleteAll();
+        try {
+            JSONArray jsonArr = new JSONArray(reportTypes);
+            for (int i = 0; i < jsonArr.length(); i++) {
+                JSONObject jsonObj = jsonArr.getJSONObject(i);
+                ReportType reportType = new ReportType(
+                        jsonObj.getLong("id"),
+                        jsonObj.getString("name")
+                );
+                reportType.setVersion(jsonObj.getInt("version"));
+                reportType.setDefinition(jsonObj.getString("definition"));
+
+                insert(reportType);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("report_type", null, null);
+        db.close();
+    }
+
+    public long insert(ReportType reportType) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("_id", reportType.getId());
+        values.put("name", reportType.getName());
+        values.put("version", reportType.getVersion());
+        values.put("definition", reportType.getDefinition());
+
+        long id = db.insert("report_type", null, values);
+        db.close();
+        return id;
     }
 
     public Form getForm(long formId) {
-
+        /*
         if (formId == 1) return parseForm("podd.json");
         if (formId == 2) return parseForm("podd2.json");
         if (formId == 3) return parseForm("podd3.json");
         if (formId == 4) return parseForm("podd4.json");
         if (formId == 6) return parseForm("podd5.json");
-        return createSampleForm1();
+        */
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from report_type where _id = ?",
+                new String[] {Long.toString(formId)});
 
+        if (cursor.moveToFirst()) {
+            String definition = cursor.getString(cursor.getColumnIndex("definition"));
+            try {
+                FormParser formParser = new FormParser();
+                formParser.parse(new JSONObject(definition));
+
+                return formParser.getForm();
+            } catch (Exception e) {
+                Log.e(TAG, "error while parsing form", e);
+            }
+            return null;
+        } else {
+            return createSampleForm1();
+        }
     }
 
     public List<ReportType> getAll() {
         ArrayList<ReportType> results = new ArrayList<ReportType>();
+        /*
         results.add(new ReportType(1, "สัตว์ป่วย/ตาย 1"));
         results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
         results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
@@ -71,6 +136,15 @@ public class ReportTypeDataSource {
         results.add(new ReportType(5, "ป่วยจากการสัมผัสสัตว์"));
         results.add(new ReportType(7, "ป่วยจากการกินสัตว์"));
         results.add(new ReportType(6, "สัตว์กัด"));
+        */
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from report_type order by _id asc", null);
+        while (cursor.moveToNext()) {
+            results.add(new ReportType(
+                    cursor.getLong(cursor.getColumnIndex("_id")),
+                    cursor.getString(cursor.getColumnIndex("name"))
+            ));
+        }
         return results;
     }
 

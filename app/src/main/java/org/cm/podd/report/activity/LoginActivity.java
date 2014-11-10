@@ -15,6 +15,7 @@ import android.view.Window;
 import android.widget.EditText;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
@@ -184,7 +185,8 @@ public class LoginActivity extends ActionBarActivity {
                 editor.commit();
 
                 // save report types data into table
-
+                ReportTypeDataSource dataSource = new ReportTypeDataSource(LoginActivity.this);
+                dataSource.initNewData(resp.getJSONArray("reportTypes").toString());
 
                 isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
                 // goto report home

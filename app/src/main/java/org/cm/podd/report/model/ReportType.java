@@ -24,6 +24,8 @@ public class ReportType {
 
     private long id;
     private String name;
+    private int version;
+    private String definition;
 
     public ReportType(long id, String name) {
         this.id = id;
@@ -44,6 +46,22 @@ public class ReportType {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     @Override
