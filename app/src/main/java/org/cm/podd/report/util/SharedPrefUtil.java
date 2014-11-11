@@ -19,6 +19,14 @@ package org.cm.podd.report.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.cm.podd.report.model.Region;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SharedPrefUtil {
 
     private static final String APP_SHARED_PREFS = "podd_preferences";
@@ -55,5 +63,19 @@ public class SharedPrefUtil {
         return sharedPrefs.getString(SERVER_ADDRESS, "http://private-anon-d510f140d-poddapi.apiary-mock.com");
     }
 
+    public static List<Region> getAllRegions() {
+        List<Region> regions = new ArrayList<Region>();
+        String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
+        try {
+            JSONArray jsonArr = new JSONArray(jsonStr);
+            for (int i = 0; i < jsonArr.length(); i++) {
+                JSONObject jsonObj = jsonArr.getJSONObject(i);
+                regions.add(new Region(jsonObj.getLong("id"), jsonObj.getString("name")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return regions;
+    }
 }
 

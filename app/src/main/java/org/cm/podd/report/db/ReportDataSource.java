@@ -28,6 +28,7 @@ import android.util.Log;
 import org.cm.podd.report.model.Region;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.ReportImage;
+import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -238,11 +239,7 @@ public class ReportDataSource {
     }
 
     public List<Region> getAllRegion() {
-        ArrayList<Region> regions = new ArrayList<Region>();
-        regions.add(new Region(1, "หมู่บ้านสันปง"));
-        regions.add(new Region(2, "หมู่บ้านสันทราย"));
-        regions.add(new Region(3, "หมู่บ้านสันตอง"));
-        return regions;
+        return SharedPrefUtil.getAllRegions();
     }
 
     public void updateReport(long reportId, Date reportDate, long regionId, String remark) {
