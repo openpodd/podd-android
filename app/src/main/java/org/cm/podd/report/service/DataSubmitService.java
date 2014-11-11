@@ -48,6 +48,7 @@ import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.ReportImage;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,7 +75,6 @@ public class DataSubmitService extends IntentService {
     private static final String SERVER_HOST = "private-a6eee-poddapi.apiary-mock.com";
     private static final int SERVER_PORT = 80;
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
-    private Charset utf8Charset = Charset.forName("UTF-8");
 
     public DataSubmitService() {
         super(null);
@@ -91,6 +91,8 @@ public class DataSubmitService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        SharedPrefUtil.getPrefs(getApplicationContext());
+
         HttpURLConnection conn = null;
         Log.i(TAG, "submit data " + Long.toString(System.currentTimeMillis()));
 
@@ -139,10 +141,6 @@ public class DataSubmitService extends IntentService {
                             filePath = c.getString(idx);
                             c.close();
                         }
-
-                        // convert file to bytes
-                        byte[] imageByte = getImageByte(filePath);
-                        String note = image.getNote();
 
                         success = uploadToS3(image.getGuid(), filePath, image.getThumbnail());
 
@@ -303,33 +301,14 @@ public class DataSubmitService extends IntentService {
         return ous.toByteArray();
     }
 
-
-    public static String convertInputStream2String(InputStream in) {
-        StringBuffer sb = new StringBuffer();
-        if (in == null) {
-            return sb.toString();
-        }
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in,
-                    "utf-8"), 8);
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
-    }
-
     public static String toHex(byte[] bytes) {
         BigInteger bi = new BigInteger(1, bytes);
         return String.format("%0" + (bytes.length << 1) + "X", bi);
     }
 
     private boolean uploadToS3(String guid, String filePath, Bitmap thumbnail) {
-        TransferManager transferManager = new TransferManager(new BasicAWSCredentials("AKIAJC6VTXE5WL2ORRAQ", "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE"));
+        TransferManager transferManager = new TransferManager(
+                new BasicAWSCredentials(SharedPrefUtil.getAwsAccessKey(), SharedPrefUtil.getAwsSecretKey()));
 
         // upload thumbnail
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

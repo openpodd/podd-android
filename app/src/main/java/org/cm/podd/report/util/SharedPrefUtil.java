@@ -77,5 +77,13 @@ public class SharedPrefUtil {
         }
         return regions;
     }
+
+    public static String getAwsSecretKey() {
+        return sharedPrefs.getString(AWS_SECRET_KEY, "AKIAJC6VTXE5WL2ORRAQ");
+    }
+
+    public static String getAwsAccessKey() {
+        return sharedPrefs.getString(AWS_ACCESS_KEY, "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE");
+    }
 }
 
