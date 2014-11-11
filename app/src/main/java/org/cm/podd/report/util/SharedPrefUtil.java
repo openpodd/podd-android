@@ -79,11 +79,13 @@ public class SharedPrefUtil {
     }
 
     public static String getAwsSecretKey() {
-        return sharedPrefs.getString(AWS_SECRET_KEY, "AKIAJC6VTXE5WL2ORRAQ");
+        return "AKIAJC6VTXE5WL2ORRAQ";
+//        return sharedPrefs.getString(AWS_SECRET_KEY, "AKIAJC6VTXE5WL2ORRAQ");
     }
 
     public static String getAwsAccessKey() {
-        return sharedPrefs.getString(AWS_ACCESS_KEY, "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE");
+        return "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE";
+//        return sharedPrefs.getString(AWS_ACCESS_KEY, "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE");
     }
 }
 

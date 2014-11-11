@@ -20,6 +20,8 @@ package org.cm.podd.report.activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,11 +32,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -103,7 +107,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+//                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+                            .setCustomView(createTabView(mSectionsPagerAdapter.getPageTitle(i).toString()))
                             .setTabListener(this));
         }
 
@@ -112,8 +117,33 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
             new ConnectivityChangeReceiver(),
             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+        int actionBarTitleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
+        if (actionBarTitleId > 0) {
+            TextView title = (TextView) findViewById(actionBarTitleId);
+            if (title != null) {
+                title.setTypeface(getTypeface(Typeface.BOLD));
+            }
+        }
     }
 
+    private Typeface getTypeface(int type) {
+        return Typeface.createFromAsset(getAssets(),
+                type == Typeface.BOLD ? "CSPraJad-bold.otf" : "CSPraJad.otf");
+    }
+
+    private TextView createTabView(String name) {
+        TextView title = new TextView(this);
+        title.setText(name);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        title.setLayoutParams(layoutParams);
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(getResources().getColorStateList(R.color.tab_text_state));
+        title.setTextSize(15);
+        title.setTypeface(getTypeface(Typeface.NORMAL));
+        return title;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
