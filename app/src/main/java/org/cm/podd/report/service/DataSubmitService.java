@@ -52,19 +52,16 @@ import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -308,7 +305,7 @@ public class DataSubmitService extends IntentService {
 
     private boolean uploadToS3(String guid, String filePath, Bitmap thumbnail) {
         TransferManager transferManager = new TransferManager(
-                new BasicAWSCredentials(SharedPrefUtil.getAwsAccessKey(), SharedPrefUtil.getAwsSecretKey()));
+                new BasicAWSCredentials(SharedPrefUtil.getAwsSecretKey(), SharedPrefUtil.getAwsAccessKey()));
 
         // upload thumbnail
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
