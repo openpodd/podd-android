@@ -186,11 +186,14 @@ public class ReportDataSource {
         return images;
     }
 
+    /*
+     * Return report images that are not in a submit queue
+     */
     public List<ReportImage> getSubmitPendingImages(long reportId) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
         ArrayList<ReportImage> images = new ArrayList<ReportImage>();
         Cursor cursor = db.rawQuery(
-                "SELECT * from report_image where report_id = ? and submit != 1",
+                "SELECT * from report_image where report_id = ? and submit != 1 and guid is null",
                 new String[]{Long.toString(reportId)});
 
         while (cursor.moveToNext()) {
