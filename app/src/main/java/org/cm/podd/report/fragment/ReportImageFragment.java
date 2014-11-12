@@ -20,15 +20,20 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Checkable;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
@@ -76,6 +81,8 @@ public class ReportImageFragment extends Fragment {
     long mReportImageId;
     String mCurrentPhotoPath;
     String mImageNote;
+
+    private ActionMode mMode;
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -160,10 +167,12 @@ public class ReportImageFragment extends Fragment {
             }
         });
         gridView.setAdapter(imageAdapter);
+        gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                ReportImage ri = (ReportImage) imageAdapter.getItem(position);
+                if (mMode != null) {
+                    ReportImage ri = (ReportImage) imageAdapter.getItem(position);
 
                 /* use android default viewer
                 Uri uri = Uri.parse(ri.getImageUri());
@@ -173,9 +182,10 @@ public class ReportImageFragment extends Fragment {
                 startActivity(intent);
                 */
 
-                Intent intent = new Intent(getActivity(), ImageActivity.class);
-                intent.putExtra("imagePath", ri.getImageUri());
-                startActivity(intent);
+                    Intent intent = new Intent(getActivity(), ImageActivity.class);
+                    intent.putExtra("imagePath", ri.getImageUri());
+                    startActivity(intent);
+                }
             }
         });
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -462,10 +472,18 @@ public class ReportImageFragment extends Fragment {
         private View newView(ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
             View v = inflater.inflate(R.layout.image_item, parent, false);
+
+            ImageCheckableLayout checkable = new ImageCheckableLayout(context);
+            checkable.setLayoutParams(new GridView.LayoutParams(
+                    GridView.LayoutParams.MATCH_PARENT,
+                    GridView.LayoutParams.MATCH_PARENT));
+            checkable.addView(v);
+
             ViewHolder holder = new ViewHolder();
             holder.imageView = (ImageView) v.findViewById(R.id.image_view);
-            v.setTag(holder);
-            return v;
+            checkable.setTag(holder);
+
+            return checkable;
         }
 
         private boolean isLastItem(int pos) {
@@ -490,6 +508,43 @@ public class ReportImageFragment extends Fragment {
 
         class ViewHolder {
             ImageView imageView;
+        }
+    }
+
+    /**
+     * Layout wrapper to make image view checkable
+     */
+    public class ImageCheckableLayout extends FrameLayout implements Checkable {
+        private boolean mChecked;
+        View mask;
+
+        public ImageCheckableLayout(Context context) {
+            super(context);
+        }
+
+        @SuppressWarnings("deprecation")
+        public void setChecked(boolean checked) {
+            mChecked = checked;
+            mask = findViewById(R.id.selected_mask);
+            mask.setVisibility(checked ? VISIBLE : INVISIBLE);
+        }
+
+        public boolean isChecked() {
+            return mChecked;
+        }
+
+        public void toggle() {
+            setChecked(!mChecked);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            if (mask != null) {
+                ViewGroup.LayoutParams layoutParams = mask.getLayoutParams();
+                layoutParams.height = getMeasuredHeight();
+                mask.setLayoutParams(layoutParams);
+            }
         }
     }
 

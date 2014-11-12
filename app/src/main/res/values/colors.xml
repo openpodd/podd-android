@@ -5,5 +5,6 @@
     <color name="white">#ffffff</color>
     <color name="action_bar_bg">#fafafa</color>
     <color name="bright_pink">#ff4081</color>
+    <color name="selected_image_mask">#50000000</color>
 
 </resources>
