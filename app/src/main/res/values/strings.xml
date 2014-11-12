@@ -28,5 +28,7 @@
     <string name="logout">ออกจากระบบ</string>
     <string name="btn_camera">กล้อง</string>
     <string name="btn_next">ต่อไป</string>
+    <string name="action_delete">ลบ</string>
+    <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
 
 </resources>

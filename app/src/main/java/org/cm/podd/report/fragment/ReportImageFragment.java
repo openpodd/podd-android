@@ -12,6 +12,7 @@ import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Typeface;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -20,9 +21,14 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,13 +38,13 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.ReportImage;
+import org.cm.podd.report.util.StyleUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -171,35 +177,49 @@ public class ReportImageFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                if (mMode != null) {
+                if (mMode == null) {
+                    // only in ActionMode to do a check
+                    gridView.setItemChecked(position, false);
+
+                    // View full image if actionMode is not active
                     ReportImage ri = (ReportImage) imageAdapter.getItem(position);
-
-                /* use android default viewer
-                Uri uri = Uri.parse(ri.getImageUri());
-                Intent intent = new Intent();
-                intent.setAction(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
-                startActivity(intent);
-                */
-
+                    /* use android default viewer
+                    Uri uri = Uri.parse(ri.getImageUri());
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(new File(uri.getPath())), "image/png");
+                    startActivity(intent);
+                    */
                     Intent intent = new Intent(getActivity(), ImageActivity.class);
                     intent.putExtra("imagePath", ri.getImageUri());
                     startActivity(intent);
+                } else {
+                    // multiple select other images when actionMode is active
+                    SparseBooleanArray checked = gridView.getCheckedItemPositions();
+
+                    if (checked != null) {
+                        boolean hasCheckedElement = false;
+                        for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+                            hasCheckedElement = checked.valueAt(i);
+                        }
+
+                        if (hasCheckedElement) {
+                            mMode.invalidate();
+                        } else {
+                            // until nothing is selected then deactivate actionMode
+                            mMode.finish();
+                        }
+                    }
                 }
             }
         });
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                ReportImage ri = (ReportImage) imageAdapter.getItem(position);
-                if (ri.getId() > 0) {
-                    mCurrentPhotoPath = ri.getImageUri();
-                    mReportImageId = ri.getId();
-                    mImageNote = ri.getNote();
-                    // show action options
-                    ImageEditDialog dlg = new ImageEditDialog();
-                    dlg.setTargetFragment(targetFragment, 0);
-                    dlg.show(getActivity().getSupportFragmentManager(), "ImageEditDialog");
+                // use ActionMode.Callback for compatibility with pre Honeycomb
+                if (mMode == null) {
+                    mMode = ((ActionBarActivity)getActivity()).startSupportActionMode(
+                            new ActionModeCallback(getActivity()));
                 }
                 return false;
             }
@@ -255,37 +275,31 @@ public class ReportImageFragment extends Fragment {
         }
     }
 
-    /*
-     * Handle click on image edit option list
-     * @param index
-     */
-    private void onImageEditActionClick(int index) {
-        switch (index) {
-            case 0:
-                deleteImage();
-                break;
-            case 1:
-                saveNote();
-                break;
+    private void deleteImages() {
+        long[] ids = gridView.getCheckedItemIds();
+        for (int i = 0; i < ids.length; i++) {
+            ReportImage ri = imageAdapter.getItemById(ids[i]);
+            mCurrentPhotoPath = ri.getImageUri();
+            mReportImageId = ri.getId();
+            mImageNote = ri.getNote();
+            mCurrentPhotoPath = ri.getImageUri();
+
+            Log.d(TAG, "Delete image id=" + mReportImageId);
+            reportDataSource.delete(mReportImageId);
+
+            // remove image file if it was taken from capture camera, not from media list
+            Uri uri = Uri.parse(mCurrentPhotoPath);
+            Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+
+            // Uri is not content://path
+            if (cursor == null) {
+                String filePath = uri.getPath();
+                File f = new File(filePath);
+                f.delete();
+                Log.d(TAG, "Image file removed: path= " + filePath);
+            }
+            imageAdapter.removeItem(mReportImageId);
         }
-    }
-
-    private void deleteImage() {
-        Log.d(TAG, "Delete image id=" + mReportImageId);
-        reportDataSource.delete(mReportImageId);
-
-        // remove image file if it was taken from capture camera, not from media list
-        Uri uri = Uri.parse(mCurrentPhotoPath);
-        Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-
-        // Uri is not content://path
-        if (cursor == null) {
-            String filePath = uri.getPath();
-            File f = new File(filePath);
-            f.delete();
-            Log.d(TAG, "Image file removed: path= " + filePath);
-        }
-        imageAdapter.removeItem(mReportImageId);
         imageAdapter.notifyDataSetChanged();
     }
 
@@ -454,6 +468,11 @@ public class ReportImageFragment extends Fragment {
         }
 
         @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
         public View getView(int i, View view, ViewGroup parent) {
             if (view == null) {
                 view = newView(parent);
@@ -504,6 +523,15 @@ public class ReportImageFragment extends Fragment {
                 i++;
             }
             return pos;
+        }
+
+        public ReportImage getItemById(long id) {
+            for (ReportImage item : images) {
+                if (item.getId() == id) {
+                    return item;
+                }
+            }
+            return null;
         }
 
         class ViewHolder {
@@ -571,25 +599,6 @@ public class ReportImageFragment extends Fragment {
     }
 
     /**
-     * Dialog for image item edit options, when long press on image thumbnail
-     */
-    public static class ImageEditDialog extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.title_image_edit_action)
-                    .setItems(R.array.image_edit_action_selection, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
-                            fragment.onImageEditActionClick(which);
-                        }
-                    });
-            return builder.create();
-        }
-    }
-
-    /**
      * Dialog to input note message for selected picture
      */
     public static class NoteEditDialog extends DialogFragment {
@@ -629,4 +638,65 @@ public class ReportImageFragment extends Fragment {
         }
     }
 
+    /**
+     * Callback to CAB (Contextual Action Bar)
+     */
+    private final class ActionModeCallback implements ActionMode.Callback {
+        Context context;
+        public ActionModeCallback(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create the menu from the xml file
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.image_fragment_contextual_actions, menu);
+
+            // use custom text as title
+            // on pre honeycomb (<11), cab title background is action bar background (red in drme)
+            TextView tv = new TextView(getActivity());
+            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv.setText("cab");
+            tv.setBackgroundColor(context.getResources().getColor(R.color.action_bar_bg));
+            mode.setCustomView(tv);
+
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            int selected = gridView.getCheckedItemCount();
+            TextView title = ((TextView) mode.getCustomView());
+            title.setText(getString(R.string.title_image_item_selected, new Object[]{selected}));
+            title.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            Log.d(TAG, "deselect all items");
+            // Destroying action mode, let's unselect all items
+            for (int i = 0; i < gridView.getAdapter().getCount(); i++) {
+                gridView.setItemChecked(i, false);
+            }
+            gridView.clearChoices();
+
+            if (mode == mMode) {
+                mMode = null;
+            }
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.cab_action_delete:
+                    deleteImages();
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 }
