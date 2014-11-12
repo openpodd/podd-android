@@ -204,6 +204,7 @@ public class ReportDataSource {
             String guid = cursor.getString(cursor.getColumnIndex("guid"));
 
             ReportImage image = new ReportImage(id, uri);
+            // TODO remove unused operation.
             image.setThumbnail(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
             image.setNote(note);
             image.setGuid(guid);

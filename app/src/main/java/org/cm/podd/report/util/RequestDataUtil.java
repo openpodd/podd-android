@@ -35,6 +35,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 
@@ -43,8 +44,9 @@ public class RequestDataUtil {
     private static final String TAG = "RequestDataUtil";
     private static Charset utf8Charset = Charset.forName("UTF-8");
 
-    public static JSONObject post(String path, String query, String json) {
+    public static ResponseObject post(String path, String query, String json, String token) {
         JSONObject jsonObj = null;
+        int statusCode = 0;
         String reqUrl = String.format("%s%s%s", SharedPrefUtil.getServerAddress(), path,
                 query == null ? "" : "?"+query);
         Log.i(TAG, "submit url=" + reqUrl);
@@ -57,6 +59,9 @@ public class RequestDataUtil {
         try {
             HttpPost post = new HttpPost(reqUrl);
             post.setHeader("Content-type", "application/json");
+            if (token != null) {
+                post.setHeader("Authorization", "Token " + token);
+            }
             post.setEntity(new StringEntity(json, HTTP.UTF_8));
 
             HttpResponse response;
@@ -64,10 +69,10 @@ public class RequestDataUtil {
             HttpEntity entity = response.getEntity();
 
             // Detect server complaints
-            int statusCode = response.getStatusLine().getStatusCode();
+            statusCode = response.getStatusLine().getStatusCode();
             Log.e(TAG, "status code=" + statusCode);
 
-            if (statusCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+            if (statusCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
                 InputStream in = entity.getContent();
                 String resp = FileUtil.convertInputStreamToString(in);
 
@@ -85,7 +90,33 @@ public class RequestDataUtil {
         } finally {
             client.getConnectionManager().shutdown();
         }
-        return jsonObj;
+        return new ResponseObject(statusCode, jsonObj);
     }
 
+
+    public static class ResponseObject implements Serializable {
+        private JSONObject jsonObject;
+        private int statusCode;
+
+        public ResponseObject(int statusCode, JSONObject jsonObject) {
+            this.jsonObject = jsonObject;
+            this.statusCode = statusCode;
+        }
+
+        public JSONObject getJsonObject() {
+            return jsonObject;
+        }
+
+        public void setJsonObject(JSONObject jsonObject) {
+            this.jsonObject = jsonObject;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+    }
 }

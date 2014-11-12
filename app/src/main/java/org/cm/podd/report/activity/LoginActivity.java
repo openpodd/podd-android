@@ -21,6 +21,8 @@ import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
+
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -104,7 +106,7 @@ public class LoginActivity extends ActionBarActivity {
     /**
      * Post login
      */
-    public class LoginTask extends AsyncTask<Void, Void, JSONObject> {
+    public class LoginTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
 
         @Override
         protected void onPreExecute() {
@@ -113,7 +115,7 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         @Override
-        protected JSONObject doInBackground(Void... params) {
+        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
             // authenticate and get access token
             String reqData = null;
             try {
@@ -125,15 +127,17 @@ public class LoginActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return RequestDataUtil.post("/api-token-auth", null, reqData);
+            return RequestDataUtil.post("/api-token-auth/", null, reqData, null);
         }
 
         @Override
-        protected void onPostExecute(JSONObject resp) {
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
-            if (resp != null) {
+            hideProgressDialog();
+            JSONObject obj = resp.getJsonObject();
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
-                    String token = resp.getString("token");
+                    String token = obj.getString("token");
 
                     Editor editor = sharedPrefs.edit();
                     editor.putString(SharedPrefUtil.ACCESS_TOKEN_KEY, token);
@@ -149,6 +153,12 @@ public class LoginActivity extends ActionBarActivity {
 
             } else {
                 // alert error
+                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                    Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                } else {
+                    Crouton.makeText(LoginActivity.this, "Username or Password is incorrect!", Style.ALERT).show();
+                }
+
             }
         }
     }
@@ -156,37 +166,40 @@ public class LoginActivity extends ActionBarActivity {
     /**
      * Get preference configuration
      */
-    public class ConfigTask extends AsyncTask<Void, Void, JSONObject> {
+    public class ConfigTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected JSONObject doInBackground(Void... params) {
+        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
             // authenticate and get access token
             String reqData = getIdentifier().toString();
-            return RequestDataUtil.post("/configuration", null, reqData);
+            return RequestDataUtil.post("/configuration/", null, reqData, SharedPrefUtil.getAccessToken());
         }
 
         @Override
-        protected void onPostExecute(JSONObject resp) {
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
             hideProgressDialog();
-            if (resp == null)
+
+            JSONObject obj = resp.getJsonObject();
+
+            if (obj == null)
                 return;
 
             try {
                 Editor editor = sharedPrefs.edit();
-                editor.putString(SharedPrefUtil.FULLNAME, resp.getString("fullName"));
-                editor.putString(SharedPrefUtil.AWS_SECRET_KEY, resp.getString("awsSecretKey"));
-                editor.putString(SharedPrefUtil.AWS_ACCESS_KEY, resp.getString("awsAccessKey"));
-                editor.putString(SharedPrefUtil.ADMIN_AREA, resp.getJSONArray("administrationAreas").toString());
+                editor.putString(SharedPrefUtil.FULLNAME, obj.getString("fullName"));
+                editor.putString(SharedPrefUtil.AWS_SECRET_KEY, obj.getString("awsSecretKey"));
+                editor.putString(SharedPrefUtil.AWS_ACCESS_KEY, obj.getString("awsAccessKey"));
+                editor.putString(SharedPrefUtil.ADMIN_AREA, obj.getJSONArray("administrationAreas").toString());
                 editor.commit();
 
                 // save report types data into table
                 ReportTypeDataSource dataSource = new ReportTypeDataSource(LoginActivity.this);
-                dataSource.initNewData(resp.getJSONArray("reportTypes").toString());
+                dataSource.initNewData(obj.getJSONArray("reportTypes").toString());
 
                 isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
                 // goto report home
