@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,7 @@ import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
 import org.cm.podd.report.service.LocationBackgroundService;
+import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -128,12 +130,14 @@ public class ReportActivity extends ActionBarActivity
                 nextScreen();
             }
         });
+        nextBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
             }
         });
+        prevBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
 
         cameraBtn = (Button) findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +148,7 @@ public class ReportActivity extends ActionBarActivity
                 }
             }
         });
+        cameraBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         disableMaskView = findViewById(R.id.disableMask);
 
         reportDataSource = new ReportDataSource(this);
@@ -266,7 +271,7 @@ public class ReportActivity extends ActionBarActivity
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
 
-
+        setCameraBtnVisible(false);
 
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
@@ -283,6 +288,7 @@ public class ReportActivity extends ActionBarActivity
                 if (! formIterator.previousPage()) {
                     currentFragment = ReportImageFragment.class.getName();
                     showHideDisableMask(false);
+                    setCameraBtnVisible(true);
                 } else {
                     showHideDisableMask(reportSubmit == 1);
                 }
@@ -296,6 +302,7 @@ public class ReportActivity extends ActionBarActivity
         boolean isDynamicForm = false;
 
         hideKeyboard();
+        setCameraBtnVisible(false);
 
         Fragment oldFragment = getVisibleFragment();
         if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
@@ -306,6 +313,7 @@ public class ReportActivity extends ActionBarActivity
             Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
             showHideDisableMask(false);
+            setCameraBtnVisible(true);
         } else {
 
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
@@ -319,9 +327,9 @@ public class ReportActivity extends ActionBarActivity
                 isDynamicForm = true;
 
                 setNextVisible(true);
-                setPrevVisible(true);
+                setPrevVisible(false);
                 setNextEnable(true);
-                setPrevEnable(true);
+                setPrevEnable(false);
 
                 // case I
                 // just come into this dynamic form
@@ -455,6 +463,14 @@ public class ReportActivity extends ActionBarActivity
             prevBtn.setVisibility(View.VISIBLE);
         } else {
             prevBtn.setVisibility(View.GONE);
+        }
+    }
+
+    public void setCameraBtnVisible(boolean flag) {
+        if (flag) {
+            cameraBtn.setVisibility(View.VISIBLE);
+        } else {
+            cameraBtn.setVisibility(View.GONE);
         }
     }
 

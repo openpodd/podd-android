@@ -31,7 +31,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
 
         <Button
             android:id="@+id/prevBtn"
@@ -46,14 +48,19 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Camera" />
+            style="@style/CameraButton"
+            android:layout_marginRight="10dp"
+            android:drawableLeft="@drawable/icon_camera"
+            android:drawablePadding="0dp"
+            android:text="@string/btn_camera" />
 
         <Button
             android:id="@+id/nextBtn"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Next" />
+            style="@style/NextButton"
+            android:text="@string/btn_next" />
 
     </LinearLayout>
 

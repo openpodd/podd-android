@@ -56,7 +56,7 @@ public class ReportConfirmFragment extends Fragment {
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
-        navigationInterface.setPrevEnable(true);
+        navigationInterface.setPrevVisible(false);
         navigationInterface.setNextVisible(false);
     }
 

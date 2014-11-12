@@ -32,6 +32,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     private long reportId;
 
     private ReportDataInterface reportDataInterface;
+    private ReportNavigationInterface navigationInterface;
 
     private ReportDataSource reportDataSource;
 
@@ -84,6 +85,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         mRegionsSpinner.setAdapter(regionAdapter);
 
         loadData();
+        navigationInterface.setPrevVisible(false);
 
         return view;
     }
@@ -92,6 +94,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         reportDataInterface = (ReportDataInterface) activity;
+        navigationInterface = (ReportNavigationInterface) activity;
     }
 
     @Override

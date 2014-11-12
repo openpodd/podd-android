@@ -26,5 +26,7 @@
     <string name="title_activity_setting">Setting</string>
     <string name="server_address">Server address</string>
     <string name="logout">ออกจากระบบ</string>
+    <string name="btn_camera">กล้อง</string>
+    <string name="btn_next">ต่อไป</string>
 
 </resources>
