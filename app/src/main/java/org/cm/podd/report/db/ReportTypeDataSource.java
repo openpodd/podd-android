@@ -99,12 +99,12 @@ public class ReportTypeDataSource {
     }
 
     public Form getForm(long formId) {
-        if (formId == 1) return parseForm("podd.json");
-        if (formId == 2) return parseForm("podd2.json");
-        if (formId == 3) return parseForm("podd3.json");
-        if (formId == 4) return parseForm("podd4.json");
-        if (formId == 6) return parseForm("podd5.json");
-        /*
+//        if (formId == 1) return parseForm("podd.json");
+//        if (formId == 2) return parseForm("podd2.json");
+//        if (formId == 3) return parseForm("podd3.json");
+//        if (formId == 4) return parseForm("podd4.json");
+//        if (formId == 6) return parseForm("podd5.json");
+
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from report_type where _id = ?",
                 new String[] {Long.toString(formId)});
@@ -119,23 +119,22 @@ public class ReportTypeDataSource {
             } catch (Exception e) {
                 Log.e(TAG, "error while parsing form", e);
             }
-            return null;
-        } else {
+
         }
-        */
-            return createSampleForm1();
+
+        return null;
     }
 
     public List<ReportType> getAll() {
         ArrayList<ReportType> results = new ArrayList<ReportType>();
-        results.add(new ReportType(1, "สัตว์ป่วย/ตาย 1"));
-        results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
-        results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
-        results.add(new ReportType(4, "สัตว์ป่วย/ตาย 4"));
-        results.add(new ReportType(5, "ป่วยจากการสัมผัสสัตว์"));
-        results.add(new ReportType(7, "ป่วยจากการกินสัตว์"));
-        results.add(new ReportType(6, "สัตว์กัด"));
-        /*
+//        results.add(new ReportType(1, "สัตว์ป่วย/ตาย 1"));
+//        results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
+//        results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
+//        results.add(new ReportType(4, "สัตว์ป่วย/ตาย 4"));
+//        results.add(new ReportType(5, "ป่วยจากการสัมผัสสัตว์"));
+//        results.add(new ReportType(7, "ป่วยจากการกินสัตว์"));
+//        results.add(new ReportType(6, "สัตว์กัด"));
+
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from report_type order by _id asc", null);
         while (cursor.moveToNext()) {
@@ -144,7 +143,7 @@ public class ReportTypeDataSource {
                     cursor.getString(cursor.getColumnIndex("name"))
             ));
         }
-        */
+
         return results;
     }
 

@@ -43,6 +43,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -186,11 +187,13 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reports", null, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reports/", null, null);
             Log.i(TAG, "submit report url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
             post.setHeader("Content-type", "application/json");
+            post.setHeader("Authorization", "Token " + SharedPrefUtil.getAccessToken());
+
             SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
             SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -206,6 +209,7 @@ public class DataSubmitService extends IntentService {
             data.put("formData", report.getSubmitJSONFormData());
 
             post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
+            Log.d(TAG, "request with " + EntityUtils.toString(post.getEntity()));
 
             HttpResponse response;
             response = client.execute(post);
@@ -213,7 +217,11 @@ public class DataSubmitService extends IntentService {
 
             // Detect server complaints
             int statusCode = response.getStatusLine().getStatusCode();
-            Log.e(TAG, "status code=" + statusCode);
+            Log.d(TAG, "status code=" + statusCode);
+
+            if (statusCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                Log.e(TAG, "error " + EntityUtils.toString(response.getEntity()));
+            }
             success = statusCode == 200;
             entity.consumeContent();
 
@@ -233,11 +241,12 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reportImages", null, null);
+            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reportImages/", null, null);
             Log.i(TAG, "submit report image url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
             post.setHeader("Content-type", "application/json");
+            post.setHeader("Authorization", "Token " + SharedPrefUtil.getAccessToken());
 
             String note = reportImage.getNote();
             if (note == null) {
