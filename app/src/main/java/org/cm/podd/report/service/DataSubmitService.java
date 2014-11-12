@@ -69,7 +69,7 @@ public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
 //    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
-    private static final String SERVER_HOST = "private-a6eee-poddapi.apiary-mock.com";
+    private static final String SERVER_HOST = "apidev.cmonehealth.org";
     private static final int SERVER_PORT = 80;
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
 

@@ -60,7 +60,7 @@ public class SharedPrefUtil {
     }
 
     public static String getServerAddress() {
-        return sharedPrefs.getString(SERVER_ADDRESS, "http://private-anon-d510f140d-poddapi.apiary-mock.com");
+        return sharedPrefs.getString(SERVER_ADDRESS, "http://apidev.cmonehealth.org");
     }
 
     public static List<Region> getAllRegions() {
