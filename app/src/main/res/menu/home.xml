@@ -2,10 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.cm.podd.report.activity.HomeActivity" >
+
     <item android:id="@+id/action_new_event"
-        android:icon="@drawable/ic_action_new_event"
+        android:icon="@drawable/ic_documents_add"
         android:title="New Report"
         app:showAsAction="always"
+        />
+    <item android:id="@+id/action_camera"
+        android:icon="@drawable/icon_camera_dark"
+        android:title="Take Picture"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/action_notification"
+        android:icon="@drawable/icon_ring"
+        android:title="Notification"
+        app:showAsAction="ifRoom|collapseActionView"
         />
 
     <item android:id="@+id/action_settings"
