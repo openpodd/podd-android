@@ -28,6 +28,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -421,8 +422,13 @@ public class ReportActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(0);
+        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.report, menu);
+//        getMenuInflater().inflate(R.menu.report, menu);
         return true;
     }
 

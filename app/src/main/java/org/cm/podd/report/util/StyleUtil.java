@@ -16,8 +16,13 @@
  */
 package org.cm.podd.report.util;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.widget.TextView;
+
+import org.cm.podd.report.R;
 
 public class StyleUtil {
 
@@ -25,4 +30,18 @@ public class StyleUtil {
         return Typeface.createFromAsset(assets, type == Typeface.BOLD ? "CSPraJad-bold.otf" : "CSPraJad.otf");
     }
 
+    public static void setActionBarTitle(Activity activity, String title) {
+        int actionBarTitleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
+        if (actionBarTitleId > 0) {
+            TextView titleView = (TextView) (activity.findViewById(actionBarTitleId));
+            if (titleView != null) {
+                titleView.setText(title);
+                titleView.setTypeface(getDefaultTypeface(activity.getAssets(), Typeface.NORMAL));
+                if (title == null) {
+                    titleView.setCompoundDrawablesWithIntrinsicBounds(
+                            activity.getResources().getDrawable(R.drawable.logo_podd), null, null, null);
+                }
+            }
+        }
+    }
 }

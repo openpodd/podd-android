@@ -45,6 +45,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Locale;
 
@@ -118,18 +119,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             new ConnectivityChangeReceiver(),
             new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        int actionBarTitleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        if (actionBarTitleId > 0) {
-            TextView title = (TextView) findViewById(actionBarTitleId);
-            if (title != null) {
-                title.setTypeface(getTypeface(Typeface.BOLD));
-            }
-        }
-    }
-
-    private Typeface getTypeface(int type) {
-        return Typeface.createFromAsset(getAssets(),
-                type == Typeface.BOLD ? "CSPraJad-bold.otf" : "CSPraJad.otf");
     }
 
     private TextView createTabView(String name) {
@@ -140,13 +129,15 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         title.setLayoutParams(layoutParams);
         title.setGravity(Gravity.CENTER);
         title.setTextColor(getResources().getColorStateList(R.color.tab_text_state));
-        title.setTextSize(15);
-        title.setTypeface(getTypeface(Typeface.NORMAL));
+        title.setTextSize(20);
+        title.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         return title;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, null);
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;

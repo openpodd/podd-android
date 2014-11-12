@@ -17,9 +17,10 @@
 
 package org.cm.podd.report.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,10 +33,11 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
 
-public class ReportTypeActivity extends Activity implements AdapterView.OnItemClickListener {
+public class ReportTypeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "ReportTypeActivity";
     private ArrayAdapter<ReportType> adapter;
@@ -67,8 +69,13 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report_type));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(0);
+        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.report_type, menu);
+//        getMenuInflater().inflate(R.menu.report_type, menu);
         return true;
     }
 
@@ -95,7 +102,7 @@ public class ReportTypeActivity extends Activity implements AdapterView.OnItemCl
         } else if (item.getId() == 0) {
             reportDataSource.createPositiveReport();
             finish();
-            
+
         } else {
             Intent intent = new Intent(this, ReportActivity.class);
             intent.putExtra("reportType", item.getId());

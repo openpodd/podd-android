@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.view.ZoomableImageView;
@@ -29,6 +30,9 @@ public class ImageActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getSupportActionBar().hide();
+
         setContentView(R.layout.activity_image);
 
         mImageView = (ZoomableImageView) findViewById(R.id.image_view);
@@ -68,7 +72,7 @@ public class ImageActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.image, menu);
+//        getMenuInflater().inflate(R.menu.image, menu);
         return true;
     }
 

@@ -20,13 +20,16 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.cm.podd.report.util.StyleUtil;
 
 public class SettingActivity extends ActionBarActivity {
 
@@ -78,6 +81,16 @@ public class SettingActivity extends ActionBarActivity {
                     .show();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_setting));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(0);
+        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+
+        return true;
     }
 
     private void logout() {

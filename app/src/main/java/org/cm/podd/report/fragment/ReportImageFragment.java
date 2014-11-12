@@ -29,7 +29,6 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
@@ -42,7 +41,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -207,7 +205,7 @@ public class ReportImageFragment extends Fragment {
     private List<ReportImage> getAllImageGuide() {
         int max = MAX_IMAGE_GUIDE, i = 0;
         List<ReportImage> images = new ArrayList<ReportImage>(max);
-        while (i < 4) {
+        while (i < MAX_IMAGE_GUIDE) {
             ReportImage image = new ReportImage(i, null);
             image.setThumbnail(BitmapFactory.decodeResource(
                     getResources(), R.drawable.gallery_default));
@@ -457,14 +455,8 @@ public class ReportImageFragment extends Fragment {
         private void bindView(int i, View view) {
             ViewHolder holder = (ViewHolder) view.getTag();
             ImageView imageView = holder.imageView;
-            TextView addButton = holder.addButton;
 
             imageView.setImageBitmap(images.get(i).getThumbnail());
-            if (!isLastItem(i)) {
-                addButton.setVisibility(View.GONE);
-            } else {
-                addButton.setVisibility(View.VISIBLE);
-            }
         }
 
         private View newView(ViewGroup parent) {
@@ -472,7 +464,6 @@ public class ReportImageFragment extends Fragment {
             View v = inflater.inflate(R.layout.image_item, parent, false);
             ViewHolder holder = new ViewHolder();
             holder.imageView = (ImageView) v.findViewById(R.id.image_view);
-            holder.addButton = (TextView) v.findViewById(R.id.add_button);
             v.setTag(holder);
             return v;
         }
@@ -499,7 +490,6 @@ public class ReportImageFragment extends Fragment {
 
         class ViewHolder {
             ImageView imageView;
-            TextView addButton;
         }
     }
 
