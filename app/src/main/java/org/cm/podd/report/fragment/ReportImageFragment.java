@@ -266,6 +266,7 @@ public class ReportImageFragment extends Fragment {
                     Log.e(TAG, "can't create file", ie);
                 }
                 if (photoFile != null) {
+                    intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024*1024);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
                     intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

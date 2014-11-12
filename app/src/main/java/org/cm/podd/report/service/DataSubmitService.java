@@ -222,7 +222,7 @@ public class DataSubmitService extends IntentService {
             if (statusCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                 Log.e(TAG, "error " + EntityUtils.toString(response.getEntity()));
             }
-            success = statusCode == 200;
+            success = statusCode == 201;
             entity.consumeContent();
 
         } finally {
@@ -269,7 +269,7 @@ public class DataSubmitService extends IntentService {
 
             int statusCode = response.getStatusLine().getStatusCode();
             Log.e(TAG, "status code=" + statusCode);
-            success = statusCode == 200;
+            success = statusCode == 201;
             // Detect server complaints
             entity.consumeContent();
 
