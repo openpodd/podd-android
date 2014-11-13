@@ -85,6 +85,12 @@ public class ReportDataSource {
         return getReadableDB().rawQuery("SELECT * FROM report order by _id desc", null);
     }
 
+    public Cursor getAllWithTypeName() {
+        return getReadableDB().rawQuery(
+                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name FROM report r "
+                + "left join report_type rt on r.type = rt._id order by r._id desc", null);
+    }
+
     public Report getById(long id) {
         Cursor cursor = getReadableDB().rawQuery("SELECT * FROM report where _id = ?", new String[] {Long.toString(id)});
         cursor.moveToFirst();

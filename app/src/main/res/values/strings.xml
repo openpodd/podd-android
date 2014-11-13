@@ -30,5 +30,6 @@
     <string name="btn_next">ต่อไป</string>
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
+    <string name="normal_incident">ปกติ</string>
 
 </resources>

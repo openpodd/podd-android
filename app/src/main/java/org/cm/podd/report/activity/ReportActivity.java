@@ -488,17 +488,18 @@ public class ReportActivity extends ActionBarActivity
 
         if (action != ReportDataInterface.CANCEL_ACTION) {
             if (reportSubmit == 0) {
-                saveForm();
                 reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
+                    saveForm(0);
                     reportQueueDataSource.addDataQueue(reportId);
                     reportQueueDataSource.addImageQueue(reportId);
 
                     broadcastReportSubmision();
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
-                    // nothing here
+                    // save as draft
+                    saveForm(1);
                 }
             } else {
                 // if report already submitted before, now only submit images that has no guid
@@ -524,11 +525,11 @@ public class ReportActivity extends ActionBarActivity
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
-    private void saveForm() {
+    private void saveForm(int draft) {
         Map<String, Object> data = formIterator.getData(false);
         String jsonData = new JSONObject(data).toString();
         Log.d(TAG, jsonData);
-        reportDataSource.updateData(reportId, jsonData, 0 /* draft = 0*/);
+        reportDataSource.updateData(reportId, jsonData, draft);
     }
 
     public void startLocationService() {

@@ -44,4 +44,8 @@ public class StyleUtil {
             }
         }
     }
+
+    public static Typeface getSecondTypeface(AssetManager assets, int type) {
+        return Typeface.createFromAsset(assets, type == Typeface.BOLD ? "Roboto-Bold.ttf" : "Roboto-Light.ttf");
+    }
 }

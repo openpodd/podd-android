@@ -4,13 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,7 +23,9 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.util.StyleUtil;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -56,12 +63,19 @@ public class ReportListFragment extends ListFragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getListView().setDivider(new ColorDrawable(getResources().getColor(R.color.report_row_divider)));
+        getListView().setDividerHeight(1);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume skipRefreshAdapter = " + skipRefreshAdapter);
         if (! skipRefreshAdapter) {
             Log.d(TAG, "refresh adapter");
-            adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAll());
+            adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAllWithTypeName());
             setListAdapter(adapter);
         }
         skipRefreshAdapter = false;
@@ -150,19 +164,74 @@ public class ReportListFragment extends ListFragment {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View retView = inflater.inflate(R.layout.report_list_item, parent, false);
 
+            ViewHolder holder = new ViewHolder();
+            holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
+            holder.typeText = (TextView) retView.findViewById(R.id.report_type);
+            // update fontface
+            holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.BOLD));
+
+            holder.dateText = (TextView) retView.findViewById(R.id.report_date);
+            // update fontface
+            holder.dateText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+
+            holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
+            // update fontface
+            holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+
+            holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
+
+            // cache drawable
+            holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
+            holder.negative = context.getResources().getDrawable(R.drawable.icon_status_bad);
+
+            retView.setTag(holder);
             return retView;
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView tv = (TextView) view.findViewById(R.id.report_date);
-            StringBuilder builder = new StringBuilder();
-            builder.append(cursor.getLong(cursor.getColumnIndex("_id")));
+            ViewHolder holder = (ViewHolder) view.getTag();
+            int draft = cursor.getInt(cursor.getColumnIndex("draft"));
+            int submit = cursor.getInt(cursor.getColumnIndex("submit"));
+            int negative = cursor.getInt(cursor.getColumnIndex("negative"));
+
+            String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
+            if (typeName == null) {
+                holder.typeText.setText(R.string.normal_incident);
+            } else {
+                holder.typeText.setText(typeName);
+            }
+            holder.draftText.setVisibility(
+                    draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
+
             Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-            builder.append(" ").append(date);
-            builder.append(" ").append(cursor.getInt(cursor.getColumnIndex("draft")));
-            builder.append(" ").append(cursor.getInt(cursor.getColumnIndex("submit")));
-            tv.setText(builder.toString());
+            String dateStr = DateFormat.getDateInstance().format(date);
+            holder.dateText.setText(dateStr);
+
+            if (negative == Report.TRUE) {
+                holder.statusImage.setImageDrawable(holder.negative);
+            } else {
+                holder.statusImage.setImageDrawable(holder.positive);
+            }
+
+            if (submit == Report.FALSE && draft == Report.FALSE) {
+                holder.queueImage.setVisibility(View.VISIBLE);
+                view.setBackgroundResource(R.color.report_row_bg);
+            } else {
+                holder.queueImage.setVisibility(View.INVISIBLE);
+                view.setBackgroundResource(R.color.white);
+            }
+
+        }
+
+        class ViewHolder {
+            ImageView statusImage;
+            TextView typeText;
+            TextView dateText;
+            TextView draftText;
+            ImageView queueImage;
+            Drawable positive;
+            Drawable negative;
         }
     }
 

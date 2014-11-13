@@ -591,7 +591,7 @@ public class ReportImageFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             ReportImageFragment fragment = (ReportImageFragment) getTargetFragment();
                             fragment.onMediaChoiceRequest(which == 0 ?
-                                    CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE : CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+                            CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE : CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
                         }
                     });
             // Create the AlertDialog object and return it
