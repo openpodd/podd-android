@@ -69,16 +69,16 @@ public class ReportDataSource {
     /*
      * create report that has no incident;
      */
-    public void createPositiveReport() {
+    public long createPositiveReport() {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("date", new Date().getTime());
         values.put("draft", 0);
         values.put("negative", 0);
         values.put("submit", 0);
-        db.insert("report", null, values);
+        long id = db.insert("report", null, values);
         db.close();
-        //TODO submit data to server
+        return id;
     }
 
     public Cursor getAll() {

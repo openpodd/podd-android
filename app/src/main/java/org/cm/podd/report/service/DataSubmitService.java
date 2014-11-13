@@ -206,7 +206,8 @@ public class DataSubmitService extends IntentService {
             data.put("administrationAreaId", report.getRegionId());
             data.put("remark", report.getRemark());
             data.put("negative", report.getNegative() == 1);
-            data.put("formData", report.getSubmitJSONFormData());
+            data.put("formData", report.getNegative() == 1 ?
+                    report.getSubmitJSONFormData() : new JSONObject());
 
             post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
             Log.d(TAG, "request with " + EntityUtils.toString(post.getEntity()));

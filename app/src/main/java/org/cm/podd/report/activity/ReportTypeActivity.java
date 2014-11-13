@@ -18,7 +18,9 @@
 package org.cm.podd.report.activity;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -31,6 +33,7 @@ import android.widget.ProgressBar;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.util.StyleUtil;
@@ -45,6 +48,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
     private ProgressBar progressBar;
     private ReportTypeDataSource dataSource;
     private ReportDataSource reportDataSource;
+    private ReportQueueDataSource reportQueueDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
         dataSource = new ReportTypeDataSource(this);
         reportDataSource = new ReportDataSource(this);
+        reportQueueDataSource = new ReportQueueDataSource(this);
 
         ArrayList<ReportType> items = new ArrayList<ReportType>();
         items.add(new ReportType(0, "ปกติ"));
@@ -100,7 +105,12 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             progressBar.setVisibility(View.VISIBLE);
 
         } else if (item.getId() == 0) {
-            reportDataSource.createPositiveReport();
+            long reportId = reportDataSource.createPositiveReport();
+
+            // after save positive report, submit to queue right away
+            reportQueueDataSource.addDataQueue(reportId);
+            broadcastReportSubmission();
+
             finish();
 
         } else {
@@ -108,5 +118,11 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             intent.putExtra("reportType", item.getId());
             startActivity(intent);
         }
+    }
+
+    private void broadcastReportSubmission() {
+        // Broadcasts the Intent to network receiver
+        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 }
