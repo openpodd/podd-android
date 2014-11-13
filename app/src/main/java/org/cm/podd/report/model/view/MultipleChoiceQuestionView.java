@@ -18,6 +18,7 @@
 package org.cm.podd.report.model.view;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,9 +31,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.cm.podd.report.R;
 import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.MultipleChoiceSelection;
+import org.cm.podd.report.util.StyleUtil;
 
 import java.util.List;
 
@@ -51,12 +54,15 @@ public class MultipleChoiceQuestionView extends LinearLayout {
 
         setOrientation(VERTICAL);
 
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 0, 24);
         setLayoutParams(params);
 
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
         titleView.setLayoutParams(params);
+        titleView.setTextAppearance(context, R.style.ReportTextLabel);
+        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         addView(titleView);
 
         ListView listView = new ListView(context);
@@ -72,7 +78,7 @@ public class MultipleChoiceQuestionView extends LinearLayout {
         MultipleChoiceQuestionAdapter adapter = new MultipleChoiceQuestionAdapter(context, question);
         listView.setAdapter(adapter);
         listView.setLayoutParams(params);
-
+        listView.setDividerHeight(0);
 
         List<MultipleChoiceItem> items = question.getItems();
         for (int i = 0; i < items.size(); i++) {

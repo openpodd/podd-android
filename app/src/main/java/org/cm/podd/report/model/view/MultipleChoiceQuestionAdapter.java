@@ -19,16 +19,17 @@ package org.cm.podd.report.model.view;
 
 import android.R;
 import android.content.Context;
-import android.database.DataSetObserver;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
-import android.widget.ListAdapter;
 
 import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
+import org.cm.podd.report.util.StyleUtil;
 
 /**
  * Created by pphetra on 10/3/14 AD.
@@ -65,8 +66,14 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.simple_list_item_multiple_choice, viewGroup, false);
         }
         CheckedTextView ctv = (CheckedTextView) view;
+        ctv.setCheckMarkDrawable(0);
+        ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_multiple_state, 0, 0, 0);
         MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
         ctv.setText(item.getText());
+        ctv.setPadding(0, 0, 0, 24);
+        ctv.setTextAppearance(this.context, org.cm.podd.report.R.style.ReportTextLabel);
+        ctv.setTypeface(StyleUtil.getDefaultTypeface(this.context.getAssets(), Typeface.NORMAL));
+
         return ctv;
     }
 
