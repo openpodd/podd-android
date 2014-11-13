@@ -18,6 +18,7 @@
 package org.cm.podd.report.model.view;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -28,8 +29,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.cm.podd.report.R;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.util.StyleUtil;
 
 /**
  * Created by pphetra on 9/30/14 AD.
@@ -44,18 +47,27 @@ public class QuestionView extends LinearLayout {
 
         setOrientation(VERTICAL);
 
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 0, 24);
         setLayoutParams(params);
         setTag(q.getName());
         setId(q.getId());
 
+        ViewGroup.LayoutParams itemParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
-        titleView.setLayoutParams(params);
+        titleView.setLayoutParams(itemParams);
+        titleView.setTextAppearance(context, R.style.ReportTextLabel);
+        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         addView(titleView);
 
         final EditText editView = new EditText(context);
         editView.setLayoutParams(params);
+        editView.setPadding(0,0,0,0);
+        editView.setTextAppearance(context, R.style.EditTextFlat);
+        editView.setBackgroundResource(R.drawable.ab_solid_white_podd);
+        editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         int type = 0;
         if (question.getDataType() == DataType.INTEGER) {
             type = type | InputType.TYPE_CLASS_NUMBER;

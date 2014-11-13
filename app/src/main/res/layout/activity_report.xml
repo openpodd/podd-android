@@ -12,6 +12,7 @@
         android:layout_above="@+id/controlBar" >
         <FrameLayout
             android:id="@+id/container"
+            android:padding="14dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
              />

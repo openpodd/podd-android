@@ -8,6 +8,7 @@
     android:layout_centerInParent="true"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@color/white"
     android:orientation="vertical">
 
 
@@ -24,6 +25,9 @@
 	android:hint="@string/username"
 	android:imeOptions="actionNext"
 	android:singleLine="true"
+    style="@style/EditTextFlat"
+    android:background="@drawable/ab_solid_white_podd"
+    android:padding="5dp"
 	android:layout_marginBottom="8dp" />
 
     <EditText
@@ -34,6 +38,9 @@
 	android:imeOptions="actionDone"
 	android:singleLine="true"
     android:inputType="textPassword"
+    style="@style/EditTextFlat"
+    android:background="@drawable/ab_solid_white_podd"
+    android:padding="5dp"
 	android:layout_marginBottom="24dp" />
 
     <Button

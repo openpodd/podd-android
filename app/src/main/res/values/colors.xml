@@ -10,5 +10,6 @@
     <color name="report_row_bg">#f9f9f9</color>
     <color name="report_draft">#ff4081</color>
     <color name="report_date">#999999</color>
-
+    <color name="edit_text_report">#909090</color>
+    <color name="text_label_report">#333333</color>
 </resources>
