@@ -32,7 +32,6 @@ public class SharedPrefUtil {
     private static final String APP_SHARED_PREFS = "podd_preferences";
     public static final String ACCESS_TOKEN_KEY = "access_token";
     public static final String USERNAME = "username";
-    public static final String SERVER_ADDRESS = "server_address";
     public static final String FULLNAME = "full_name";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
     public static final String AWS_ACCESS_KEY = "aws_access_key";
@@ -59,10 +58,6 @@ public class SharedPrefUtil {
         return sharedPrefs.getString(USERNAME, null);
     }
 
-    public static String getServerAddress() {
-        return sharedPrefs.getString(SERVER_ADDRESS, "http://apidev.cmonehealth.org");
-    }
-
     public static List<Region> getAllRegions() {
         List<Region> regions = new ArrayList<Region>();
         String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
@@ -79,13 +74,11 @@ public class SharedPrefUtil {
     }
 
     public static String getAwsSecretKey() {
-        return "AKIAJC6VTXE5WL2ORRAQ";
-//        return sharedPrefs.getString(AWS_SECRET_KEY, "AKIAJC6VTXE5WL2ORRAQ");
+        return sharedPrefs.getString(AWS_SECRET_KEY, "");
     }
 
     public static String getAwsAccessKey() {
-        return "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE";
-//        return sharedPrefs.getString(AWS_ACCESS_KEY, "aXnjzAwUGr1RWr/yH13vGY/639tj9k1PqRudElcE");
+        return sharedPrefs.getString(AWS_ACCESS_KEY, "");
     }
 }
 

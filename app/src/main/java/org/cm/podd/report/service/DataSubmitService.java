@@ -36,7 +36,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -44,6 +43,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -69,9 +69,6 @@ import java.util.List;
 public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
-//    private static final String SERVER_HOST = "mister-podd.herokuapp.com";
-    private static final String SERVER_HOST = "apidev.cmonehealth.org";
-    private static final int SERVER_PORT = 80;
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
 
     public DataSubmitService() {
@@ -187,7 +184,7 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reports/", null, null);
+            URI http = new URI(BuildConfig.SERVER_URL + "/reports/");
             Log.i(TAG, "submit report url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
@@ -242,7 +239,7 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = URIUtils.createURI("http", SERVER_HOST, SERVER_PORT, "/reportImages/", null, null);
+            URI http = new URI(BuildConfig.SERVER_URL + "/reportImages/");
             Log.i(TAG, "submit report image url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
@@ -325,12 +322,7 @@ public class DataSubmitService extends IntentService {
         ObjectMetadata meta = new ObjectMetadata();
         meta.setContentLength(bitmapData.length);
         meta.setContentType("image/jpeg");
-//        try {
-//            byte[] md5s = MessageDigest.getInstance("MD5").digest(bitmapData);
-//            meta.setContentMD5(toHex(md5s));
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
+
         Upload upload1 = transferManager.upload(
                 "podd-dev", // bucket
                 guid + "-thumbnail", // name

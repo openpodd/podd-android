@@ -45,25 +45,11 @@ public class SettingActivity extends ActionBarActivity {
         sharedPrefs = SharedPrefUtil.getPrefs(getApplicationContext());
         Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
 
-        final EditText serverText = (EditText) findViewById(R.id.server_address);
-        serverText.setText(SharedPrefUtil.getServerAddress());
-        serverText.setTypeface(face);
-        serverText.setBackgroundResource(R.drawable.ab_solid_white_podd);
-        serverText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                sharedPrefs.edit().putString(
-                        SharedPrefUtil.SERVER_ADDRESS, serverText.getText().toString());
-                sharedPrefs.edit().commit();
-            }
-        });
-
         final EditText userText = (EditText) findViewById(R.id.username);
         userText.setText(SharedPrefUtil.getUserName());
         userText.setTypeface(face);
         userText.setBackgroundResource(R.drawable.ab_solid_white_podd);
 
-        ((TextView) findViewById(R.id.server_address_label)).setTypeface(face);
         ((TextView) findViewById(R.id.username_label)).setTypeface(face);
 
         final SettingActivity me = this;
