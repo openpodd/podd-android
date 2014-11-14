@@ -29,6 +29,7 @@ import android.widget.CheckedTextView;
 
 import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
+import org.cm.podd.report.model.MultipleChoiceSelection;
 import org.cm.podd.report.util.StyleUtil;
 
 /**
@@ -66,8 +67,13 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.simple_list_item_multiple_choice, viewGroup, false);
         }
         CheckedTextView ctv = (CheckedTextView) view;
+        // Remove android checkbox
         ctv.setCheckMarkDrawable(0);
-        ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_multiple_state, 0, 0, 0);
+        if (question.getSelectionType() == MultipleChoiceSelection.MULTIPLE) {
+            ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_multiple_state, 0, 0, 0);
+        } else {
+            ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_single_state, 0, 0, 0);
+        }
         MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
         ctv.setText(item.getText());
         ctv.setPadding(0, 0, 0, 24);
