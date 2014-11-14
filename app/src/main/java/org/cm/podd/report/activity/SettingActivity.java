@@ -19,12 +19,14 @@ package org.cm.podd.report.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -41,9 +43,12 @@ public class SettingActivity extends ActionBarActivity {
         setContentView(R.layout.activity_setting);
 
         sharedPrefs = SharedPrefUtil.getPrefs(getApplicationContext());
+        Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
 
         final EditText serverText = (EditText) findViewById(R.id.server_address);
         serverText.setText(SharedPrefUtil.getServerAddress());
+        serverText.setTypeface(face);
+        serverText.setBackgroundResource(R.drawable.ab_solid_white_podd);
         serverText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -55,6 +60,11 @@ public class SettingActivity extends ActionBarActivity {
 
         final EditText userText = (EditText) findViewById(R.id.username);
         userText.setText(SharedPrefUtil.getUserName());
+        userText.setTypeface(face);
+        userText.setBackgroundResource(R.drawable.ab_solid_white_podd);
+
+        ((TextView) findViewById(R.id.server_address_label)).setTypeface(face);
+        ((TextView) findViewById(R.id.username_label)).setTypeface(face);
 
         final SettingActivity me = this;
 

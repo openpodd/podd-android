@@ -2,29 +2,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:padding="@dimen/page_padding"
     tools:context="org.cm.podd.report.fragment.ReportConfirmFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        >
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
 
         <Button
             android:id="@+id/confirmBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Confirm"></Button>
+            style="@style/ConfirmButton"
+            android:text="Confirm"
+            android:layout_marginBottom="20dp"/>
         <Button
             android:id="@+id/draftBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Save as draft"></Button>
+            style="@style/SaveDraftButton"
+            android:text="Save as draft"
+            android:layout_marginBottom="20dp" />
         <Button
             android:id="@+id/cancelBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel"></Button>
+            style="@style/CancelButton"
+            android:text="Cancel" />
     </LinearLayout>
 </RelativeLayout>

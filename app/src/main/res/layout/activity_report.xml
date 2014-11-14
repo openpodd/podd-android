@@ -12,7 +12,7 @@
         android:layout_above="@+id/controlBar" >
         <FrameLayout
             android:id="@+id/container"
-            android:padding="14dp"
+            android:padding="@dimen/page_padding"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
              />
@@ -33,8 +33,8 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:paddingBottom="20dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
+        android:paddingLeft="@dimen/page_padding"
+        android:paddingRight="@dimen/page_padding" >
 
         <Button
             android:id="@+id/prevBtn"

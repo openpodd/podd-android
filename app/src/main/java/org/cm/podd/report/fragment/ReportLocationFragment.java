@@ -2,6 +2,7 @@ package org.cm.podd.report.fragment;
 
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.Region;
+import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -81,11 +84,15 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         mDatePicker.setMinDate(minDate);
 
         mRegionsSpinner = (Spinner) view.findViewById(R.id.regions_spinner);
-        regionAdapter = new ArrayAdapter<Region>(getActivity(), android.R.layout.simple_spinner_item, reportDataSource.getAllRegion());
+        regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, reportDataSource.getAllRegion());
         mRegionsSpinner.setAdapter(regionAdapter);
 
         loadData();
         navigationInterface.setPrevVisible(false);
+
+        Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+        ((TextView) view.findViewById(R.id.incident_date)).setTypeface(face);
+        ((TextView) view.findViewById(R.id.incident_place)).setTypeface(face);
 
         return view;
     }

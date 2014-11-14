@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,13 +6,14 @@
 
     <LinearLayout
         android:id="@+id/report_location_info"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
         <TextView
+            android:id="@+id/incident_date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            style="@style/ReportTextLabel"
             android:text="วันที่เกิดเหตุ"/>
 
         <DatePicker
@@ -23,8 +24,10 @@
         </DatePicker>
 
         <TextView
+            android:id="@+id/incident_place"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            style="@style/ReportTextLabel"
             android:text="สถานที่เกิดเหตุ"/>
 
         <Spinner
@@ -34,4 +37,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</ScrollView>

@@ -90,6 +90,9 @@ public class MultipleChoiceQuestionView extends LinearLayout {
             editText = new EditText(context);
             editText.setLayoutParams(params);
             editText.setText(question.getFreeTextValue());
+            editText.setTextAppearance(context, R.style.EditTextFlat);
+            editText.setBackgroundResource(R.drawable.ab_solid_white_podd);
+            editText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
             if (question.getFreeTextValue() != null && ! question.getFreeTextValue().equals("")) {
                 editText.setVisibility(VISIBLE);
             } else {
