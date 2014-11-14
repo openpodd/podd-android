@@ -10,9 +10,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -54,22 +57,36 @@ public class LoginActivity extends ActionBarActivity {
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = usernameText.getText().toString();
-                String password = passwordText.getText().toString();
-                if (username.length() > 0 && password.length() > 0) {
-                    new LoginTask().execute((Void[]) null);
-                } else {
-                    if (username.length() == 0) {
-                        Crouton.makeText(LoginActivity.this, "Required username", Style.ALERT).show();
-                        return;
-                    }
-                    if (password.length() == 0) {
-                        Crouton.makeText(LoginActivity.this, "Required password", Style.ALERT).show();
-                        return;
-                    }
-                }
+                authenticate();
             }
         });
+
+        passwordText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    authenticate();
+                }
+            return false;
+            }
+        });
+    }
+
+    private void authenticate() {
+        String username = usernameText.getText().toString();
+        String password = passwordText.getText().toString();
+        if (username.length() > 0 && password.length() > 0) {
+            new LoginTask().execute((Void[]) null);
+        } else {
+            if (username.length() == 0) {
+                Crouton.makeText(LoginActivity.this, "Required username", Style.ALERT).show();
+                return;
+            }
+            if (password.length() == 0) {
+                Crouton.makeText(LoginActivity.this, "Required password", Style.ALERT).show();
+                return;
+            }
+        }
     }
 
     @Override

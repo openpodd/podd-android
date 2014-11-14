@@ -58,7 +58,7 @@ public class RequestDataUtil {
 
         try {
             HttpPost post = new HttpPost(reqUrl);
-            post.setHeader("Content-type", "application/json");
+            post.setHeader("Content-Type", "application/json");
             if (token != null) {
                 post.setHeader("Authorization", "Token " + token);
             }
@@ -83,8 +83,7 @@ public class RequestDataUtil {
         } catch (ClientProtocolException e) {
             Log.e(TAG, "error post data", e);
         } catch (IOException e) {
-            Log.e(TAG, "error post data", e);
-
+            Log.e(TAG, "Can't connect server", e);
         } catch (JSONException e) {
             Log.e(TAG, "error convert json", e);
         } finally {
