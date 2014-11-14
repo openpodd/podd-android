@@ -1,6 +1,7 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.util.StyleUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,6 +98,12 @@ public class ReportConfirmFragment extends Fragment {
                 navigationInterface.finishReport(ReportDataInterface.CANCEL_ACTION);
             }
         });
+
+        Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+        ((TextView) view.findViewById(R.id.confirm_message)).setTypeface(face);
+        confirmBtn.setTypeface(face);
+        cancelBtn.setTypeface(face);
+        draftBtn.setTypeface(face);
 
         return view;
     }

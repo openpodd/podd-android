@@ -31,5 +31,8 @@
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
     <string name="normal_incident">ปกติ</string>
+    <string name="button_confirm">ยืนยัน</string>
+    <string name="button_save_draft">บันทึกร่างรายงาน</string>
+    <string name="message_confirm_submit">คุณต้องการยืนยัน\nการรายงานนี้ใช่หรือไม่ ?</string>
 
 </resources>

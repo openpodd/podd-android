@@ -1,14 +1,23 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:padding="@dimen/page_padding"
+    android:orientation="vertical"
     tools:context="org.cm.podd.report.fragment.ReportConfirmFragment">
+
+    <TextView
+        android:id="@+id/confirm_message"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/message_confirm_submit"
+        android:textSize="25sp"
+        android:gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical" >
 
         <Button
@@ -16,20 +25,20 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/ConfirmButton"
-            android:text="Confirm"
+            android:text="@string/button_confirm"
             android:layout_marginBottom="20dp"/>
         <Button
             android:id="@+id/draftBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/SaveDraftButton"
-            android:text="Save as draft"
+            android:text="@string/button_save_draft"
             android:layout_marginBottom="20dp" />
         <Button
             android:id="@+id/cancelBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/CancelButton"
-            android:text="Cancel" />
+            android:text="@string/cancel" />
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>
