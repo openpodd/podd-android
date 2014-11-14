@@ -37,6 +37,7 @@ public class StyleUtil {
             if (titleView != null) {
                 titleView.setText(title);
                 titleView.setTypeface(getDefaultTypeface(activity.getAssets(), Typeface.NORMAL));
+                titleView.setPadding(0, 15, 0, 0);
                 if (title == null) {
                     titleView.setCompoundDrawablesWithIntrinsicBounds(
                             activity.getResources().getDrawable(R.drawable.logo_podd), null, null, null);
