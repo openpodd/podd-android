@@ -17,19 +17,24 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -39,6 +44,7 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReportTypeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
@@ -65,7 +71,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         items.add(new ReportType(0, "ปกติ"));
         items.addAll(dataSource.getAll());
         items.add(new ReportType(-99, "ดึงแบบฟอร์มใหม่"));
-        adapter = new ArrayAdapter<ReportType>(this, android.R.layout.simple_list_item_1, items);
+        adapter = new ReportTypeAdapter(this, R.layout.list_item_report_type, items);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(this);
@@ -124,5 +130,27 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         // Broadcasts the Intent to network receiver
         Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+    }
+
+    public class ReportTypeAdapter extends ArrayAdapter<ReportType> {
+
+        Context context;
+        int resource;
+
+        public ReportTypeAdapter(Context context, int resource, List<ReportType> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.resource = resource;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(this.resource, parent, false);
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            textView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            textView.setText(getItem(position).getName());
+            return view;
+        }
     }
 }
