@@ -26,7 +26,9 @@ import org.cm.podd.report.model.Report;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -205,7 +207,7 @@ public class ReportListFragment extends ListFragment {
                     draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
 
             Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-            String dateStr = DateFormat.getDateInstance().format(date);
+            String dateStr = convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 
             if (negative == Report.TRUE) {
@@ -222,6 +224,21 @@ public class ReportListFragment extends ListFragment {
                 view.setBackgroundResource(R.color.white);
             }
 
+        }
+
+        final String[] THAI_MONTH = {
+            "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+            "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+        };
+
+        private String convertToThaiDate(Date date) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            int dateNum = cal.get(Calendar.DATE);
+            int month = cal.get(Calendar.MONTH);
+            String thaiMonth = THAI_MONTH[month];
+            int year = cal.get(Calendar.YEAR) + 543;
+            return String.format("%d %s %d", dateNum, thaiMonth, year);
         }
 
         class ViewHolder {
