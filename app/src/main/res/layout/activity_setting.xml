@@ -15,25 +15,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/server_address_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/server_address"
-            style="@style/ReportTextLabel"
-            android:layout_marginBottom="15dp"
-            />
-        <EditText
-            android:id="@+id/server_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="xxx"
-            style="@style/EditTextFlat"
-            android:hint="https://ip.address"
-            android:layout_marginBottom="15dp"
-            />
-
-        <TextView
             android:id="@+id/username_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

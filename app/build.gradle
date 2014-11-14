@@ -11,12 +11,38 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    buildTypes {
+
+    signingConfigs {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            keyAlias 'podd_report'
+            storeFile file('../report.keystore')
         }
     }
+
+    buildTypes {
+        debug {
+            debuggable true
+            runProguard false
+        }
+
+        release {
+            debuggable false
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    productFlavors {
+        server_test {
+            buildConfigField "String", "SERVER_URL", "\"http://apidev.cmonehealth.org\""
+        }
+
+        server_production {
+            buildConfigField "String", "SERVER_URL", "\"https://cmonehealth.org/api\""
+        }
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
@@ -41,4 +67,20 @@ dependencies {
 configurations {
     all*.exclude group: 'commons-logging', module: 'commons-logging'
     all*.exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+}
+
+task askForPasswords << {
+    // Must create String because System.readPassword() returns char[]
+    // (and assigning that below fails silently)
+    def storePw = new String(System.console().readPassword("Keystore password: "))
+    //def keyPw  = new String(System.console().readPassword("Key password: "))
+
+    android.signingConfigs.release.storePassword = storePw
+    android.signingConfigs.release.keyPassword = storePw
+}
+
+tasks.whenTaskAdded { theTask ->
+    if (theTask.name.equals("packageServer_productionRelease") || theTask.name.equals("packageServer_testRelease")) {
+        theTask.dependsOn "askForPasswords"
+    }
 }

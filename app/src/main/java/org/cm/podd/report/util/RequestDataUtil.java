@@ -30,6 +30,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.cm.podd.report.BuildConfig;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,7 +48,7 @@ public class RequestDataUtil {
     public static ResponseObject post(String path, String query, String json, String token) {
         JSONObject jsonObj = null;
         int statusCode = 0;
-        String reqUrl = String.format("%s%s%s", SharedPrefUtil.getServerAddress(), path,
+        String reqUrl = String.format("%s%s%s", BuildConfig.SERVER_URL, path,
                 query == null ? "" : "?"+query);
         Log.i(TAG, "submit url=" + reqUrl);
         Log.i(TAG, "post data=" + json);
