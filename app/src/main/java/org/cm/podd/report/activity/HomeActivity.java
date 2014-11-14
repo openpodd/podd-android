@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -129,7 +130,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         title.setLayoutParams(layoutParams);
         title.setGravity(Gravity.CENTER);
         title.setTextColor(getResources().getColorStateList(R.color.tab_text_state));
-        title.setTextSize(20);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         title.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         return title;
     }

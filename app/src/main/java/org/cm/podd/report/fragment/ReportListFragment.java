@@ -170,11 +170,11 @@ public class ReportListFragment extends ListFragment {
             holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
             holder.typeText = (TextView) retView.findViewById(R.id.report_type);
             // update fontface
-            holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.BOLD));
+            holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
             holder.dateText = (TextView) retView.findViewById(R.id.report_date);
             // update fontface
-            holder.dateText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+            holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
             holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
             // update fontface
@@ -184,7 +184,7 @@ public class ReportListFragment extends ListFragment {
 
             // cache drawable
             holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
-            holder.negative = context.getResources().getDrawable(R.drawable.icon_status_bad);
+            holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
 
             retView.setTag(holder);
             return retView;
