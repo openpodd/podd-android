@@ -269,7 +269,7 @@ public class DataSubmitService extends IntentService {
             HttpEntity entity = response.getEntity();
 
             int statusCode = response.getStatusLine().getStatusCode();
-            Log.e(TAG, "status code=" + statusCode);
+            Log.d(TAG, "status code=" + statusCode);
             success = statusCode == 201;
             // Detect server complaints
             entity.consumeContent();
@@ -353,7 +353,7 @@ public class DataSubmitService extends IntentService {
 
         } catch (InterruptedException e) {
             e.printStackTrace();
-            Log.e(TAG, "upload to s3 error", e);
+            Log.d(TAG, "upload to s3 error", e);
             return false;
         }
 
