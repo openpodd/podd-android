@@ -16,6 +16,8 @@ android {
         release {
             keyAlias 'podd_report'
             storeFile file('../report.keystore')
+            storePassword "xxx"
+            keyPassword "yyy"
         }
     }
 
