@@ -25,6 +25,7 @@ import java.io.Serializable;
 public class MultipleChoiceItem implements Serializable{
     private String id;
     private String text;
+    private String hiddenValue;
     private boolean checked = false;
 
     public MultipleChoiceItem(String id, String text) {
@@ -59,5 +60,13 @@ public class MultipleChoiceItem implements Serializable{
     @Override
     public String toString() {
         return text;
+    }
+
+    public String getHiddenValue() {
+        return hiddenValue;
+    }
+
+    public void setHiddenValue(String hiddenValue) {
+        this.hiddenValue = hiddenValue;
     }
 }

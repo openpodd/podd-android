@@ -19,6 +19,7 @@ package org.cm.podd.report.model.parser;
 
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Form;
+import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.MultipleChoiceSelection;
 import org.cm.podd.report.model.Page;
@@ -232,6 +233,10 @@ public class FormParser {
             question.setFreeTextChoiceEnable(q.getBoolean("freeTextChoiceEnable"));
         }
 
+        if (!q.isNull("hiddenName")) {
+            question.setHiddenName(q.getString("hiddenName"));
+        }
+
         if (!q.isNull("validations")) {
             JSONArray validations = q.getJSONArray("validations");
             for (int i = 0; i < validations.length(); i++) {
@@ -243,8 +248,12 @@ public class FormParser {
         JSONArray items = q.getJSONArray("items");
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            question.addItem(item.getString("id"),
+            MultipleChoiceItem choiceItem = question.addItem(
+                    item.getString("id"),
                     item.getString("text"));
+            if (!item.isNull("hiddenValue")) {
+                choiceItem.setHiddenValue(item.getString("hiddenValue"));
+            }
         }
 
         if (question.isFreeTextChoiceEnable()) {

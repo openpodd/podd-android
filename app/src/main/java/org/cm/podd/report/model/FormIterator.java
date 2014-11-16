@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -116,7 +117,11 @@ public class FormIterator implements Serializable{
     private void recreateExpressionEngine() {
         Log.d(TAG, "recreateExpressionEngine");
         expressionEngine = new ExpressionEngine();
-        for (Map.Entry<String, Object> ks: getData(true).entrySet()) {
+        assignDataToExpressionEngine(getData(true).entrySet());
+    }
+
+    private void assignDataToExpressionEngine(Set<Map.Entry<String, Object>> entries) {
+        for (Map.Entry<String, Object> ks: entries) {
             expressionEngine.setObject(ks.getKey(), ks.getValue());
         }
     }
@@ -130,9 +135,9 @@ public class FormIterator implements Serializable{
     }
 
     private void setPageDataToExpressionEngine(Page page) {
-        for (Question q : page.getQuestions()) {
-            getExpressionEngine().setObject(q.getName(), q.getValue());
-        }
+        HashMap<String, Object> data = new HashMap<String, Object>();
+        page.getData(data, true);
+        assignDataToExpressionEngine(data.entrySet());
     }
 
     public Map<String, Object> getData(boolean keyAsName) {

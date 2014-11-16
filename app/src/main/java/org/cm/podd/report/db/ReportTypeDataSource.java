@@ -99,7 +99,7 @@ public class ReportTypeDataSource {
     }
 
     public Form getForm(long formId) {
-//        if (formId == 1) return parseForm("podd.json");
+//        if (formId == 100000) return parseForm("podd.json");
 //        if (formId == 2) return parseForm("podd2.json");
 //        if (formId == 3) return parseForm("podd3.json");
 //        if (formId == 4) return parseForm("podd4.json");
@@ -109,25 +109,29 @@ public class ReportTypeDataSource {
         Cursor cursor = db.rawQuery("select * from report_type where _id = ?",
                 new String[] {Long.toString(formId)});
 
+        Form result = null;
         if (cursor.moveToFirst()) {
             String definition = cursor.getString(cursor.getColumnIndex("definition"));
             try {
                 FormParser formParser = new FormParser();
                 formParser.parse(new JSONObject(definition));
 
-                return formParser.getForm();
+                result = formParser.getForm();
             } catch (Exception e) {
                 Log.e(TAG, "error while parsing form", e);
             }
 
         }
 
-        return null;
+        cursor.close();
+        db.close();
+
+        return result;
     }
 
     public List<ReportType> getAll() {
         ArrayList<ReportType> results = new ArrayList<ReportType>();
-//        results.add(new ReportType(1, "สัตว์ป่วย/ตาย 1"));
+//        results.add(new ReportType(100000, "podd.json"));
 //        results.add(new ReportType(2, "สัตว์ป่วย/ตาย 2"));
 //        results.add(new ReportType(3, "สัตว์ป่วย/ตาย 3"));
 //        results.add(new ReportType(4, "สัตว์ป่วย/ตาย 4"));
@@ -143,6 +147,8 @@ public class ReportTypeDataSource {
                     cursor.getString(cursor.getColumnIndex("name"))
             ));
         }
+        cursor.close();
+        db.close();
 
         return results;
     }

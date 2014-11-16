@@ -38,9 +38,10 @@ public class MultipleChoiceQuestion extends Question<String> {
     private List<MultipleChoiceItem> items = new ArrayList<MultipleChoiceItem>();
     private HashMap<String, MultipleChoiceItem> itemMap = new HashMap<String, MultipleChoiceItem>();
     private MultipleChoiceSelection selectionType;
+
+    private String hiddenName;
+
     private boolean freeTextChoiceEnable = false;
-
-
     private String freeTextText;
     private String freeTextName;
     private String freeTextId;
@@ -59,15 +60,16 @@ public class MultipleChoiceQuestion extends Question<String> {
         }
     }
 
-    public void addItem(String id, String text) {
-        addItem(id, text, false);
+    public MultipleChoiceItem addItem(String id, String text) {
+        return addItem(id, text, false);
     }
 
-    public void addItem(String id, String text, boolean flag) {
+    public MultipleChoiceItem addItem(String id, String text, boolean flag) {
         MultipleChoiceItem item = new MultipleChoiceItem(id, text);
         item.setChecked(flag);
         items.add(item);
         itemMap.put(id, item);
+        return item;
     }
 
     public List<MultipleChoiceItem> getItems() {
@@ -114,7 +116,6 @@ public class MultipleChoiceQuestion extends Question<String> {
             }
         }
         return builder.toString();
-
     }
 
     @Override
@@ -194,14 +195,24 @@ public class MultipleChoiceQuestion extends Question<String> {
         super.getData(data, keyAsName);
 
         if (isFreeTextChoiceEnable() && isFreeTextChoiceTick()) {
-            String key = null;
-            if (keyAsName) {
-                key = getName();
-            } else {
-                key = getId() + "@@@" + getFreeTextName();
-            }
+            String key = getKey(keyAsName, getFreeTextName());
             data.put(key, getFreeTextValue());
         }
+
+        if (hiddenName != null) {
+            String key = getKey(keyAsName, hiddenName);
+            data.put(key, getHiddenValue());
+        }
+    }
+
+    private String getKey(boolean keyAsName, String name) {
+        String key = null;
+        if (keyAsName) {
+            key = name;
+        } else {
+            key = getId() + "@@@" + name;
+        }
+        return key;
     }
 
     private boolean isFreeTextChoiceTick() {
@@ -211,5 +222,28 @@ public class MultipleChoiceQuestion extends Question<String> {
             }
         }
         return false;
+    }
+
+    public String getHiddenName() {
+        return hiddenName;
+    }
+
+    public void setHiddenName(String hiddenName) {
+        this.hiddenName = hiddenName;
+    }
+
+    private String getHiddenValue() {
+        StringBuilder builder = new StringBuilder();
+        boolean isFirst = true;
+        for (MultipleChoiceItem item : items) {
+            if (item.isChecked()) {
+                if (!isFirst) {
+                    builder.append(",");
+                }
+                builder.append(item.getHiddenValue());
+                isFirst = false;
+            }
+        }
+        return builder.toString();
     }
 }

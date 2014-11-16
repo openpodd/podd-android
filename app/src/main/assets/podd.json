@@ -3,13 +3,13 @@
     "questions": [
         {
             "id": 1,
-            "name": "animalGroup",
+            "name": "animalUIGroup",
             "title": "ประเภทสัตว์",
             "type": "single",
             "items": [
                 { "id": "สัตว์ปีก", "text": "สัตว์ปีก" },
-                { "id": "สัตว์กระเพาะเดี่ยว", "text": "สัตว์กระเพาะเดี่ยว" },
-                { "id": "สัตว์กระเพาะรวม", "text": "สัตว์กระเพาะรวม" }
+                { "id": "สัตว์เลี้ยง", "text": "สัตว์เลี้ยง" },
+                { "id": "ปศุสัตว์", "text": "ปศุสัตว์" }
             ],
             "validations": [
                 { "type": "require", "message": "กรุณาระบุประเภทสัตว์" }
@@ -20,13 +20,14 @@
             "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
+            "hiddenName": "animalGroup",
             "items": [
-                { "id": "ไก่พื้นเมือง", "text": "ไก่พื้นเมือง" },
-                { "id": "ไก่เนื้อ", "text": "ไก่เนื้อ" },
-                { "id": "ไก่ไข่", "text": "ไก่ไข่" },
-                { "id": "เป็ดเนื้อ", "text": "เป็ดเนื้อ" },
-                { "id": "เป็ดไข่", "text": "เป็ดไข่" },
-                { "id": "นก", "text": "นก" }
+                { "id": "ไก่พื้นเมือง", "text": "ไก่พื้นเมือง", "hiddenValue": "สัตว์ปีก" },
+                { "id": "ไก่เนื้อ", "text": "ไก่เนื้อ", "hiddenValue": "สัตว์ปีก" },
+                { "id": "ไก่ไข่", "text": "ไก่ไข่", "hiddenValue": "สัตว์ปีก" },
+                { "id": "เป็ดเนื้อ", "text": "เป็ดเนื้อ", "hiddenValue": "สัตว์ปีก" },
+                { "id": "เป็ดไข่", "text": "เป็ดไข่", "hiddenValue": "สัตว์ปีก" },
+                { "id": "นก", "text": "นก", "hiddenValue": "สัตว์ปีก" }
             ],
             "validations": [
                 { "type": "require", "message": "กรุณาระบุชนิดสัตว์" }
@@ -37,10 +38,10 @@
             "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
+            "hiddenName": "animalGroup",
             "items": [
-                { "id": "สุกร", "text": "สุกร" },
-                { "id": "สุนัข", "text": "สุนัข" },
-                { "id": "แมว", "text": "แมว" }
+                { "id": "สุนัข", "text": "หมา", "hiddenValue": "สัตว์กระเพาะเดี่ยว"},
+                { "id": "แมว", "text": "แมว", "hiddenValue": "สัตว์กระเพาะเดี่ยว" }
             ],
             "validations": [
                 { "type": "require", "message": "กรุณาระบุชนิดสัตว์" }
@@ -51,12 +52,14 @@
             "name": "animalType",
             "title": "ชนิดสัตว์",
             "type": "single",
+            "hiddenName": "animalGroup",
             "items": [
-                { "id": "โคเนื้อ", "text": "โคเนื้อ" },
-                { "id": "โคนม", "text": "โคนม" },
-                { "id": "แพะ", "text": "แพะ" },
-                { "id": "แกะ", "text": "แกะ" },
-                { "id": "กระบือ", "text": "กระบือ" }
+                { "id": "สุกร", "text": "หมู", "hiddenValue": "สัตว์กระเพาะเดี่ยว" },
+                { "id": "โคเนื้อ", "text": "โคเนื้อ", "hiddenValue": "สัตว์กระเพาะรวม" },
+                { "id": "โคนม", "text": "โคนม", "hiddenValue": "สัตว์กระเพาะรวม" },
+                { "id": "แพะ", "text": "แพะ", "hiddenValue": "สัตว์กระเพาะรวม" },
+                { "id": "แกะ", "text": "แกะ", "hiddenValue": "สัตว์กระเพาะรวม" },
+                { "id": "กระบือ", "text": "ควาย", "hiddenValue": "สัตว์กระเพาะรวม" }
             ],
             "validations": [
                 { "type": "require", "message": "กรุณาระบุชนิดสัตว์" }
@@ -491,17 +494,17 @@
         {
             "from": 1,
             "to": 2,
-            "expression": "animalGroup=='สัตว์ปีก'"
+            "expression": "animalUIGroup=='สัตว์ปีก'"
         },
         {
             "from": 1,
             "to": 3,
-            "expression": "animalGroup=='สัตว์กระเพาะเดี่ยว'"
+            "expression": "animalUIGroup=='สัตว์เลี้ยง'"
         },
         {
             "from": 1,
             "to": 4,
-            "expression": "animalGroup=='สัตว์กระเพาะรวม'"
+            "expression": "animalUIGroup=='ปศุสัตว์'"
         },
         {
             "from": 2,
