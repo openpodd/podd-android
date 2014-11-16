@@ -200,7 +200,9 @@ public class DataSubmitService extends IntentService {
             data.put("reportTypeId", report.getType());
             data.put("date", sdfDateTime.format(report.getDate()));
             data.put("incidentDate", sdfDate.format(report.getStartDate()));
-            data.put("administrationAreaId", report.getRegionId());
+            if (report.getRegionId() != 0) {
+                data.put("administrationAreaId", report.getRegionId());
+            }
             data.put("remark", report.getRemark());
             data.put("negative", report.getNegative() == 1);
             data.put("formData", report.getNegative() == 1 ?
