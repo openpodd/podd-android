@@ -30,7 +30,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE = "create table report"
             + "("
-            + "  _id INTEGER PRIMARY KEY,"
+            + "  _id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "  type INTEGER,"
             + "  latitude REAL default 0.0,"
             + "  longitude REAL default 0.0,"
@@ -47,7 +47,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_IMAGE = "create table report_image"
             + "("
-            + "  _id INTEGER PRIMARY KEY,"
+            + "  _id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "  report_id INTEGER,"
             + "  image_uri TEXT,"
             + "  image_thumbnail BLOB,"
