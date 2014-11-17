@@ -16,7 +16,6 @@
  */
 package org.cm.podd.report.db;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -68,13 +67,21 @@ public class ReportQueueDataSource {
         Log.d(TAG, "insert queue type=" + dataType);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put("report_id", reportId);
-        values.put("image_id", imageId);
-        values.put("data_type", dataType);
-        values.put("created_at", new Date().getTime());
+        StringBuilder sql = new StringBuilder("insert into report_queue ");
+        sql.append("(report_id, image_id, data_type, created_at) ")
+            .append("select ?, ?, ?, ? where not exists (select 1 from report_queue ");
 
-        db.insert("report_queue", null, values);
+        if (dataType.equals(IMAGE_TYPE)) {
+            sql.append(" where image_id = ? and data_type = ?)");
+            db.execSQL(sql.toString(), new Object[]{
+                    reportId, imageId, dataType, new Date().getTime(), imageId, dataType
+            });
+        } else {
+            sql.append(" where report_id = ? and data_type = ?)");
+            db.execSQL(sql.toString(), new Object[]{
+                    reportId, imageId, dataType, new Date().getTime(), reportId, dataType
+            });
+        }
         db.close();
     }
 
