@@ -142,10 +142,12 @@ public class ReportTypeDataSource {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from report_type order by _id asc", null);
         while (cursor.moveToNext()) {
-            results.add(new ReportType(
+            ReportType reportType = new ReportType(
                     cursor.getLong(cursor.getColumnIndex("_id")),
                     cursor.getString(cursor.getColumnIndex("name"))
-            ));
+            );
+            reportType.setVersion(cursor.getInt(cursor.getColumnIndex("version")));
+            results.add(reportType);
         }
         cursor.close();
         db.close();
@@ -231,5 +233,16 @@ public class ReportTypeDataSource {
         form.addTransition(new Transition(3, 4, "true"));
 
         return form;
+    }
+
+    public void update(ReportType reportType) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", reportType.getName());
+        values.put("version", reportType.getVersion());
+        values.put("definition", reportType.getDefinition());
+        db.update("report_type", values, "_id = ?",
+                new String[] {Long.toString(reportType.getId())});
+        db.close();
     }
 }

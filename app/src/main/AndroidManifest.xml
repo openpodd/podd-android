@@ -110,6 +110,9 @@
             android:name=".service.DataSubmitService"
             android:exported="false" />
 
+        <service
+            android:name=".service.SyncReportTypeService"
+            android:exported="false" />
 
     </application>
 

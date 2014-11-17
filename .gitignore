@@ -8,3 +8,4 @@
 # cache dir
 .directory
 *.iml
+*.keystore

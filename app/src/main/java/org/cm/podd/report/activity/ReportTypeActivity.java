@@ -17,8 +17,10 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -41,6 +43,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
@@ -56,6 +59,18 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
     private ReportDataSource reportDataSource;
     private ReportQueueDataSource reportQueueDataSource;
 
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            listView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
+
+            ArrayList<ReportType> items = getAll();
+            adapter = new ReportTypeAdapter(context, R.layout.list_item_report_type, items);
+            listView.setAdapter(adapter);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,14 +82,21 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         reportDataSource = new ReportDataSource(this);
         reportQueueDataSource = new ReportQueueDataSource(this);
 
-        ArrayList<ReportType> items = new ArrayList<ReportType>();
-        items.add(new ReportType(0, "ปกติ"));
-        items.addAll(dataSource.getAll());
-        items.add(new ReportType(-99, "ดึงแบบฟอร์มใหม่"));
+        ArrayList<ReportType> items = getAll();
         adapter = new ReportTypeAdapter(this, R.layout.list_item_report_type, items);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(this);
+
+        registerReceiver(mSyncReceiver, new IntentFilter(SyncReportTypeService.SYNC));
+    }
+
+    private ArrayList<ReportType> getAll() {
+        ArrayList<ReportType> items = new ArrayList<ReportType>();
+        items.add(new ReportType(0, "ปกติ"));
+        items.addAll(dataSource.getAll());
+        items.add(new ReportType(-99, "ดึงแบบฟอร์มใหม่"));
+        return items;
     }
 
 
@@ -110,6 +132,8 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             listView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
 
+            startSyncReportType();
+
         } else if (item.getId() == 0) {
             long reportId = reportDataSource.createPositiveReport();
 
@@ -126,12 +150,27 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mSyncReceiver);
+        // intent service stops by itself after handle intent
+        super.onDestroy();
+    }
+
     private void broadcastReportSubmission() {
         // Broadcasts the Intent to network receiver
         Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 
+    private void startSyncReportType() {
+        Intent intent = new Intent(this, SyncReportTypeService.class);
+        startService(intent);
+    }
+
+    /**
+     * Adapter
+     */
     public class ReportTypeAdapter extends ArrayAdapter<ReportType> {
 
         Context context;
