@@ -58,7 +58,7 @@ public class SyncReportTypeService extends IntentService {
 
             try {
                 JSONArray items = new JSONArray(resp.getRawData());
-//                JSONArray items = new JSONArray("[{\"id\":1,\"version\":2,\"name\":\"สัตว์ป่วย\\/ไม่ตายสักที\"},{\"id\":2,\"version\":3,\"name\":\"สัตว์กัดกระจาย\"}]");
+//                JSONArray items = new JSONArray("[{\"id\":1,\"version\":1,\"name\":\"สัตว์ป่วย\\/ไม่ตายสักที\"},{\"id\":2,\"version\":3,\"name\":\"สัตว์กัดกระจาย\"}]");
 
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject updateReportType = items.getJSONObject(i);
@@ -67,20 +67,38 @@ public class SyncReportTypeService extends IntentService {
                     ReportType rt = requireVersionUpdate(updateReportType, origReportTypes);
 
                     if (rt != null) {
-                        // Get more detail definition for this report type
+                        if (rt.hasNextVersion()) {
+                            // Get more detail definition for this report type
+                            RequestDataUtil.ResponseObject resp2 =
+                                    RequestDataUtil.get("/reportTypes/" + rt.getId(), null, accessToken);
+
+                            JSONObject result = new JSONObject(resp2.getRawData());
+                            rt.setDefinition(result.optJSONObject("definition").toString());
+                            rt.setVersion(result.optInt("version"));
+                            rt.setName(result.optString("name"));
+
+                            Log.d(TAG, String.format("Report type id %d updated to version %d",
+                                    rt.getId(), rt.getVersion()));
+                            Log.d(TAG, "new definition = " + rt.getDefinition());
+
+                            dbSource.update(rt);
+                        }
+
+                    } else {
+                        long reportTypeId = updateReportType.optInt("id");
+                        String name = updateReportType.optString("name");
+                        Log.d(TAG, "Found new report type id= " + reportTypeId);
+
                         RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/reportTypes/" + rt.getId(), null, accessToken);
+                                RequestDataUtil.get("/reportTypes/" + reportTypeId, null, accessToken);
 
                         JSONObject result = new JSONObject(resp2.getRawData());
+
+                        rt = new ReportType(reportTypeId, name);
                         rt.setDefinition(result.optJSONObject("definition").toString());
                         rt.setVersion(result.optInt("version"));
-                        rt.setName(result.optString("name"));
 
-                        Log.d(TAG, String.format("Report type id %d updated to version %d",
-                                rt.getId(), rt.getVersion()));
-                        Log.d(TAG, "new definition = " + rt.getDefinition());
-
-                        dbSource.update(rt);
+                        dbSource.insert(rt);
                     }
                 }
 
@@ -98,19 +116,23 @@ public class SyncReportTypeService extends IntentService {
 
     private ReportType requireVersionUpdate(JSONObject updateReportType, List<ReportType> reportTypes) {
         ReportType found = null;
-        boolean required = false;
         Iterator<ReportType> iterator = reportTypes.iterator();
 
-        while (iterator.hasNext() && !required) {
+        while (iterator.hasNext() && found == null) {
             ReportType rt = iterator.next();
             int updateVersion = updateReportType.optInt("version");
             long updateReportTypeId = updateReportType.optInt("id");
 
-            if (updateReportTypeId == rt.getId() && updateVersion > rt.getVersion()) {
-                Log.d(TAG, String.format("id %d : new version %d > old version %d",
-                        updateReportTypeId, updateVersion, rt.getVersion()));
-                required = true;
+            if (updateReportTypeId == rt.getId()) {
                 found = rt;
+                found.setNextVersion(rt.getVersion());
+
+                if (updateVersion > rt.getVersion()) {
+                    Log.d(TAG, String.format("id %d : new version %d > old version %d",
+                            updateReportTypeId, updateVersion, rt.getVersion()));
+
+                    found.setNextVersion(updateVersion);
+                }
             }
         }
         return found;

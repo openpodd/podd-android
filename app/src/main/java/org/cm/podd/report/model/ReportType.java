@@ -26,6 +26,7 @@ public class ReportType {
     private String name;
     private int version;
     private String definition;
+    private int nextVersion;
 
     public ReportType(long id, String name) {
         this.id = id;
@@ -54,6 +55,7 @@ public class ReportType {
 
     public void setVersion(int version) {
         this.version = version;
+        this.nextVersion = version;
     }
 
     public String getDefinition() {
@@ -64,8 +66,20 @@ public class ReportType {
         this.definition = definition;
     }
 
+    public int getNextVersion() {
+        return nextVersion;
+    }
+
+    public void setNextVersion(int nextVersion) {
+        this.nextVersion = nextVersion;
+    }
+
+    public boolean hasNextVersion() {
+        return this.nextVersion > this.version;
+    }
     @Override
     public String toString() {
         return name;
     }
+
 }
