@@ -14,15 +14,6 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.util.StyleUtil;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ReportConfirmFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ReportConfirmFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class ReportConfirmFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,15 +62,18 @@ public class ReportConfirmFragment extends Fragment {
         Button confirmBtn = (Button) view.findViewById(R.id.confirmBtn);
         Button cancelBtn = (Button) view.findViewById(R.id.cancelBtn);
         Button draftBtn = (Button) view.findViewById(R.id.draftBtn);
+        TextView confirmText = (TextView) view.findViewById(R.id.confirm_message);
 
         if (dataInterface.isDoneSubmit()) {
             draftBtn.setVisibility(View.GONE);
+            confirmBtn.setVisibility(View.GONE);
+            cancelBtn.setText(R.string.button_back_to_report_list);
+            confirmText.setText(R.string.done_submit_message);
         }
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO mark report status to "ready to send to server"
                 navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
             }
         });
@@ -87,7 +81,6 @@ public class ReportConfirmFragment extends Fragment {
         draftBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO mark report status to "ready to send to server"
                 navigationInterface.finishReport(ReportDataInterface.DRAFT_ACTION);
             }
         });
@@ -100,7 +93,7 @@ public class ReportConfirmFragment extends Fragment {
         });
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
-        ((TextView) view.findViewById(R.id.confirm_message)).setTypeface(face);
+        confirmText.setTypeface(face);
         confirmBtn.setTypeface(face);
         cancelBtn.setTypeface(face);
         draftBtn.setTypeface(face);
@@ -117,33 +110,12 @@ public class ReportConfirmFragment extends Fragment {
         super.onAttach(activity);
         navigationInterface = (ReportNavigationInterface) activity;
         dataInterface = (ReportDataInterface) activity;
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         navigationInterface = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 
 }
