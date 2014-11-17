@@ -15,12 +15,14 @@ import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -43,6 +45,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.ReportImage;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -75,6 +78,7 @@ public class ReportImageFragment extends Fragment {
     private ReportNavigationInterface navigationInterface;
     private ReportDataInterface dataInterface;
     private ReportDataSource reportDataSource;
+    private ReportQueueDataSource reportQueueDataSource;
 
     private GridView gridView;
     private ImageAdapter imageAdapter;
@@ -135,6 +139,7 @@ public class ReportImageFragment extends Fragment {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
         reportDataSource = new ReportDataSource(this.getActivity());
+        reportQueueDataSource = new ReportQueueDataSource(this.getActivity());
 
         if (savedInstanceState != null) {
             mCurrentPhotoPath = savedInstanceState.getString("mCurrentPhotoPath");
@@ -386,6 +391,16 @@ public class ReportImageFragment extends Fragment {
         }
         allImage.add(reportImage);
         imageAdapter.notifyDataSetChanged();
+
+        if (dataInterface.isDoneSubmit()) {
+            // if report already submitted before, now only submit images
+            // that is not submitted yet and also not in a queue
+            reportQueueDataSource.addImageQueue(reportId);
+
+            // Broadcasts the Intent to network receiver, and prepare queue for sending
+            Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(networkIntent);
+        }
     }
 
     protected Bitmap createThumbnail(Uri uri) {
