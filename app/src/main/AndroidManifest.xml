@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.screen.portrait"/>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -74,7 +75,8 @@
         <activity
             android:name=".activity.ImageActivity"
             android:label="@string/title_activity_image"
-            android:parentActivityName=".activity.ReportActivity" >
+            android:parentActivityName=".activity.ReportActivity"
+            android:screenOrientation="fullSensor" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.ReportActivity" />

@@ -3,6 +3,7 @@ package org.cm.podd.report.activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -18,14 +19,20 @@ import android.view.Window;
 import org.cm.podd.report.R;
 import org.cm.podd.report.view.ZoomableImageView;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ImageActivity extends ActionBarActivity {
 
     private static final String TAG = "ImageActivity";
+    //The new size we want to scale to
+    final int REQUIRED_SIZE = 2048;
+
     ZoomableImageView mImageView;
     String imagePath;
+    Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +52,33 @@ public class ImageActivity extends ActionBarActivity {
         }
 
         Uri uri = Uri.parse(imagePath);
-        try {
-            // Get image from uri file:///path or content://path
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            if (bitmap != null) {
-                int rotate = neededRotation(uri);
-                Matrix matrix = new Matrix();
-                if (rotate != 0) {
-                    matrix.postRotate(rotate);
-                }
-                bitmap = getResizedTextureBitmap(bitmap, matrix);
-                mImageView.setImageBitmap(bitmap);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        // Get image from uri file:///path or content://path
+//            mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+
+        String imageFilePath = getImageFilePath(uri);
+
+        int rotate = neededRotation(imageFilePath);
+        Matrix matrix = new Matrix();
+        if (rotate != 0) {
+            matrix.postRotate(rotate);
         }
 
+        mBitmap = decodeFile(new File(imageFilePath));
+        if (mBitmap != null) {
+            mBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
+                    mBitmap.getWidth(), mBitmap.getHeight(), matrix, false);
+
+            mImageView.setImageBitmap(mBitmap);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBitmap != null) {
+            mBitmap.recycle();
+        }
     }
 
     @Override
@@ -88,17 +106,20 @@ public class ImageActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public int neededRotation(Uri uri) {
-        String imagePath = uri.getPath();
+    private String getImageFilePath(Uri uri) {
+        String imageFilePath = uri.getPath();
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            imagePath = cursor.getString(idx);
+            imageFilePath = cursor.getString(idx);
         }
-        try {
+        return imageFilePath;
+    }
 
-            ExifInterface exif = new ExifInterface(imagePath);
+    public int neededRotation(String filePath) {
+        try {
+            ExifInterface exif = new ExifInterface(filePath);
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
@@ -121,9 +142,39 @@ public class ImageActivity extends ActionBarActivity {
         return 0;
     }
 
+
+    //decodes image and scales it to reduce memory consumption
+    private Bitmap decodeFile(File f){
+        try {
+            //Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+            //Find the correct scale value. It should be the power of 2.
+            int scale=1;
+            while (o.outWidth*(2/scale) >= REQUIRED_SIZE || o.outHeight*(2/scale) >= REQUIRED_SIZE)
+                scale*=2;
+
+            //Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Error decode bitmap file");
+        }
+
+        return null;
+    }
+
     /**
      * Resize bitmap to fit in gl texture limit
      * Fix error 'OpenGLRenderer﹕ Bitmap too large to be uploaded into a texture'
+     *
+     * ** still causing OutOfMemory error **
+     * ** also not getting gl maxTexture value sometimes when screen rotates **
      */
     public Bitmap getResizedTextureBitmap(Bitmap src, Matrix mat) {
         Bitmap bmp = src;
@@ -135,7 +186,8 @@ public class ImageActivity extends ActionBarActivity {
 
         int maxSize = maxTextureSize[0];
 
-        if (src.getHeight() > maxSize || src.getWidth() > maxSize) {
+        if ((src.getHeight() > maxSize || src.getWidth() > maxSize) &&
+                src.getHeight() > 0 && src.getWidth() > 0 && maxSize > 0) {
             // Determine how much to scale.
             // This way the image always stays inside bounding gl limit
             float scaleWidth = maxSize / (float) src.getWidth() ;
