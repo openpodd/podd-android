@@ -301,6 +301,7 @@ public class ReportDataSource {
         db.delete("report", null, null);
         db.delete("report_image", null, null);
         db.delete("report_queue", null, null);
+        db.delete("report_type", null, null);
         db.close();
     }
 
