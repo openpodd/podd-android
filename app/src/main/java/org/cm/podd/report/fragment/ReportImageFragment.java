@@ -354,6 +354,13 @@ public class ReportImageFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        reportDataSource.close();
+        reportQueueDataSource.close();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "result code = " + resultCode + ", request code = " + requestCode + " data = " + data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {

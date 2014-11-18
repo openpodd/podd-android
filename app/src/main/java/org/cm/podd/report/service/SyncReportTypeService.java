@@ -106,6 +106,7 @@ public class SyncReportTypeService extends IntentService {
                 Log.e(TAG, e.getMessage(), e);
             }
 
+            dbSource.close();
         } else {
             Log.e(TAG, "Server error");
         }

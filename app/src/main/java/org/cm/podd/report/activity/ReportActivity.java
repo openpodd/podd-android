@@ -519,6 +519,9 @@ public class ReportActivity extends ActionBarActivity
         super.onDestroy();
         stopLocationService();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        reportDataSource.close();
+        reportQueueDataSource.close();
+        reportTypeDataSource.close();
     }
 
     private void saveForm(int draft) {

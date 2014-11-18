@@ -79,6 +79,7 @@ public class ReportListFragment extends ListFragment {
             Log.d(TAG, "refresh adapter");
             adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAllWithTypeName());
             setListAdapter(adapter);
+            reportDataSource.close();
         }
         skipRefreshAdapter = false;
     }

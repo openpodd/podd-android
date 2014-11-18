@@ -152,6 +152,10 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
     @Override
     protected void onDestroy() {
+        dataSource.close();
+        reportDataSource.close();
+        reportQueueDataSource.close();
+
         unregisterReceiver(mSyncReceiver);
         // intent service stops by itself after handle intent
         super.onDestroy();

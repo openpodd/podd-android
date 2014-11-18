@@ -56,7 +56,7 @@ public class ReportTypeDataSource {
 
     public ReportTypeDataSource(Context context) {
         this.context = context;
-        dbHelper = new ReportDatabaseHelper(context);
+        dbHelper = ReportDatabaseHelper.getInstance(context);
     }
 
     public void initNewData(String reportTypes) {
@@ -244,5 +244,9 @@ public class ReportTypeDataSource {
         db.update("report_type", values, "_id = ?",
                 new String[] {Long.toString(reportType.getId())});
         db.close();
+    }
+
+    public void close() {
+        dbHelper.close();
     }
 }

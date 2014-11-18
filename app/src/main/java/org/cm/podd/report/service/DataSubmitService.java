@@ -72,16 +72,7 @@ public class DataSubmitService extends IntentService {
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
 
     public DataSubmitService() {
-        super(null);
-    }
-
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public DataSubmitService(String name) {
-        super(name);
+        super(DataSubmitService.class.getSimpleName());
     }
 
     @Override
@@ -92,11 +83,12 @@ public class DataSubmitService extends IntentService {
         Log.i(TAG, "submit data " + Long.toString(System.currentTimeMillis()));
 
         ReportQueueDataSource queueDataSource = new ReportQueueDataSource(getApplicationContext());
+        ReportDataSource reportDataSource = new ReportDataSource(getApplicationContext());
+
         try {
             List<Queue> queues = queueDataSource.getAllQueues();
 
             for (Queue que : queues) {
-                ReportDataSource reportDataSource = new ReportDataSource(getApplicationContext());
 
                 long id = que.getId();
                 String type = que.getType();
@@ -166,11 +158,15 @@ public class DataSubmitService extends IntentService {
 
         } finally {
             Log.e(TAG, "---- end submit");
+
             // signal this service is ended regardless successful submission
             // so that new work can be executed next
             Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
             networkIntent.putExtra("SubmitDone", true);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+
+            queueDataSource.close();
+            reportDataSource.close();
         }
 
     }

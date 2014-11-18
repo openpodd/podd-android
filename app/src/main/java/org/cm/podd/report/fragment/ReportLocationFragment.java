@@ -110,6 +110,12 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         reportDataInterface = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        reportDataSource.close();
+    }
+
     public java.util.Date getDateFromDatePicket(DatePicker datePicker){
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth();

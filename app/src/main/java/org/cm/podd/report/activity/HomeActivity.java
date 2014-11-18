@@ -196,6 +196,12 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        reportDataSource.close();
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

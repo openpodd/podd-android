@@ -38,7 +38,7 @@ public class ReportQueueDataSource {
     private ReportDataSource mReportDataSource;
 
     public ReportQueueDataSource(Context context) {
-        mDbHelper = new ReportDatabaseHelper(context);
+        mDbHelper = ReportDatabaseHelper.getInstance(context);
         mReportDataSource = new ReportDataSource(context);
     }
 
@@ -102,6 +102,7 @@ public class ReportQueueDataSource {
             queues.add(q);
         }
         cursor.close();
+        db.close();
         return queues;
     }
 
@@ -110,5 +111,9 @@ public class ReportQueueDataSource {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         db.delete("report_queue", "_id = ?", new String[] {Long.toString(id)});
         db.close();
+    }
+
+    public void close() {
+        mDbHelper.close();
     }
 }
