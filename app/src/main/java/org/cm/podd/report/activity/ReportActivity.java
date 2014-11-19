@@ -269,6 +269,7 @@ public class ReportActivity extends ActionBarActivity
             ((ReportNavigationChangeCallbackInterface) oldFragment).onPrevious();
         }
 
+
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
 
@@ -391,6 +392,7 @@ public class ReportActivity extends ActionBarActivity
         if (fragment != null) {
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             if (currentFragment == null) {
                 Log.d(TAG, "add fragment");
                 transaction.add(R.id.container, fragment);
