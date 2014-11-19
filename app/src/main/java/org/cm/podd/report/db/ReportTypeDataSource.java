@@ -56,7 +56,7 @@ public class ReportTypeDataSource {
 
     public ReportTypeDataSource(Context context) {
         this.context = context;
-        dbHelper = ReportDatabaseHelper.getInstance(context);
+        dbHelper = new ReportDatabaseHelper(context);
     }
 
     public void initNewData(String reportTypes) {

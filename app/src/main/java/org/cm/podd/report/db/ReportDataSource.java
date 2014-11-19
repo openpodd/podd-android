@@ -43,7 +43,7 @@ public class ReportDataSource {
     private ReportDatabaseHelper reportDatabaseHelper;
 
     public ReportDataSource(Context context) {
-        reportDatabaseHelper = ReportDatabaseHelper.getInstance(context);
+        reportDatabaseHelper = new ReportDatabaseHelper(context);
     }
 
     public void close() {

@@ -25,10 +25,8 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.util.StyleUtil;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -79,9 +77,14 @@ public class ReportListFragment extends ListFragment {
             Log.d(TAG, "refresh adapter");
             adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAllWithTypeName());
             setListAdapter(adapter);
-            reportDataSource.close();
         }
         skipRefreshAdapter = false;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        reportDataSource.close();
     }
 
     @Override

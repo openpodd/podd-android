@@ -38,7 +38,7 @@ public class ReportQueueDataSource {
     private ReportDataSource mReportDataSource;
 
     public ReportQueueDataSource(Context context) {
-        mDbHelper = ReportDatabaseHelper.getInstance(context);
+        mDbHelper = new ReportDatabaseHelper(context);
         mReportDataSource = new ReportDataSource(context);
     }
 

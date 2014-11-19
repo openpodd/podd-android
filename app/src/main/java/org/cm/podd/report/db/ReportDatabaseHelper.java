@@ -28,8 +28,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
     private static final int DATABASE_VERSION = 1;
 
-    private static ReportDatabaseHelper mInstance;
-
     private static final String CREATE_TABLE = "create table report"
             + "("
             + "  _id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -79,17 +77,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE_IMAGE = "drop table report_image";
     private static final String DROP_TABLE_QUEUE = "drop table report_queue";
     private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
-
-    public static ReportDatabaseHelper getInstance(Context ctx) {
-
-        // Use the application context, which will ensure that you
-        // don't accidentally leak an Activity's context.
-        // See this article for more information: http://bit.ly/6LRzfx
-        if (mInstance == null) {
-            mInstance = new ReportDatabaseHelper(ctx.getApplicationContext());
-        }
-        return mInstance;
-    }
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

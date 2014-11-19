@@ -5,7 +5,7 @@
             "id": 1,
             "title": "สัตว์ที่กัด",
             "name": "animal_type",
-            "type": "multiple",
+            "type": "single",
             "items": [
                 {"id": "หมา", "text": "หมา"},
                 {"id": "แมว", "text": "แมว"}
