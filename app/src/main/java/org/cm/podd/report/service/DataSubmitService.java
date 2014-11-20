@@ -68,7 +68,8 @@ public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
-    public static final String ACTION_REPORT_STATUS_CHANGE = "reportStatusChange";
+    public static final String ACTION_REPORT_STATUS_CHANGE = "podd.report_status_change";
+    public static final String ACTION_REPORT_SUBMIT = "podd.report_submit";
 
     public DataSubmitService() {
         super(DataSubmitService.class.getSimpleName());

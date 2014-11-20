@@ -62,6 +62,7 @@ import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.LocationBackgroundService;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
@@ -657,7 +658,7 @@ public class ReportActivity extends ActionBarActivity
 
     private void broadcastReportSubmission() {
         // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 }

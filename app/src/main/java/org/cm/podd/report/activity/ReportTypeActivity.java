@@ -43,6 +43,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -163,7 +164,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
     private void broadcastReportSubmission() {
         // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 

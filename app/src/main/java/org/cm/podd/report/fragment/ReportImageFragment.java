@@ -47,6 +47,7 @@ import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.ReportImage;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -405,7 +406,7 @@ public class ReportImageFragment extends Fragment {
             reportQueueDataSource.addImageQueue(reportId);
 
             // Broadcasts the Intent to network receiver, and prepare queue for sending
-            Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
+            Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(networkIntent);
         }
     }

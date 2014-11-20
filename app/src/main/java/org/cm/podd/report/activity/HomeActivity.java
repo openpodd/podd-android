@@ -45,6 +45,7 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -117,8 +118,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         reportDataSource = new ReportDataSource(this);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
-            new ConnectivityChangeReceiver(),
-            new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                new ConnectivityChangeReceiver(),
+                new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
 
     }
 
