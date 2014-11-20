@@ -24,32 +24,19 @@ import android.util.Log;
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
     private static final String TAG = "ConnectivityChangeReceiever";
-    private boolean isPending = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // 'Submit service' broadcasts this same intent back after it's finished its job.
-        // This intent extra makes calling to submit service one at a time,
-        // must wait for service to end before making another call
-        if (intent.hasExtra("SubmitDone")) {
-            isPending = false;
-            return;
-        }
-
         ConnectivityManager cm = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         if (cm == null) {
             return;
         }
-
-        Log.d(TAG, "submit pending state= " + isPending);
+        Log.i(TAG, "Receiving braodcast action " + intent.getAction());
 
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
-            if (!isPending) {
-                Log.d(TAG, "NetworkConnected - Start sending data");
-                isPending = true;
-                Intent submitIntent = new Intent(context, DataSubmitService.class);
-                context.startService(submitIntent);
-            }
+            Log.d(TAG, "NetworkConnected - Start sending data");
+            Intent submitIntent = new Intent(context, DataSubmitService.class);
+            context.startService(submitIntent);
 
         } else {
             // Do nothing

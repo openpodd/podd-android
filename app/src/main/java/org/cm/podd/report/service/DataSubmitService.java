@@ -20,10 +20,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -160,14 +158,7 @@ public class DataSubmitService extends IntentService {
             Log.e(TAG, "Error submit data", e);
 
         } finally {
-            Log.e(TAG, "---- end submit");
-
-            // signal this service is ended regardless successful submission
-            // so that new work can be executed next
-            Intent networkIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
-            networkIntent.putExtra("SubmitDone", true);
-            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
-
+            Log.e(TAG, "---- end submit ----");
             queueDataSource.close();
             reportDataSource.close();
         }
