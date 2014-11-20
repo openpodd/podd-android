@@ -16,6 +16,9 @@
  */
 package org.cm.podd.report.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -32,6 +35,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +44,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class RequestDataUtil {
 
@@ -174,5 +181,17 @@ public class RequestDataUtil {
         public void setRawData(String rawData) {
             this.rawData = rawData;
         }
+    }
+
+    public static boolean hasNetworkConnection(Activity activity) {
+        ConnectivityManager cm = ((ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE));
+        boolean connected = cm != null &&
+                cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnected();
+
+        if (!connected) {
+            Crouton.makeText(activity, R.string.alert_no_network_connection, Style.ALERT).show();
+        }
+        return connected;
     }
 }

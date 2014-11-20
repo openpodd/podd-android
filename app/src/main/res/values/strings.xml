@@ -36,5 +36,6 @@
     <string name="message_confirm_submit">คุณต้องการยืนยัน\nการรายงานนี้ใช่หรือไม่ ?</string>
     <string name="button_back_to_report_list">กลับไปที่หน้ารายการ</string>
     <string name="done_submit_message">รายงานนี้ได้ถูกยืนยัน\nเป็นที่เรียบร้อยแล้ว</string>
+    <string name="alert_no_network_connection">ไม่สามารถเชื่อต่ออินเตอร์เน็ตได้</string>
 
 </resources>

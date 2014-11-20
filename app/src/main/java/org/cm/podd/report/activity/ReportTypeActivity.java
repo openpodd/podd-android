@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
@@ -45,6 +44,7 @@ import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
@@ -130,11 +130,12 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         ReportType item = adapter.getItem(position);
         if (item.getId() == -99) {
 
-            listView.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
+            if (RequestDataUtil.hasNetworkConnection(this)) {
+                listView.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
 
-            startSyncReportType();
-
+                startSyncReportType();
+            }
         } else if (item.getId() == 0) {
             long reportId = reportDataSource.createPositiveReport();
 

@@ -76,7 +76,9 @@ public class LoginActivity extends ActionBarActivity {
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
         if (username.length() > 0 && password.length() > 0) {
-            new LoginTask().execute((Void[]) null);
+            if (RequestDataUtil.hasNetworkConnection(this)) {
+                new LoginTask().execute((Void[]) null);
+            }
         } else {
             if (username.length() == 0) {
                 Crouton.makeText(LoginActivity.this, "Required username", Style.ALERT).show();
