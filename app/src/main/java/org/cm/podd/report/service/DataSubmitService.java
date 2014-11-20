@@ -70,6 +70,7 @@ public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
+    public static final String ACTION_REPORT_STATUS_CHANGE = "reportStatusChange";
 
     public DataSubmitService() {
         super(DataSubmitService.class.getSimpleName());
@@ -151,6 +152,8 @@ public class DataSubmitService extends IntentService {
                     queueDataSource.remove(id);
                 }
             }
+            // notify report list about change in report status
+            sendBroadcast(new Intent(ACTION_REPORT_STATUS_CHANGE));
 
         } catch (Exception e) {
             // handle exception

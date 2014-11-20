@@ -1,8 +1,10 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -23,6 +25,7 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Calendar;
@@ -48,6 +51,14 @@ public class ReportListFragment extends ListFragment {
     private ReportCursorAdapter adapter;
 
     private boolean skipRefreshAdapter = false;
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Receiving action " + intent.getAction());
+            adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
+            setListAdapter(adapter);
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,6 +71,7 @@ public class ReportListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         reportDataSource = new ReportDataSource(this.getActivity());
+        getActivity().registerReceiver(mReceiver, new IntentFilter(DataSubmitService.ACTION_REPORT_STATUS_CHANGE));
     }
 
     @Override
@@ -85,6 +97,7 @@ public class ReportListFragment extends ListFragment {
     public void onDestroyView() {
         super.onDestroyView();
         reportDataSource.close();
+        getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
