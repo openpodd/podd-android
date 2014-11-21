@@ -107,7 +107,7 @@ public class ReportDataSource {
         double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
         double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
         Date startDate = null;
-        if (! cursor.isNull(cursor.getColumnIndex("start_date"))) {
+        if (cursor.getInt(cursor.getColumnIndex("start_date")) != 0) {
             long t = cursor.getLong(cursor.getColumnIndex("start_date"));
             startDate = new Date(t);
         }
