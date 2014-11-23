@@ -4,14 +4,14 @@
         {
             "id": 1,
             "title": "สัตว์ที่กัด",
-            "name": "animal_type",
+            "name": "animalType",
             "type": "single",
             "items": [
                 {"id": "หมา", "text": "หมา"},
                 {"id": "แมว", "text": "แมว"}
             ],
             "freeTextText": "อื่นๆ",
-            "freeTextName": "animal_type_other",
+            "freeTextName": "animalTypeOther",
             "freeTextId": "อื่นๆ",
             "freeTextChoiceEnable": true
         }
