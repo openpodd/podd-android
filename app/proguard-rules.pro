@@ -15,17 +15,29 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--dontwarn org.mozilla.javascript.**
--dontwarn org.mozilla.classfile.**
--dontwarn org.ietf.jgss.**
--dontwarn com.amazonaws.org.joda.**
--dontwarn org.apache.commons.**
--dontwarn org.apache.**
+
+-dontshrink
+
+#-dontwarn org.mozilla.javascript.**
+#-dontwarn org.mozilla.classfile.**
+-dontwarn org.mozilla.javascript.tools.**
+-dontwarn org.mozilla.javascript.xml.impl.**
+-dontwarn org.apache.xmlbeans.XmlCursor
+-keep class org.mozilla.javascript.** { *; }
+-keep class org.mozilla.classfile.** { *; }
+
+-dontwarn org.apache.http.**
+-dontwarn org.apache.james.mime4j.**
+-dontwarn org.apache.commons.logging.LogFactory
+
+# funf
+-keep class edu.mit.media.funf.** { *; }
 
 # httpcore
 -keep class org.apache.http.** { *; }
 -dontwarn javax.swing.**
 -dontwarn java.awt.**
+-dontwarn javax.imageio.**
 
 # amazon
 -keep class org.apache.commons.logging.**               { *; }
@@ -34,12 +46,28 @@
 -keep class com.amazonaws.javax.xml.stream.**           { *; }
 -keep class com.amazonaws.services.**.model.*Exception* { *; }
 -keep class org.codehaus.**                             { *; }
+-keep class org.joda.time.tz.Provider                    { *; }
+-keep class org.joda.time.tz.NameProvider                { *; }
+-keep class com.amazonaws.org.joda.convert.**          { *; }
+-keep class com.amazonaws.org.apache.commons.logging.**    { *; }
 -keepattributes Signature,*Annotation*
+-keepattributes Signature,*Annotation*,EnclosingMethod
+-keepnames class com.fasterxml.jackson.** { *; }
+-keepnames class com.amazonaws.** { *; }
 
+-dontwarn com.amazonaws.org.joda.time.**
+-dontwarn org.apache.http.conn.scheme.**
+-dontwarn com.fasterxml.jackson.databind.**
 -dontwarn javax.xml.stream.events.**
 -dontwarn org.codehaus.jackson.**
 -dontwarn org.apache.commons.logging.impl.**
 -dontwarn org.apache.http.conn.scheme.**
+-dontwarn org.apache.http.annotation.**
+-dontwarn org.ietf.jgss.**
+-dontwarn org.joda.convert.**
+-dontwarn org.w3c.dom.bootstrap.**
+
+-dontwarn com.amazonaws.services.s3.**
 
 # support-v4
 -dontwarn android.support.v4.**
