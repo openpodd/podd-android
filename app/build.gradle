@@ -8,8 +8,8 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 11
         targetSdkVersion 20
-        versionCode 2
-        versionName "1.0"
+        versionCode 3
+        versionName "1.0-beta-3"
     }
 
     signingConfigs {
@@ -64,6 +64,8 @@ dependencies {
     compile 'org.apache.httpcomponents:httpcore:4.3.2'
     compile files('libs/aws-android-sdk-2.1.5-core.jar')
     compile files('libs/aws-android-sdk-2.1.5-s3.jar')
+    compile files('libs/funf-v0.5.0RC1.jar')
+    compile files('libs/gson-2.1.jar')
 }
 
 configurations {
