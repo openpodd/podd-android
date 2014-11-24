@@ -38,11 +38,12 @@
 
         <Button
             android:id="@+id/prevBtn"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:text="Prev" />
+            android:layout_marginRight="10dp"
+            style="@style/PrevButton"
+            android:text="@string/btn_prev" />
 
         <Button
             android:id="@+id/cameraBtn"

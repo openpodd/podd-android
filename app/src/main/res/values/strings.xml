@@ -52,5 +52,6 @@
             ]
         }
     </string>
+    <string name="btn_prev">กลับ</string>
 
 </resources>

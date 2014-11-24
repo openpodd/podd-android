@@ -285,6 +285,7 @@ public class ReportActivity extends ActionBarActivity
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = ReportLocationFragment.class.getName();
                 setNextVisible(true);
+                setPrevVisible(true);
                 showHideDisableMask(reportSubmit == 1);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (! formIterator.previousPage()) {
@@ -329,9 +330,9 @@ public class ReportActivity extends ActionBarActivity
                 isDynamicForm = true;
 
                 setNextVisible(true);
-                setPrevVisible(false);
+                setPrevVisible(true);
                 setNextEnable(true);
-                setPrevEnable(false);
+                setPrevEnable(true);
 
                 // case I
                 // just come into this dynamic form

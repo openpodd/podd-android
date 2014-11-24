@@ -35,8 +35,6 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     private long reportId;
 
     private ReportDataInterface reportDataInterface;
-    private ReportNavigationInterface navigationInterface;
-
     private ReportDataSource reportDataSource;
 
     private DatePicker mDatePicker;
@@ -88,7 +86,6 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         mRegionsSpinner.setAdapter(regionAdapter);
 
         loadData();
-        navigationInterface.setPrevVisible(false);
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
         ((TextView) view.findViewById(R.id.incident_date)).setTypeface(face);
@@ -101,7 +98,6 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         reportDataInterface = (ReportDataInterface) activity;
-        navigationInterface = (ReportNavigationInterface) activity;
     }
 
     @Override

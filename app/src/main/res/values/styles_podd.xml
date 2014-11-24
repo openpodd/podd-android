@@ -152,4 +152,10 @@
         <item name="android:textColor">@color/text_label_report</item>
         <item name="android:textSize">20sp</item>
     </style>
+
+    <style name="PrevButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@drawable/button_gray</item>
+    </style>
 </resources>
