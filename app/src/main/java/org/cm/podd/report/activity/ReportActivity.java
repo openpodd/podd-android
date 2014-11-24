@@ -17,8 +17,10 @@
 
 package org.cm.podd.report.activity;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
@@ -441,7 +443,29 @@ public class ReportActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Log.d(TAG, "Menu item select id=" + item.getItemId());
+
         if (id == R.id.action_settings) {
+            return true;
+
+        } else if (id == android.R.id.home) {
+            // confirm going back to report list home
+            new AlertDialog.Builder(this).setTitle(R.string.title_confirm_back_report_home)
+                    .setMessage(R.string.message_confirm_back_report_home)
+                    .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Save as draft and finish this activity
+                            finishReport(ReportDataInterface.DRAFT_ACTION);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .create().show();
             return true;
         }
         return super.onOptionsItemSelected(item);

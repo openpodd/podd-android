@@ -254,7 +254,9 @@ public class ReportDataSource {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("region_id", regionId);
-        values.put("start_date", reportDate.getTime());
+        if (reportDate != null) {
+            values.put("start_date", reportDate.getTime());
+        }
         values.put("remark", remark);
         db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
         db.close();

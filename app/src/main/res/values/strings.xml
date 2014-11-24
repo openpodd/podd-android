@@ -53,5 +53,8 @@
         }
     </string>
     <string name="btn_prev">กลับ</string>
+    <string name="title_confirm_back_report_home">ยืนยันแจ้งออก</string>
+    <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
+    <string name="agree">ตกลง</string>
 
 </resources>
