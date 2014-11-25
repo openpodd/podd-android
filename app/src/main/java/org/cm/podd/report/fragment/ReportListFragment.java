@@ -12,11 +12,21 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Checkable;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,6 +57,8 @@ public class ReportListFragment extends ListFragment {
     public static final int REQUEST_FOR_EDIT = 1;
     OnReportSelectListener mListener;
 
+    private ActionMode mMode;
+
     ReportDataSource reportDataSource;
     private ReportCursorAdapter adapter;
 
@@ -57,6 +69,9 @@ public class ReportListFragment extends ListFragment {
             Log.i(TAG, "Receiving action " + intent.getAction());
             adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
             setListAdapter(adapter);
+            if (mMode != null) {
+                mMode.finish();
+            }
         }
     };
 
@@ -78,6 +93,20 @@ public class ReportListFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         getListView().setDivider(new ColorDrawable(getResources().getColor(R.color.report_row_divider)));
         getListView().setDividerHeight(1);
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mMode == null) {
+                    mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
+                            new ActionModeCallback(getActivity()));
+                }
+                return false;
+            }
+        });
+        // multiple choice mode is active when entering action mode,
+        // and becomes single choice mode when finish action mode
+        getListView().setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -89,6 +118,10 @@ public class ReportListFragment extends ListFragment {
             Log.d(TAG, "refresh adapter");
             adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAllWithTypeName());
             setListAdapter(adapter);
+            getListView().clearChoices();
+            if (mMode != null) {
+                mMode.finish();
+            }
         }
         skipRefreshAdapter = false;
     }
@@ -134,26 +167,46 @@ public class ReportListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long reportId) {
         super.onListItemClick(l, v, position, reportId);
 
-        Report report = reportDataSource.getById(reportId);
-        Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
-        if (report.getNegative() == report.TRUE) {
-            Intent intent = new Intent(getActivity(), ReportActivity.class);
-            intent.putExtra("reportType", report.getType());
-            intent.putExtra("reportId", reportId);
-            startActivityForResult(intent, REQUEST_FOR_EDIT);
+        if (mMode == null) {
+            Report report = reportDataSource.getById(reportId);
+            Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
+            if (report.getNegative() == report.TRUE) {
+                Intent intent = new Intent(getActivity(), ReportActivity.class);
+                intent.putExtra("reportType", report.getType());
+                intent.putExtra("reportId", reportId);
+                startActivityForResult(intent, REQUEST_FOR_EDIT);
+            } else {
+                StringBuffer buff = new StringBuffer();
+                buff.append("report on ").append(report.getDate()).append("\n");
+                buff.append("positive report");
+                final Crouton crouton = Crouton.makeText(getActivity(), buff.toString(), Style.INFO);
+                crouton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Crouton.hide(crouton);
+                    }
+                });
+                crouton.show();
+            }
         } else {
-            StringBuffer buff = new StringBuffer();
-            buff.append("report on ").append(report.getDate()).append("\n");
-            buff.append("positive report");
-            final Crouton crouton = Crouton.makeText(getActivity(), buff.toString(), Style.INFO);
-            crouton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Crouton.hide(crouton);
+            SparseBooleanArray checked = getListView().getCheckedItemPositions();
+
+            if (checked != null) {
+                boolean hasCheckedElement = false;
+                for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+                    hasCheckedElement = checked.valueAt(i);
                 }
-            });
-            crouton.show();
+
+                if (hasCheckedElement) {
+                    mMode.invalidate();
+                } else {
+                    mMode.finish();
+                }
+            }
         }
+    }
+
+    private void deleteReport() {
 
     }
 
@@ -203,8 +256,13 @@ public class ReportListFragment extends ListFragment {
             holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
             holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
 
-            retView.setTag(holder);
-            return retView;
+            CheckableLayout checkableView = new CheckableLayout(context);
+            checkableView.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            checkableView.addView(retView);
+            checkableView.setTag(holder);
+
+            return checkableView;
         }
 
         @Override
@@ -235,10 +293,11 @@ public class ReportListFragment extends ListFragment {
 
             if (submit == Report.FALSE && draft == Report.FALSE) {
                 holder.queueImage.setVisibility(View.VISIBLE);
-                view.setBackgroundResource(R.color.report_row_bg);
+                // submit pending in queue
+                ((CheckableLayout) view).setBackgroundSubmitState(false);
             } else {
                 holder.queueImage.setVisibility(View.INVISIBLE);
-                view.setBackgroundResource(R.color.white);
+                ((CheckableLayout) view).setBackgroundSubmitState(true);
             }
 
         }
@@ -269,4 +328,103 @@ public class ReportListFragment extends ListFragment {
         }
     }
 
+    /**
+     * Checkable wrapper to toggle multiple selection state
+     */
+    public class CheckableLayout extends FrameLayout implements Checkable {
+        private boolean mChecked;
+        private boolean mSubmit;
+
+        public CheckableLayout(Context context) {
+            super(context);
+        }
+
+        @SuppressWarnings("deprecation")
+        public void setChecked(boolean checked) {
+            mChecked = checked;
+            int bgColor;
+            if (checked) {
+                bgColor = R.color.report_row_selected_bg;
+            } else {
+                bgColor = mSubmit ? R.color.white : R.color.report_row_bg;
+            }
+            setBackgroundColor(getResources().getColor(bgColor));
+        }
+
+        public boolean isChecked() {
+            return mChecked;
+        }
+
+        public void toggle() {
+            setChecked(!mChecked);
+        }
+
+        public void setBackgroundSubmitState(boolean submit) {
+            mSubmit = submit;
+        }
+    }
+
+    /**
+     * Callback to CAB (Contextual Action Bar)
+     */
+    private final class ActionModeCallback implements ActionMode.Callback {
+        Context context;
+        public ActionModeCallback(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Create the menu from the xml file
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.image_fragment_contextual_actions, menu);
+
+            // use custom text as title
+            // on pre honeycomb (<11), cab title background is action bar background (red in drme)
+            TextView tv = new TextView(getActivity());
+            tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv.setText("cab");
+            tv.setBackgroundColor(context.getResources().getColor(R.color.action_bar_bg));
+            mode.setCustomView(tv);
+
+            getListView().setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
+
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            int selected = getListView().getCheckedItemCount();
+            TextView title = ((TextView) mode.getCustomView());
+            title.setText(getString(R.string.title_report_item_selected, new Object[]{selected}));
+            title.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            // Destroying action mode, let's unselect all items
+            for (int i = 0; i < getListView().getAdapter().getCount(); i++) {
+                getListView().setItemChecked(i, false);
+            }
+            getListView().clearChoices();
+            getListView().setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+
+            if (mode == mMode) {
+                mMode = null;
+            }
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.cab_action_delete:
+                    deleteReport();
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 }

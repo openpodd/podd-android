@@ -245,7 +245,7 @@ public class ReportActivity extends ActionBarActivity
                     Question question = form.getQuestion(qid);
                     if (question != null) {
                         String value = jsonObject.getString(key);
-                        if (value != null) {
+                        if (value != null && !value.equals("null")) {
                             question.setData(name, question.getDataType().parseFromString(value));
                         }
                     } else {

@@ -56,5 +56,5 @@
     <string name="title_confirm_back_report_home">ยืนยันแจ้งออก</string>
     <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
     <string name="agree">ตกลง</string>
-
+    <string name="title_report_item_selected">เลือกรายงาน %d รายการ</string>
 </resources>
