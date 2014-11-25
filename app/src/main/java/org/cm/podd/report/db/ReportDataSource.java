@@ -133,7 +133,7 @@ public class ReportDataSource {
         ContentValues values = new ContentValues();
         values.put("form_data", jsonStr);
         values.put("draft", draftFlag);
-        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
         db.close();
     }
 
@@ -142,7 +142,7 @@ public class ReportDataSource {
         ContentValues values = new ContentValues();
         values.put("latitude", latitude);
         values.put("longitude", longitude);
-        db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
+        db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
         db.close();
     }
 
@@ -162,9 +162,21 @@ public class ReportDataSource {
         return ret;
     }
 
-    public void delete(long imageId) {
+    public void deleteReport(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        db.delete("report", BaseColumns._ID + "=?", new String[] { Long.toString(reportId) });
+        db.close();
+    }
+
+    public void deleteImage(long imageId) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         db.delete("report_image", BaseColumns._ID + "=?", new String[] { Long.toString(imageId) });
+        db.close();
+    }
+
+    public void deleteImagesByReportId(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        db.delete("report_image", "report_id = ?", new String[] { Long.toString(reportId) });
         db.close();
     }
 
@@ -266,7 +278,7 @@ public class ReportDataSource {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("note", note);
-        db.update("report_image", values, "_id = ?", new String[] {Long.toString(id)});
+        db.update("report_image", values, "_id = ?", new String[]{Long.toString(id)});
         db.close();
     }
 
@@ -309,7 +321,7 @@ public class ReportDataSource {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("submit", 1);
-        db.update("report_image", values, "_id = ?", new String[] {Long.toString(imageId)});
+        db.update("report_image", values, "_id = ?", new String[]{Long.toString(imageId)});
         db.close();
     }
 }

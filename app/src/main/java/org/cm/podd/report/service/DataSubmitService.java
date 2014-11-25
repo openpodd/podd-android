@@ -102,10 +102,15 @@ public class DataSubmitService extends IntentService {
                     // get report data
                     Report report = reportDataSource.getById(reportId);
 
-                    success = submitReport(report);
-                    if (success) {
-                        // mark report as done submitting to server
-                        reportDataSource.updateSubmit(reportId);
+                    if (report != null) {
+                        success = submitReport(report);
+                        if (success) {
+                            // mark report as done submitting to server
+                            reportDataSource.updateSubmit(reportId);
+                        }
+                    } else {
+                        // no report found, just remove this from queue
+                        success = true;
                     }
 
                 } else if (type.equals(ReportQueueDataSource.IMAGE_TYPE)) {

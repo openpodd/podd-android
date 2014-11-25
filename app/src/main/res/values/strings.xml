@@ -57,4 +57,9 @@
     <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
     <string name="agree">ตกลง</string>
     <string name="title_report_item_selected">เลือกรายงาน %d รายการ</string>
+    <string name="title_delete_report">ยืนยันการลบ</string>
+    <string name="message_confirm_delete_report">
+        ต้องการลบรายงานที่เลือกไว้หรือไม่\n
+        เฉพาะรายงานที่เป็นแบบร่างกับที่กำลังอัพโหลดอยู่เท่านั้น
+    </string>
 </resources>

@@ -1,8 +1,10 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -34,6 +36,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.StyleUtil;
@@ -60,6 +63,7 @@ public class ReportListFragment extends ListFragment {
     private ActionMode mMode;
 
     ReportDataSource reportDataSource;
+    ReportQueueDataSource reportQueueDataSource;
     private ReportCursorAdapter adapter;
 
     private boolean skipRefreshAdapter = false;
@@ -67,8 +71,7 @@ public class ReportListFragment extends ListFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Receiving action " + intent.getAction());
-            adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
-            setListAdapter(adapter);
+            refreshAdapter();
             if (mMode != null) {
                 mMode.finish();
             }
@@ -86,6 +89,7 @@ public class ReportListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         reportDataSource = new ReportDataSource(this.getActivity());
+        reportQueueDataSource = new ReportQueueDataSource(this.getActivity());
         getActivity().registerReceiver(mReceiver, new IntentFilter(DataSubmitService.ACTION_REPORT_STATUS_CHANGE));
     }
 
@@ -116,8 +120,7 @@ public class ReportListFragment extends ListFragment {
         Log.d(TAG, "onResume skipRefreshAdapter = " + skipRefreshAdapter);
         if (! skipRefreshAdapter) {
             Log.d(TAG, "refresh adapter");
-            adapter = new ReportCursorAdapter(this.getActivity(), reportDataSource.getAllWithTypeName());
-            setListAdapter(adapter);
+            refreshAdapter();
             getListView().clearChoices();
             if (mMode != null) {
                 mMode.finish();
@@ -130,6 +133,7 @@ public class ReportListFragment extends ListFragment {
     public void onDestroyView() {
         super.onDestroyView();
         reportDataSource.close();
+        reportQueueDataSource.close();
         getActivity().unregisterReceiver(mReceiver);
     }
 
@@ -207,7 +211,55 @@ public class ReportListFragment extends ListFragment {
     }
 
     private void deleteReport() {
+        final long[] ids = getListView().getCheckedItemIds();
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog alertDialog = builder.setTitle(R.string.title_delete_report)
+                .setMessage(R.string.message_confirm_delete_report)
+                .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        for (int i = 0; i < ids.length; i++) {
+                            long id = ids[i];
+                            Report report = reportDataSource.getById(id);
+                            int draft = report.getDraft();
+                            int submit = report.getSubmit();
+                            boolean delete = false;
+                            Log.d(TAG, String.format("Select report to delete id=%d, draft=%d, submit=%d", id, draft, submit));
+
+                            if (draft == Report.TRUE) {
+                                // draft report
+                                delete = true;
+                            } else {
+                                if (draft == Report.FALSE && submit == Report.FALSE) {
+                                    // submit pending report
+                                    delete = true;
+                                }
+                            }
+                            if (delete) {
+                                reportDataSource.deleteReport(id);
+                                reportDataSource.deleteImagesByReportId(id);
+                                reportQueueDataSource.deleteByReportId(id);
+                                Log.d(TAG, "Report and images and queue deleted !");
+                            }
+                        }
+                        refreshAdapter();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).create();
+
+        alertDialog.show();
+    }
+
+    private void refreshAdapter() {
+        adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
+        setListAdapter(adapter);
     }
 
     /**

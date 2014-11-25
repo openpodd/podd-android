@@ -15,7 +15,6 @@ import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -292,7 +291,7 @@ public class ReportImageFragment extends Fragment {
             mCurrentPhotoPath = ri.getImageUri();
 
             Log.d(TAG, "Delete image id=" + mReportImageId);
-            reportDataSource.delete(mReportImageId);
+            reportDataSource.deleteImage(mReportImageId);
 
             // remove image file if it was taken from capture camera, not from media list
             Uri uri = Uri.parse(mCurrentPhotoPath);

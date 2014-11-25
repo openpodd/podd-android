@@ -113,6 +113,13 @@ public class ReportQueueDataSource {
         db.close();
     }
 
+    public void deleteByReportId(long id) {
+        Log.d(TAG, "remove queue with report id=" + id);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.delete("report_queue", "report_id = ?", new String[] {Long.toString(id)});
+        db.close();
+    }
+
     public void close() {
         mDbHelper.close();
     }
