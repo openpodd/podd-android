@@ -181,20 +181,30 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
         Context context;
         int resource;
+        Typeface face;
 
         public ReportTypeAdapter(Context context, int resource, List<ReportType> objects) {
             super(context, resource, objects);
             this.context = context;
             this.resource = resource;
+            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
+
             TextView textView = (TextView) view.findViewById(android.R.id.text1);
-            textView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            textView.setTypeface(face);
             textView.setText(getItem(position).getName());
+
+            int version = getItem(position).getVersion();
+            if (version > 0) {
+                TextView versionView = (TextView) view.findViewById(android.R.id.text2);
+                versionView.setTypeface(face);
+                versionView.setText("v" + version);
+            }
             return view;
         }
     }
