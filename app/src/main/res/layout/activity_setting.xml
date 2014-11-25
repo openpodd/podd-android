@@ -31,6 +31,59 @@
             style="@style/EditTextFlat"
             android:editable="false"
             android:layout_marginBottom="25dp"
+            android:background="@drawable/ab_solid_white_podd"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/app_version_code_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/ReportTextLabel"
+            android:text="@string/app_version_code"
+            android:layout_marginBottom="15dp"
+            />
+        <EditText
+            android:id="@+id/version_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="mr.podd"
+            style="@style/EditTextFlat"
+            android:editable="false"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/ab_solid_white_podd"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/app_version_name_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/ReportTextLabel"
+            android:text="@string/app_version_name"
+            android:layout_marginBottom="15dp"
+            />
+        <EditText
+            android:id="@+id/version_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="mr.podd"
+            style="@style/EditTextFlat"
+            android:editable="false"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/ab_solid_white_podd"
             />
     </LinearLayout>
 

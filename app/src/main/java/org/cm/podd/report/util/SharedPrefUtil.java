@@ -80,5 +80,9 @@ public class SharedPrefUtil {
     public static String getAwsAccessKey() {
         return sharedPrefs.getString(AWS_ACCESS_KEY, "");
     }
+
+    public static String getFullName() {
+        return sharedPrefs.getString(FULLNAME, "");
+    }
 }
 

@@ -62,4 +62,6 @@
         ต้องการลบรายงานที่เลือกไว้หรือไม่\n
         เฉพาะรายงานที่เป็นแบบร่างกับที่กำลังอัพโหลดอยู่เท่านั้น
     </string>
+    <string name="app_version_code">เวอร์ชั่น</string>
+    <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
 </resources>

@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -46,11 +47,20 @@ public class SettingActivity extends ActionBarActivity {
         Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
 
         final EditText userText = (EditText) findViewById(R.id.username);
-        userText.setText(SharedPrefUtil.getUserName());
+        userText.setText(SharedPrefUtil.getFullName());
         userText.setTypeface(face);
-        userText.setBackgroundResource(R.drawable.ab_solid_white_podd);
+
+        final EditText versionCodeText = (EditText) findViewById(R.id.version_code);
+        versionCodeText.setText(String.valueOf(BuildConfig.VERSION_CODE));
+        versionCodeText.setTypeface(face);
+
+        final EditText versionNameText = (EditText) findViewById(R.id.version_name);
+        versionNameText.setText(BuildConfig.VERSION_NAME);
+        versionNameText.setTypeface(face);
 
         ((TextView) findViewById(R.id.username_label)).setTypeface(face);
+        ((TextView) findViewById(R.id.app_version_code_label)).setTypeface(face);
+        ((TextView) findViewById(R.id.app_version_name_label)).setTypeface(face);
 
         final SettingActivity me = this;
 
