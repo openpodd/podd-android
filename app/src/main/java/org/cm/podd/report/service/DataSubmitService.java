@@ -62,6 +62,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class DataSubmitService extends IntentService {
@@ -195,7 +196,11 @@ public class DataSubmitService extends IntentService {
             data.put("guid", report.getGuid());
             data.put("reportTypeId", report.getType());
             data.put("date", sdfDateTime.format(report.getDate()));
-            data.put("incidentDate", sdfDate.format(report.getStartDate()));
+            Date startDate = report.getStartDate();
+            if (startDate == null) {
+                startDate = new Date();
+            }
+            data.put("incidentDate", sdfDate.format(startDate));
             if (report.getRegionId() != 0) {
                 data.put("administrationAreaId", report.getRegionId());
             }
