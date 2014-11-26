@@ -20,9 +20,7 @@ package org.cm.podd.report.activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +30,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,6 +40,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.AnalyticsApp;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
@@ -67,6 +70,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     ReportDataSource reportDataSource;
 
     private SharedPreferences sharedPref;
+    private boolean sendScreenViewAnalytic = true;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -164,12 +168,18 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     private void showSetting() {
         Intent intent = new Intent(this, SettingActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     private void newReport() {
         Intent intent = new Intent(this, ReportTypeActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        sendScreenViewAnalytic = false;
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -194,7 +204,17 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+
+        } else {
+            if (sendScreenViewAnalytic) {
+                // send screen view analytic
+                Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(AnalyticsApp.TrackerName.APP_TRACKER);
+                tracker.setScreenName("ReportList");
+                tracker.send(new HitBuilders.AppViewBuilder().build());
+            }
+            sendScreenViewAnalytic = true;
         }
+
     }
 
     @Override
