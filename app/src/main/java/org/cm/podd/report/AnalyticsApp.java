@@ -22,6 +22,8 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
+import org.cm.podd.report.util.SharedPrefUtil;
+
 import java.util.HashMap;
 
 public class AnalyticsApp extends Application {
@@ -50,6 +52,11 @@ public class AnalyticsApp extends Application {
             }
             // --------------
             Tracker t = analytics.newTracker(PROPERTY_ID);
+
+            // You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+            // sent with all subsequent hits.
+            t.set("&uid", SharedPrefUtil.getUserName());
+
             mTrackers.put(trackerId, t);
 
         }

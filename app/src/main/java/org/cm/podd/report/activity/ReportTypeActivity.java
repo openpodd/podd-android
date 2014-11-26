@@ -37,6 +37,10 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.AnalyticsApp;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
@@ -45,6 +49,7 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
@@ -136,19 +141,29 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
                 startSyncReportType();
             }
-        } else if (item.getId() == 0) {
-            long reportId = reportDataSource.createPositiveReport();
-
-            // after save positive report, submit to queue right away
-            reportQueueDataSource.addDataQueue(reportId);
-            broadcastReportSubmission();
-
-            finish();
-
         } else {
-            Intent intent = new Intent(this, ReportActivity.class);
-            intent.putExtra("reportType", item.getId());
-            startActivity(intent);
+            if (item.getId() == 0) {
+                long reportId = reportDataSource.createPositiveReport();
+
+                // after save positive report, submit to queue right away
+                reportQueueDataSource.addDataQueue(reportId);
+                broadcastReportSubmission();
+
+                finish();
+
+            } else {
+                Intent intent = new Intent(this, ReportActivity.class);
+                intent.putExtra("reportType", item.getId());
+                startActivity(intent);
+            }
+
+            // send event hit
+            Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(
+                    AnalyticsApp.TrackerName.APP_TRACKER);
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("ReportType").setAction(item.getName())
+                    .setLabel(SharedPrefUtil.getUserName())
+                    .build());
         }
     }
 
