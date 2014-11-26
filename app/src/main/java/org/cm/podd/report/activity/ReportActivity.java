@@ -45,6 +45,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.AnalyticsApp;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
@@ -65,6 +69,7 @@ import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.LocationBackgroundService;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -119,6 +124,7 @@ public class ReportActivity extends ActionBarActivity
     };
 
     private CameraInteractionListener cameraInteractionListener;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +213,8 @@ public class ReportActivity extends ActionBarActivity
                 }
             }
         });
+
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -549,6 +557,19 @@ public class ReportActivity extends ActionBarActivity
         reportDataSource.close();
         reportQueueDataSource.close();
         reportTypeDataSource.close();
+
+        if (! isDoneSubmit()) {
+            // send timing hit
+            long interval = System.currentTimeMillis() - startTime;
+            Log.d(TAG, "Timing interval milli=" + interval);
+
+            Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(
+                    AnalyticsApp.TrackerName.APP_TRACKER);
+            tracker.send(new HitBuilders.TimingBuilder()
+                    .setCategory("ReportProcess").setValue(interval)
+                    .setVariable("Overall").setLabel(SharedPrefUtil.getUserName())
+                    .build());
+        }
     }
 
     private void saveForm(int draft) {
