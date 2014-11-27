@@ -457,8 +457,12 @@ public class ReportActivity extends ActionBarActivity
             return true;
 
         } else if (id == android.R.id.home) {
-            if (! isDoneSubmit()) {
-                // confirm going back to report list home
+            // confirm going back to report list home
+            if (reportSubmit == 1) {
+
+                finishReport(ReportDataInterface.CANCEL_ACTION);
+
+            } else {
                 new AlertDialog.Builder(this).setTitle(R.string.title_confirm_back_report_home)
                         .setMessage(R.string.message_confirm_back_report_home)
                         .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
@@ -475,8 +479,8 @@ public class ReportActivity extends ActionBarActivity
                             }
                         })
                         .create().show();
-                return true;
             }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

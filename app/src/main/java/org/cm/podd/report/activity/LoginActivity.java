@@ -152,7 +152,6 @@ public class LoginActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
-            hideProgressDialog();
             JSONObject obj = resp.getJsonObject();
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
@@ -172,6 +171,8 @@ public class LoginActivity extends ActionBarActivity {
 
             } else {
                 // alert error
+                hideProgressDialog();
+
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                     Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
@@ -201,7 +202,6 @@ public class LoginActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
-            hideProgressDialog();
 
             JSONObject obj = resp.getJsonObject();
 
@@ -225,6 +225,9 @@ public class LoginActivity extends ActionBarActivity {
                 finish();
             } catch (JSONException e) {
                 e.printStackTrace();
+                hideProgressDialog();
+
+                Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
             }
         }
     }

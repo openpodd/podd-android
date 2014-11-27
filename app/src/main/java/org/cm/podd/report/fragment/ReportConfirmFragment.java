@@ -69,6 +69,8 @@ public class ReportConfirmFragment extends Fragment {
             confirmBtn.setVisibility(View.GONE);
             cancelBtn.setText(R.string.button_back_to_report_list);
             confirmText.setText(R.string.done_submit_message);
+        } else {
+            cancelBtn.setVisibility(View.GONE);
         }
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
