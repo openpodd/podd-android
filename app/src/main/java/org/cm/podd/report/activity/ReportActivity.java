@@ -288,7 +288,7 @@ public class ReportActivity extends ActionBarActivity
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 currentFragment = "dynamicForm";
-                showHideDisableMask(reportSubmit == 1);
+                showHideDisableMask(false); // delegate readonly function to dynamic form
             } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
                 currentFragment = null;
                 showHideDisableMask(false);
@@ -302,8 +302,6 @@ public class ReportActivity extends ActionBarActivity
                     currentFragment = ReportImageFragment.class.getName();
                     showHideDisableMask(false);
                     setCameraBtnVisible(true);
-                } else {
-                    showHideDisableMask(reportSubmit == 1);
                 }
             }
         }
@@ -358,7 +356,7 @@ public class ReportActivity extends ActionBarActivity
                 if (currentFragment.equals(ReportImageFragment.class.getName())) {
                     // no-op
                     fragment = getPageFragment(formIterator.getCurrentPage());
-                    showHideDisableMask(reportSubmit == 1);
+                    showHideDisableMask(false); // delegate readonly function to dynamic form
 
                 } else if (formIterator.isAtLastPage()) {
                     fragment = ReportLocationFragment.newInstance(reportId);
@@ -389,11 +387,12 @@ public class ReportActivity extends ActionBarActivity
                             // end if no valid transition and no validation results
                             fragment = ReportLocationFragment.newInstance(reportId);
                             isDynamicForm = false;
+                            showHideDisableMask(isDoneSubmit());
                         }
                     } else {
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
-                        showHideDisableMask(reportSubmit == 1);
+                        showHideDisableMask(false);
                     }
                 }
 
@@ -429,6 +428,7 @@ public class ReportActivity extends ActionBarActivity
         FormPageFragment fragment = new FormPageFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("page", formIterator.getCurrentPage());
+        bundle.putBoolean("isSubmit", isDoneSubmit());
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -643,7 +643,8 @@ public class ReportActivity extends ActionBarActivity
                                  Bundle savedInstanceState) {
             Bundle arguments = getArguments();
             Page page = (Page) arguments.get("page");
-            PageView pageView = new PageView(getActivity(), page);
+            boolean isSubmit = arguments.getBoolean("isSubmit");
+            PageView pageView = new PageView(getActivity(), page, isSubmit);
             pageView.setQuestionActionListener((QuestionView.SoftKeyActionHandler) getActivity());
             return pageView;
         }

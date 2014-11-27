@@ -48,7 +48,7 @@ public class MultipleChoiceQuestionView extends LinearLayout {
     private MultipleChoiceQuestion question;
     private EditText editText;
 
-    public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question) {
+    public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question, final boolean readonly) {
         super(context);
         this.question = question;
 
@@ -75,7 +75,12 @@ public class MultipleChoiceQuestionView extends LinearLayout {
                 break;
         }
 
-        MultipleChoiceQuestionAdapter adapter = new MultipleChoiceQuestionAdapter(context, question);
+        MultipleChoiceQuestionAdapter adapter = new MultipleChoiceQuestionAdapter(context, question) {
+            @Override
+            public boolean isEnabled(int position) {
+                return ! readonly;
+            }
+        };
         listView.setAdapter(adapter);
         listView.setLayoutParams(params);
         listView.setDividerHeight(0);
@@ -99,56 +104,63 @@ public class MultipleChoiceQuestionView extends LinearLayout {
                 editText.setVisibility(INVISIBLE);
             }
 
+            if (readonly) {
+                editText.setKeyListener(null);
 
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            } else {
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    question.setFreeTextValue(editable.toString());
-                }
-            });
-
-            editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean hasFocus) {
-                    if (! hasFocus) {
-                        question.setFreeTextValue(editText.getText().toString());
                     }
-                }
-            });
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        question.setFreeTextValue(editable.toString());
+                    }
+                });
+
+                editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean hasFocus) {
+                        if (! hasFocus) {
+                            question.setFreeTextValue(editText.getText().toString());
+                        }
+                    }
+                });
+            }
+
         }
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                if (question.getSelectionType() == MultipleChoiceSelection.SINGLE) {
-                    question.clearAllItemChecked();
-                    Log.d("---", "clear all checked");
-                }
+                if (! readonly) {
+                    if (question.getSelectionType() == MultipleChoiceSelection.SINGLE) {
+                        question.clearAllItemChecked();
+                        Log.d("---", "clear all checked");
+                    }
 
-                List items = question.getItems();
-                MultipleChoiceItem item = (MultipleChoiceItem) items.get(i);
-                CheckedTextView tv = (CheckedTextView) view;
-                item.setChecked(tv.isChecked());
-                Log.d("---", String.format("click %d, %s, %s, size %d", i, item.getId(), tv.isChecked(), items.size()));
+                    List items = question.getItems();
+                    MultipleChoiceItem item = (MultipleChoiceItem) items.get(i);
+                    CheckedTextView tv = (CheckedTextView) view;
+                    item.setChecked(tv.isChecked());
+                    Log.d("---", String.format("click %d, %s, %s, size %d", i, item.getId(), tv.isChecked(), items.size()));
 
-                if (question.isFreeTextChoiceEnable()) {
-                    MultipleChoiceItem freeTextItem = (MultipleChoiceItem) items.get(items.size() - 1);
-                    if (freeTextItem.isChecked()) {
-                        editText.setVisibility(VISIBLE);
-                    } else {
-                        editText.setVisibility(INVISIBLE);
-                        editText.setText("");
+                    if (question.isFreeTextChoiceEnable()) {
+                        MultipleChoiceItem freeTextItem = (MultipleChoiceItem) items.get(items.size() - 1);
+                        if (freeTextItem.isChecked()) {
+                            editText.setVisibility(VISIBLE);
+                        } else {
+                            editText.setVisibility(INVISIBLE);
+                            editText.setText("");
+                        }
                     }
                 }
             }
