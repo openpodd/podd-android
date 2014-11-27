@@ -458,22 +458,28 @@ public class ReportActivity extends ActionBarActivity
 
         } else if (id == android.R.id.home) {
             // confirm going back to report list home
-            new AlertDialog.Builder(this).setTitle(R.string.title_confirm_back_report_home)
-                    .setMessage(R.string.message_confirm_back_report_home)
-                    .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Save as draft and finish this activity
-                            finishReport(ReportDataInterface.DRAFT_ACTION);
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create().show();
+            if (reportSubmit == 1) {
+
+                finishReport(ReportDataInterface.CANCEL_ACTION);
+
+            } else {
+                new AlertDialog.Builder(this).setTitle(R.string.title_confirm_back_report_home)
+                        .setMessage(R.string.message_confirm_back_report_home)
+                        .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Save as draft and finish this activity
+                                finishReport(ReportDataInterface.DRAFT_ACTION);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .create().show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
