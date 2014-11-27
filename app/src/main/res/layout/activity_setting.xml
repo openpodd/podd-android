@@ -93,6 +93,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:text="@string/logout"
-        style="@style/NextButton" />
+        style="@style/CameraButton" />
 
 </LinearLayout>
