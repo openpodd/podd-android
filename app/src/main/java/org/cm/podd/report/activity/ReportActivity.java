@@ -48,7 +48,7 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.cm.podd.report.AnalyticsApp;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
@@ -569,8 +569,8 @@ public class ReportActivity extends ActionBarActivity
             long interval = System.currentTimeMillis() - startTime;
             Log.d(TAG, "Timing interval milli=" + interval);
 
-            Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(
-                    AnalyticsApp.TrackerName.APP_TRACKER);
+            Tracker tracker = ((PoddApplication) getApplication()).getTracker(
+                    PoddApplication.TrackerName.APP_TRACKER);
             tracker.send(new HitBuilders.TimingBuilder()
                     .setCategory("ReportProcess").setValue(interval)
                     .setVariable("Overall").setLabel(SharedPrefUtil.getUserName())

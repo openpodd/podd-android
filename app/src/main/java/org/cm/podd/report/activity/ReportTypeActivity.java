@@ -40,7 +40,7 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.cm.podd.report.AnalyticsApp;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
@@ -49,7 +49,6 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.ArrayList;
@@ -158,11 +157,10 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             }
 
             // send event hit
-            Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(
-                    AnalyticsApp.TrackerName.APP_TRACKER);
+            Tracker tracker = ((PoddApplication) getApplication()).getTracker(
+                    PoddApplication.TrackerName.APP_TRACKER);
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory("ReportType").setAction(item.getName())
-                    .setLabel(SharedPrefUtil.getUserName())
                     .build());
         }
     }

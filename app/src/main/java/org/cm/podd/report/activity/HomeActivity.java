@@ -30,7 +30,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -43,7 +42,7 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.cm.podd.report.AnalyticsApp;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
@@ -208,7 +207,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         } else {
             if (sendScreenViewAnalytic) {
                 // send screen view analytic
-                Tracker tracker = ((AnalyticsApp) getApplication()).getTracker(AnalyticsApp.TrackerName.APP_TRACKER);
+                Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
                 tracker.setScreenName("ReportList");
                 tracker.send(new HitBuilders.AppViewBuilder().build());
             }

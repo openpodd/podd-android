@@ -44,14 +44,13 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.cm.podd.report.AnalyticsApp;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.ReportImage;
 import org.cm.podd.report.service.DataSubmitService;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.view.TouchyGridView;
 
@@ -436,11 +435,10 @@ public class ReportImageFragment extends Fragment {
         }
 
         // send event hit
-        Tracker tracker = ((AnalyticsApp) getActivity().getApplication()).getTracker(
-                AnalyticsApp.TrackerName.APP_TRACKER);
+        Tracker tracker = ((PoddApplication) getActivity().getApplication()).getTracker(
+                PoddApplication.TrackerName.APP_TRACKER);
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("ReportProcess").setAction("Camera")
-                .setLabel(SharedPrefUtil.getUserName())
                 .build());
     }
 

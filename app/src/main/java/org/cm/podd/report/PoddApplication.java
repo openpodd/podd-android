@@ -26,7 +26,7 @@ import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.HashMap;
 
-public class AnalyticsApp extends Application {
+public class PoddApplication extends Application {
 
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-57082327-1";
@@ -37,7 +37,7 @@ public class AnalyticsApp extends Application {
 
     HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
-    public AnalyticsApp() {
+    public PoddApplication() {
         super();
     }
 
