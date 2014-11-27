@@ -101,8 +101,21 @@ public class ReportListFragment extends ListFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mMode == null) {
-                    mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
-                            new ActionModeCallback(getActivity()));
+
+                    if (isReportItemSubmit(position)) {
+                        // uncheck item on submitted report
+                        getListView().setItemChecked(position, false);
+
+                    } else {
+                        // uncheck all except the one selected
+                        for (int i = 0; i < getListView().getAdapter().getCount(); i++) {
+                            if (i != position) {
+                                getListView().setItemChecked(i, false);
+                            }
+                        }
+                        mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
+                                new ActionModeCallback(getActivity()));
+                    }
                 }
                 return false;
             }
@@ -193,21 +206,34 @@ public class ReportListFragment extends ListFragment {
                 crouton.show();
             }
         } else {
-            SparseBooleanArray checked = getListView().getCheckedItemPositions();
+            if (isReportItemSubmit(position)) {
+                // uncheck item if is submit
+                getListView().setItemChecked(position, false);
 
-            if (checked != null) {
-                boolean hasCheckedElement = false;
-                for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
-                    hasCheckedElement = checked.valueAt(i);
-                }
+            } else {
+                SparseBooleanArray checked = getListView().getCheckedItemPositions();
 
-                if (hasCheckedElement) {
-                    mMode.invalidate();
-                } else {
-                    mMode.finish();
+                if (checked != null) {
+                    boolean hasCheckedElement = false;
+                    for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+                        hasCheckedElement = checked.valueAt(i);
+                    }
+
+                    if (hasCheckedElement) {
+                        mMode.invalidate();
+                    } else {
+                        mMode.finish();
+                    }
                 }
             }
         }
+    }
+
+    private boolean isReportItemSubmit(int position) {
+        Cursor cursor = (Cursor) getListView().getItemAtPosition(position);
+        cursor.moveToPosition(position);
+        int submit = cursor.getInt(cursor.getColumnIndex("submit"));
+        return submit == Report.TRUE;
     }
 
     private void deleteReport() {
