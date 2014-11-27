@@ -36,7 +36,7 @@ public class PageView extends ScrollView {
 
     private final Page page;
 
-    public PageView(Context context, Page page) {
+    public PageView(Context context, Page page, boolean readonly) {
         super(context);
         this.page = page;
 
@@ -56,9 +56,9 @@ public class PageView extends ScrollView {
         for (Question q : questions) {
             View qView;
             if (q instanceof MultipleChoiceQuestion) {
-                qView = new MultipleChoiceQuestionView(context, (MultipleChoiceQuestion) q);
+                qView = new MultipleChoiceQuestionView(context, (MultipleChoiceQuestion) q, readonly);
             } else {
-                qView = new QuestionView(context, q);
+                qView = new QuestionView(context, q, readonly);
             }
             qView.setLayoutParams(wrapContent);
             scrollViewContent.addView(qView);

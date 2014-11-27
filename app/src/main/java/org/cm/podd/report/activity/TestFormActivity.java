@@ -234,7 +234,7 @@ public class TestFormActivity extends ActionBarActivity {
                 Bundle savedInstanceState) {
             Bundle arguments = getArguments();
             Page page = (Page) arguments.get("page");
-            return new PageView(getActivity(), page);
+            return new PageView(getActivity(), page, false);
         }
 
     }

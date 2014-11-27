@@ -41,7 +41,7 @@ public class QuestionView extends LinearLayout {
 
     private final Question question;
 
-    public QuestionView(Context context, Question q) {
+    public QuestionView(Context context, Question q, boolean readonly) {
         super(context);
         this.question = q;
 
@@ -68,6 +68,10 @@ public class QuestionView extends LinearLayout {
         editView.setTextAppearance(context, R.style.EditTextFlat);
         editView.setBackgroundResource(R.drawable.ab_solid_white_podd);
         editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+        if (readonly) {
+            editView.setKeyListener(null);
+            editView.setEnabled(false);
+        }
         int type = 0;
         if (question.getDataType() == DataType.INTEGER) {
             type = type | InputType.TYPE_CLASS_NUMBER;
@@ -85,41 +89,44 @@ public class QuestionView extends LinearLayout {
         }
         addView(editView);
 
-        editView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        if (! readonly) {
+            editView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                question.setData(question.getDataType().parseFromString(editable.toString()));
-            }
-        });
-
-        editView.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (! hasFocus) {
-                    question.setData(question.getDataType().parseFromString(editView.getText().toString()));
                 }
-            }
-        });
 
-        editView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (listener != null) {
-                    return listener.onSoftKeyAction(v, actionId, event);
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
                 }
-                return false;
-            }
-        });
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    question.setData(question.getDataType().parseFromString(editable.toString()));
+                }
+            });
+
+            editView.setOnFocusChangeListener(new OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    if (! hasFocus) {
+                        question.setData(question.getDataType().parseFromString(editView.getText().toString()));
+                    }
+                }
+            });
+
+            editView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (listener != null) {
+                        return listener.onSoftKeyAction(v, actionId, event);
+                    }
+                    return false;
+                }
+            });
+        }
+
     }
 
 
