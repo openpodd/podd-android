@@ -53,6 +53,7 @@ import org.cm.podd.report.model.ReportImage;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.cm.podd.report.view.TouchyGridView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -170,8 +171,15 @@ public class ReportImageFragment extends Fragment {
         allImageGuide = getAllImageGuide();
         imageGuideAdapter = new ImageAdapter(getActivity(), allImageGuide);
         gridImageGuideView.setAdapter(imageGuideAdapter);
+        gridImageGuideView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (mMode == null) {
+                    popUpChooseImage();
+                }
+            }
+        });
 
-        final Fragment targetFragment = this;
         imageAdapter = new ImageAdapter(getActivity(), allImage);
         imageAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -232,6 +240,16 @@ public class ReportImageFragment extends Fragment {
                             new ActionModeCallback(getActivity()));
                 }
                 return false;
+            }
+        });
+        ((TouchyGridView) gridView).setOnNoItemClickListener(new TouchyGridView.OnNoItemClickListener() {
+            @Override
+            public void onNoItemClick() {
+                if (mMode == null) {
+                    if (gridImageGuideView.getVisibility() == View.VISIBLE) {
+                        popUpChooseImage();
+                    }
+                }
             }
         });
 
@@ -334,16 +352,19 @@ public class ReportImageFragment extends Fragment {
         super.onAttach(activity);
         navigationInterface = (ReportNavigationInterface) activity;
 
-        final ReportImageFragment me = this;
         dataInterface = (ReportDataInterface) activity;
         dataInterface.setCameraInteractionListener(new CameraInteractionListener() {
             @Override
             public void doGetImage() {
-                MediaChoiceDialog dlg = new MediaChoiceDialog();
-                dlg.setTargetFragment(me, 0);
-                dlg.show(getActivity().getSupportFragmentManager(), "MediaChoiceDialog");
+                popUpChooseImage();
             }
         });
+    }
+
+    public void popUpChooseImage() {
+        MediaChoiceDialog dlg = new MediaChoiceDialog();
+        dlg.setTargetFragment(this, 0);
+        dlg.show(getActivity().getSupportFragmentManager(), "MediaChoiceDialog");
     }
 
     @Override

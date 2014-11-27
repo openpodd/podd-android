@@ -16,7 +16,7 @@
         android:gravity="center"
         />
 
-    <GridView
+    <org.cm.podd.report.view.TouchyGridView
         android:id="@+id/image_grid_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
