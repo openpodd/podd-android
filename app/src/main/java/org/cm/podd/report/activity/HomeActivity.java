@@ -17,10 +17,12 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,7 +44,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -51,10 +58,12 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.io.IOException;
 import java.util.Locale;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ReportListFragment.OnReportSelectListener {
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String TAG = "HomeActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -74,6 +83,9 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    GoogleCloudMessaging gcm;
+    String regid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +135,19 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
+
+        // Check device for Play Services APK. If check succeeds, proceed with
+        //  GCM registration.
+        if (checkPlayServices()) {
+            gcm = GoogleCloudMessaging.getInstance(this);
+            regid = getRegistrationId();
+
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }
+        } else {
+            Log.i(TAG, "No valid Google Play Services APK found.");
+        }
 
     }
 
@@ -220,6 +245,110 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     protected void onDestroy() {
         super.onDestroy();
         reportDataSource.close();
+    }
+
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Gets the current registration ID for application on GCM service.
+     * If result is empty, the app needs to register.
+     *
+     * @return registration ID, or empty string if there is no existing
+     *         registration ID.
+     */
+    private String getRegistrationId() {
+        final SharedPreferences prefs = getGCMPreferences();
+        String registrationId = prefs.getString(SharedPrefUtil.GCM_REGISTRATION_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.i(TAG, "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = prefs.getInt(SharedPrefUtil.GCM_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = BuildConfig.VERSION_CODE;
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
+    /**
+     * @return Application's {@code SharedPreferences}.
+     */
+    private SharedPreferences getGCMPreferences() {
+        return getSharedPreferences(HomeActivity.class.getSimpleName(),
+                Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+    private void registerInBackground() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(HomeActivity.this);
+                    }
+                    regid = gcm.register(BuildConfig.GCM_SERVICE_ID);
+                    msg = "Device registered, registration ID=" + regid;
+
+                    // Persist the regID - no need to register again.
+                    storeRegistrationId(regid);
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+                Log.e(TAG, msg);
+            }
+        }.execute(null, null, null);
+    }
+
+    /**
+     * Stores the registration ID and app versionCode in the application's
+     * {@code SharedPreferences}.
+     *
+     * @param regId registration ID
+     */
+    private void storeRegistrationId(String regId) {
+        final SharedPreferences prefs = getGCMPreferences();
+        int appVersion = BuildConfig.VERSION_CODE;
+        Log.i(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(SharedPrefUtil.GCM_REGISTRATION_ID, regId);
+        editor.putInt(SharedPrefUtil.GCM_APP_VERSION, appVersion);
+        editor.commit();
     }
 
     /**
