@@ -55,8 +55,10 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -320,8 +322,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                     regid = gcm.register(BuildConfig.GCM_SERVICE_ID);
                     msg = "Device registered, registration ID=" + regid;
 
-                    // Persist the regID - no need to register again.
-                    storeRegistrationId(regid);
+                    new RegisterTask().execute((Void[]) null);
+
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                 }
@@ -423,4 +425,34 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
+
+    /**
+     * Post gcm register id
+     */
+    public class RegisterTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
+            // authenticate and get access token
+            String reqData = regid;
+            return RequestDataUtil.registerDeviceId(reqData, SharedPrefUtil.getAccessToken());
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            JSONObject obj = resp.getJsonObject();
+
+            if (obj != null) {
+                // Persist the regID - no need to register again.
+                storeRegistrationId(regid);
+                return;
+            }
+
+        }
+    }
 }
