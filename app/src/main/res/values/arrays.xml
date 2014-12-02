@@ -8,4 +8,8 @@
         <item>ลบรูปออก</item>
         <item>แก้ไขคำบรรยายรูป</item>
     </string-array>
+    <string-array name="menu_titles">
+        <item>รายงาน</item>
+        <item>ข่าวสาร</item>
+    </string-array>
 </resources>

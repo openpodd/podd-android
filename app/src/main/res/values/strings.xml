@@ -64,4 +64,7 @@
     </string>
     <string name="app_version_code">เวอร์ชั่น</string>
     <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
+    <string name="drawer_open">แสดงเมนู</string>
+    <string name="drawer_close">ปิดเมนู</string>
+
 </resources>

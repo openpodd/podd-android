@@ -17,26 +17,26 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -51,29 +51,23 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
-import java.util.Locale;
-
-public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener, ReportListFragment.OnReportSelectListener {
+public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener {
 
     public static final String TAG = "HomeActivity";
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+
+    private String[] mMenuTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
 
     ReportDataSource reportDataSource;
 
     private SharedPreferences sharedPref;
     private boolean sendScreenViewAnalytic = true;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,40 +77,39 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         // initialize prefs
         sharedPref = SharedPrefUtil.getPrefs(getApplicationContext());
 
-        // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mMenuTitles = getResources().getStringArray(R.array.menu_titles);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mTitle = mDrawerTitle = getTitle();
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_menu_list, R.string.drawer_open, R.string.drawer_close) {
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
-        });
 
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-//                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setCustomView(createTabView(mSectionsPagerAdapter.getPageTitle(i).toString()))
-                            .setTabListener(this));
-        }
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         reportDataSource = new ReportDataSource(this);
 
@@ -124,19 +117,60 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
 
+        selectItem(0);
     }
 
-    private TextView createTabView(String name) {
-        TextView title = new TextView(this);
-        title.setText(name);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        title.setLayoutParams(layoutParams);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(getResources().getColorStateList(R.color.tab_text_state));
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        title.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        return title;
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_new_event).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    /** Swaps fragments in the main content view */
+    private void selectItem(int position) {
+        Fragment fragment = null;
+
+        if (position == 0) {
+            fragment = new ReportListFragment();
+            setTitle(mMenuTitles[position]);
+        } else {
+            fragment = PlaceholderFragment.newInstance(position + 1);
+            setTitle(null);
+        }
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override
@@ -150,9 +184,12 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             showSetting();
@@ -182,21 +219,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if (! SharedPrefUtil.isUserLoggedIn()) {
@@ -222,42 +244,31 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         reportDataSource.close();
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    public class DrawerAdapter extends ArrayAdapter<String> {
+
+        Context context;
+        int resource;
+
+        public DrawerAdapter(Context context, int resource, String[] titles) {
+            super(context, resource, titles);
+            this.context = context;
+            this.resource = resource;
         }
 
         @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position == 0) {
-                return new ReportListFragment();
-            } else {
-                return PlaceholderFragment.newInstance(position + 1);
-            }
-
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 1;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-            }
-            return null;
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View rootView = LayoutInflater.from(context).inflate(resource, parent, false);
+            TextView titleView = (TextView) rootView.findViewById(R.id.title);
+            titleView.setText(getItem(position));
+            return rootView;
         }
     }
 
