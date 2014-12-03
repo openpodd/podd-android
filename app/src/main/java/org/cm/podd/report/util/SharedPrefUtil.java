@@ -36,6 +36,8 @@ public class SharedPrefUtil {
     public static final String AWS_SECRET_KEY = "aws_secret_key";
     public static final String AWS_ACCESS_KEY = "aws_access_key";
     public static final String ADMIN_AREA = "admin_area";
+    public static final String GCM_REGISTRATION_ID = "gcm_registration_id";
+    public static final String GCM_APP_VERSION = "gcm_app_version";
 
     private static SharedPreferences sharedPrefs;
 

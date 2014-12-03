@@ -194,4 +194,49 @@ public class RequestDataUtil {
         }
         return connected;
     }
+
+    public static ResponseObject registerDeviceId(String deviceId, String token) {
+        JSONObject jsonObj = null;
+        int statusCode = 0;
+        String reqUrl = BuildConfig.SERVER_URL + "/gcm";
+        Log.i(TAG, "submit url=" + reqUrl);
+
+        HttpParams params = new BasicHttpParams();
+        params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        HttpClient client = new DefaultHttpClient(params);
+
+        try {
+            HttpPost post = new HttpPost(reqUrl);
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            if (token != null) {
+                post.setHeader("Authorization", "Token " + token);
+            }
+            post.setEntity(new StringEntity("gcmRecId="+deviceId, HTTP.UTF_8));
+
+            HttpResponse response;
+            response = client.execute(post);
+            HttpEntity entity = response.getEntity();
+
+            // Detect server complaints
+            statusCode = response.getStatusLine().getStatusCode();
+            Log.v(TAG, "status code=" + statusCode);
+
+            if (statusCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                InputStream in = entity.getContent();
+                String resp = FileUtil.convertInputStreamToString(in);
+                Log.d(TAG, "Register device id : Response text= " + resp);
+                jsonObj = new JSONObject();
+                entity.consumeContent();
+            }
+
+        } catch (ClientProtocolException e) {
+            Log.e(TAG, "error post data", e);
+        } catch (IOException e) {
+            Log.e(TAG, "Can't connect server", e);
+        } finally {
+            client.getConnectionManager().shutdown();
+        }
+        return new ResponseObject(statusCode, jsonObj);
+    }
+
 }
