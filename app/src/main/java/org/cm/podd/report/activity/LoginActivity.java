@@ -35,7 +35,7 @@ import static android.provider.Settings.Secure.ANDROID_ID;
 public class LoginActivity extends ActionBarActivity {
 
     private boolean isUserLoggedIn;
-    SharedPreferences sharedPrefs;
+    SharedPrefUtil sharedPrefUtil;
 
     EditText usernameText;
     EditText passwordText;
@@ -48,8 +48,8 @@ public class LoginActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_login);
 
-        sharedPrefs = SharedPrefUtil.getPrefs(getApplicationContext());
-        isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+        isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
 
         usernameText = (EditText) findViewById(R.id.username);
         passwordText = (EditText) findViewById(R.id.password);
@@ -157,10 +157,8 @@ public class LoginActivity extends ActionBarActivity {
                 try {
                     String token = obj.getString("token");
 
-                    Editor editor = sharedPrefs.edit();
-                    editor.putString(SharedPrefUtil.ACCESS_TOKEN_KEY, token);
-                    editor.putString(SharedPrefUtil.USERNAME, usernameText.getText().toString());
-                    editor.commit();
+                    sharedPrefUtil.setAccessToken(token);
+                    sharedPrefUtil.setUserName(usernameText.getText().toString());
 
                     // get configuration
                     new ConfigTask().execute((Void[]) null);
@@ -196,7 +194,7 @@ public class LoginActivity extends ActionBarActivity {
         protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
             // authenticate and get access token
             String reqData = getIdentifier().toString();
-            return RequestDataUtil.post("/configuration/", null, reqData, SharedPrefUtil.getAccessToken());
+            return RequestDataUtil.post("/configuration/", null, reqData, sharedPrefUtil.getAccessToken());
         }
 
         @Override
@@ -209,18 +207,15 @@ public class LoginActivity extends ActionBarActivity {
                 return;
 
             try {
-                Editor editor = sharedPrefs.edit();
-                editor.putString(SharedPrefUtil.FULLNAME, obj.getString("fullName"));
-                editor.putString(SharedPrefUtil.AWS_SECRET_KEY, obj.getString("awsSecretKey"));
-                editor.putString(SharedPrefUtil.AWS_ACCESS_KEY, obj.getString("awsAccessKey"));
-                editor.putString(SharedPrefUtil.ADMIN_AREA, obj.getJSONArray("administrationAreas").toString());
-                editor.commit();
+
+                sharedPrefUtil.setUserInfo(obj.getString("fullName"), obj.getJSONArray("administrationAreas").toString());
+                sharedPrefUtil.setAWSKey(obj.getString("awsSecretKey"), obj.getString("awsAccessKey"));
 
                 // save report types data into table
                 ReportTypeDataSource dataSource = new ReportTypeDataSource(LoginActivity.this);
                 dataSource.initNewData(obj.getJSONArray("reportTypes").toString());
 
-                isUserLoggedIn = SharedPrefUtil.isUserLoggedIn();
+                isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
                 // goto report home
                 finish();
             } catch (JSONException e) {

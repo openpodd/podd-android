@@ -82,6 +82,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private SharedPreferences sharedPref;
     private boolean sendScreenViewAnalytic = true;
 
+    private SharedPrefUtil sharedPrefUtil;
+
 
     GoogleCloudMessaging gcm;
     String regid;
@@ -92,7 +94,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         setContentView(R.layout.activity_home);
 
         // initialize prefs
-        sharedPref = SharedPrefUtil.getPrefs(getApplicationContext());
+        sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
         mMenuTitles = getResources().getStringArray(R.array.menu_titles);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -209,7 +211,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, null);
+        StyleUtil.setActionBarTitle(this, "ผ่อดีดี");
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
@@ -255,7 +257,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     protected void onResume() {
         super.onResume();
-        if (! SharedPrefUtil.isUserLoggedIn()) {
+        if (! sharedPrefUtil.isUserLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -307,8 +309,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
      *         registration ID.
      */
     private String getRegistrationId() {
-        final SharedPreferences prefs = getGCMPreferences();
-        String registrationId = prefs.getString(SharedPrefUtil.GCM_REGISTRATION_ID, "");
+        String registrationId = sharedPrefUtil.getGCMRegId();
         if (registrationId.isEmpty()) {
             Log.i(TAG, "Registration not found.");
             return "";
@@ -316,21 +317,13 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // Check if app was updated; if so, it must clear the registration ID
         // since the existing regID is not guaranteed to work with the new
         // app version.
-        int registeredVersion = prefs.getInt(SharedPrefUtil.GCM_APP_VERSION, Integer.MIN_VALUE);
+        int registeredVersion = sharedPrefUtil.getGCMVersion();
         int currentVersion = BuildConfig.VERSION_CODE;
         if (registeredVersion != currentVersion) {
             Log.i(TAG, "App version changed.");
             return "";
         }
         return registrationId;
-    }
-
-    /**
-     * @return Application's {@code SharedPreferences}.
-     */
-    private SharedPreferences getGCMPreferences() {
-        return getSharedPreferences(HomeActivity.class.getSimpleName(),
-                Context.MODE_PRIVATE);
     }
 
     /**
@@ -373,13 +366,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
      * @param regId registration ID
      */
     private void storeRegistrationId(String regId) {
-        final SharedPreferences prefs = getGCMPreferences();
         int appVersion = BuildConfig.VERSION_CODE;
-        Log.i(TAG, "Saving regId on app version " + appVersion);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(SharedPrefUtil.GCM_REGISTRATION_ID, regId);
-        editor.putInt(SharedPrefUtil.GCM_APP_VERSION, appVersion);
-        editor.commit();
+        sharedPrefUtil.setGCMData(regId, appVersion);
     }
 
 
@@ -464,7 +452,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
             // authenticate and get access token
             String reqData = regid;
-            return RequestDataUtil.registerDeviceId(reqData, SharedPrefUtil.getAccessToken());
+            return RequestDataUtil.registerDeviceId(reqData, sharedPrefUtil.getAccessToken());
         }
 
         @Override

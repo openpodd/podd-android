@@ -36,18 +36,19 @@ import org.cm.podd.report.util.StyleUtil;
 
 public class SettingActivity extends ActionBarActivity {
 
-    SharedPreferences sharedPrefs;
+    SharedPrefUtil sharedPrefUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+
         setContentView(R.layout.activity_setting);
 
-        sharedPrefs = SharedPrefUtil.getPrefs(getApplicationContext());
         Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
 
         final EditText userText = (EditText) findViewById(R.id.username);
-        userText.setText(SharedPrefUtil.getFullName());
+        userText.setText(sharedPrefUtil.getFullName());
         userText.setTypeface(face);
 
         final EditText versionCodeText = (EditText) findViewById(R.id.version_code);
@@ -101,9 +102,7 @@ public class SettingActivity extends ActionBarActivity {
 
     private void logout() {
         // clear access token
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.remove(SharedPrefUtil.ACCESS_TOKEN_KEY);
-        editor.commit();
+        sharedPrefUtil.clearAllData();
 
         // clear all report data
         ReportDataSource db = new ReportDataSource(this);

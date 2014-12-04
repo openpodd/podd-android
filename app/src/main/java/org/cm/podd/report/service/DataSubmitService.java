@@ -72,13 +72,15 @@ public class DataSubmitService extends IntentService {
     public static final String ACTION_REPORT_STATUS_CHANGE = "podd.report_status_change";
     public static final String ACTION_REPORT_SUBMIT = "podd.report_submit";
 
+    SharedPrefUtil sharedPrefUtil;
+
     public DataSubmitService() {
         super(DataSubmitService.class.getSimpleName());
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPrefUtil.getPrefs(getApplicationContext());
 
         HttpURLConnection conn = null;
         Log.i(TAG, "submit data " + Long.toString(System.currentTimeMillis()));
@@ -186,7 +188,7 @@ public class DataSubmitService extends IntentService {
 
             HttpPost post = new HttpPost(http);
             post.setHeader("Content-type", "application/json");
-            post.setHeader("Authorization", "Token " + SharedPrefUtil.getAccessToken());
+            post.setHeader("Authorization", "Token " + sharedPrefUtil.getAccessToken());
 
             SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
             SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -247,7 +249,7 @@ public class DataSubmitService extends IntentService {
 
             HttpPost post = new HttpPost(http);
             post.setHeader("Content-type", "application/json");
-            post.setHeader("Authorization", "Token " + SharedPrefUtil.getAccessToken());
+            post.setHeader("Authorization", "Token " + sharedPrefUtil.getAccessToken());
 
             String note = reportImage.getNote();
             if (note == null) {
@@ -315,7 +317,7 @@ public class DataSubmitService extends IntentService {
 
     private boolean uploadToS3(String guid, String filePath, Bitmap thumbnail) {
         TransferManager transferManager = new TransferManager(
-                new BasicAWSCredentials(SharedPrefUtil.getAwsSecretKey(), SharedPrefUtil.getAwsAccessKey()));
+                new BasicAWSCredentials(sharedPrefUtil.getAwsSecretKey(), sharedPrefUtil.getAwsAccessKey()));
 
         // upload thumbnail
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

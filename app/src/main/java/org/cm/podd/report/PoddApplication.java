@@ -55,7 +55,8 @@ public class PoddApplication extends Application {
 
             // You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
             // sent with all subsequent hits.
-            t.set("&uid", SharedPrefUtil.getUserName());
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+            t.set("&uid", sharedPrefUtil.getUserName());
 
             mTrackers.put(trackerId, t);
 

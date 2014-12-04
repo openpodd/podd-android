@@ -17,6 +17,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.model.Region;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Calendar;
@@ -41,6 +42,8 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     private Spinner mRegionsSpinner;
     private ArrayAdapter<Region> regionAdapter;
 
+    private SharedPrefUtil sharedPrefUtil;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -63,6 +66,9 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPrefUtil = new SharedPrefUtil(getActivity().getApplicationContext());
+
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
@@ -82,7 +88,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         mDatePicker.setMinDate(minDate);
 
         mRegionsSpinner = (Spinner) view.findViewById(R.id.regions_spinner);
-        regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, reportDataSource.getAllRegion());
+        regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, sharedPrefUtil.getAllRegions());
         mRegionsSpinner.setAdapter(regionAdapter);
 
         loadData();

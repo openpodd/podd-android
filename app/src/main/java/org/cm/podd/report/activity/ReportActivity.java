@@ -110,6 +110,8 @@ public class ReportActivity extends ActionBarActivity
     private String remark;
     private int reportSubmit;
 
+    private SharedPrefUtil sharedPrefUtil;
+
     protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -129,6 +131,8 @@ public class ReportActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
         setContentView(R.layout.activity_report);
         prevBtn = (Button) findViewById(R.id.prevBtn);
@@ -573,7 +577,7 @@ public class ReportActivity extends ActionBarActivity
                     PoddApplication.TrackerName.APP_TRACKER);
             tracker.send(new HitBuilders.TimingBuilder()
                     .setCategory("ReportProcess").setValue(interval)
-                    .setVariable("Overall").setLabel(SharedPrefUtil.getUserName())
+                    .setVariable("Overall").setLabel(sharedPrefUtil.getUserName())
                     .build());
         }
     }

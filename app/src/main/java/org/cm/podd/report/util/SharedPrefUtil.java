@@ -18,6 +18,7 @@ package org.cm.podd.report.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.cm.podd.report.model.Region;
 import org.json.JSONArray;
@@ -38,29 +39,27 @@ public class SharedPrefUtil {
     public static final String ADMIN_AREA = "admin_area";
     public static final String GCM_REGISTRATION_ID = "gcm_registration_id";
     public static final String GCM_APP_VERSION = "gcm_app_version";
+    private static final String TAG = "SharedPrefUtil";
 
-    private static SharedPreferences sharedPrefs;
+    private SharedPreferences sharedPrefs;
 
-    public static SharedPreferences getPrefs(Context context) {
-        if (sharedPrefs == null) {
-            sharedPrefs = context.getSharedPreferences(APP_SHARED_PREFS, Context.MODE_PRIVATE);
-        }
-        return sharedPrefs;
+    public SharedPrefUtil (Context context) {
+        sharedPrefs = context.getSharedPreferences(APP_SHARED_PREFS, Context.MODE_PRIVATE);
     }
 
-    public static boolean isUserLoggedIn() {
+    public boolean isUserLoggedIn() {
         return getAccessToken() != null;
     }
 
-    public static String getAccessToken() {
+    public String getAccessToken() {
         return sharedPrefs.getString(ACCESS_TOKEN_KEY, null);
     }
 
-    public static String getUserName() {
+    public String getUserName() {
         return sharedPrefs.getString(USERNAME, null);
     }
 
-    public static List<Region> getAllRegions() {
+    public List<Region> getAllRegions() {
         List<Region> regions = new ArrayList<Region>();
         String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
         try {
@@ -75,16 +74,60 @@ public class SharedPrefUtil {
         return regions;
     }
 
-    public static String getAwsSecretKey() {
+    public String getAwsSecretKey() {
         return sharedPrefs.getString(AWS_SECRET_KEY, "");
     }
 
-    public static String getAwsAccessKey() {
+    public String getAwsAccessKey() {
         return sharedPrefs.getString(AWS_ACCESS_KEY, "");
     }
 
-    public static String getFullName() {
+    public String getFullName() {
         return sharedPrefs.getString(FULLNAME, "");
+    }
+
+    public String getGCMRegId() { return sharedPrefs.getString(GCM_REGISTRATION_ID, ""); }
+
+    public int getGCMVersion() { return sharedPrefs.getInt(GCM_APP_VERSION, 0); }
+
+    public void setGCMData(String regId, int appVersion) {
+        Log.i(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.GCM_REGISTRATION_ID, regId);
+        editor.putInt(SharedPrefUtil.GCM_APP_VERSION, appVersion);
+        editor.commit();
+    }
+
+    public void setAccessToken(String token) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.ACCESS_TOKEN_KEY, token);
+        editor.commit();
+    }
+
+    public void setUserName(String name) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.USERNAME, name);
+        editor.commit();
+    }
+
+    public void setUserInfo(String fullName, String administrationAreas) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.FULLNAME, fullName);
+        editor.putString(SharedPrefUtil.ADMIN_AREA, administrationAreas);
+        editor.commit();
+    }
+
+    public void setAWSKey(String awsSecretKey, String awsAccessKey) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.AWS_SECRET_KEY, awsSecretKey);
+        editor.putString(SharedPrefUtil.AWS_ACCESS_KEY, awsAccessKey);
+        editor.commit();
+    }
+
+    public void clearAllData() {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.clear();
+        editor.commit();
     }
 }
 

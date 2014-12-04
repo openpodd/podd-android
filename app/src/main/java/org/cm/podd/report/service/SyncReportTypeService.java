@@ -48,7 +48,8 @@ public class SyncReportTypeService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String accessToken = SharedPrefUtil.getAccessToken();
+        SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+        String accessToken = sharedPrefUtil.getAccessToken();
         RequestDataUtil.ResponseObject resp = RequestDataUtil.get(
                 "/reportTypes/", null, accessToken);
 
