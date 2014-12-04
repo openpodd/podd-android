@@ -81,7 +81,7 @@ public class RequestDataUtil {
             statusCode = response.getStatusLine().getStatusCode();
             Log.v(TAG, "status code=" + statusCode);
 
-            if (statusCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
                 InputStream in = entity.getContent();
                 String resp = FileUtil.convertInputStreamToString(in);
 
@@ -127,7 +127,7 @@ public class RequestDataUtil {
             statusCode = response.getStatusLine().getStatusCode();
             Log.v(TAG, "status code=" + statusCode);
 
-            if (statusCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
                 InputStream in = entity.getContent();
                 rawData = FileUtil.convertInputStreamToString(in);
 
@@ -198,7 +198,7 @@ public class RequestDataUtil {
     public static ResponseObject registerDeviceId(String deviceId, String token) {
         JSONObject jsonObj = null;
         int statusCode = 0;
-        String reqUrl = BuildConfig.SERVER_URL + "/gcm";
+        String reqUrl = BuildConfig.SERVER_URL + "/gcm/";
         Log.i(TAG, "submit url=" + reqUrl);
 
         HttpParams params = new BasicHttpParams();
@@ -207,11 +207,20 @@ public class RequestDataUtil {
 
         try {
             HttpPost post = new HttpPost(reqUrl);
-            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            post.setHeader("Content-Type", "application/json");
+
             if (token != null) {
                 post.setHeader("Authorization", "Token " + token);
             }
-            post.setEntity(new StringEntity("gcmRecId="+deviceId, HTTP.UTF_8));
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("gcmRegId", deviceId);
+            } catch (JSONException e) {
+                Log.e(TAG, "Error while create json object", e);
+            }
+
+            post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
 
             HttpResponse response;
             response = client.execute(post);
@@ -221,7 +230,7 @@ public class RequestDataUtil {
             statusCode = response.getStatusLine().getStatusCode();
             Log.v(TAG, "status code=" + statusCode);
 
-            if (statusCode < HttpURLConnection.HTTP_INTERNAL_ERROR) {
+            if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
                 InputStream in = entity.getContent();
                 String resp = FileUtil.convertInputStreamToString(in);
                 Log.d(TAG, "Register device id : Response text= " + resp);
