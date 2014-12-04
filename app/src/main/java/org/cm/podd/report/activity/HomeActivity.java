@@ -21,23 +21,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-
 import android.content.res.Configuration;
-
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
-
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -67,7 +63,6 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Locale;
 
 public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener {
 
@@ -110,7 +105,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         mTitle = mDrawerTitle = getTitle();
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_menu_list, R.string.drawer_open, R.string.drawer_close) {
+                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -129,6 +124,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -409,6 +405,13 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         public View getView(int position, View convertView, ViewGroup parent) {
             View rootView = LayoutInflater.from(context).inflate(resource, parent, false);
             TextView titleView = (TextView) rootView.findViewById(R.id.title);
+            titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            ImageView iconView = (ImageView) rootView.findViewById(R.id.icon);
+            if (position == 0) {
+                iconView.setImageResource(R.drawable.ic_action_view_as_list);
+            } else if (position == 1) {
+                iconView.setImageResource(R.drawable.ic_action_event);
+            }
             titleView.setText(getItem(position));
             return rootView;
         }

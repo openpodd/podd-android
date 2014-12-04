@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="@drawable/tab_indicator_ab_podd">
+    android:background="@android:color/transparent">
 
     <ImageView
         android:id="@+id/icon"
@@ -18,21 +18,22 @@
 
     <TextView
         android:id="@+id/title"
+        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_toRightOf="@id/icon"
         style="@style/ActionBarTabTextStyle"
-        android:textColor="@color/tab_text_state"
+        android:textColor="@color/drawer_text_color"
         android:gravity="center_vertical"
         android:paddingRight="40dp" />
 
     <TextView android:id="@+id/counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/tab_selected_podd"
+        android:background="@android:color/transparent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
-        android:textColor="@color/black" />
+        android:textColor="@color/drawer_text_color" />
 
 </RelativeLayout>

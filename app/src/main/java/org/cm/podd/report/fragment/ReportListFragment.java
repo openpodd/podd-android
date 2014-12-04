@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -462,6 +463,7 @@ public class ReportListFragment extends ListFragment {
             TextView tv = new TextView(getActivity());
             tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setText("cab");
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             tv.setBackgroundColor(context.getResources().getColor(R.color.action_bar_bg));
             mode.setCustomView(tv);
 

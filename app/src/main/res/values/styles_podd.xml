@@ -26,7 +26,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenu.Podd</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Podd</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Podd</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_podd</item>
+        <item name="android:actionModeBackground">@drawable/abc_ab_solid_light_holo</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_podd</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Podd</item>
         <item name="android:actionBarTabTextStyle">@style/ActionBarTabTextStyle</item>
@@ -45,16 +45,12 @@
 
     <style name="ActionBar.Solid.Podd" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
         <item name="android:logo">@drawable/logo_with_pad</item>
-        <item name="android:background">@color/action_bar_bg</item>
-        <item name="android:backgroundStacked">@color/action_bar_bg</item>
-        <item name="android:backgroundSplit">@color/action_bar_bg</item>
+        <item name="android:background">@drawable/abc_ab_solid_light_holo</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Podd</item>
         <item name="android:titleTextStyle">@style/ActionBarTitleTextStyle</item>
 
         <item name="logo">@drawable/logo_with_pad</item>
-        <item name="background">@color/action_bar_bg</item>
-        <item name="backgroundStacked">@color/action_bar_bg</item>
-        <item name="backgroundSplit">@color/action_bar_bg</item>
+        <item name="background">@drawable/abc_ab_solid_light_holo</item>
         <item name="progressBarStyle">@style/ProgressBar.Podd</item>
         <item name="titleTextStyle">@style/ActionBarTitleTextStyle</item>
     </style>

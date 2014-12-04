@@ -7,8 +7,9 @@
     <!-- The main content view -->
     <FrameLayout
         android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
 
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
@@ -16,8 +17,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="@drawable/tab_selected_focused_podd"/>
+        android:divider="@color/report_row_bg"
+        android:dividerHeight="1dp"
+        android:background="@color/drawer_bg"/>
 
 </android.support.v4.widget.DrawerLayout>
