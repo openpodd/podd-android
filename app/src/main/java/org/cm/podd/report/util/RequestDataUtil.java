@@ -198,7 +198,7 @@ public class RequestDataUtil {
     public static ResponseObject registerDeviceId(String deviceId, String token) {
         JSONObject jsonObj = null;
         int statusCode = 0;
-        String reqUrl = BuildConfig.SERVER_URL + "/gcm/";
+        String reqUrl = "http://128.1.1.237:8081/gcm-demo/register";
         Log.i(TAG, "submit url=" + reqUrl);
 
         HttpParams params = new BasicHttpParams();
@@ -207,6 +207,7 @@ public class RequestDataUtil {
 
         try {
             HttpPost post = new HttpPost(reqUrl);
+            /*
             post.setHeader("Content-Type", "application/json");
 
             if (token != null) {
@@ -219,6 +220,9 @@ public class RequestDataUtil {
             } catch (JSONException e) {
                 Log.e(TAG, "Error while create json object", e);
             }
+*/
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            String data = "regId=" + deviceId;
 
             post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
 

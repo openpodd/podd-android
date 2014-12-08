@@ -17,12 +17,17 @@
 package org.cm.podd.report.fragment;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +35,23 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.util.StyleUtil;
 
 public class NotificationListFragment extends ListFragment {
 
     private static final String TAG = "NotificationListFragment";
+    public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
 
     NotificationDataSource notificationDataSource;
     private NotificationCursorAdapter adapter;
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Receiving action " + intent.getAction());
+            refreshAdapter();
+        }
+    };
 
     public NotificationListFragment() {
     }
@@ -45,11 +60,16 @@ public class NotificationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationDataSource = new NotificationDataSource(getActivity());
+        getActivity().registerReceiver(mMessageReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        refreshAdapter();
+    }
+
+    private void refreshAdapter() {
         adapter = new NotificationCursorAdapter(getActivity(), notificationDataSource.getAll(), false);
         setListAdapter(adapter);
     }
@@ -58,6 +78,7 @@ public class NotificationListFragment extends ListFragment {
     public void onDestroy() {
         super.onDestroy();
         notificationDataSource.close();
+        getActivity().unregisterReceiver(mMessageReceiver);
     }
 
     /**
@@ -65,8 +86,11 @@ public class NotificationListFragment extends ListFragment {
      */
     private class NotificationCursorAdapter extends CursorAdapter {
 
+        private Typeface typeFace;
+
         private NotificationCursorAdapter(Context context, Cursor c, boolean autoRequery) {
             super(context, c, autoRequery);
+            typeFace = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
         }
 
         @Override
@@ -77,8 +101,16 @@ public class NotificationListFragment extends ListFragment {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            long time = cursor.getLong(cursor.getColumnIndex("created_at"));
+
             TextView titleTextView = (TextView) view.findViewById(R.id.title);
-            titleTextView.setText("xxk");
+            titleTextView.setText(title);
+            titleTextView.setTypeface(typeFace);
+
+            TextView dateTextView = (TextView) view.findViewById(R.id.date);
+            dateTextView.setText(String.valueOf(time));
+            dateTextView.setTypeface(typeFace);
         }
     }
 }

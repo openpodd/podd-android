@@ -16,9 +16,12 @@
  */
 package org.cm.podd.report.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.Date;
 
 public class NotificationDataSource {
 
@@ -35,5 +38,15 @@ public class NotificationDataSource {
     public Cursor getAll() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         return db.query("notification", null, null, null, null, null, "_id desc");
+    }
+
+    public void save(String title, String content) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("title", title);
+        values.put("content", content);
+        values.put("created_at", new Date().getTime());
+        db.insert("notification", null, values);
+        db.close();
     }
 }

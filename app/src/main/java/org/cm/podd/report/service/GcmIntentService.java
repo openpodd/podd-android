@@ -29,6 +29,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
+import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.fragment.NotificationListFragment;
 
 public class GcmIntentService extends IntentService {
 
@@ -52,9 +54,21 @@ public class GcmIntentService extends IntentService {
         if (!extras.isEmpty()) {
 
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+
+                // Save notification
+                NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
+                String title = "Test noti message title";
+                String content = "<html><body><h3>good morning world</h3></body></html>";
+
+                notificationDataSource.save(title, content);
+                notificationDataSource.close();
+
                 // Post notification of received message.
-                sendNotification("Received: " + extras.toString());
+                sendNotification(title);
                 Log.i(TAG, "Received: " + extras.toString());
+
+                // refresh notification list
+                sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
