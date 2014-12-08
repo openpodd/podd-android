@@ -58,7 +58,7 @@ public class GcmIntentService extends IntentService {
                 // Save notification
                 NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
                 String title = "Test noti message title";
-                String content = "<html><body><h3>good morning world</h3></body></html>";
+                String content = "<h1>good morning world</h1><h3>How are you today?</h3>";
 
                 notificationDataSource.save(title, content);
                 notificationDataSource.close();

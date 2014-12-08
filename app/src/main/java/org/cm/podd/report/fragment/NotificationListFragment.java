@@ -31,9 +31,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.WebContentActivity;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -72,6 +74,19 @@ public class NotificationListFragment extends ListFragment {
     private void refreshAdapter() {
         adapter = new NotificationCursorAdapter(getActivity(), notificationDataSource.getAll(), false);
         setListAdapter(adapter);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Cursor cursor = (Cursor) adapter.getItem(position);
+        String title = cursor.getString(cursor.getColumnIndex("title"));
+        String content = cursor.getString(cursor.getColumnIndex("content"));
+
+        Intent intent = new Intent(getActivity(), WebContentActivity.class);
+        intent.putExtra("title", title);
+        intent.putExtra("content", content);
+        startActivity(intent);
     }
 
     @Override
