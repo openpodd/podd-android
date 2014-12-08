@@ -64,7 +64,7 @@ public class GcmIntentService extends IntentService {
                 notificationDataSource.close();
 
                 // Post notification of received message.
-                sendNotification(title);
+                sendNotification(title, content);
                 Log.i(TAG, "Received: " + extras.toString());
 
                 // refresh notification list
@@ -75,14 +75,15 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(String msg) {
+    private void sendNotification(String title, String content) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.setAction("org.cm.podd.report.GCM_NOTIFICATION");
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        intent.putExtra("url", url);
+        intent.putExtra("title", title);
+        intent.putExtra("content", content);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -92,8 +93,8 @@ public class GcmIntentService extends IntentService {
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("GCM Notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg);
+                                .bigText(title))
+                        .setContentText(title);
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

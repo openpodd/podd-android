@@ -61,6 +61,7 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.cm.podd.report.util.WebContentUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -156,6 +157,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+
 
     }
 
@@ -266,6 +268,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         sendScreenViewAnalytic = false;
+        // handle intent result from notification
+        launchNotificationMessage(data);
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -286,7 +290,20 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             }
             sendScreenViewAnalytic = true;
         }
+    }
 
+    private void launchNotificationMessage(Intent data) {
+        if (data != null) {
+            String title = data.getStringExtra("title");
+            String content = data.getStringExtra("content");
+
+            if (title != null && content != null) {
+                Intent intent = new Intent(this, WebContentActivity.class);
+                intent.putExtra("title", title);
+                intent.putExtra("content", content);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
