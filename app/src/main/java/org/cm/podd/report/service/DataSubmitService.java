@@ -76,11 +76,11 @@ public class DataSubmitService extends IntentService {
 
     public DataSubmitService() {
         super(DataSubmitService.class.getSimpleName());
-        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
         HttpURLConnection conn = null;
         Log.i(TAG, "submit data " + Long.toString(System.currentTimeMillis()));
