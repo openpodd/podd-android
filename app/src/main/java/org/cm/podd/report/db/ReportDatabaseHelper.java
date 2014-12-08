@@ -73,10 +73,19 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  definition TEXT"       // json string
             + ")";
 
+    private static final String CREATE_TABLE_NOTIFICATION = "create table notification"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  title TEXT,"
+            + "  content TEXT,"          // html
+            + "  created_at INTEGER"
+            + ")";
+
     private static final String DROP_TABLE = "drop table report";
     private static final String DROP_TABLE_IMAGE = "drop table report_image";
     private static final String DROP_TABLE_QUEUE = "drop table report_queue";
     private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
+    private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -89,7 +98,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
         sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
         sqLiteDatabase.execSQL(CREATE_TABLE_REPORT_TYPE);
-
+        sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
     }
 
     @Override
@@ -98,5 +107,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(DROP_TABLE_IMAGE);
         sqLiteDatabase.execSQL(DROP_TABLE_QUEUE);
         sqLiteDatabase.execSQL(DROP_TABLE_REPORT_TYPE);
+        sqLiteDatabase.execSQL(DROP_TABLE_NOTIFICATION);
     }
 }

@@ -20,7 +20,6 @@ package org.cm.podd.report.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -38,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -54,6 +54,7 @@ import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
@@ -68,6 +69,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String TAG = "HomeActivity";
+    private static final String APP_TITLE = "ผ่อดีดี";
 
     private String[] mMenuTitles;
     private DrawerLayout mDrawerLayout;
@@ -76,14 +78,11 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private int drawerPosition;
 
     ReportDataSource reportDataSource;
-
-    private SharedPreferences sharedPref;
     private boolean sendScreenViewAnalytic = true;
-
     private SharedPrefUtil sharedPrefUtil;
-
 
     GoogleCloudMessaging gcm;
     String regid;
@@ -105,14 +104,14 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        mTitle = mDrawerTitle = getTitle();
+        mDrawerTitle = APP_TITLE;
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                setTitle(mTitle);
+                setTitle(drawerPosition == 0 ? APP_TITLE : mMenuTitles[drawerPosition]);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -137,8 +136,13 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
 
-
-        selectItem(0);
+        /* return to last position after recreate activity */
+        if (savedInstanceState != null) {
+            drawerPosition = savedInstanceState.getInt("drawerPosition");
+        } else {
+            drawerPosition = 0;
+        }
+        selectItem(drawerPosition);
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
@@ -153,6 +157,12 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("drawerPosition", drawerPosition);
+        super.onSaveInstanceState(outState);
     }
 
     /* Called whenever we call invalidateOptionsMenu() */
@@ -180,11 +190,17 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
+        drawerPosition = position;
         Fragment fragment = null;
 
         if (position == 0) {
             fragment = new ReportListFragment();
+            setTitle(APP_TITLE);
+
+        } else if (position == 1) {
+            fragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
+
         } else {
             fragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
@@ -206,12 +222,11 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, "ผ่อดีดี");
+        StyleUtil.setActionBarTitle(this, mTitle.toString());
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
