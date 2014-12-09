@@ -143,20 +143,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         }
         selectItem(drawerPosition);
 
-        // Check device for Play Services APK. If check succeeds, proceed with
-        //  GCM registration.
-        if (checkPlayServices()) {
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regid = getRegistrationId();
-
-            if (regid.isEmpty()) {
-                registerInBackground();
-            }
-        } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
-
-        }
-
         onNewIntent(getIntent());
     }
 
@@ -277,7 +263,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-
         } else {
             if (sendScreenViewAnalytic) {
                 // send screen view analytic
@@ -286,6 +271,20 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 tracker.send(new HitBuilders.AppViewBuilder().build());
             }
             sendScreenViewAnalytic = true;
+
+            // Check device for Play Services APK. If check succeeds, proceed with
+            //  GCM registration.
+            if (checkPlayServices()) {
+                gcm = GoogleCloudMessaging.getInstance(this);
+                regid = getRegistrationId();
+
+                if (regid.isEmpty()) {
+                    registerInBackground();
+                }
+            } else {
+                Log.i(TAG, "No valid Google Play Services APK found.");
+
+            }
         }
     }
 
