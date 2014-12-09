@@ -34,7 +34,7 @@ public class WebContentUtil {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
 
-        webView.loadData(buildHtml(title, body), "text/html", "utf-8");
+        webView.loadData(buildHtml(title, body), "text/html; charset=UTF-8", null);
 
         // keep compat
         webView.setInitialScale((int) (100 * webView.getScale()));

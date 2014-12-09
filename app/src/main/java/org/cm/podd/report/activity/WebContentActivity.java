@@ -19,6 +19,7 @@ package org.cm.podd.report.activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
 
@@ -38,6 +39,8 @@ public class WebContentActivity extends ActionBarActivity {
 
         String title = getIntent().getStringExtra("title");
         String body = getIntent().getStringExtra("content");
+
+        Log.d("WebContentActivity.body", body);
 
         if (title != null && body != null) {
             WebContentUtil.launch(webView, title, body);

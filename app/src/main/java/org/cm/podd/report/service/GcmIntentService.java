@@ -49,26 +49,30 @@ public class GcmIntentService extends IntentService {
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
         String messageType = gcm.getMessageType(intent);
-        Log.i(TAG, String.format("Receive GCM message type=%s, extra=%s", messageType, extras.toString()));
+
 
         if (!extras.isEmpty()) {
 
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                String payload = intent.getStringExtra("message");
+                String payloadType = intent.getStringExtra("type");
 
-                // Save notification
-                NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
-                String title = "Test noti message title";
-                String content = "<h1>good morning world</h1><h3>How are you today?</h3>";
+                Log.i(TAG, String.format("Receive GCM message type=%s, payload type = %s extra=%s", messageType, payloadType, payload));
+                if (payloadType != null && payloadType.equals("news")) {
+                    // Save notification
+                    NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
+                    String title = "แจ้งข่าว";
 
-                notificationDataSource.save(title, content);
-                notificationDataSource.close();
+                    notificationDataSource.save(title, payload);
+                    notificationDataSource.close();
 
-                // Post notification of received message.
-                sendNotification(title, content);
-                Log.i(TAG, "Received: " + extras.toString());
+                    // Post notification of received message.
+                    sendNotification(title, payload);
 
-                // refresh notification list
-                sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
+                    // refresh notification list
+                    sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
+                }
+
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
