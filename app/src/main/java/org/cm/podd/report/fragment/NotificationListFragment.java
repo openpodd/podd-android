@@ -37,7 +37,10 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.WebContentActivity;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
+
+import java.util.Date;
 
 public class NotificationListFragment extends ListFragment {
 
@@ -124,7 +127,8 @@ public class NotificationListFragment extends ListFragment {
             titleTextView.setTypeface(typeFace);
 
             TextView dateTextView = (TextView) view.findViewById(R.id.date);
-            dateTextView.setText(String.valueOf(time));
+            Date date = new Date(time);
+            dateTextView.setText(DateUtil.convertToThaiDate(date));
             dateTextView.setTypeface(typeFace);
         }
     }

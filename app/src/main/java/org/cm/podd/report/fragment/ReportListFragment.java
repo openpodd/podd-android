@@ -40,6 +40,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Calendar;
@@ -361,7 +362,7 @@ public class ReportListFragment extends ListFragment {
                     draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
 
             Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-            String dateStr = convertToThaiDate(date);
+            String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 
             if (negative == Report.TRUE) {
@@ -379,21 +380,6 @@ public class ReportListFragment extends ListFragment {
                 ((CheckableLayout) view).setBackgroundSubmitState(true);
             }
 
-        }
-
-        final String[] THAI_MONTH = {
-            "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-            "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
-        };
-
-        private String convertToThaiDate(Date date) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            int dateNum = cal.get(Calendar.DATE);
-            int month = cal.get(Calendar.MONTH);
-            String thaiMonth = THAI_MONTH[month];
-            int year = cal.get(Calendar.YEAR) + 543;
-            return String.format("%d %s %d", dateNum, thaiMonth, year);
         }
 
         class ViewHolder {
