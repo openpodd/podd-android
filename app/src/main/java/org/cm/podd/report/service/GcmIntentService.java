@@ -82,8 +82,11 @@ public class GcmIntentService extends IntentService {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.setAction("org.cm.podd.report.GCM_NOTIFICATION");
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra("title", title);
-        intent.putExtra("content", content);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title);
+        bundle.putString("content", content);
+        intent.putExtras(bundle);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -91,7 +94,7 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("GCM Notification")
+                        .setContentTitle("PODD Notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(title))
                         .setContentText(title);
