@@ -101,7 +101,8 @@ public class GcmIntentService extends IntentService {
                         .setContentTitle("PODD Notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(title))
-                        .setContentText(title);
+                        .setContentText(title)
+                        .setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
