@@ -43,7 +43,6 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -142,6 +141,19 @@ public class ReportListFragment extends ListFragment {
             }
         }
         skipRefreshAdapter = false;
+
+        setupEmptyText();
+    }
+
+    private void setupEmptyText() {
+        ListView listView = (ListView) getView().findViewById(android.R.id.list);
+        ViewGroup parent = (ViewGroup) listView.getParent();
+        TextView emptyView = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        emptyView.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+        emptyView.setText("ยังไม่มีการรายงาน\nกดปุ่ม + เพื่อเริ่มรายงาน ");
+
+        parent.addView(emptyView);
+        listView.setEmptyView(emptyView);
     }
 
     @Override

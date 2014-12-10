@@ -99,6 +99,23 @@ public class NotificationListFragment extends ListFragment {
         getActivity().unregisterReceiver(mMessageReceiver);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupEmptyText();
+    }
+
+    private void setupEmptyText() {
+        ListView listView = (ListView) getView().findViewById(android.R.id.list);
+        ViewGroup parent = (ViewGroup) listView.getParent();
+        TextView emptyView = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        emptyView.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+        emptyView.setText("ไม่มีรายการข่าวสาร");
+
+        parent.addView(emptyView);
+        listView.setEmptyView(emptyView);
+    }
+
     /**
      * List Adapter
      */
