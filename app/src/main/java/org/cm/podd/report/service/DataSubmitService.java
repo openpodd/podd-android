@@ -206,6 +206,14 @@ public class DataSubmitService extends IntentService {
             if (report.getRegionId() != 0) {
                 data.put("administrationAreaId", report.getRegionId());
             }
+            if (report.getLatitude() != 0.00 && report.getLongitude() != 0.00) {
+                JSONObject loc = new JSONObject();
+                loc.put("latitude", report.getLatitude());
+                loc.put("longitude", report.getLongitude());
+
+                data.put("reportLocation", loc);
+            }
+
             data.put("remark", report.getRemark());
             data.put("negative", report.getNegative() == 1);
             data.put("formData", report.getNegative() == 1 ?
