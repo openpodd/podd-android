@@ -1,5 +1,32 @@
 apply plugin: 'com.android.application'
 
+def funfConfig = """
+{
+    "@type": "edu.mit.media.funf.pipeline.BasicPipeline",
+    "name": "default",
+    "version": 1,
+    "archive": {
+        "@schedule": {"interval": 3600}
+    },
+    "upload": {
+        "url": \\"http://apidev.cmonehealth.org/funf/upload/\\"
+    },
+    "data": [
+        {
+            "@type": "edu.mit.media.funf.probe.builtin.BatteryProbe",
+            "@schedule": {"interval": 1800}
+        },
+        {
+            "@type": "edu.mit.media.funf.probe.builtin.RunningApplicationsProbe"
+        },
+        {
+            "@type": "edu.mit.media.funf.probe.builtin.SimpleLocationProbe"
+        }
+    ]
+
+}
+
+"""
 android {
     compileSdkVersion 20
     buildToolsVersion "19.1.0"
@@ -11,6 +38,7 @@ android {
         versionCode 5
         versionName "1.0-beta-5"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
+        resValue "string", "funf_pipeline", funfConfig
     }
 
     signingConfigs {
@@ -42,7 +70,8 @@ android {
         }
 
         server_production {
-            buildConfigField "String", "SERVER_URL", "\"https://cmonehealth.org/api\""
+            buildConfigField "String", "SERVER_URL", "\"https://api.cmonehealth.org\""
+            resValue "string", "funf_pipeline", funfConfig.replaceAll("apidev", "api")
         }
     }
 

@@ -135,7 +135,7 @@
             android:exported="false" />
 
         <service android:name="edu.mit.media.funf.FunfManager">
-            <meta-data android:name="default" android:value="@string/funf_pipeline"/>
+            <meta-data android:name="default" android:value="@string/funf_pipeline"/> <!-- this resource is in generated.xml -->
         </service>
 
 
