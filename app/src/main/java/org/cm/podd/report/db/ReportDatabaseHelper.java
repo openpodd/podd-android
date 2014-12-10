@@ -26,7 +26,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -73,7 +73,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  definition TEXT"       // json string
             + ")";
 
-    private static final String CREATE_TABLE_NOTIFICATION = "create table notification"
+    private static final String CREATE_TABLE_NOTIFICATION = "create table if not exists notification"
             + "("
             + "  _id INTEGER PRIMARY KEY,"
             + "  title TEXT,"
@@ -93,7 +93,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
         sqLiteDatabase.execSQL(CREATE_TABLE);
         sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
         sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
@@ -103,10 +102,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL(DROP_TABLE);
-        sqLiteDatabase.execSQL(DROP_TABLE_IMAGE);
-        sqLiteDatabase.execSQL(DROP_TABLE_QUEUE);
-        sqLiteDatabase.execSQL(DROP_TABLE_REPORT_TYPE);
-        sqLiteDatabase.execSQL(DROP_TABLE_NOTIFICATION);
+        switch (oldVersion) {
+            case 1:
+                sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
+        }
     }
 }
