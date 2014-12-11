@@ -68,7 +68,7 @@ import java.util.List;
 public class DataSubmitService extends IntentService {
 
     private static final String TAG = "DataSubmitService";
-    private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/podd-dev/";
+    private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/" + BuildConfig.BUCKET_NAME + "/";
     public static final String ACTION_REPORT_STATUS_CHANGE = "podd.report_status_change";
     public static final String ACTION_REPORT_SUBMIT = "podd.report_submit";
 
@@ -337,7 +337,7 @@ public class DataSubmitService extends IntentService {
         meta.setContentType("image/jpeg");
 
         Upload upload1 = transferManager.upload(
-                "podd-dev", // bucket
+                BuildConfig.BUCKET_NAME, // bucket
                 guid + "-thumbnail", // name
                 bs,
                 meta
@@ -347,7 +347,7 @@ public class DataSubmitService extends IntentService {
         // upload image
         File imageFile = new File(filePath);
         Upload upload2 = transferManager.upload(
-                "podd-dev",
+                BuildConfig.BUCKET_NAME,
                 guid,
                 imageFile
         );

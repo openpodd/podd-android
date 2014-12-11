@@ -35,9 +35,10 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 11
         targetSdkVersion 20
-        versionCode 5
-        versionName "1.0-beta-5"
+        versionCode 9
+        versionName "1.0.9"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
+        buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         resValue "string", "funf_pipeline", funfConfig
     }
 
@@ -71,6 +72,7 @@ android {
 
         server_production {
             buildConfigField "String", "SERVER_URL", "\"https://api.cmonehealth.org\""
+            buildConfigField "String", "BUCKET_NAME", "\"podd\""
             resValue "string", "funf_pipeline", funfConfig.replaceAll("apidev", "api")
         }
     }
