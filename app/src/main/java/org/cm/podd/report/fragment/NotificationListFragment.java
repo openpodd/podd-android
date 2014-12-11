@@ -102,18 +102,24 @@ public class NotificationListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        setupEmptyText();
     }
 
-    private void setupEmptyText() {
-        ListView listView = (ListView) getView().findViewById(android.R.id.list);
-        ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyView = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
-        emptyView.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyView.setText("ไม่มีรายการข่าวสาร");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        parent.addView(emptyView);
-        listView.setEmptyView(emptyView);
+        ViewGroup parent = (ViewGroup) listView.getParent();
+        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+
+        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+        emptyText.setText("ไม่มีรายการข่าวสาร");
+        listView.setEmptyView(emptyText);
+
+        emptyText.setVisibility(View.GONE);
+        parent.addView(emptyText);
+
+        return view;
     }
 
     /**

@@ -141,19 +141,24 @@ public class ReportListFragment extends ListFragment {
             }
         }
         skipRefreshAdapter = false;
-
-        setupEmptyText();
     }
 
-    private void setupEmptyText() {
-        ListView listView = (ListView) getView().findViewById(android.R.id.list);
-        ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyView = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
-        emptyView.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyView.setText("ยังไม่มีการรายงาน\nกดปุ่ม + เพื่อเริ่มรายงาน ");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        parent.addView(emptyView);
-        listView.setEmptyView(emptyView);
+        ViewGroup parent = (ViewGroup) listView.getParent();
+        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+
+        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+        emptyText.setText("ยังไม่มีการรายงาน\nกดปุ่ม + เพื่อเริ่มรายงาน ");
+        listView.setEmptyView(emptyText);
+
+        emptyText.setVisibility(View.GONE);
+        parent.addView(emptyText);
+
+        return view;
     }
 
     @Override
