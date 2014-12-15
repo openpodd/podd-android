@@ -61,11 +61,14 @@ public class GcmIntentService extends IntentService {
                 if (payloadType != null && payloadType.equals("news")) {
                     // Save notification
                     NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
+
+                    String payloadStr = android.text.Html.fromHtml(payload).toString();
+
                     int len = 30;
-                    if (payload.length() < len) {
-                        len = payload.length();
+                    if (payloadStr.length() < len) {
+                        len = payloadStr.length();
                     }
-                    String title = "แจ้งข่าว: " + payload.substring(0, len) + "...";
+                    String title = "แจ้งข่าว: " + payloadStr.substring(0, len) + "...";
 
                     notificationDataSource.save(title, payload);
                     notificationDataSource.close();

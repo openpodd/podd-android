@@ -34,7 +34,8 @@ public class WebContentUtil {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
 
-        webView.loadData(buildHtml(title, body), "text/html; charset=UTF-8", null);
+        webView.loadDataWithBaseURL("file:///android_asset",
+                buildHtml(title, body), "text/html; charset=UTF-8", "utf-8", null);
 
         // keep compat
         webView.setInitialScale((int) (100 * webView.getScale()));

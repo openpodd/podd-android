@@ -28,6 +28,9 @@ def funfConfig = """
         {
             "@type": "edu.mit.media.funf.probe.builtin.SimpleLocationProbe",
             "@schedule": {"interval": ${60 * 60 * 4}}
+        },
+        {
+            "@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe"
         }
     ]
 

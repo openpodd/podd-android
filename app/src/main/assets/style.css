@@ -1,1 +1,14 @@
 /* webview style */
+@font-face {
+    font-family: 'CSPraJad';
+    src: url('file:///android_asset/CSPraJad.otf');
+}
+
+
+body {
+	font-family: "CSPraJad", sans-serif;
+    font-size: 24px; /* 17px */
+	line-height: 1.5em; /* 20px; /* 17px */
+	color: #111;
+	padding: 5px;
+}
