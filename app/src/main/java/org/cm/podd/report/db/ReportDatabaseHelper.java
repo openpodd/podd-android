@@ -20,13 +20,14 @@ package org.cm.podd.report.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by pphetra on 10/8/14 AD.
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -97,14 +98,37 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
         sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
         sqLiteDatabase.execSQL(CREATE_TABLE_REPORT_TYPE);
-        sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
+
+        Log.e("DB", "on create");
+        onUpgrade(sqLiteDatabase, 1, DATABASE_VERSION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        Log.e("DB", String.format("old version=%d / new version=%d", oldVersion, newVersion));
+        while (oldVersion < newVersion) {
+            updateSchema(sqLiteDatabase, oldVersion);
+            oldVersion++;
+        }
+
+    }
+
+    public void updateSchema(SQLiteDatabase db, int oldVersion) {
+        Log.e("DB", String.format("version=%d", oldVersion));
+        String sql = null;
         switch (oldVersion) {
             case 1:
-                sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
+                sql = CREATE_TABLE_NOTIFICATION;
+                Log.e("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL(sql);
+                break;
+            case 2:
+                sql = "ALTER TABLE notification ADD COLUMN seen INTEGER DEFAULT 0";
+                Log.e("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL(sql);
+                break;
+            default:
         }
     }
 }
+
