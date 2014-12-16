@@ -37,6 +37,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.WebContentActivity;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.model.Report;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -144,6 +145,7 @@ public class NotificationListFragment extends ListFragment {
         public void bindView(View view, Context context, Cursor cursor) {
             String title = cursor.getString(cursor.getColumnIndex("title"));
             long time = cursor.getLong(cursor.getColumnIndex("created_at"));
+            int seen = cursor.getInt(cursor.getColumnIndex("seen"));
 
             TextView titleTextView = (TextView) view.findViewById(R.id.title);
             titleTextView.setText(title);
@@ -153,6 +155,10 @@ public class NotificationListFragment extends ListFragment {
             Date date = new Date(time);
             dateTextView.setText(DateUtil.convertToThaiDate(date));
             dateTextView.setTypeface(typeFace);
+
+            TextView newTextView = (TextView) view.findViewById(R.id.new_label);
+            newTextView.setTypeface(typeFace);
+            newTextView.setVisibility(seen == Report.TRUE ? View.GONE : View.VISIBLE);
         }
     }
 }
