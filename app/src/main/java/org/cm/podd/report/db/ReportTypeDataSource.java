@@ -249,4 +249,10 @@ public class ReportTypeDataSource {
     public void close() {
         dbHelper.close();
     }
+
+    public void removeReportType(Long id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("report_type", "_id = ?", new String[] {id.toString()} );
+        db.close();
+    }
 }

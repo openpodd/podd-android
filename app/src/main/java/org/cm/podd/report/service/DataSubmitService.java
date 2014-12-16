@@ -151,6 +151,9 @@ public class DataSubmitService extends IntentService {
                         // so just remove a queue if no image found
                         success = true;
                     }
+                } else if (type.equals(ReportQueueDataSource.UPDATE_REPORT_TYPE)) {
+                    Intent syncIntent = new Intent(this, SyncReportTypeService.class);
+                    startService(syncIntent);
                 }
 
                 if (success) {

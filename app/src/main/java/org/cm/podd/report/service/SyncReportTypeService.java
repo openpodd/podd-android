@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,12 +58,18 @@ public class SyncReportTypeService extends IntentService {
             ReportTypeDataSource dbSource = new ReportTypeDataSource(this);
             List<ReportType> origReportTypes = dbSource.getAll();
 
+            ArrayList<Long> removeIds = new ArrayList<Long>();
+            for (ReportType rt : origReportTypes) {
+                removeIds.add(rt.getId());
+            }
+
             try {
                 JSONArray items = new JSONArray(resp.getRawData());
 //                JSONArray items = new JSONArray("[{\"id\":1,\"version\":1,\"name\":\"สัตว์ป่วย\\/ไม่ตายสักที\"},{\"id\":2,\"version\":3,\"name\":\"สัตว์กัดกระจาย\"}]");
 
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject updateReportType = items.getJSONObject(i);
+                    removeIds.remove(new Long(updateReportType.optInt("id")));
 
                     // check to see if any of server report types has greater version
                     ReportType rt = requireVersionUpdate(updateReportType, origReportTypes);
@@ -105,6 +112,10 @@ public class SyncReportTypeService extends IntentService {
 
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage(), e);
+            }
+
+            for (Long id : removeIds) {
+                dbSource.removeReportType(id);
             }
 
             dbSource.close();
