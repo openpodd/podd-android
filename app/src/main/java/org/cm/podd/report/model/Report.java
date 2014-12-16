@@ -47,6 +47,7 @@ public class Report {
     private double longitude = 0.00;
 
     private String formData;
+    private int reportTypeVersion;
 
     public Report(long id, long type, Date date, int negative, int draft, int submit) {
         this.id = id;
@@ -196,6 +197,14 @@ public class Report {
         }
 
         return target;
+    }
+
+    public int getReportTypeVersion() {
+        return reportTypeVersion;
+    }
+
+    public void setReportTypeVersion(int reportTypeVersion) {
+        this.reportTypeVersion = reportTypeVersion;
     }
 
 }

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -30,7 +31,9 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.fragment.NotificationListFragment;
+import org.cm.podd.report.util.SharedPrefUtil;
 
 public class GcmIntentService extends IntentService {
 
@@ -58,26 +61,41 @@ public class GcmIntentService extends IntentService {
                 String payloadType = intent.getStringExtra("type");
 
                 Log.i(TAG, String.format("Receive GCM message type=%s, payload type = %s extra=%s", messageType, payloadType, payload));
-                if (payloadType != null && payloadType.equals("news")) {
-                    // Save notification
-                    NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
 
-                    String payloadStr = android.text.Html.fromHtml(payload).toString();
+                SharedPrefUtil pref = new SharedPrefUtil(getApplicationContext());
+                if (pref.isUserLoggedIn() && payloadType != null) {
+                    if (payloadType.equals("news") || payloadType.equals("nearby")) {
 
-                    int len = 30;
-                    if (payloadStr.length() < len) {
-                        len = payloadStr.length();
+                        String prefix = payloadType.equals("news") ? "แจ้งข่าว" : "รายงาน";
+
+                        // Save notification
+                        NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
+
+                        String payloadStr = android.text.Html.fromHtml(payload).toString();
+
+                        int len = 30;
+                        if (payloadStr.length() < len) {
+                            len = payloadStr.length();
+                        }
+                        String title = prefix + ": " + payloadStr.substring(0, len) + "...";
+
+                        long id = notificationDataSource.save(title, payload);
+                        notificationDataSource.close();
+
+                        // Post notification of received message.
+                        sendNotification(id, title, payload);
+
+                        // refresh notification list
+                        sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
+                    } else if (payloadType.equals("updated_report_type")) {
+                        ReportQueueDataSource dataSource = new ReportQueueDataSource(getApplicationContext());
+                        dataSource.addUpdateTypeQueue();
+                        dataSource.close();
+
+                        // Broadcasts the Intent to network receiver
+                        Intent updateIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateIntent);
                     }
-                    String title = "แจ้งข่าว: " + payloadStr.substring(0, len) + "...";
-
-                    long id = notificationDataSource.save(title, payload);
-                    notificationDataSource.close();
-
-                    // Post notification of received message.
-                    sendNotification(id, title, payload);
-
-                    // refresh notification list
-                    sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
                 }
 
             }

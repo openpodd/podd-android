@@ -32,6 +32,7 @@ import java.util.UUID;
 public class ReportQueueDataSource {
     public static final String DATA_TYPE = "report_data";
     public static final String IMAGE_TYPE = "report_image";
+    public static final String UPDATE_REPORT_TYPE = "update_report_type";
     private static final String TAG = "ReportQueueDataSource";
 
     private ReportDatabaseHelper mDbHelper;
@@ -61,6 +62,10 @@ public class ReportQueueDataSource {
 
             insertQueue(reportId, imageId, IMAGE_TYPE);
         }
+    }
+
+    public void addUpdateTypeQueue() {
+        insertQueue(0, 0, UPDATE_REPORT_TYPE);
     }
 
     private void insertQueue(long reportId, long imageId, String dataType) {

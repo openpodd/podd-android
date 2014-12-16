@@ -94,7 +94,7 @@ public class ReportDataSource {
 
     public Report getById(long id) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM report where _id = ?", new String[] {Long.toString(id)});
+        Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r._id = ?", new String[] {Long.toString(id)});
         cursor.moveToFirst();
 
         long type = cursor.getLong(cursor.getColumnIndex("type"));
@@ -121,6 +121,7 @@ public class ReportDataSource {
         report.setRegionId(regionId);
         report.setRemark(remark);
         report.setGuid(guid);
+        report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
         cursor.close();
         db.close();
         return report;

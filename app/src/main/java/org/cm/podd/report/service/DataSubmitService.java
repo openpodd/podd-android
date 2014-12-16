@@ -151,6 +151,9 @@ public class DataSubmitService extends IntentService {
                         // so just remove a queue if no image found
                         success = true;
                     }
+                } else if (type.equals(ReportQueueDataSource.UPDATE_REPORT_TYPE)) {
+                    Intent syncIntent = new Intent(this, SyncReportTypeService.class);
+                    startService(syncIntent);
                 }
 
                 if (success) {
@@ -216,8 +219,11 @@ public class DataSubmitService extends IntentService {
 
             data.put("remark", report.getRemark());
             data.put("negative", report.getNegative() == 1);
-            data.put("formData", report.getNegative() == 1 ?
-                    report.getSubmitJSONFormData() : new JSONObject());
+
+            JSONObject formObj = report.getNegative() == 1 ? report.getSubmitJSONFormData() : new JSONObject();
+            formObj.put("programVersion", BuildConfig.VERSION_CODE);
+            formObj.put("reportTypeVersion", report.getReportTypeVersion());
+            data.put("formData", formObj);
 
             post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
             Log.d(TAG, "request with " + EntityUtils.toString(post.getEntity()));
