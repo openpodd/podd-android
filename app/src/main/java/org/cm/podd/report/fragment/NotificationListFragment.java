@@ -90,6 +90,7 @@ public class NotificationListFragment extends ListFragment {
         Intent intent = new Intent(getActivity(), WebContentActivity.class);
         intent.putExtra("title", title);
         intent.putExtra("content", content);
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 
@@ -103,6 +104,7 @@ public class NotificationListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
+        refreshAdapter();
     }
 
     @Override

@@ -293,18 +293,20 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // handle intent result from notification
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            if (extras.containsKey("title")) {
+            if (extras.containsKey("id")) {
                 String title = extras.getString("title");
                 String content = extras.getString("content");
-                displayWebViewContent(title, content);
+                long id = extras.getLong("id");
+                displayWebViewContent(id, title, content);
             }
         }
     }
 
-    private void displayWebViewContent(String title, String content) {
+    private void displayWebViewContent(long id, String title, String content) {
         Intent intent = new Intent(this, WebContentActivity.class);
         intent.putExtra("title", title);
         intent.putExtra("content", content);
+        intent.putExtra("id", id);
         startActivity(intent);
     }
 

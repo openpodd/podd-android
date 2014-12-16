@@ -70,11 +70,11 @@ public class GcmIntentService extends IntentService {
                     }
                     String title = "แจ้งข่าว: " + payloadStr.substring(0, len) + "...";
 
-                    notificationDataSource.save(title, payload);
+                    long id = notificationDataSource.save(title, payload);
                     notificationDataSource.close();
 
                     // Post notification of received message.
-                    sendNotification(title, payload);
+                    sendNotification(id, title, payload);
 
                     // refresh notification list
                     sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
@@ -86,7 +86,7 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(String title, String content) {
+    private void sendNotification(long id, String title, String content) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -97,6 +97,7 @@ public class GcmIntentService extends IntentService {
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putString("content", content);
+        bundle.putLong("id", id);
         intent.putExtras(bundle);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

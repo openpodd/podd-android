@@ -24,27 +24,40 @@ import android.view.Menu;
 import android.webkit.WebView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.model.Report;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.util.WebContentUtil;
 
 public class WebContentActivity extends ActionBarActivity {
 
     WebView webView;
+    NotificationDataSource notificationDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_content);
+        notificationDataSource = new NotificationDataSource(this);
+
         webView = (WebView) findViewById(R.id.webView);
 
         String title = getIntent().getStringExtra("title");
         String body = getIntent().getStringExtra("content");
+        long id = getIntent().getLongExtra("id", 0);
 
         Log.d("WebContentActivity.body", body);
 
         if (title != null && body != null) {
             WebContentUtil.launch(webView, title, body);
+            notificationDataSource.markAsSeen(id, Report.TRUE);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        notificationDataSource.close();
     }
 
     @Override

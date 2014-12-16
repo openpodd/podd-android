@@ -40,13 +40,22 @@ public class NotificationDataSource {
         return db.query("notification", null, null, null, null, null, "_id desc");
     }
 
-    public void save(String title, String content) {
+    public long save(String title, String content) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("title", title);
         values.put("content", content);
         values.put("created_at", new Date().getTime());
-        db.insert("notification", null, values);
+        long id = db.insert("notification", null, values);
+        db.close();
+        return id;
+    }
+
+    public void markAsSeen(long id, int seen) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("seen", seen);
+        db.update("notification", values, "_id = ?", new String[]{ Long.toString(id) });
         db.close();
     }
 }
