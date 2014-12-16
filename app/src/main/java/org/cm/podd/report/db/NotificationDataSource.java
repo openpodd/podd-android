@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.sql.SQLClientInfoException;
 import java.util.Date;
 
 public class NotificationDataSource {
@@ -57,5 +58,12 @@ public class NotificationDataSource {
         values.put("seen", seen);
         db.update("notification", values, "_id = ?", new String[]{ Long.toString(id) });
         db.close();
+    }
+
+    public int getUnseenCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select count(*) as cnt from notification where seen = 0", null);
+        cursor.moveToFirst();
+        return cursor.getInt(cursor.getColumnIndex("cnt"));
     }
 }

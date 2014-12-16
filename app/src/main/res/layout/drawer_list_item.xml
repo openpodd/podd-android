@@ -30,10 +30,14 @@
     <TextView android:id="@+id/counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
-        android:textColor="@color/drawer_text_color" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@color/report_row_draft"
+        android:textColor="@color/white"
+        android:text="10"/>
 
 </RelativeLayout>

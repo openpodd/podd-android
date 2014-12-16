@@ -52,7 +52,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
-import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
@@ -64,7 +65,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener {
+public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String TAG = "HomeActivity";
@@ -73,13 +74,14 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private String[] mMenuTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    DrawerAdapter drawerAdapter;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private int drawerPosition;
 
-    ReportDataSource reportDataSource;
+    NotificationDataSource notificationDataSource;
     private boolean sendScreenViewAnalytic = true;
     private SharedPrefUtil sharedPrefUtil;
 
@@ -91,6 +93,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // initialize and create or upgrade db
+        notificationDataSource = new NotificationDataSource(this);
+
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
@@ -99,7 +104,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles));
+        refreshDrawerAdapter(notificationDataSource.getUnseenCount());
+
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -129,8 +135,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        reportDataSource = new ReportDataSource(this);
-
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
@@ -144,6 +148,11 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         selectItem(drawerPosition);
 
         onNewIntent(getIntent());
+    }
+
+    public void refreshDrawerAdapter(int unseenNotificationCount) {
+        drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles, unseenNotificationCount);
+        mDrawerList.setAdapter(drawerAdapter);
     }
 
     @Override
@@ -285,6 +294,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 Log.i(TAG, "No valid Google Play Services APK found.");
 
             }
+
+            refreshDrawerAdapter(notificationDataSource.getUnseenCount());
         }
     }
 
@@ -313,7 +324,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        reportDataSource.close();
+        notificationDataSource.close();
     }
 
 
@@ -406,6 +417,10 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         sharedPrefUtil.setGCMData(regId, appVersion);
     }
 
+    @Override
+    public void updateUnseenMessageCount(int count) {
+       refreshDrawerAdapter(count);
+    }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -418,11 +433,13 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         Context context;
         int resource;
+        int unseenNotificationCount;
 
-        public DrawerAdapter(Context context, int resource, String[] titles) {
+        public DrawerAdapter(Context context, int resource, String[] titles, int unseenNotificationCount) {
             super(context, resource, titles);
             this.context = context;
             this.resource = resource;
+            this.unseenNotificationCount = unseenNotificationCount;
         }
 
         @Override
@@ -430,13 +447,28 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             View rootView = LayoutInflater.from(context).inflate(resource, parent, false);
             TextView titleView = (TextView) rootView.findViewById(R.id.title);
             titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+
+            TextView counterView = (TextView) rootView.findViewById(R.id.counter);
+            counterView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            counterView.setText(String.valueOf(unseenNotificationCount));
+
             ImageView iconView = (ImageView) rootView.findViewById(R.id.icon);
+
             if (position == 0) {
                 iconView.setImageResource(R.drawable.ic_action_view_as_list);
+                counterView.setVisibility(View.INVISIBLE);
+
             } else if (position == 1) {
                 iconView.setImageResource(R.drawable.ic_action_event);
+
+                if (unseenNotificationCount > 0) {
+                    counterView.setVisibility(View.VISIBLE);
+                } else {
+                    counterView.setVisibility(View.INVISIBLE);
+                }
             }
             titleView.setText(getItem(position));
+
             return rootView;
         }
     }

@@ -17,6 +17,7 @@
 package org.cm.podd.report.fragment;
 
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,8 @@ public class NotificationListFragment extends ListFragment {
     NotificationDataSource notificationDataSource;
     private NotificationCursorAdapter adapter;
 
+    private NotificationInterface notificationInterface;
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -63,21 +66,24 @@ public class NotificationListFragment extends ListFragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        notificationInterface = (NotificationInterface) activity;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationDataSource = new NotificationDataSource(getActivity());
         getActivity().registerReceiver(mMessageReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        refreshAdapter();
-    }
-
     private void refreshAdapter() {
         adapter = new NotificationCursorAdapter(getActivity(), notificationDataSource.getAll(), false);
         setListAdapter(adapter);
+
+        int count = notificationDataSource.getUnseenCount();
+        notificationInterface.updateUnseenMessageCount(count);
     }
 
     @Override
