@@ -212,17 +212,7 @@ public class ReportListFragment extends ListFragment {
                 intent.putExtra("reportId", reportId);
                 startActivityForResult(intent, REQUEST_FOR_EDIT);
             } else {
-                StringBuffer buff = new StringBuffer();
-                buff.append("report on ").append(report.getDate()).append("\n");
-                buff.append("positive report");
-                final Crouton crouton = Crouton.makeText(getActivity(), buff.toString(), Style.INFO);
-                crouton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Crouton.hide(crouton);
-                    }
-                });
-                crouton.show();
+                // do nothing
             }
         } else {
             if (isReportItemSubmit(position)) {
