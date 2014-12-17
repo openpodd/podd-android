@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -68,8 +69,11 @@ import java.io.IOException;
 public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
     public static final String TAG = "HomeActivity";
     private static final String APP_TITLE = "ผ่อดีดี";
+
+    Fragment mCurrentFragment;
 
     private String[] mMenuTitles;
     private DrawerLayout mDrawerLayout;
@@ -88,10 +92,22 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     GoogleCloudMessaging gcm;
     String regid;
 
+    private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Receiving action " + intent.getAction());
+            refreshDrawerAdapter();
+            refreshNotificationListAdapter();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // notification receiver from gcm intent service
+        registerReceiver(mNotificationReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
 
         // initialize and create or upgrade db
         notificationDataSource = new NotificationDataSource(this);
@@ -104,7 +120,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        refreshDrawerAdapter(notificationDataSource.getUnseenCount());
+        refreshDrawerAdapter();
 
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
@@ -150,9 +166,18 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         onNewIntent(getIntent());
     }
 
-    public void refreshDrawerAdapter(int unseenNotificationCount) {
+    public void refreshDrawerAdapter() {
+        int unseenNotificationCount = notificationDataSource.getUnseenCount();
         drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles, unseenNotificationCount);
         mDrawerList.setAdapter(drawerAdapter);
+    }
+
+    public void refreshNotificationListAdapter() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(NotificationListFragment.class.getSimpleName());
+        if (fragment != null && fragment == mCurrentFragment) {
+            NotificationListFragment notificationFragment = (NotificationListFragment) fragment;
+            notificationFragment.refreshAdapter();
+        }
     }
 
     @Override
@@ -187,25 +212,23 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         drawerPosition = position;
-        Fragment fragment = null;
-
         if (position == 0) {
-            fragment = new ReportListFragment();
+            mCurrentFragment = new ReportListFragment();
             setTitle(APP_TITLE);
 
         } else if (position == 1) {
-            fragment = new NotificationListFragment();
+            mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
 
         } else {
-            fragment = PlaceholderFragment.newInstance(position + 1);
+            mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
         }
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
                 .commit();
 
         // Highlight the selected item, update the title, and close the drawer
@@ -295,7 +318,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
             }
 
-            refreshDrawerAdapter(notificationDataSource.getUnseenCount());
+            refreshDrawerAdapter();
         }
     }
 
@@ -325,6 +348,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     protected void onDestroy() {
         super.onDestroy();
         notificationDataSource.close();
+        unregisterReceiver(mNotificationReceiver);
     }
 
 
@@ -418,8 +442,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     }
 
     @Override
-    public void updateUnseenMessageCount(int count) {
-       refreshDrawerAdapter(count);
+    public void updateUnseenMessageCount() {
+       refreshDrawerAdapter();
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

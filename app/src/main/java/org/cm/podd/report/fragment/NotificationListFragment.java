@@ -18,17 +18,13 @@ package org.cm.podd.report.fragment;
 
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,20 +43,11 @@ import java.util.Date;
 public class NotificationListFragment extends ListFragment {
 
     private static final String TAG = "NotificationListFragment";
-    public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
 
     NotificationDataSource notificationDataSource;
     private NotificationCursorAdapter adapter;
 
     private NotificationInterface notificationInterface;
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Receiving action " + intent.getAction());
-            refreshAdapter();
-        }
-    };
 
     public NotificationListFragment() {
     }
@@ -75,15 +62,13 @@ public class NotificationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationDataSource = new NotificationDataSource(getActivity());
-        getActivity().registerReceiver(mMessageReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
     }
 
-    private void refreshAdapter() {
+    public void refreshAdapter() {
         adapter = new NotificationCursorAdapter(getActivity(), notificationDataSource.getAll(), false);
         setListAdapter(adapter);
 
-        int count = notificationDataSource.getUnseenCount();
-        notificationInterface.updateUnseenMessageCount(count);
+        notificationInterface.updateUnseenMessageCount();
     }
 
     @Override
@@ -104,7 +89,6 @@ public class NotificationListFragment extends ListFragment {
     public void onDestroy() {
         super.onDestroy();
         notificationDataSource.close();
-        getActivity().unregisterReceiver(mMessageReceiver);
     }
 
     @Override

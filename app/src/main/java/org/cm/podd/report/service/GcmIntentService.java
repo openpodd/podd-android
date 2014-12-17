@@ -32,7 +32,6 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
-import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.util.SharedPrefUtil;
 
 public class GcmIntentService extends IntentService {
@@ -85,8 +84,9 @@ public class GcmIntentService extends IntentService {
                         // Post notification of received message.
                         sendNotification(id, title, payload);
 
-                        // refresh notification list
-                        sendBroadcast(new Intent(NotificationListFragment.RECEIVE_MESSAGE_ACTION));
+                        // refresh notification list and drawer/actionbar counter
+                        sendBroadcast(new Intent(HomeActivity.RECEIVE_MESSAGE_ACTION));
+
                     } else if (payloadType.equals("updated_report_type")) {
                         ReportQueueDataSource dataSource = new ReportQueueDataSource(getApplicationContext());
                         dataSource.addUpdateTypeQueue();

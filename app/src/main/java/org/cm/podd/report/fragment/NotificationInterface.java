@@ -18,5 +18,5 @@ package org.cm.podd.report.fragment;
 
 public interface NotificationInterface {
 
-    public void updateUnseenMessageCount(int count);
+    public void updateUnseenMessageCount();
 }
