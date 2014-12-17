@@ -30,7 +30,6 @@
     <string name="btn_next">ต่อไป</string>
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
-    <string name="normal_incident">ปกติ</string>
     <string name="button_confirm">ยืนยัน</string>
     <string name="button_save_draft">บันทึกร่างรายงาน</string>
     <string name="message_confirm_submit">คุณต้องการยืนยัน\nการรายงานนี้ใช่หรือไม่ ?</string>
@@ -51,5 +50,7 @@
     <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
     <string name="drawer_open">แสดงเมนู</string>
     <string name="drawer_close">ปิดเมนู</string>
+    <string name="normal_case">ไม่พบเหตุผิดปกติ</string>
+    <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
 
 </resources>

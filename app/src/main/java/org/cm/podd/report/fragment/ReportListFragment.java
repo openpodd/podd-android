@@ -361,7 +361,7 @@ public class ReportListFragment extends ListFragment {
 
             String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
             if (typeName == null) {
-                holder.typeText.setText(R.string.normal_incident);
+                holder.typeText.setText(R.string.normal_case);
             } else {
                 holder.typeText.setText(typeName);
             }

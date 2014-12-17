@@ -98,9 +98,9 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
     private ArrayList<ReportType> getAll() {
         ArrayList<ReportType> items = new ArrayList<ReportType>();
-        items.add(new ReportType(0, "ปกติ"));
+        items.add(new ReportType(0, getString(R.string.normal_case)));
         items.addAll(dataSource.getAll());
-        items.add(new ReportType(-99, "ดึงแบบฟอร์มใหม่"));
+        items.add(new ReportType(-99, getString(R.string.update_report_type)));
         return items;
     }
 
