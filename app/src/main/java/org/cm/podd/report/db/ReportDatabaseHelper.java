@@ -79,6 +79,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  _id INTEGER PRIMARY KEY,"
             + "  title TEXT,"
             + "  content TEXT,"          // html
+            + "  seen INTEGER DEFAULT 0"
             + "  created_at INTEGER"
             + ")";
 
@@ -98,22 +99,12 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_IMAGE);
         sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
         sqLiteDatabase.execSQL(CREATE_TABLE_REPORT_TYPE);
-
+        sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
         Log.i("DB", "on create");
-        onUpgrade(sqLiteDatabase, 1, DATABASE_VERSION);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        Log.i("DB", String.format("old version=%d / new version=%d", oldVersion, newVersion));
-        while (oldVersion < newVersion) {
-            updateSchema(sqLiteDatabase, oldVersion);
-            oldVersion++;
-        }
-
-    }
-
-    public void updateSchema(SQLiteDatabase db, int oldVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.i("DB", String.format("version=%d", oldVersion));
         String sql = null;
         switch (oldVersion) {
@@ -121,14 +112,12 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 sql = CREATE_TABLE_NOTIFICATION;
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(sql);
-                break;
             case 2:
                 sql = "ALTER TABLE notification ADD COLUMN seen INTEGER DEFAULT 0";
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(sql);
-                break;
-            default:
         }
     }
+
 }
 
