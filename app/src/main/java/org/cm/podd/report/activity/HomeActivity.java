@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -40,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -74,6 +76,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private static final String APP_TITLE = "ผ่อดีดี";
 
     Fragment mCurrentFragment;
+    int mNotificationCount;
 
     private String[] mMenuTitles;
     private DrawerLayout mDrawerLayout;
@@ -96,7 +99,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Receiving action " + intent.getAction());
+            setNotificationCount();
             refreshDrawerAdapter();
+            supportInvalidateOptionsMenu();
             refreshNotificationListAdapter();
         }
     };
@@ -120,6 +125,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
+        setNotificationCount();
         refreshDrawerAdapter();
 
         // Set the list's click listener
@@ -166,9 +172,12 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         onNewIntent(getIntent());
     }
 
+    public void setNotificationCount() {
+        mNotificationCount = notificationDataSource.getUnseenCount();
+    }
+
     public void refreshDrawerAdapter() {
-        int unseenNotificationCount = notificationDataSource.getUnseenCount();
-        drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles, unseenNotificationCount);
+        drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles, mNotificationCount);
         mDrawerList.setAdapter(drawerAdapter);
     }
 
@@ -193,6 +202,14 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         menu.findItem(R.id.action_new_event).setVisible(!drawerOpen);
+
+        MenuItem item = menu.findItem(R.id.badge);
+        item.setVisible(mNotificationCount > 0 ? true : false);
+
+        MenuItemCompat.setActionView(item, R.layout.notif_count);
+        Button counter = (Button) MenuItemCompat.getActionView(item);
+        counter.setText(String.valueOf(mNotificationCount));
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -318,7 +335,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
             }
 
+            setNotificationCount();
             refreshDrawerAdapter();
+            supportInvalidateOptionsMenu();
         }
     }
 
@@ -442,8 +461,11 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     }
 
     @Override
-    public void updateUnseenMessageCount() {
-       refreshDrawerAdapter();
+    public void refreshNotificationCount() {
+        setNotificationCount();
+        refreshDrawerAdapter();
+        // refresh actionbar menu
+        supportInvalidateOptionsMenu();
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

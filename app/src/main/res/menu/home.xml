@@ -8,6 +8,12 @@
         android:title="New Report"
         app:showAsAction="always" />
 
+    <item android:id="@+id/badge"
+        android:actionLayout="@layout/notif_count"
+        app:showAsAction="always"
+        android:icon="@drawable/shape_notification"
+        android:title="Unseen news" />
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"

@@ -68,7 +68,7 @@ public class NotificationListFragment extends ListFragment {
         adapter = new NotificationCursorAdapter(getActivity(), notificationDataSource.getAll(), false);
         setListAdapter(adapter);
 
-        notificationInterface.updateUnseenMessageCount();
+        notificationInterface.refreshNotificationCount();
     }
 
     @Override
