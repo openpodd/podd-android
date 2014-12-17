@@ -16,6 +16,7 @@
  */
 package org.cm.podd.report.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,5 +35,15 @@ public class DateUtil {
         String thaiMonth = THAI_MONTH[month];
         int year = cal.get(Calendar.YEAR) + 543;
         return String.format("%d %s %d", dateNum, thaiMonth, year);
+    }
+
+    public static String convertToThaiDateTime(Date date) {
+        String thaiDate = convertToThaiDate(date);
+        String time = formatTime(date);
+        return String.format("%s เวลา %s", thaiDate, time);
+    }
+
+    private static String formatTime(Date date) {
+        return new SimpleDateFormat("HH:mm").format(date);
     }
 }

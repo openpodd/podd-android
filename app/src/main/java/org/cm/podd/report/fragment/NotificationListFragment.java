@@ -145,7 +145,7 @@ public class NotificationListFragment extends ListFragment {
 
             TextView dateTextView = (TextView) view.findViewById(R.id.date);
             Date date = new Date(time);
-            dateTextView.setText(DateUtil.convertToThaiDate(date));
+            dateTextView.setText(DateUtil.convertToThaiDateTime(date));
             dateTextView.setTypeface(typeFace);
 
             TextView newTextView = (TextView) view.findViewById(R.id.new_label);
