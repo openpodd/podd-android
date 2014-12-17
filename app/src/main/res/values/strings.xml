@@ -52,5 +52,7 @@
     <string name="drawer_close">ปิดเมนู</string>
     <string name="normal_case">ไม่พบเหตุผิดปกติ</string>
     <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
+    <string name="draft">แบบร่าง</string>
+    <string name="unseen">ใหม่</string>
 
 </resources>
