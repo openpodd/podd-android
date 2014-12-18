@@ -110,7 +110,7 @@ public class GcmIntentService extends IntentService {
 
         Intent intent = new Intent(this, HomeActivity.class);
         intent.setAction("org.cm.podd.report.GCM_NOTIFICATION");
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
