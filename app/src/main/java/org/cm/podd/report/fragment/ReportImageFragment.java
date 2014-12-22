@@ -103,8 +103,15 @@ public class ReportImageFragment extends Fragment {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
+
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
+        Log.d(TAG, "storageDir = " + storageDir + " file name = " + imageFileName);
+        if (! storageDir.exists()) {
+            if (! storageDir.mkdir()) {
+                Log.d(TAG, "can't create directory " + storageDir);
+            }
+        }
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
