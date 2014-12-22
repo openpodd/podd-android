@@ -79,7 +79,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  _id INTEGER PRIMARY KEY,"
             + "  title TEXT,"
             + "  content TEXT,"          // html
-            + "  seen INTEGER DEFAULT 0"
+            + "  seen INTEGER DEFAULT 0,"
             + "  created_at INTEGER"
             + ")";
 
