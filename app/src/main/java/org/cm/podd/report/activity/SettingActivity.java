@@ -18,7 +18,6 @@ package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -38,11 +37,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.service.UploadProfileService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -153,7 +151,6 @@ public class SettingActivity extends ActionBarActivity {
 
         photoPickerIntent.putExtra("return-data", true);
         photoPickerIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-.sendBroadcast(networkIntent);
 
         startActivityForResult(photoPickerIntent, REQ_CODE_PICK_IMAGE);
     }
@@ -241,7 +238,13 @@ public class SettingActivity extends ActionBarActivity {
             }
         }
 
-        sharedPrefUtil.setProfileImageFilePath(Uri.parse(file.getPath()).toString());
+        Uri imageUri = Uri.parse(file.getPath());
+        sharedPrefUtil.setProfileImageFilePath(imageUri.toString());
+
+        // upload to server
+        Intent intent = new Intent(this, UploadProfileService.class);
+        intent.setData(imageUri);
+        startService(intent);
     }
 
     @Override
