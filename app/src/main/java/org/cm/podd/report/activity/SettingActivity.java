@@ -17,16 +17,28 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.R;
@@ -34,9 +46,22 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class SettingActivity extends ActionBarActivity {
 
+    private static final int REQ_CODE_PICK_IMAGE = 1;
+    private static final int REQ_CODE_TAKE_IMAGE = 2;
+    private static final String TEMP_PHOTO_FILE = "temporary_holder.jpg";
+
     SharedPrefUtil sharedPrefUtil;
+    ImageView profileImageView;
+    Uri mCurrentPhotoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +113,135 @@ public class SettingActivity extends ActionBarActivity {
                     .show();
             }
         });
+
+        profileImageView = (ImageView) findViewById(R.id.profileImage);
+        String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
+        Bitmap profileBitmap;
+        if (profileImageFilePath == null) {
+            // Use default profile image if not setup
+            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery_default);
+        } else {
+            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+        }
+        profileImageView.setImageBitmap(profileBitmap);
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment fragment = new MediaChoiceDialog();
+                fragment.show(getSupportFragmentManager(), "MediaChoiceDialog");
+            }
+        });
+    }
+
+    private void cropImage(Uri fileUri) {
+        Intent photoPickerIntent;
+        if (mCurrentPhotoUri == null) {
+            // no photo to edit, then first select what to edit
+            photoPickerIntent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        } else {
+            // Edit photo after taken
+            photoPickerIntent = new Intent("com.android.camera.action.CROP");
+        }
+        // indicate image type and Uri
+        photoPickerIntent.setDataAndType(fileUri, "image/*");
+        photoPickerIntent.putExtra("crop", "true");
+        photoPickerIntent.putExtra("aspectX", 0);
+        photoPickerIntent.putExtra("aspectY", 0);
+        photoPickerIntent.putExtra("outputX", 400);
+        photoPickerIntent.putExtra("outputY", 400);
+
+        photoPickerIntent.putExtra("return-data", true);
+        photoPickerIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+.sendBroadcast(networkIntent);
+
+        startActivityForResult(photoPickerIntent, REQ_CODE_PICK_IMAGE);
+    }
+
+    private Uri getTempUri() {
+        return Uri.fromFile(getTempFile());
+    }
+
+    private File getTempFile() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File file = new File(Environment.getExternalStorageDirectory(),TEMP_PHOTO_FILE);
+            try {
+                file.createNewFile();
+            } catch (IOException e) {}
+
+            return file;
+        } else {
+            return null;
+        }
+    }
+
+    private Uri getImageUri() {
+        return Uri.fromFile(createImageFile());
+    }
+
+    private File createImageFile() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQ_CODE_PICK_IMAGE:
+                    if (imageReturnedIntent != null) {
+
+                        Bundle extras = imageReturnedIntent.getExtras();
+                        // get the cropped bitmap
+                        Bitmap bmp = extras.getParcelable("data");
+                        profileImageView.setImageBitmap(bmp);
+
+                        mCurrentPhotoUri = null;
+
+                        // save output file and save path to share pref
+                        saveProfileImage(bmp);
+                    }
+                    break;
+
+                case REQ_CODE_TAKE_IMAGE:
+                    cropImage(mCurrentPhotoUri);
+                    break;
+
+            }
+            File tempFile = getTempFile();
+            if (tempFile.exists()) tempFile.delete();
+        }
+    }
+
+    private void saveProfileImage(Bitmap bmp) {
+        File file = createImageFile();
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        sharedPrefUtil.setProfileImageFilePath(Uri.parse(file.getPath()).toString());
     }
 
     @Override
@@ -110,5 +264,42 @@ public class SettingActivity extends ActionBarActivity {
 
         // Back to home, then redirect to login
         finish();
+    }
+
+    private void onMediaChoiceRequest(int requestCode) {
+        switch (requestCode) {
+            case REQ_CODE_PICK_IMAGE:
+                cropImage(getTempUri());
+                break;
+
+            case REQ_CODE_TAKE_IMAGE:
+                mCurrentPhotoUri = getImageUri();
+                Intent photoTakerIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                photoTakerIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
+                photoTakerIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                photoTakerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                startActivityForResult(photoTakerIntent, REQ_CODE_TAKE_IMAGE);
+                break;
+        }
+    }
+
+    /**
+     * Dialog for image selection methods
+     */
+    public static class MediaChoiceDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.title_pick_media_options)
+                    .setItems(R.array.pick_media_selection, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((SettingActivity) getActivity()).onMediaChoiceRequest(
+                                    which == 0 ?
+                                    REQ_CODE_TAKE_IMAGE : REQ_CODE_PICK_IMAGE);
+                        }
+                    });
+            return builder.create();
+        }
     }
 }

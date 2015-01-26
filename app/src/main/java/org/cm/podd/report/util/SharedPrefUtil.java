@@ -39,6 +39,7 @@ public class SharedPrefUtil {
     public static final String ADMIN_AREA = "admin_area";
     public static final String GCM_REGISTRATION_ID = "gcm_registration_id";
     public static final String GCM_APP_VERSION = "gcm_app_version";
+    public static final String PROFILE_IMAGE_FILE_PATH = "profile_image_file_path";
     private static final String TAG = "SharedPrefUtil";
 
     private SharedPreferences sharedPrefs;
@@ -127,6 +128,16 @@ public class SharedPrefUtil {
     public void clearAllData() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.clear();
+        editor.commit();
+    }
+
+    public String getProfileImageFilePath() {
+        return sharedPrefs.getString(PROFILE_IMAGE_FILE_PATH, null);
+    }
+
+    public void setProfileImageFilePath(String filePath) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(PROFILE_IMAGE_FILE_PATH, filePath);
         editor.commit();
     }
 }
