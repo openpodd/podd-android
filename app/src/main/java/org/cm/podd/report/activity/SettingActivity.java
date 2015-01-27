@@ -57,7 +57,6 @@ public class SettingActivity extends ActionBarActivity {
     public static final String TAG = "SettingActivity";
     private static final int REQ_CODE_PICK_IMAGE = 1;
     private static final int REQ_CODE_TAKE_IMAGE = 2;
-    private static final String TEMP_PHOTO_FILE = "temporary_holder.jpg";
 
     SharedPrefUtil sharedPrefUtil;
     ImageView profileImageView;
@@ -122,6 +121,10 @@ public class SettingActivity extends ActionBarActivity {
             profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery_default);
         } else {
             profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+            // use default image, if user deleted an image somehow
+            if (profileBitmap == null) {
+                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery_default);
+            }
         }
         profileImageView.setImageBitmap(profileBitmap);
         profileImageView.setOnClickListener(new View.OnClickListener() {
@@ -133,18 +136,19 @@ public class SettingActivity extends ActionBarActivity {
         });
     }
 
-    private void cropImage(Uri fileUri) {
+    private void cropImage() {
         Intent photoPickerIntent;
         if (mCurrentPhotoUri == null) {
             // no photo to edit, then first select what to edit
             photoPickerIntent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            photoPickerIntent.setType("image/*");
         } else {
             // Edit photo after taken
             photoPickerIntent = new Intent("com.android.camera.action.CROP");
+            // indicate taken image type and Uri
+            photoPickerIntent.setDataAndType(mCurrentPhotoUri, "image/*");
         }
-        // indicate image type and Uri
-        photoPickerIntent.setDataAndType(fileUri, "image/*");
         photoPickerIntent.putExtra("crop", "true");
         photoPickerIntent.putExtra("aspectX", 0);
         photoPickerIntent.putExtra("aspectY", 0);
@@ -155,31 +159,6 @@ public class SettingActivity extends ActionBarActivity {
         photoPickerIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 
         startActivityForResult(photoPickerIntent, REQ_CODE_PICK_IMAGE);
-    }
-
-    private Uri getTempUri() {
-        return Uri.fromFile(getTempFile());
-    }
-
-    private File getTempFile() {
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-
-        if (! storageDir.exists()) {
-            if (! storageDir.mkdir()) {
-                Log.d(TAG, "can't create directory " + storageDir);
-            }
-        }
-
-        File file = new File(storageDir, TEMP_PHOTO_FILE);
-
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            Log.e(TAG, "error create new file", e);
-        }
-
-        return file;
     }
 
     private Uri getImageUri() {
@@ -227,12 +206,10 @@ public class SettingActivity extends ActionBarActivity {
                     break;
 
                 case REQ_CODE_TAKE_IMAGE:
-                    cropImage(mCurrentPhotoUri);
+                    cropImage();
                     break;
 
             }
-            File tempFile = getTempFile();
-            if (tempFile.exists()) tempFile.delete();
         }
     }
 
@@ -288,7 +265,8 @@ public class SettingActivity extends ActionBarActivity {
     private void onMediaChoiceRequest(int requestCode) {
         switch (requestCode) {
             case REQ_CODE_PICK_IMAGE:
-                cropImage(getTempUri());
+                mCurrentPhotoUri = null;
+                cropImage();
                 break;
 
             case REQ_CODE_TAKE_IMAGE:
