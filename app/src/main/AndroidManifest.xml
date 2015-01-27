@@ -44,7 +44,7 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -133,6 +133,10 @@
 
         <service
             android:name=".service.SyncReportTypeService"
+            android:exported="false" />
+
+        <service
+            android:name=".service.UploadProfileService"
             android:exported="false" />
 
         <service android:name="edu.mit.media.funf.FunfManager">

@@ -1,98 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.cm.podd.report.activity.SettingActivity"
-    android:orientation="vertical"
-    android:padding="@dimen/page_padding"
-    android:background="@color/white"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="@dimen/page_padding"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/username_label"
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/ReportTextLabel"
-            android:text="@string/username"
-            android:layout_marginBottom="15dp"
-            />
-        <EditText
-            android:id="@id/username"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/username_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ReportTextLabel"
+                android:text="@string/username"
+                android:layout_marginBottom="15dp"
+                />
+            <EditText
+                android:id="@id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="mr.podd"
+                style="@style/EditTextFlat"
+                android:editable="false"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/ab_solid_white_podd"
+                />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="mr.podd"
-            style="@style/EditTextFlat"
-            android:editable="false"
-            android:layout_marginBottom="25dp"
-            android:background="@drawable/ab_solid_white_podd"
-            />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/app_version_code_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ReportTextLabel"
+                android:text="@string/app_version_code"
+                android:layout_marginBottom="15dp"
+                />
+            <EditText
+                android:id="@+id/version_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="mr.podd"
+                style="@style/EditTextFlat"
+                android:editable="false"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/ab_solid_white_podd"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/app_version_name_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ReportTextLabel"
+                android:text="@string/app_version_name"
+                android:layout_marginBottom="15dp"
+                />
+            <EditText
+                android:id="@+id/version_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="mr.podd"
+                style="@style/EditTextFlat"
+                android:editable="false"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/ab_solid_white_podd"
+                />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/logout"
+            style="@style/CameraButton" />
+
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/app_version_code_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/ReportTextLabel"
-            android:text="@string/app_version_code"
-            android:layout_marginBottom="15dp"
-            />
-        <EditText
-            android:id="@+id/version_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="mr.podd"
-            style="@style/EditTextFlat"
-            android:editable="false"
-            android:layout_marginBottom="25dp"
-            android:background="@drawable/ab_solid_white_podd"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/app_version_name_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/ReportTextLabel"
-            android:text="@string/app_version_name"
-            android:layout_marginBottom="15dp"
-            />
-        <EditText
-            android:id="@+id/version_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="mr.podd"
-            style="@style/EditTextFlat"
-            android:editable="false"
-            android:layout_marginBottom="25dp"
-            android:background="@drawable/ab_solid_white_podd"
-            />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/logout"
-        style="@style/CameraButton" />
-
-</LinearLayout>
+</ScrollView>
