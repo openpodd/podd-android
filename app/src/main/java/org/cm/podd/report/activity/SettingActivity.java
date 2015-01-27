@@ -31,6 +31,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -53,6 +54,7 @@ import java.util.Date;
 
 public class SettingActivity extends ActionBarActivity {
 
+    public static final String TAG = "SettingActivity";
     private static final int REQ_CODE_PICK_IMAGE = 1;
     private static final int REQ_CODE_TAKE_IMAGE = 2;
     private static final String TEMP_PHOTO_FILE = "temporary_holder.jpg";
@@ -160,16 +162,24 @@ public class SettingActivity extends ActionBarActivity {
     }
 
     private File getTempFile() {
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File file = new File(Environment.getExternalStorageDirectory(),TEMP_PHOTO_FILE);
-            try {
-                file.createNewFile();
-            } catch (IOException e) {}
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
 
-            return file;
-        } else {
-            return null;
+        if (! storageDir.exists()) {
+            if (! storageDir.mkdir()) {
+                Log.d(TAG, "can't create directory " + storageDir);
+            }
         }
+
+        File file = new File(storageDir, TEMP_PHOTO_FILE);
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            Log.e(TAG, "error create new file", e);
+        }
+
+        return file;
     }
 
     private Uri getImageUri() {
@@ -181,6 +191,12 @@ public class SettingActivity extends ActionBarActivity {
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
+        Log.d(TAG, "storageDir = " + storageDir + " file name = " + imageFileName);
+        if (! storageDir.exists()) {
+            if (! storageDir.mkdir()) {
+                Log.d(TAG, "can't create directory " + storageDir);
+            }
+        }
         File image = null;
         try {
             image = File.createTempFile(imageFileName, ".jpg", storageDir);
