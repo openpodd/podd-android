@@ -16,4 +16,10 @@
     <color name="report_row_type">#999999</color>
     <color name="edit_text_report">#909090</color>
     <color name="text_label_report">#333333</color>
+
+    <color name="color_scheme_1_1">#33B5E5</color>
+    <color name="color_scheme_1_2">#99CC00</color>
+    <color name="color_scheme_1_3">#FFBB33</color>
+    <color name="color_scheme_1_4">#FF4444</color>
+
 </resources>
