@@ -203,9 +203,12 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         menu.findItem(R.id.action_new_event).setVisible(!drawerOpen);
+        if (drawerPosition > 0) {
+            menu.findItem(R.id.action_new_event).setVisible(false);
+        }
 
         MenuItem item = menu.findItem(R.id.badge);
-        item.setVisible(mNotificationCount > 0 ? true : false);
+        item.setVisible(mNotificationCount > 0);
 
         MenuItemCompat.setActionView(item, R.layout.notif_count);
         Button counter = (Button) MenuItemCompat.getActionView(item);
@@ -519,6 +522,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 counterView.setVisibility(View.INVISIBLE);
             }
             titleView.setText(getItem(position));
+
+            // Re-draw menu.
+            invalidateOptionsMenu();
 
             return rootView;
         }
