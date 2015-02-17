@@ -56,6 +56,7 @@ import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
@@ -236,7 +237,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         } else if (position == 1) {
             mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
-
+        } else if (position == 2) {
+            mCurrentFragment = new DashboardFeedFragment();
+            setTitle(mMenuTitles[position]);
         } else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
@@ -512,6 +515,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 } else {
                     counterView.setVisibility(View.INVISIBLE);
                 }
+            } else {
+                counterView.setVisibility(View.INVISIBLE);
             }
             titleView.setText(getItem(position));
 
