@@ -523,9 +523,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             }
             titleView.setText(getItem(position));
 
-            // Re-draw menu.
-            invalidateOptionsMenu();
-
             return rootView;
         }
     }
