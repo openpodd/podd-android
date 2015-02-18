@@ -102,8 +102,8 @@ dependencies {
     compile 'org.mozilla:rhino:1.7R4'
     compile 'com.android.support:appcompat-v7:20.0.0'
     compile 'com.google.android.gms:play-services:6.1.+'
-    compile 'com.android.support:cardview-v7:+'
-    compile 'com.android.support:recyclerview-v7:+'
+    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
     compile files('libs/aws-android-sdk-2.1.5-core.jar')
     compile files('libs/aws-android-sdk-2.1.5-s3.jar')
     compile files('libs/gson-2.1.jar')

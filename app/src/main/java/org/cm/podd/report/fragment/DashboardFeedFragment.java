@@ -1,7 +1,12 @@
 package org.cm.podd.report.fragment;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,24 +23,13 @@ import java.util.Random;
 /**
  * Created by siriwat on 2/17/15.
  */
-public class DashboardFeedFragment extends SwipeRefreshListFragment {
+public class DashboardFeedFragment extends SwipeRefreshFragment {
 
-    private static final int LIST_ITEM_COUNT = 20;
+    private static final String TAG = "DashboardFeedFragment";
 
-    private Random random = new Random();
-
-    public ArrayList<String> randomList(int count) {
-        HashSet<String> items = new HashSet<String>();
-
-        // Make sure that don't infinity loop
-        count = Math.min(count, 100);
-
-        while (items.size() < count) {
-            items.add("Row #" + Integer.toString(random.nextInt(100)));
-        }
-
-        return new ArrayList<String>(items);
-    }
+    protected RecyclerView mRecyclerView;
+    protected RecyclerView.LayoutManager mLayoutManager;
+    protected ReportAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,42 +39,38 @@ public class DashboardFeedFragment extends SwipeRefreshListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_dashboard_feed, container, false);
+        rootView.setTag(TAG);
+
+        // set fragmentView to let super class know what to do next.
+        mFragmentView = rootView;
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.dashboard_feed_list);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mAdapter = new ReportAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // Define to let super class setOnRefreshListener() for us.
+        mRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(TAG, "onRefresh");
+                onRefreshComplete();
+            }
+        };
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    private void onRefreshComplete(List<String> result) {
-        // Remove all items from the ListAdapter, and then replace them with the new items
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) getListAdapter();
-        adapter.clear();
-        adapter.addAll(result);
-
-        // Stop the refreshing indicator
+    private void onRefreshComplete() {
+        Log.d(TAG, "onRefreshComplete");
         setRefreshing(false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ListAdapter adapter = new ArrayAdapter<String>(
-                getActivity(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                randomList(LIST_ITEM_COUNT));
-
-        // Set the adapter between the ListView and its backing data.
-        setListAdapter(adapter);
-
-        // Set color schemes.
-        setColorScheme(R.color.color_scheme_1_1, R.color.color_scheme_1_2,
-                R.color.color_scheme_1_3, R.color.color_scheme_1_4);
-
-        setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                onRefreshComplete(randomList(LIST_ITEM_COUNT));
-            }
-        });
     }
 
 }
