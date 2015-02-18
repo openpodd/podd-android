@@ -73,4 +73,16 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    protected boolean canViewScrollUp(View view) {
+        if (android.os.Build.VERSION.SDK_INT >= 14) {
+            // For ICS and above we can call canScrollVertically() to determine this
+            return ViewCompat.canScrollVertically(mRecyclerView, -1);
+        } else {
+            // Pre-ICS we need to manually check the first visible item and the child view's top
+            // value
+            return (mRecyclerView.getVerticalScrollbarPosition() > 0
+                    || mRecyclerView.getTop() < mRecyclerView.getPaddingTop());
+        }
+    }
+
 }
