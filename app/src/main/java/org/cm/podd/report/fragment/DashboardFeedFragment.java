@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.service.FilterService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dashboard_feed, container, false);
         rootView.setTag(TAG);
@@ -56,6 +57,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh");
+                FilterService.doQuery(container.getContext(), "negative:true", "7");
                 onRefreshComplete();
             }
         };
