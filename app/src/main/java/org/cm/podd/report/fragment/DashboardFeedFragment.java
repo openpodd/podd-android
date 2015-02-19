@@ -57,7 +57,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh");
-                FilterService.doQuery(container.getContext(), "negative:true", "7");
+                FilterService.doQuery(container.getContext(), "negative:true", null);
                 onRefreshComplete();
             }
         };

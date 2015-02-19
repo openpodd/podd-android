@@ -18,8 +18,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Fetch data from API using specific query.
@@ -49,8 +55,8 @@ public class FilterService extends IntentService {
                 String timezone = intent.getStringExtra(PARAM_TIMEZONE);
 
                 // Set tz to match mobile timezone if not specify.
-                if (timezone.isEmpty()) {
-                    timezone = "7";
+                if (timezone == null || timezone.isEmpty()) {
+                    timezone = getTimezoneOffset();
                 }
 
                 handleActionQuery(query, timezone);
@@ -72,12 +78,10 @@ public class FilterService extends IntentService {
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 Log.d(TAG, "Filtering success: "+ resp.getRawData());
 
-                JSONArray filteredItems = new JSONArray(resp.getRawData());
+                JSONObject result = resp.getJsonObject();
             } else {
                 Log.d(TAG, "Filtering fail with errorCode:" + resp.getStatusCode());
             }
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON Array", e);
         } catch (MalformedURLException e) {
             Log.e(TAG, "Filter URL is malformed", e);
         } catch (IOException e) {
@@ -116,10 +120,22 @@ public class FilterService extends IntentService {
             if (!timezone.isEmpty()) {
                 params.add(new BasicNameValuePair(PARAM_TIMEZONE, timezone));
             }
+            else {
+                params.add(new BasicNameValuePair(PARAM_TIMEZONE, getTimezoneOffset()));
+            }
 
             queryString = URLEncodedUtils.format(params, "utf-8");
         }
 
         return RequestDataUtil.get(ENDPOINT, queryString, sharedPrefUtil.getAccessToken());
+    }
+
+    private static String getTimezoneOffset() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
+        Date currentLocalTime = calendar.getTime();
+        DateFormat date = new SimpleDateFormat("Z", Locale.getDefault());
+        String offset = date.format(currentLocalTime);
+
+        return offset.substring(2, 3);
     }
 }
