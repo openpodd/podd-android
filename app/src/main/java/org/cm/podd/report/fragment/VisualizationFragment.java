@@ -4,41 +4,44 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.VisualizationAreaActivity;
 import org.cm.podd.report.activity.WebContentActivity;
+import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.AdministrationAreaService;
+import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Date;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link VisualizationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link VisualizationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class VisualizationFragment extends ListFragment {
 
     private static final String TAG = "VisualizationFragment";
 
-    private visualizationCursorAdapter adapter;
-
+    AdministrationAreaDataSource administrationAreaDataSource;
+    private visualizationAdapter adapter;
 
     public VisualizationFragment() {
     }
@@ -51,10 +54,15 @@ public class VisualizationFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        administrationAreaDataSource = new AdministrationAreaDataSource(getActivity());
     }
 
     public void refreshAdapter() {
-        adapter = new visualizationCursorAdapter(getActivity(), null, false);
+        if(administrationAreaDataSource.getAll().size() == 0){
+            startSyncAdministrationAreaService();
+        }
+
+        adapter = new visualizationAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getAll());
         setListAdapter(adapter);
 
     }
@@ -62,13 +70,13 @@ public class VisualizationFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        Cursor cursor = (Cursor) adapter.getItem(position);
-        String title = cursor.getString(cursor.getColumnIndex("title"));
-        String content = cursor.getString(cursor.getColumnIndex("content"));
+        AdministrationArea area = adapter.getItem(position);
+        String name = area.getName();
+        String parentName = area.getParentName();
 
-        Intent intent = new Intent(getActivity(), WebContentActivity.class);
-        intent.putExtra("title", title);
-        intent.putExtra("content", content);
+        Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
+        intent.putExtra("parentName", parentName);
+        intent.putExtra("name", name);
         intent.putExtra("id", id);
         startActivity(intent);
     }
@@ -105,39 +113,41 @@ public class VisualizationFragment extends ListFragment {
     /**
      * List Adapter
      */
-    private class visualizationCursorAdapter extends CursorAdapter {
+    private class visualizationAdapter extends ArrayAdapter<AdministrationArea> {
 
-        private Typeface typeFace;
+        Context context;
+        int resource;
+        Typeface face;
 
-        private visualizationCursorAdapter(Context context, Cursor c, boolean autoRequery) {
-            super(context, c, autoRequery);
-            typeFace = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+        public visualizationAdapter(Context context, int resource, List<AdministrationArea> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.resource = resource;
+            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
-
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View rootView = LayoutInflater.from(context).inflate(R.layout.notification_list_item, parent, false);
-            return rootView;
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(this.resource, parent, false);
+
+            TextView textView = (TextView) view.findViewById(R.id.name);
+            textView.setTypeface(face);
+            textView.setText(getItem(position).getName());
+
+            boolean isLeaf = getItem(position).getIsLeaf() > 0;
+            if(!isLeaf){
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
+                textView.setTypeface(null, Typeface.BOLD);
+                view.setEnabled(false);
+            }
+
+            return view;
         }
 
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            String title = cursor.getString(cursor.getColumnIndex("title"));
-            long time = cursor.getLong(cursor.getColumnIndex("created_at"));
-            int seen = cursor.getInt(cursor.getColumnIndex("seen"));
+    }
 
-            TextView titleTextView = (TextView) view.findViewById(R.id.title);
-            titleTextView.setText(title);
-            titleTextView.setTypeface(typeFace);
-
-            TextView dateTextView = (TextView) view.findViewById(R.id.date);
-            Date date = new Date(time);
-            dateTextView.setText(DateUtil.convertToThaiDateTime(date));
-            dateTextView.setTypeface(typeFace);
-
-            TextView newTextView = (TextView) view.findViewById(R.id.new_label);
-            newTextView.setTypeface(typeFace);
-            newTextView.setVisibility(seen == Report.TRUE ? View.GONE : View.VISIBLE);
-        }
+    private void startSyncAdministrationAreaService() {
+        Intent intent = new Intent(getActivity(), AdministrationAreaService.class);
+        getActivity().startService(intent);
     }
 }

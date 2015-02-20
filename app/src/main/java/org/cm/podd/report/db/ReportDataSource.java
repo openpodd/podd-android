@@ -310,6 +310,7 @@ public class ReportDataSource {
         db.delete("report_queue", null, null);
         db.delete("report_type", null, null);
         db.delete("notification", null, null);
+        db.delete("administration_area", null, null);
         db.close();
     }
 

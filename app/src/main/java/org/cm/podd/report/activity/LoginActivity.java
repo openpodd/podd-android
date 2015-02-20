@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -214,6 +215,9 @@ public class LoginActivity extends ActionBarActivity {
                 // save report types data into table
                 ReportTypeDataSource dataSource = new ReportTypeDataSource(LoginActivity.this);
                 dataSource.initNewData(obj.getJSONArray("reportTypes").toString());
+
+                AdministrationAreaDataSource administrationAreaDataSource = new AdministrationAreaDataSource(LoginActivity.this);
+                administrationAreaDataSource.initNewData(obj.getJSONArray("administrationAreas").toString());
 
                 isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
                 // goto report home
