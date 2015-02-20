@@ -117,6 +117,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
+        <activity
+            android:name=".activity.VisualizationAreaActivity"
+            android:label="@string/title_activity_visualization_area"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.HomeActivity" />
+        </activity>
 
         <receiver android:name=".service.ConnectivityChangeReceiver" >
             <intent-filter>
@@ -134,6 +142,9 @@
             android:exported="false" />
         <service
             android:name=".service.UploadProfileService"
+            android:exported="false" />
+        <service
+            android:name=".service.AdministrationAreaService"
             android:exported="false" />
         <service android:name="edu.mit.media.funf.FunfManager" >
             <meta-data

@@ -55,11 +55,13 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
+import org.cm.podd.report.fragment.VisualizationFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -90,6 +92,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private int drawerPosition;
 
     NotificationDataSource notificationDataSource;
+    AdministrationAreaDataSource administrationDataSource;
     private boolean sendScreenViewAnalytic = true;
     private SharedPrefUtil sharedPrefUtil;
 
@@ -117,6 +120,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         // initialize and create or upgrade db
         notificationDataSource = new NotificationDataSource(this);
+        administrationDataSource = new AdministrationAreaDataSource(this);
 
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
@@ -243,7 +247,10 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         } else if (position == 2) {
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
-        } else {
+        } else if (position == 3) {
+            mCurrentFragment = new VisualizationFragment();
+            setTitle(mMenuTitles[position]);
+        }else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
         }
@@ -518,10 +525,17 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 } else {
                     counterView.setVisibility(View.INVISIBLE);
                 }
-            } else {
+            } else if (position == 3) {
+                iconView.setImageResource(R.drawable.ic_menu_list);
+                counterView.setVisibility(View.INVISIBLE);
+
+            }else {
                 counterView.setVisibility(View.INVISIBLE);
             }
             titleView.setText(getItem(position));
+
+            // Re-draw menu.
+            invalidateOptionsMenu();
 
             return rootView;
         }

@@ -83,6 +83,14 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  created_at INTEGER"
             + ")";
 
+    private static final String CREATE_TABLE_ADMINISTRATION_AREA = "create table administration_area"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  name TEXT,"
+            + "  parent_name TEXT,"
+            + "  is_leaf INTEGER DEFAULT 0"
+            + ")";
+
     private static final String CREATE_TABLE_FEED_ITEM = "create table if not exists feed_item"
             + "("
             + "  _id INTEGER PRIMARY KEY,"
@@ -99,6 +107,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE_QUEUE = "drop table report_queue";
     private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
     private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
+    private static final String DROP_TABLE_ADMINISTRATION_AREA = "drop table administration_area";
     private static final String DROP_TABLE_FEED_ITEM = "drop table feed_item";
 
     public ReportDatabaseHelper(Context context) {
@@ -112,6 +121,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_QUEUE);
         sqLiteDatabase.execSQL(CREATE_TABLE_REPORT_TYPE);
         sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
+        sqLiteDatabase.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
         sqLiteDatabase.execSQL(CREATE_TABLE_FEED_ITEM);
         Log.i("DB", "on create");
     }
