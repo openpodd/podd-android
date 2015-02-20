@@ -41,8 +41,11 @@ public class FilterService extends IntentService {
     private static final String ACTION_QUERY     = "podd.filter.query";
     public static final String ACTION_QUERY_DONE = "podd.filter.query.done";
 
-    private static final String PARAM_QUERY    = "q";
-    private static final String PARAM_TIMEZONE = "tz";
+    private static final String PARAM_QUERY     = "q";
+    private static final String PARAM_TIMEZONE  = "tz";
+    private static final String PARAM_PAGE_SIZE = "page_size";
+
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     SharedPrefUtil sharedPrefUtil;
     FeedItemDataSource feedItemDataSource;
@@ -157,6 +160,9 @@ public class FilterService extends IntentService {
             else {
                 params.add(new BasicNameValuePair(PARAM_TIMEZONE, getTimezoneOffset()));
             }
+
+            // Fixed page size.
+            params.add(new BasicNameValuePair(PARAM_PAGE_SIZE, Integer.toString(DEFAULT_PAGE_SIZE)));
 
             queryString = URLEncodedUtils.format(params, "utf-8");
         }

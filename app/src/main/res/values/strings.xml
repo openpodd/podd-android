@@ -54,5 +54,6 @@
     <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
     <string name="draft">แบบร่าง</string>
     <string name="unseen">ใหม่</string>
+    <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
 
 </resources>
