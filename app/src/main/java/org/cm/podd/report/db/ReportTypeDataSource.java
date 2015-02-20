@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.cm.podd.report.R;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
@@ -254,5 +255,37 @@ public class ReportTypeDataSource {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete("report_type", "_id = ?", new String[] {id.toString()} );
         db.close();
+    }
+
+    public ReportType getReportTypeById(long id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = null;
+        ReportType reportType = null;
+
+        if (id != 0) {
+            cursor = db.query("report_type", null, "_id = ?",
+                    new String[]{ Long.toString(id) }, null, null, null, "1");
+            if (cursor.moveToFirst()) {
+                reportType = new ReportType(
+                        cursor.getLong(cursor.getColumnIndex("_id")),
+                        cursor.getString(cursor.getColumnIndex("name"))
+                );
+            } else {
+                reportType = getNormalCaseReportType();
+            }
+        } else {
+            reportType = getNormalCaseReportType();
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+
+        return reportType;
+    }
+
+    public ReportType getNormalCaseReportType() {
+        return new ReportType(0, context.getString(R.string.normal_case));
     }
 }

@@ -59,7 +59,8 @@ public class FeedItemDataSource {
         if (existingRow != null && existingRow.moveToNext()) {
             // Then update instead.
             values.put("updated_at", now.getTime());
-            db.update(TABLE_NAME, values, "_id = ?", new String[] { Long.toString(feedItem.getId()) });
+            db.update(TABLE_NAME, values, "_id = ?",
+                    new String[] { Long.toString(existingRow.getLong(COLUMN_ID)) });
         } else {
             values.put("created_at", now.getTime());
             values.put("updated_at", now.getTime());

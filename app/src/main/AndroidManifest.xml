@@ -174,7 +174,10 @@
         </receiver>
 
         <service android:name=".service.GcmIntentService" />
-
+        <service
+            android:name=".service.FilterService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
