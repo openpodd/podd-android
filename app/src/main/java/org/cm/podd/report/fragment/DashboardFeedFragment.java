@@ -1,5 +1,9 @@
 package org.cm.podd.report.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -14,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.FeedItemDataSource;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FilterService;
 
 import java.util.ArrayList;
@@ -32,9 +38,22 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ReportAdapter mAdapter;
 
+    private FeedItemDataSource feedItemDataSource;
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Receiving action " + intent.getAction());
+            refreshAdapter();
+            onRefreshComplete();
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        feedItemDataSource = new FeedItemDataSource(getActivity().getApplicationContext());
+        getActivity().registerReceiver(mReceiver, new IntentFilter(FilterService.ACTION_QUERY_DONE));
     }
 
     @Override
@@ -57,12 +76,16 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh");
-                FilterService.doQuery(container.getContext(), "negative:true", "7");
-                onRefreshComplete();
+                setRefreshing(true);
+                FilterService.doQuery(container.getContext(), "negative:true", null);
             }
         };
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View wrappedView = super.onCreateView(inflater, container, savedInstanceState);
+
+        feedItemDataSource.clear();
+        mRefreshListener.onRefresh();
+        return wrappedView;
     }
 
     private void onRefreshComplete() {
@@ -75,6 +98,12 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getActivity().unregisterReceiver(mReceiver);
+    }
+
     protected boolean canViewScrollUp(View view) {
         if (android.os.Build.VERSION.SDK_INT >= 14) {
             // For ICS and above we can call canScrollVertically() to determine this
@@ -85,6 +114,11 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
             return (mRecyclerView.getVerticalScrollbarPosition() > 0
                     || mRecyclerView.getTop() < mRecyclerView.getPaddingTop());
         }
+    }
+
+    private void refreshAdapter() {
+        mAdapter.mDataSet = feedItemDataSource.latest();
+        mAdapter.notifyDataSetChanged();
     }
 
 }

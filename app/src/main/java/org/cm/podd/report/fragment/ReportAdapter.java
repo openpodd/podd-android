@@ -7,17 +7,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.model.FeedItem;
+
+import java.util.ArrayList;
 
 /**
  * Created by siriwat on 2/17/15.
  */
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder> {
 
-    protected String[] mDataSet = {
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-            "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-            "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
-    };
+    protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
@@ -35,12 +34,12 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getTextView().setText(mDataSet[Math.min(position, mDataSet.length - 1)]);
+        viewHolder.getTextView().setText(Long.toString(mDataSet.get(position).getItemId()));
     }
 
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        return mDataSet.size();
     }
 
     @Override

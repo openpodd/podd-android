@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -91,12 +91,24 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  is_leaf INTEGER DEFAULT 0"
             + ")";
 
+    private static final String CREATE_TABLE_FEED_ITEM = "create table if not exists feed_item"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  item_id INTEGER,"
+            + "  type TEXT,"
+            + "  date INTEGER,"
+            + "  json_string TEXT,"
+            + "  created_at INTEGER,"
+            + "  updated_at INTEGER"
+            + ")";
+
     private static final String DROP_TABLE = "drop table report";
     private static final String DROP_TABLE_IMAGE = "drop table report_image";
     private static final String DROP_TABLE_QUEUE = "drop table report_queue";
     private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
     private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
     private static final String DROP_TABLE_ADMINISTRATION_AREA = "drop table administration_area";
+    private static final String DROP_TABLE_FEED_ITEM = "drop table feed_item";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,6 +122,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_REPORT_TYPE);
         sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
         sqLiteDatabase.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
+        sqLiteDatabase.execSQL(CREATE_TABLE_FEED_ITEM);
         Log.i("DB", "on create");
     }
 
@@ -126,6 +139,13 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 sql = "ALTER TABLE notification ADD COLUMN seen INTEGER DEFAULT 0";
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(sql);
+            case 3:
+                Log.i("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL(CREATE_TABLE_FEED_ITEM);
+            case 4:
+                Log.i("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
         }
     }
 
