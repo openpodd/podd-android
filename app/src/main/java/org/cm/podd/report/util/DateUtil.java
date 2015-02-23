@@ -16,9 +16,13 @@
  */
 package org.cm.podd.report.util;
 
+import org.json.JSONException;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateUtil {
 
@@ -45,5 +49,16 @@ public class DateUtil {
 
     private static String formatTime(Date date) {
         return new SimpleDateFormat("HH:mm").format(date);
+    }
+
+    public static Date fromJsonDateString(String dateStr) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                Locale.getDefault());
+        try {
+            return formatter.parse(dateStr);
+        } catch (ParseException e) {
+            return null;
+        }
+
     }
 }

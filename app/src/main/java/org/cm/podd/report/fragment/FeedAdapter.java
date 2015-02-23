@@ -3,6 +3,7 @@ package org.cm.podd.report.fragment;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,29 +15,36 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.util.DateUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by siriwat on 2/17/15.
  */
-public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder> {
+public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
-    private static final String TAG = "ReportAdapter";
+    private static final String TAG = "FeedAdapter";
+    private OnItemClickListener mListener;
 
     protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
 
     private static final int[] flagColors = new int[]{
-            R.drawable.icon_flag,
-            R.drawable.icon_flag_ignore,
-            R.drawable.icon_flag_ok,
-            R.drawable.icon_flag_contact,
-            R.drawable.icon_flag_follow,
-            R.drawable.icon_flag_case
+        R.drawable.icon_flag,
+        R.drawable.icon_flag_ignore,
+        R.drawable.icon_flag_ok,
+        R.drawable.icon_flag_contact,
+        R.drawable.icon_flag_follow,
+        R.drawable.icon_flag_case
     };
+    
+    public FeedAdapter(OnItemClickListener listener) {
+        mListener = listener;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
@@ -47,6 +55,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
         private final ImageView thumbView;
         private final TextView animalTypeView;
         private final TextView descriptionView;
+        private final TextView addressView;
 
         public ViewHolder(View v) {
             super(v);
@@ -60,6 +69,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             thumbView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
             animalTypeView = (TextView) v.findViewById(R.id.df_item_animal_type);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
+            addressView = (TextView) v.findViewById(R.id.df_item_address);
         }
 
         public CardView getCardView() {
@@ -93,6 +103,17 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
         public TextView getTimeagoView() {
             return timeagoView;
         }
+
+        public TextView getAddressView() {
+            return addressView;
+        }
+    }
+
+    private String stripHTMLTags(String html) {
+        String modifiedHtml = Html.fromHtml(html).toString();
+        modifiedHtml = modifiedHtml.replaceAll("[\r\n]$", "");
+        modifiedHtml = modifiedHtml.replaceAll("^[\r\n]", "");
+        return modifiedHtml;
     }
 
     @Override
@@ -108,7 +129,23 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
-            viewHolder.getTimeagoView().setText(report.getString("date"));
+            Date date = DateUtil.fromJsonDateString(report.getString("date"));
+            String dateStr = DateUtil.convertToThaiDate(date);
+            viewHolder.getTimeagoView().setText(dateStr);
+            // form data explanation
+            viewHolder.getDescriptionView().setText(
+                    stripHTMLTags(report.getString("formDataExplanation")));
+            // address
+            viewHolder.getAddressView().setText(report.getString("administrationAreaAddress"));
+            
+            // set on click listener
+            viewHolder.getCardView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onClick(view, position);
+                }
+            });
+            
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         }
@@ -126,6 +163,13 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
                 .inflate(R.layout.dashboard_feed_item, viewGroup, false);
 
         return new ViewHolder(v);
+    }
+
+    /**
+     * Interface for receiving click events from cells.
+     */
+    public interface OnItemClickListener {
+        public void onClick(View view, int position);
     }
 
 }
