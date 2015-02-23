@@ -71,14 +71,18 @@ public class VisualizationFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         AdministrationArea area = adapter.getItem(position);
+        Long administrationAreaId = area.getId();
         String name = area.getName();
         String parentName = area.getParentName();
+        boolean isLeaf = area.getIsLeaf() > 0;
 
-        Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
-        intent.putExtra("parentName", parentName);
-        intent.putExtra("name", name);
-        intent.putExtra("id", id);
-        startActivity(intent);
+        if(isLeaf){
+            Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
+            intent.putExtra("parentName", parentName);
+            intent.putExtra("name", name);
+            intent.putExtra("id", administrationAreaId);
+            startActivity(intent);
+        }
     }
 
     @Override

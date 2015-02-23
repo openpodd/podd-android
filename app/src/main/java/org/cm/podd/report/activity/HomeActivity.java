@@ -56,6 +56,7 @@ import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
+import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
@@ -93,6 +94,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
     NotificationDataSource notificationDataSource;
     AdministrationAreaDataSource administrationDataSource;
+    FeedItemDataSource feedItemDataSource;
     private boolean sendScreenViewAnalytic = true;
     private SharedPrefUtil sharedPrefUtil;
 
@@ -121,6 +123,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // initialize and create or upgrade db
         notificationDataSource = new NotificationDataSource(this);
         administrationDataSource = new AdministrationAreaDataSource(this);
+        feedItemDataSource = new FeedItemDataSource(this);
 
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
