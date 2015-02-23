@@ -115,7 +115,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         Log.d(TAG, "Clicked on position: " + Integer.toString(position));
 
         Intent intent = new Intent(getActivity(), ReportViewActivity.class);
-        intent.putExtra("", "");
+        intent.putExtra("id", mAdapter.mDataSet.get(position).getItemId());
         startActivity(intent);
     }
 

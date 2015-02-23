@@ -4,33 +4,44 @@
     android:layout_height="match_parent"
     android:padding="10dp" >
 
-    <FrameLayout
+    <LinearLayout android:id="@+id/df_view_content"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="100dp">
-        <TextView
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Images (if available)" />
-    </FrameLayout>
+            android:layout_height="100dp">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Images (if available)" />
+        </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="100dp">
-        <TextView
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Report details" />
-    </FrameLayout>
+            android:layout_height="100dp">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Report details" />
+        </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="100dp">
-        <TextView
+        <FrameLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Comments" />
+            android:layout_height="100dp">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Comments" />
+        </FrameLayout>
+    </LinearLayout>
 
-
-    </FrameLayout>
+    <ProgressBar android:id="@+id/loading_spinner"
+        style="?android:progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center" />
 
 </LinearLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.cm.podd.report">
+    package="org.cm.podd.report" >
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -187,6 +187,10 @@
         <service android:name=".service.GcmIntentService" />
         <service
             android:name=".service.FilterService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".service.ReportService"
             android:exported="false" >
         </service>
     </application>
