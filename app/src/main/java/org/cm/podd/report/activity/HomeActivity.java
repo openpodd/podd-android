@@ -58,11 +58,11 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.fragment.AdministrationAreaFragment;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
-import org.cm.podd.report.fragment.VisualizationFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -251,7 +251,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
         } else if (position == 3) {
-            mCurrentFragment = new VisualizationFragment();
+            mCurrentFragment = new AdministrationAreaFragment();
             setTitle(mMenuTitles[position]);
         }else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);

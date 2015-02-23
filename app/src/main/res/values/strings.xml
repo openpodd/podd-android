@@ -56,6 +56,13 @@
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
     <string name="title_activity_visualization_area">สรุปผลรายพื้นที่</string>
+    <string name="search">ค้นหา</string>
+    <string name="grade">ระดับการประเมิน</string>
+    <string name="total_report">จำนวนรายงาน(รายงาน)</string>
+    <string name="negative_report">เหตุผิดปกติ</string>
+    <string name="positive_report">ไม่พบเหตุผิดปกติ</string>
+    <string name="title_picker_choose_month">เลือกเดือนที่ต้องการดูผลการประเมิน</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>
