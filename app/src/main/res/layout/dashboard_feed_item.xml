@@ -58,9 +58,11 @@
 
             <ImageView
                 android:layout_width="24dp"
-                android:layout_height="24dp" />
+                android:layout_height="24dp"
+                android:src="@drawable/icon_marker" />
 
             <TextView
+                android:id="@+id/df_item_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="36dp"
@@ -68,10 +70,19 @@
 
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/df_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="62dp"
+            android:ellipsize="end"
+            android:textStyle="italic"
+            android:text="Description here to inform user that something happened." />
 
         <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="64dp">
 
             <ImageView
@@ -90,14 +101,14 @@
                 android:textStyle="bold"
                 android:text="Animal type"/>
 
-            <TextView
+            <!-- <TextView
                 android:id="@+id/df_item_description"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="90dp"
                 android:ellipsize="end"
-                android:text="Description here to inform user that something happened." />
+                android:text="Description here to inform user that something happened." /> -->
         </FrameLayout>
 
 
