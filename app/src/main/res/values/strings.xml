@@ -55,7 +55,8 @@
     <string name="draft">แบบร่าง</string>
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
-    <string name="title_activity_visualization_area">สรุปผลรายพื้นที่</string>
+    <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
+    <string name="title_activity_visualization">สรุปผลการประเมิน</string>
     <string name="search">ค้นหา</string>
     <string name="grade">ระดับการประเมิน</string>
     <string name="total_report">จำนวนรายงาน(รายงาน)</string>

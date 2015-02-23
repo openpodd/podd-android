@@ -64,7 +64,6 @@ public class VisualizationAreaFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-
         id = getArguments().getInt("id", -99);
         name = getArguments().getString("name");
         parentName = getArguments().getString("parentName");

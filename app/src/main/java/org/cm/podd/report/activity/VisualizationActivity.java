@@ -1,6 +1,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -12,13 +13,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.VisualizationAreaFragment;
@@ -45,10 +44,10 @@ public class VisualizationActivity extends ActionBarActivity {
     private int month;
     private int year;
 
-    private PieChart mChart;
     private Bundle bundle;
+    private FragmentTabHost mTabHost;
 
-    Fragment mCurrentFragment;
+    private Fragment mCurrentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +64,15 @@ public class VisualizationActivity extends ActionBarActivity {
         parentName = intent.getStringExtra("parentName");
         month = intent.getIntExtra("month", -99);
         year = intent.getIntExtra("year", -9999);
+
+        mTabHost = (FragmentTabHost) findViewById (android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                Fragment.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                Fragment.class, null);
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             new VisualizationAreaTask().execute((Void[]) null);
@@ -143,13 +151,15 @@ public class VisualizationActivity extends ActionBarActivity {
                     bundle.putInt("positiveReport", positiveReport);
                     bundle.putInt("positiveReport", positiveReport);
 
-                    mCurrentFragment = new VisualizationAreaFragment();
-                    mCurrentFragment.setArguments(bundle);
+                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(0));
+                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(1));
 
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                            .commit();
+                    mTabHost.addTab(
+                            mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                            VisualizationAreaFragment.class, bundle);
+                    mTabHost.addTab(
+                            mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                            VisualizationAreaFragment.class, bundle);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -171,7 +181,7 @@ public class VisualizationActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization_area));
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
         actionBar.setLogo(R.drawable.arrow_left_with_pad);
