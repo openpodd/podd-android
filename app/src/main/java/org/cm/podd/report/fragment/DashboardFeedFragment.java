@@ -12,12 +12,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FilterService;
@@ -30,13 +32,13 @@ import java.util.Random;
 /**
  * Created by siriwat on 2/17/15.
  */
-public class DashboardFeedFragment extends SwipeRefreshFragment {
+public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedAdapter.OnItemClickListener {
 
     private static final String TAG = "DashboardFeedFragment";
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected ReportAdapter mAdapter;
+    protected FeedAdapter mAdapter;
 
     private FeedItemDataSource feedItemDataSource;
 
@@ -67,7 +69,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.dashboard_feed_list);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mAdapter = new ReportAdapter();
+        mAdapter = new FeedAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -102,6 +104,19 @@ public class DashboardFeedFragment extends SwipeRefreshFragment {
     public void onDestroyView() {
         super.onDestroyView();
         getActivity().unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void onClick(View view, int position) {
+        selectItem(position);
+    }
+
+    private void selectItem(int position) {
+        Log.d(TAG, "Clicked on position: " + Integer.toString(position));
+
+        Intent intent = new Intent(getActivity(), ReportViewActivity.class);
+        intent.putExtra("", "");
+        startActivity(intent);
     }
 
     protected boolean canViewScrollUp(View view) {
