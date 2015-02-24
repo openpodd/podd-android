@@ -58,10 +58,19 @@
     <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
     <string name="title_activity_visualization">สรุปผลการประเมิน</string>
     <string name="search">ค้นหา</string>
-    <string name="grade">ระดับการประเมิน</string>
-    <string name="total_report">จำนวนรายงาน(รายงาน)</string>
+    <string name="grade">ประสิทธิภาพการรายงาน</string>
+    <string name="total_report">จำนวนรายงานทั้งหมด</string>
+    <string name="type_report">ประเภทรายงาน</string>
+    <string name="animal_report">จำนวนสัตว์ป่วย/ ตาย</string>
+    <string name="empty_animal_report">ไม่พบรายงานสัตว์ป่วย/ ตาย</string>
+    <string name="time_range_report">ช่วงเวลาการรายงานบ่อยสุด</string>
     <string name="negative_report">เหตุผิดปกติ</string>
     <string name="positive_report">ไม่พบเหตุผิดปกติ</string>
+    <string name="grade_A">เหรียญทอง</string>
+    <string name="grade_B">เหรียญเงิน</string>
+    <string name="grade_C">เหรียญทองแดง</string>
+    <string name="animal_sick">สัตว์ป่วย</string>
+    <string name="animal_death">สัตว์ตาย</string>
     <string name="title_picker_choose_month">เลือกเดือนที่ต้องการดูผลการประเมิน</string>
     <string name="hello_world">Hello world!</string>
 
@@ -83,5 +92,6 @@
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
     <string name="report_activity_title_template">รายงานหมายเลข #:id</string>
+    <string name="title_activity_visualization_volunteer">VisualizationVolunteerActivity</string>
 
 </resources>

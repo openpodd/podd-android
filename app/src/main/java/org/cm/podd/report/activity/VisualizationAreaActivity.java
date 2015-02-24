@@ -1,26 +1,22 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TabHost;
-import android.widget.TextView;
+import android.view.View;
 
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.fragment.VisualizationAreaFragment;
+import org.cm.podd.report.fragment.VisualizationFragment;
+import org.cm.podd.report.fragment.VisualizationListVolunteer;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -28,12 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class VisualizationActivity extends ActionBarActivity {
+public class VisualizationAreaActivity extends ActionBarActivity {
 
     private static final String TAG = "VisualizationAreaActivity";
 
@@ -47,12 +42,10 @@ public class VisualizationActivity extends ActionBarActivity {
     private Bundle bundle;
     private FragmentTabHost mTabHost;
 
-    private Fragment mCurrentFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_visualization);
+        setContentView(R.layout.activity_visualization_area);
 
         getWindow().setWindowAnimations(0);
 
@@ -68,12 +61,10 @@ public class VisualizationActivity extends ActionBarActivity {
         mTabHost = (FragmentTabHost) findViewById (android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
         mTabHost.addTab(
-                mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
-                Fragment.class, null);
-        mTabHost.addTab(
-                mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                mTabHost.newTabSpec("").setIndicator("", null),
                 Fragment.class, null);
 
+        mTabHost.setVisibility(View.INVISIBLE);
         if (RequestDataUtil.hasNetworkConnection(this)) {
             new VisualizationAreaTask().execute((Void[]) null);
         }
@@ -117,17 +108,6 @@ public class VisualizationActivity extends ActionBarActivity {
         protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
             String accessToken = sharedPrefUtil.getAccessToken();
-
-            String reqData = null;
-            try {
-                JSONObject json = new JSONObject();
-                json.put("administrationAreaId", id);
-                json.put("month", "01/2015");
-                reqData = json.toString();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             return RequestDataUtil.get("/summary/areas/show-detail/?month=" + month + "/" + year + "&administrationAreaId=" + id, null, accessToken);
         }
 
@@ -145,21 +125,33 @@ public class VisualizationActivity extends ActionBarActivity {
 
                     int positiveReport = obj.optInt("positiveReport");
                     int negativeReport = obj.optInt("negativeReport");
+                    String volunteers =  obj.optString("reporters");
+                    String animalTypes =  obj.optString("animalTypes");
+                    String timeRanges =  obj.optString("timeRanges");
 
                     bundle.putString("grade", grade);
+
                     bundle.putInt("totalReport", totalReport);
                     bundle.putInt("positiveReport", positiveReport);
-                    bundle.putInt("positiveReport", positiveReport);
+                    bundle.putInt("negativeReport", negativeReport);
 
-                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(0));
-                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(1));
+                    bundle.putString("volunteers", volunteers);
+                    bundle.putString("animalTypes", animalTypes);
+                    bundle.putString("timeRanges", timeRanges);
+
+                    mTabHost.getTabWidget().removeAllViews();
+                    mTabHost.getTabContentView().removeAllViews();
+                    mTabHost.clearAllTabs();
 
                     mTabHost.addTab(
                             mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
-                            VisualizationAreaFragment.class, bundle);
+                            VisualizationFragment.class, bundle);
                     mTabHost.addTab(
                             mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
-                            VisualizationAreaFragment.class, bundle);
+                            VisualizationListVolunteer.class, bundle);
+
+                    mTabHost.setCurrentTab(0);
+                    mTabHost.setVisibility(View.VISIBLE);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -167,9 +159,9 @@ public class VisualizationActivity extends ActionBarActivity {
 
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(VisualizationActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(VisualizationAreaActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(VisualizationActivity.this, "Administration area is incorrect!", Style.ALERT).show();
+                    Crouton.makeText(VisualizationAreaActivity.this, "Administration area is incorrect!", Style.ALERT).show();
                 }
 
             }
@@ -185,7 +177,6 @@ public class VisualizationActivity extends ActionBarActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
         actionBar.setLogo(R.drawable.arrow_left_with_pad);
-
         return true;
     }
 

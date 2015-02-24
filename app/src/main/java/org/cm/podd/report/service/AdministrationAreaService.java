@@ -37,7 +37,7 @@ import java.util.List;
 public class AdministrationAreaService extends IntentService {
 
     public static final String SYNC = "administrationArea.sync";
-    private static final String TAG = "AdministrationAreaService";
+    private static final String TAG = "AreaService";
 
     /**
      * A constructor is required, and must call the super IntentService(String)
