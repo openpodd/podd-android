@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -89,6 +92,10 @@ public class ReportViewActivity extends ActionBarActivity {
         }
     }
 
+    private static Spanned linkify(String text, String uri) {
+        return Html.fromHtml("<a href=\"" + uri + "\">" + text + "</a>");
+    }
+
     private void viewReport(JSONObject report) {
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
@@ -101,8 +108,15 @@ public class ReportViewActivity extends ActionBarActivity {
             typeView.setText(report.getString("reportTypeName"));
             areaView.setText(report.getString("administrationAreaAddress"));
             createdByView.setText(report.getString("createdBy"));
-            createdByTelephoneView.setText(report.getString("createdByTelephone"));
-            createdByProjectTelephoneView.setText(report.getString("createdByProjectMobileNumber"));
+
+            String telephone = report.getString("createdByTelephone");
+            createdByTelephoneView.setText(linkify(telephone, "tel:" + telephone));
+            createdByTelephoneView.setMovementMethod(LinkMovementMethod.getInstance());
+
+            String projectTelephone = report.getString("createdByProjectMobileNumber");
+            createdByProjectTelephoneView.setText(linkify(projectTelephone, "tel:" + projectTelephone));
+            createdByProjectTelephoneView.setMovementMethod(LinkMovementMethod.getInstance());
+
             formDataExplanation.setText(FeedAdapter.stripHTMLTags(
                     report.getString("formDataExplanation")));
         } catch (JSONException e) {
