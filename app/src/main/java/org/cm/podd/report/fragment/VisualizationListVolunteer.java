@@ -1,11 +1,13 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Volunteer;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
@@ -21,10 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VisualizationListVolunteer extends ListFragment {
 
-    private ArrayAdapter adapter;
+    private volunteerAdapter adapter;
     ArrayList<Volunteer> volunteers;
 
     public VisualizationListVolunteer() {
@@ -59,7 +63,7 @@ public class VisualizationListVolunteer extends ListFragment {
     }
 
     public void refreshAdapter() {
-        adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, volunteers);
+        adapter = new volunteerAdapter(getActivity(), R.layout.list_item_volunteer, volunteers);
         setListAdapter(adapter);
 
     }
@@ -83,6 +87,34 @@ public class VisualizationListVolunteer extends ListFragment {
         return view;
     }
 
+    /**
+     * List Adapter
+     */
+    private class volunteerAdapter extends ArrayAdapter<Volunteer> {
+
+        Context context;
+        int resource;
+        Typeface face;
+
+        public volunteerAdapter(Context context, int resource, List<Volunteer> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.resource = resource;
+            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(this.resource, parent, false);
+
+            TextView textView = (TextView) view.findViewById(R.id.name);
+            textView.setTypeface(face);
+            textView.setText(getItem(position).getName());
+
+            return view;
+        }
+
+    }
 
     @Override
     public void onAttach(Activity activity) {
