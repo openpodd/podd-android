@@ -3,10 +3,13 @@ package org.cm.podd.report.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -72,5 +75,41 @@ public class ReportService extends IntentService {
         intent.setAction(ACTION_FETCH);
         intent.putExtra(PARAM_REPORT_ID, id);
         context.startService(intent);
+    }
+
+    public static class ReportAsyncTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        protected Context context;
+
+        public void setContext(Context context) {
+            this.context = context;
+        }
+
+        public Context getContext() {
+            return context;
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            return RequestDataUtil.get(ENDPOINT + params[0], null, accessToken);
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject responseObject) {
+            super.onPostExecute(responseObject);
+        }
+    }
+
+    public static class FollowUpAsyncTask extends ReportAsyncTask {
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            return RequestDataUtil.get(ENDPOINT + params[0] + "/involved", null, accessToken);
+        }
     }
 }

@@ -109,7 +109,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         }
     }
 
-    private String stripHTMLTags(String html) {
+    public static String stripHTMLTags(String html) {
         String modifiedHtml = Html.fromHtml(html).toString();
         modifiedHtml = modifiedHtml.replaceAll("[\r\n]$", "");
         modifiedHtml = modifiedHtml.replaceAll("^[\r\n]", "");
