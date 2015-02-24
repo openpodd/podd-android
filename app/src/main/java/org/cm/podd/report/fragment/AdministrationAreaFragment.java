@@ -122,7 +122,8 @@ public class AdministrationAreaFragment extends ListFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.i(TAG, "Text [" + s + "]");
-                adapter.getFilter().filter(s.toString());
+                if(!s.equals(null))
+                    adapter.getFilter().filter(s.toString());
             }
 
             @Override

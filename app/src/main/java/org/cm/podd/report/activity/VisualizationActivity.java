@@ -148,12 +148,18 @@ public class VisualizationActivity extends ActionBarActivity {
                     int positiveReport = obj.optInt("positiveReport");
                     int negativeReport = obj.optInt("negativeReport");
                     String volunteers =  obj.optString("reporters");
+                    String animalTypes =  obj.optString("animalTypes");
+                    String timeRanges =  obj.optString("timeRanges");
 
                     bundle.putString("grade", grade);
+
                     bundle.putInt("totalReport", totalReport);
                     bundle.putInt("positiveReport", positiveReport);
                     bundle.putInt("negativeReport", negativeReport);
+
                     bundle.putString("volunteers", volunteers);
+                    bundle.putString("animalTypes", animalTypes);
+                    bundle.putString("timeRanges", timeRanges);
 
                     mTabHost.getTabWidget().removeAllViews();
                     mTabHost.getTabContentView().removeAllViews();

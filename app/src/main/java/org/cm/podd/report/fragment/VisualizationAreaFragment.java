@@ -17,7 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -25,9 +29,13 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.VisualizationActivity;
+import org.cm.podd.report.model.AnimalType;
+import org.cm.podd.report.model.TimeRange;
+import org.cm.podd.report.model.Volunteer;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,7 +56,8 @@ public class VisualizationAreaFragment extends Fragment {
     private int month;
     private int year;
 
-    private PieChart mChart;
+    private PieChart mChartTypeReport;
+    private BarChart mChartTypeAnimals;
 
     public VisualizationAreaFragment() {
         // Required empty public constructor
@@ -84,30 +93,102 @@ public class VisualizationAreaFragment extends Fragment {
         textParentNameView.setText(name + " " + parentName);
         textParentNameView.setTypeface(face, Typeface.BOLD);
 
-        String grade = getArguments().getString("grade");
-        TextView textGradeView =  (TextView) view.findViewById(R.id.grade);
-        String textGrade = (String) textGradeView.getText();
-        textGradeView.setText(textGrade + " : " + grade);
-        textGradeView.setTypeface(face);
+        TextView textTotalReportView =  (TextView) view.findViewById(R.id.textTotalReport);
+        TextView textTypeView =  (TextView) view.findViewById(R.id.textReportType);
+        TextView textAnimalView =  (TextView) view.findViewById(R.id.textAnimalType);
+        TextView textTimeRangeView =  (TextView) view.findViewById(R.id.textReportTimeRange);
+        TextView textGradeView =  (TextView) view.findViewById(R.id.textGrade);
 
+        textTotalReportView.setTypeface(face, Typeface.BOLD);
+        textTypeView.setTypeface(face, Typeface.BOLD);
+        textAnimalView.setTypeface(face, Typeface.BOLD);
+        textTimeRangeView.setTypeface(face, Typeface.BOLD);
+        textGradeView.setTypeface(face, Typeface.BOLD);
+
+        /* set total report */
         int totalReport = getArguments().getInt("totalReport");
-        TextView textTotalReportView =  (TextView) view.findViewById(R.id.totalReport);
-        String textTotal = (String) textTotalReportView.getText();
-        textTotalReportView.setText(textTotal + " : " + totalReport);
-        textTotalReportView.setTypeface(face);
+        TextView valTotalReportView =  (TextView) view.findViewById(R.id.valTotalReport);
+        valTotalReportView.setText(totalReport + "");
+        valTotalReportView.setTypeface(face);
+
+        /* set graph type report */
 
         int positiveReport = getArguments().getInt("positiveReport");
         int negativeReport = getArguments().getInt("negativeReport");
 
-        mChart = (PieChart) view.findViewById(R.id.chart1);
-        mChart.setDescription("");
-        mChart.setValueTypeface(face);
+        mChartTypeReport = (PieChart) view.findViewById(R.id.chartReport);
+        mChartTypeReport.setDescription("");
+        mChartTypeReport.setValueTypeface(face);
 
         String [] nameChart = { getString(R.string.positive_report), getString(R.string.negative_report) };
         int [] countChart = { positiveReport, negativeReport };
 
-        setData(mChart, nameChart, countChart);
-        mChart.animateXY(500, 500);
+        setDataReportTypePieChart(mChartTypeReport, ColorTemplate.COLORFUL_COLORS, nameChart, countChart);
+        mChartTypeReport.animateXY(500, 500);
+        mChartTypeReport.setValueTypeface(face);
+
+        /* set animal type */
+        ArrayList<AnimalType> animalTypes = new ArrayList<AnimalType>();
+        try {
+            JSONArray items = new JSONArray(getArguments().getString("animalTypes"));
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+
+                String name = item.optString("name");
+                int sickCount = item.optInt("sick");
+                int deathCount = item.optInt("death");
+
+                AnimalType animalType = new AnimalType(name, sickCount, deathCount);
+                animalTypes.add(animalType);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (animalTypes.size() == 0){
+            mChartTypeAnimals = (BarChart) view.findViewById(R.id.chartAnimal);
+            mChartTypeAnimals.setVisibility(View.GONE);
+        }else{
+            TextView emptyAnimalType = (TextView) view.findViewById (R.id.emptyAnimalType);
+            emptyAnimalType.setVisibility(View.GONE);
+
+            mChartTypeAnimals = (BarChart) view.findViewById(R.id.chartAnimal);
+            mChartTypeAnimals.setDescription("");
+
+            setDataAnimalTypeBarChart(mChartTypeAnimals, animalTypes);
+            mChartTypeAnimals.animateXY(500, 500);
+            mChartTypeAnimals.setValueTypeface(face);
+        }
+        /* set time range */
+        TimeRange maxReportTimeRanges = new TimeRange(0, 0, 0);
+        try {
+            JSONArray items = new JSONArray(getArguments().getString("timeRanges"));
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+
+                int startTime = item.optInt("startTime");
+                int endTime = item.optInt("endTime");
+                int total = item.optInt("totalReport");
+
+                if (total >= maxReportTimeRanges.getTotalReport()){
+                    maxReportTimeRanges = new TimeRange(startTime, endTime, total);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String timeRange = maxReportTimeRanges.toString();
+        TextView valTimeRangeView =  (TextView) view.findViewById(R.id.valReportTimeRange);
+        valTimeRangeView.setText(timeRange);
+        valTimeRangeView.setTypeface(face, Typeface.BOLD);
+
+        /* set grade */
+        String grade = getArguments().getString("grade");
+        TextView valGradeView =  (TextView) view.findViewById(R.id.valGrade);
+        valGradeView.setText(getGrade(grade));
+        valGradeView.setTypeface(face, Typeface.BOLD);
 
         return view;
     }
@@ -126,7 +207,7 @@ public class VisualizationAreaFragment extends Fragment {
 
     }
 
-    private void setData(PieChart pieChart, String[] name, int[] count) {
+    private void setDataReportTypePieChart(PieChart pieChart, int[] colorTemplate, String[] name, int[] count) {
         ArrayList<String> xValues = new ArrayList<String>();
         ArrayList<Entry> yValues = new ArrayList<Entry>();
 
@@ -142,7 +223,7 @@ public class VisualizationAreaFragment extends Fragment {
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
 
-        for (int c : ColorTemplate.PASTEL_COLORS)
+        for (int c : colorTemplate)
             colors.add(c);
 
         colors.add(ColorTemplate.getHoloBlue());
@@ -156,4 +237,47 @@ public class VisualizationAreaFragment extends Fragment {
         pieChart.invalidate();
     }
 
+    private void setDataAnimalTypeBarChart(BarChart barChart, ArrayList<AnimalType> dataGroup) {
+
+        ArrayList<String> xValues = new ArrayList<String>();
+        for (int i = 0; i < dataGroup.size(); i++) {
+            xValues.add(dataGroup.get(i).getName());
+        }
+
+        ArrayList<BarEntry> yValues1 = new ArrayList<BarEntry>();
+        ArrayList<BarEntry> yValues2 = new ArrayList<BarEntry>();
+
+        for (int i = 0; i < dataGroup.size(); i++) {
+            yValues1.add(new BarEntry(dataGroup.get(i).getSickCount(), i));
+        }
+
+        for (int i = 0; i < dataGroup.size(); i++) {
+            yValues2.add(new BarEntry(dataGroup.get(i).getDeathCount(), i));
+        }
+
+        BarDataSet set1 = new BarDataSet(yValues1, getString(R.string.animal_sick));
+        set1.setColor(Color.GREEN);
+
+        BarDataSet set2 = new BarDataSet(yValues2, getString(R.string.animal_death));
+        set2.setColor(Color.BLUE);
+
+        ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
+        dataSets.add(set1);
+        dataSets.add(set2);
+
+        BarData data = new BarData(xValues, dataSets);
+
+        data.setGroupSpace(80f);
+
+        barChart.setData(data);
+        barChart.invalidate();
+    }
+
+    private String getGrade(String grade){
+        if(grade.equals("A"))
+            return getString(R.string.grade_A);
+        else if (grade.equals("B"))
+            return getString(R.string.grade_B);
+        return getString(R.string.grade_C);
+    }
 }

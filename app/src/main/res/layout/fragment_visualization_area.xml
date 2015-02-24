@@ -26,14 +26,14 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:text="hello"
             android:paddingLeft="20dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
         <TextView
-            android:id="@+id/totalReport"
+            android:id="@+id/textTotalReport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -42,18 +42,90 @@
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
+        <TextView
+            android:id="@+id/valTotalReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:paddingLeft="40dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/textReportType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/type_report"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
         <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/chart1"
+            android:id="@+id/chartReport"
             android:layout_width="match_parent"
             android:layout_height="300dp" />
 
         <TextView
-            android:id="@+id/grade"
+            android:id="@+id/textAnimalType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/animal_report"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chartAnimal"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
+        <TextView
+            android:id="@+id/emptyAnimalType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/empty_animal_report"
+            android:paddingLeft="40dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/textReportTimeRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/time_range_report"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/valReportTimeRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:paddingLeft="40dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/textGrade"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/grade"
             android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/valGrade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:paddingLeft="40dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
