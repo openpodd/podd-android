@@ -1,18 +1,11 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -28,25 +21,16 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.activity.VisualizationActivity;
 import org.cm.podd.report.model.AnimalType;
 import org.cm.podd.report.model.TimeRange;
-import org.cm.podd.report.model.Volunteer;
-import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
-
-public class VisualizationAreaFragment extends Fragment {
+public class VisualizationFragment extends Fragment {
     private static final String TAG = "VisualizationAreaFragment";
 
     private long  id;
@@ -59,7 +43,7 @@ public class VisualizationAreaFragment extends Fragment {
     private PieChart mChartTypeReport;
     private BarChart mChartTypeAnimals;
 
-    public VisualizationAreaFragment() {
+    public VisualizationFragment() {
         // Required empty public constructor
     }
 
@@ -81,7 +65,7 @@ public class VisualizationAreaFragment extends Fragment {
         month = getArguments().getInt("month", -99);
         year = getArguments().getInt("year", -9999);
 
-        View view = inflater.inflate(R.layout.fragment_visualization_area, container, false);
+        View view = inflater.inflate(R.layout.fragment_visualization, container, false);
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
 

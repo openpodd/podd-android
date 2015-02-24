@@ -1,7 +1,9 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.VisualizationAreaActivity;
+import org.cm.podd.report.activity.VisualizationVolunteerActivity;
 import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Volunteer;
 import org.cm.podd.report.util.StyleUtil;
@@ -31,12 +36,19 @@ public class VisualizationListVolunteer extends ListFragment {
     private volunteerAdapter adapter;
     ArrayList<Volunteer> volunteers;
 
+    private int month;
+    private int year;
+
     public VisualizationListVolunteer() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        month = getArguments().getInt("month");
+        year = getArguments().getInt("year");
+
         volunteers = new ArrayList<Volunteer>();
         try {
             JSONArray items = new JSONArray(getArguments().getString("volunteers"));
@@ -62,6 +74,21 @@ public class VisualizationListVolunteer extends ListFragment {
 
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        final Volunteer volunteer = adapter.getItem(position);
+
+        Intent intent = new Intent(getActivity(), VisualizationVolunteerActivity.class);
+        intent.putExtra("month", month);
+        intent.putExtra("year", year);
+        intent.putExtra("id", volunteer.getId());
+        intent.putExtra("name", volunteer.getName());
+        intent.putExtra("parentName", "");
+        startActivity(intent);
+
+
+    }
     public void refreshAdapter() {
         adapter = new volunteerAdapter(getActivity(), R.layout.list_item_volunteer, volunteers);
         setListAdapter(adapter);

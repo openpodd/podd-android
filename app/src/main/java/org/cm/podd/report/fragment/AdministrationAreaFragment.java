@@ -21,7 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.activity.VisualizationActivity;
+import org.cm.podd.report.activity.VisualizationAreaActivity;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.service.AdministrationAreaService;
@@ -75,7 +75,7 @@ public class AdministrationAreaFragment extends ListFragment {
                     String name = area.getName();
                     String parentName = area.getParentName();
 
-                    Intent intent = new Intent(getActivity(), VisualizationActivity.class);
+                    Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
                     intent.putExtra("month", monthOfYear + 1);
                     intent.putExtra("year", year);
                     intent.putExtra("parentName", parentName);
