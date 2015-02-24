@@ -52,13 +52,25 @@ public class DateUtil {
     }
 
     public static Date fromJsonDateString(String dateStr) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
-                Locale.getDefault());
-        try {
-            return formatter.parse(dateStr);
-        } catch (ParseException e) {
-            return null;
+        String[] formats = new String[]{
+                "yyyy-MM-dd'T'HH:mm:ssZ",
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss'z'",
+                "yyyy-MM-dd",
+        };
+        Locale defaultLocale = Locale.getDefault();
+        Date date = null;
+
+        for (String format : formats) {
+            try {
+                SimpleDateFormat parser = new SimpleDateFormat(format, defaultLocale);
+                date = parser.parse(dateStr);
+                break;
+            } catch (ParseException e) {
+                // Do nothing.
+            }
         }
 
+        return date;
     }
 }

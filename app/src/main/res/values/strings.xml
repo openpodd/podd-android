@@ -57,5 +57,17 @@
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
     <string name="title_activity_visualization_area">สรุปผลรายพื้นที่</string>
     <string name="hello_world">Hello world!</string>
+    
+    <!-- for report view -->
+    <string name="report_date">วันที่รายงาน</string>
+    <string name="report_incidentDate">วันที่เกิดเหตุ</string>
+    <string name="report_type">ประเภทรายงาน</string>
+    <string name="report_area">พื้นที่เกิดเหตุ</string>
+    <string name="by">โดย</string>
+    <string name="contact">ติดต่อ</string>
+    <string name="reporter_telephone">เบอร์โทรส่วนตัว</string>
+    <string name="reporter_project_telephone">เบอร์โทรในโครงการ</string>
+    <string name="report_summary">ข้อมูลรายงาน</string>
+    <string name="form_data_explanation">คำอธิบายรายงาน</string>
 
 </resources>
