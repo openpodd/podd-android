@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.cm.podd.report.activity.VisualizationActivity"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/month_and_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:text="hello"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="hello"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/totalReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/total_report"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chart1"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
+
+        <TextView
+            android:id="@+id/grade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/grade"
+            android:paddingLeft="20dp"
+            android:paddingBottom="10dp"
+            android:gravity="center_vertical" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -55,9 +55,16 @@
     <string name="draft">แบบร่าง</string>
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
-    <string name="title_activity_visualization_area">สรุปผลรายพื้นที่</string>
+    <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
+    <string name="title_activity_visualization">สรุปผลการประเมิน</string>
+    <string name="search">ค้นหา</string>
+    <string name="grade">ระดับการประเมิน</string>
+    <string name="total_report">จำนวนรายงาน(รายงาน)</string>
+    <string name="negative_report">เหตุผิดปกติ</string>
+    <string name="positive_report">ไม่พบเหตุผิดปกติ</string>
+    <string name="title_picker_choose_month">เลือกเดือนที่ต้องการดูผลการประเมิน</string>
     <string name="hello_world">Hello world!</string>
-    
+
     <!-- for report view -->
     <string name="report_date">วันที่รายงาน</string>
     <string name="report_incidentDate">วันที่เกิดเหตุ</string>
@@ -69,5 +76,7 @@
     <string name="reporter_project_telephone">เบอร์โทรในโครงการ</string>
     <string name="report_summary">ข้อมูลรายงาน</string>
     <string name="form_data_explanation">คำอธิบายรายงาน</string>
+
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

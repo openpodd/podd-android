@@ -1,23 +1,29 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.fragment.VisualizationAreaFragment;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,29 +33,46 @@ import java.util.ArrayList;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class VisualizationAreaActivity extends ActionBarActivity {
+public class VisualizationActivity extends ActionBarActivity {
 
     private static final String TAG = "VisualizationAreaActivity";
 
     private long  id;
     private String name;
     private String parentName;
-    private PieChart mChart;
+
+    private int month;
+    private int year;
+
+    private Bundle bundle;
+    private FragmentTabHost mTabHost;
+
+    private Fragment mCurrentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_visualization_area);
+        setContentView(R.layout.activity_visualization);
 
-        id = getIntent().getLongExtra("id", -99);
-        name = getIntent().getStringExtra("name");
-        parentName = getIntent().getStringExtra("parentName");
+        getWindow().setWindowAnimations(0);
 
-        TextView textNameView = (TextView) findViewById(R.id.name);
-        textNameView.setText(name);
+        Intent intent = getIntent();
+        bundle = intent.getExtras();
 
-        TextView textParentNameView = (TextView) findViewById(R.id.parent_name);
-        textParentNameView.setText(parentName);
+        id = intent.getLongExtra("id", -99);
+        name = intent.getStringExtra("name");
+        parentName = intent.getStringExtra("parentName");
+        month = intent.getIntExtra("month", -99);
+        year = intent.getIntExtra("year", -9999);
+
+        mTabHost = (FragmentTabHost) findViewById (android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                Fragment.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                Fragment.class, null);
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             new VisualizationAreaTask().execute((Void[]) null);
@@ -105,33 +128,38 @@ public class VisualizationAreaActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return RequestDataUtil.get("/summary/areas/show-detail/?month=01/2015&administrationAreaId=" + id, null, accessToken);
+            return RequestDataUtil.get("/summary/areas/show-detail/?month=" + month + "/" + year + "&administrationAreaId=" + id, null, accessToken);
         }
 
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+
                 try {
                     JSONObject obj = new JSONObject(resp.getRawData());
 
                     String grade = obj.optString("grade");
-                    TextView textGradeView =  (TextView) findViewById(R.id.grade);
-                    textGradeView.setText("ระดับการประเมิน :" + grade);
-
-                    String totalReport = obj.optString("totalReport");
-                    TextView textTotalReportView =  (TextView) findViewById(R.id.totalReport);
-                    textTotalReportView.setText("จำนวนรายงานทั้งหมด : " + totalReport + "รายงาน");
+                    int totalReport = obj.optInt("totalReport");
 
                     int positiveReport = obj.optInt("positiveReport");
                     int negativeReport = obj.optInt("negativeReport");
 
-                    mChart = (PieChart) findViewById(R.id.chart1);
-                    int [] count = { positiveReport, negativeReport };
-                    String [] name = { "Positive", "Negative" };
+                    bundle.putString("grade", grade);
+                    bundle.putInt("totalReport", totalReport);
+                    bundle.putInt("positiveReport", positiveReport);
+                    bundle.putInt("positiveReport", positiveReport);
 
-                    setData(name, count, positiveReport + negativeReport);
-                    mChart.animateXY(500, 500);
+                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(0));
+                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(1));
+
+                    mTabHost.addTab(
+                            mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                            VisualizationAreaFragment.class, bundle);
+                    mTabHost.addTab(
+                            mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                            VisualizationAreaFragment.class, bundle);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -139,9 +167,9 @@ public class VisualizationAreaActivity extends ActionBarActivity {
 
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(VisualizationAreaActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(VisualizationActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(VisualizationAreaActivity.this, "Administration area is incorrect!", Style.ALERT).show();
+                    Crouton.makeText(VisualizationActivity.this, "Administration area is incorrect!", Style.ALERT).show();
                 }
 
             }
@@ -150,59 +178,14 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         }
     }
 
-    private void setData(String[] name, int[] count, float range) {
-
-        float mult = range;
-
-        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-
-        for (int i = 0; i < count.length; i++) {
-            yVals1.add(new Entry((float) (count[i]), i));
-        }
-
-        ArrayList<String> xVals = new ArrayList<String>();
-
-        for (int i = 0; i < name.length; i++)
-            xVals.add(name[i]);
-
-        PieDataSet set1 = new PieDataSet(yVals1, "");
-        set1.setSliceSpace(3f);
-
-
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
-
-        set1.setColors(colors);
-
-        PieData data = new PieData(xVals, set1);
-        mChart.setData(data);
-
-        // undo all highlights
-        mChart.highlightValues(null);
-
-        mChart.invalidate();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // getMenuInflater().inflate(R.menu.menu_visualization_area, menu);
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(0);
+        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+
         return true;
     }
 

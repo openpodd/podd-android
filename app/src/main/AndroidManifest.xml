@@ -129,8 +129,9 @@
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
         <activity
-            android:name=".activity.VisualizationAreaActivity"
+            android:name=".activity.VisualizationActivity"
             android:label="@string/title_activity_visualization_area"
+            android:parentActivityName=".activity.HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -189,6 +190,7 @@
             android:name=".service.FilterService"
             android:exported="false" >
         </service>
+
         <service
             android:name=".service.ReportService"
             android:exported="false" >
