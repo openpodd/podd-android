@@ -3,6 +3,7 @@ package org.cm.podd.report.fragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -141,10 +142,7 @@ public class VisualizationAreaFragment extends Fragment {
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
 
-        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
+        for (int c : ColorTemplate.PASTEL_COLORS)
             colors.add(c);
 
         colors.add(ColorTemplate.getHoloBlue());
@@ -153,6 +151,7 @@ public class VisualizationAreaFragment extends Fragment {
 
         PieData data = new PieData(xValues, set);
         pieChart.setData(data);
+        pieChart.setHoleColor(getResources().getColor(R.color.action_bar_bg));
         pieChart.highlightValues(null);
         pieChart.invalidate();
     }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -21,9 +22,12 @@ import android.support.v4.app.FragmentTabHost;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.VisualizationAreaFragment;
+import org.cm.podd.report.fragment.VisualizationListVolunteer;
+import org.cm.podd.report.model.Volunteer;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,12 +72,10 @@ public class VisualizationActivity extends ActionBarActivity {
         mTabHost = (FragmentTabHost) findViewById (android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
         mTabHost.addTab(
-                mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
-                Fragment.class, null);
-        mTabHost.addTab(
-                mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                mTabHost.newTabSpec("").setIndicator("", null),
                 Fragment.class, null);
 
+        mTabHost.setVisibility(View.INVISIBLE);
         if (RequestDataUtil.hasNetworkConnection(this)) {
             new VisualizationAreaTask().execute((Void[]) null);
         }
@@ -145,21 +147,27 @@ public class VisualizationActivity extends ActionBarActivity {
 
                     int positiveReport = obj.optInt("positiveReport");
                     int negativeReport = obj.optInt("negativeReport");
+                    String volunteers =  obj.optString("reporters");
 
                     bundle.putString("grade", grade);
                     bundle.putInt("totalReport", totalReport);
                     bundle.putInt("positiveReport", positiveReport);
-                    bundle.putInt("positiveReport", positiveReport);
+                    bundle.putInt("negativeReport", negativeReport);
+                    bundle.putString("volunteers", volunteers);
 
-                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(0));
-                    mTabHost.getTabWidget().removeView(mTabHost.getTabWidget().getChildTabViewAt(1));
+                    mTabHost.getTabWidget().removeAllViews();
+                    mTabHost.getTabContentView().removeAllViews();
+                    mTabHost.clearAllTabs();
 
                     mTabHost.addTab(
                             mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
                             VisualizationAreaFragment.class, bundle);
                     mTabHost.addTab(
                             mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
-                            VisualizationAreaFragment.class, bundle);
+                            VisualizationListVolunteer.class, bundle);
+
+                    mTabHost.setCurrentTab(0);
+                    mTabHost.setVisibility(View.VISIBLE);
 
                 } catch (Exception e) {
                     e.printStackTrace();

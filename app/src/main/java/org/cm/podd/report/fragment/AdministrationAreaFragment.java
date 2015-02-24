@@ -64,18 +64,17 @@ public class AdministrationAreaFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        final int _position = position;
-        DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener(){
+        final AdministrationArea area = adapter.getItem(position);
+        boolean isLeaf = area.getIsLeaf() > 0;
+        if(isLeaf) {
+            DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
 
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                AdministrationArea area = adapter.getItem(_position);
-                Long administrationAreaId = area.getId();
-                String name = area.getName();
-                String parentName = area.getParentName();
-                boolean isLeaf = area.getIsLeaf() > 0;
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    Long administrationAreaId = area.getId();
+                    String name = area.getName();
+                    String parentName = area.getParentName();
 
-                if(isLeaf){
                     Intent intent = new Intent(getActivity(), VisualizationActivity.class);
                     intent.putExtra("month", monthOfYear + 1);
                     intent.putExtra("year", year);
@@ -84,11 +83,11 @@ public class AdministrationAreaFragment extends ListFragment {
                     intent.putExtra("id", administrationAreaId);
                     startActivity(intent);
                 }
-            }
-        };
 
-        DatePickerDialog datePickerDialog = createDialogWithoutDateField(callback);
-        datePickerDialog.show();
+            };
+            DatePickerDialog datePickerDialog = createDialogWithoutDateField(callback);
+            datePickerDialog.show();
+        }
     }
 
     @Override
