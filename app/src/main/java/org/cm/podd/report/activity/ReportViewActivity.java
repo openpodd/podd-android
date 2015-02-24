@@ -114,12 +114,14 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     private void viewReport(final JSONObject report) {
-        Long parentId = null;
+        Long parentId;
 
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
 
         try {
+            setActivityTitleWithReportId(report.getLong("id"));
+
             dateView.setText(DateUtil.convertToThaiDateTime(
                     DateUtil.fromJsonDateString(report.getString("date"))));
             incidentDateView.setText(DateUtil.convertToThaiDate(
@@ -236,5 +238,10 @@ public class ReportViewActivity extends ActionBarActivity {
             return view;
         }
 
+    }
+
+    private void setActivityTitleWithReportId(Long id) {
+        String template = getString(R.string.report_activity_title_template);
+        setTitle(template.replace(":id", Long.toString(id)));
     }
 }

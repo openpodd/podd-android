@@ -82,5 +82,6 @@
     <string name="follow_up_parent">รายงานที่เกี่ยวข้อง (Case)</string>
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
+    <string name="report_activity_title_template">รายงานหมายเลข #:id</string>
 
 </resources>
