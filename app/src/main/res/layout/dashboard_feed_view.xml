@@ -127,6 +127,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/report_follow_up_title"
                 android:text="@string/follow_up_reports"
                 android:textStyle="bold"
                 android:layout_width="fill_parent"

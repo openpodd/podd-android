@@ -113,7 +113,9 @@ public class ReportViewActivity extends ActionBarActivity {
         return Html.fromHtml("<a href=\"" + uri + "\">" + text + "</a>");
     }
 
-    private void viewReport(JSONObject report) {
+    private void viewReport(final JSONObject report) {
+        Long parentId = null;
+
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
 
@@ -139,45 +141,73 @@ public class ReportViewActivity extends ActionBarActivity {
 
             // Add follow up if exists.
             if (report.getLong("flag") == 5) {
-                ReportService.FollowUpAsyncTask task = new ReportService.FollowUpAsyncTask() {
+                fetchFollowUpReports(report.getLong("id"));
+            }
+            parentId = report.getLong("parent");
+            if (parentId != 0) {
+                TextView reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
+                reportFollowUpTitle.setText(R.string.follow_up_parent);
+
+                emptyFollowUpListView.setVisibility(View.GONE);
+
+                ArrayList<String> textList = new ArrayList<String>();
+                textList.add(Long.toString(report.getLong("parent")));
+
+                followUpItemAdapter = new FollowUpItemAdapter(getApplicationContext(),
+                        R.layout.list_item_follow_up_report, textList);
+                followUpListView.setAdapter(followUpItemAdapter);
+
+                followUpListView.setVisibility(View.VISIBLE);
+                followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-                        try {
-                            JSONArray followUpReports = new JSONArray(resp.getRawData());
-                            ArrayList<String> textList = new ArrayList<String>();
-
-                            for (int i = 0; i != followUpReports.length(); ++i) {
-                                JSONObject item = followUpReports.getJSONObject(i);
-                                textList.add(item.getString("id"));
-
-                                // Append text view to list view.
-                            }
-
-                            followUpItemAdapter = new FollowUpItemAdapter(getContext(),
-                                    R.layout.list_item_follow_up_report, textList);
-                            followUpListView.setAdapter(followUpItemAdapter);
-
-                            followUpListView.setVisibility(View.VISIBLE);
-                            followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    Intent intent = new Intent(context, ReportViewActivity.class);
-                                    intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
-                                    startActivityForResult(intent, 0);
-                                }
-                            });
-                            emptyFollowUpListView.setVisibility(View.GONE);
-                        } catch (JSONException e) {
-                            Log.e(TAG, "Error parsing JSON data", e);
-                        }
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getApplicationContext(), ReportViewActivity.class);
+                        intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
+                        startActivityForResult(intent, 0);
                     }
-                };
-                task.setContext(getApplicationContext());
-                task.execute(report.getString("id"));
+                });
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         }
+    }
+
+    private void fetchFollowUpReports(Long reportId) {
+        ReportService.FollowUpAsyncTask task = new ReportService.FollowUpAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                try {
+                    JSONArray followUpReports = new JSONArray(resp.getRawData());
+                    ArrayList<String> textList = new ArrayList<String>();
+
+                    for (int i = 0; i != followUpReports.length(); ++i) {
+                        JSONObject item = followUpReports.getJSONObject(i);
+                        textList.add(item.getString("id"));
+
+                        // Append text view to list view.
+                    }
+
+                    followUpItemAdapter = new FollowUpItemAdapter(getContext(),
+                            R.layout.list_item_follow_up_report, textList);
+                    followUpListView.setAdapter(followUpItemAdapter);
+
+                    followUpListView.setVisibility(View.VISIBLE);
+                    followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(context, ReportViewActivity.class);
+                            intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
+                            startActivityForResult(intent, 0);
+                        }
+                    });
+                    emptyFollowUpListView.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing JSON data", e);
+                }
+            }
+        };
+        task.setContext(getApplicationContext());
+        task.execute(Long.toString(reportId));
     }
 
     private class FollowUpItemAdapter extends ArrayAdapter<String> {
