@@ -201,8 +201,7 @@
         </service>
         <service
             android:name=".service.CommentService"
-            android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
     </application>
 

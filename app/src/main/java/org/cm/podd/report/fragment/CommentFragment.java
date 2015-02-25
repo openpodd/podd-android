@@ -78,8 +78,10 @@ public class CommentFragment extends ListFragment {
         reportId = getArguments().getLong("reportId", -99);
         commentDataSource = new CommentDataSource(getActivity());
 
+        getActivity().registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
+
         if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-            getActivity().registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
+            startSyncCommentService(reportId);
         }
     }
 
@@ -96,6 +98,7 @@ public class CommentFragment extends ListFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        getActivity().unregisterReceiver(mSyncReceiver);
     }
 
     @Override
@@ -142,15 +145,19 @@ public class CommentFragment extends ListFragment {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
 
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
-            textView.setTypeface(face);
-            textView.setText(getItem(position).getMessage());
+            TextView messageTextView = (TextView) view.findViewById(android.R.id.text1);
+            messageTextView.setTypeface(face);
+            messageTextView.setText(getItem(position).getMessage());
+
+            TextView createdByTextView = (TextView) view.findViewById(android.R.id.text2);
+            createdByTextView.setTypeface(face);
+            createdByTextView.setText(getItem(position).getCreatedBy());
 
             return view;
         }
     }
 
-    private void startSyncCommentService() {
+    private void startSyncCommentService(long reportId) {
         Intent intent = new Intent(getActivity(), CommentService.class);
         intent.putExtra("reportId", reportId);
         getActivity().startService(intent);

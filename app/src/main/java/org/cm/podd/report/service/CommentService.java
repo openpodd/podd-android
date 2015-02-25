@@ -22,9 +22,10 @@ import java.util.List;
 public class CommentService extends IntentService {
 
     public static final String SYNC = "Comment.sync";
+
     private static final String TAG = "CommentService";
 
-    public CommentService(long reportId) {
+    public CommentService() {
         super(CommentService.class.getSimpleName());
     }
 
@@ -56,10 +57,6 @@ public class CommentService extends IntentService {
                     Comment comment = requireAreaUpdate(updateComment, origComment);
 
                     if (comment != null) {
-                        String name = updateComment.optString("name");
-                        String parentName = updateComment.optString("parentName");
-                        boolean isLeaf = updateComment.optBoolean("isLeaf");
-
                         Log.d(TAG, "Update comment id= " + comment.getId());
 
                         RequestDataUtil.ResponseObject resp2 =
@@ -67,10 +64,12 @@ public class CommentService extends IntentService {
 
                         JSONObject result = new JSONObject(resp2.getRawData());
                         Log.i(TAG, result.toString());
+
                         comment.setReportId(result.optLong("reportId"));
                         comment.setMessage(result.optString("message"));
                         comment.setFileUrl(result.optString("fileUrl"));
                         String createdBy = "";
+
                         try {
                             JSONObject jsonCreatedBy = new JSONObject(result.optString("createdBy"));
                             createdBy = jsonCreatedBy.getString("firstName") + jsonCreatedBy.getString("lastName");

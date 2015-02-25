@@ -78,7 +78,7 @@ public class CommentDataSource {
         values.put("report_id", comment.getReportId());
         values.put("message", comment.getMessage());
         values.put("file_url", comment.getFileUrl());
-        values.put("created_by", comment.getCreatedAt());
+        values.put("created_by", comment.getCreatedBy());
         values.put("created_at", comment.getCreatedAt());
         long id = db.insert("comment", null, values);
         db.close();
@@ -113,7 +113,7 @@ public class CommentDataSource {
         values.put("report_id", comment.getReportId());
         values.put("message", comment.getMessage());
         values.put("file_url", comment.getFileUrl());
-        values.put("created_by", comment.getCreatedAt());
+        values.put("created_by", comment.getCreatedBy());
         values.put("created_at", comment.getCreatedAt());
         db.update("comment", values, "_id = ?",
                 new String[] {Long.toString(comment.getId())});

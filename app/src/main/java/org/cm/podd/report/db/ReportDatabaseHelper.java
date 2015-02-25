@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -83,7 +83,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  created_at INTEGER"
             + ")";
 
-    private static final String CREATE_TABLE_ADMINISTRATION_AREA = "create table administration_area"
+    private static final String CREATE_TABLE_ADMINISTRATION_AREA = "create table if not exists administration_area"
             + "("
             + "  _id INTEGER PRIMARY KEY,"
             + "  name TEXT,"
@@ -192,7 +192,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
-            case 5:
+            case 7:
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
                 db.execSQL(CREATE_TABLE_COMMENT);

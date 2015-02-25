@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:text="hello"
-        android:paddingLeft="20dp"
+        android:paddingLeft="15dp"
         android:paddingBottom="10dp"
         android:gravity="center_vertical" />
 
@@ -20,7 +20,7 @@
         android:id="@android:id/text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="10sp"
         android:text="hello"
         android:textColor="@color/edit_text_report"
         android:paddingRight="20dp"
