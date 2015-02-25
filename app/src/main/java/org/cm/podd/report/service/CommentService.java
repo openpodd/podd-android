@@ -4,9 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.CommentDataSource;
-import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;

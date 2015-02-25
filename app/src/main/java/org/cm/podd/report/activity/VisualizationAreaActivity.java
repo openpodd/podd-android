@@ -1,8 +1,10 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -20,8 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.CommentDataSource;
+import org.cm.podd.report.db.VisualizationAreaDataSource;
 import org.cm.podd.report.fragment.VisualizationFragment;
 import org.cm.podd.report.fragment.VisualizationListVolunteer;
+import org.cm.podd.report.model.Comment;
+import org.cm.podd.report.model.VisualizationAdministrationArea;
+import org.cm.podd.report.service.CommentService;
+import org.cm.podd.report.service.VisualizationAreaService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -29,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -48,6 +57,15 @@ public class VisualizationAreaActivity extends ActionBarActivity {
     private FragmentTabHost mTabHost;
 
     Context context;
+    VisualizationAreaDataSource visualizationAreaDataSource;
+
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            VisualizationAdministrationArea item = visualizationAreaDataSource.getFromAreaByMonth(id, month, year);
+            refreshData(item);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +91,17 @@ public class VisualizationAreaActivity extends ActionBarActivity {
                 Fragment.class, null);
 
         mTabHost.setVisibility(View.INVISIBLE);
+
+        visualizationAreaDataSource = new VisualizationAreaDataSource(this);
+        VisualizationAdministrationArea area = visualizationAreaDataSource.getFromAreaByMonth(id, month, year);
+        if(area != null){
+            refreshData(area);
+        }
+
+        registerReceiver(mSyncReceiver, new IntentFilter(VisualizationAreaService.SYNC));
+
         if (RequestDataUtil.hasNetworkConnection(this)) {
-            new VisualizationAreaTask().execute((Void[]) null);
+            startSyncVisualizationAreaService(id, month, year);
         }
     }
 
@@ -101,86 +128,46 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         hideProgressDialog();
     }
 
-    /**
-     * GET AREA
-     */
-    public class VisualizationAreaTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+    private void refreshData(VisualizationAdministrationArea area){
+        if (area != null) {
+            int totalReport = area.getTotalReport();
+            int positiveReport = area.getPositiveReport();
+            int negativeReport = area.getNegativeReport();
+            String volunteers = area.getVolunteers();
+            String animalTypes = area.getAnimalType();
+            String timeRanges = area.getTimeRanges();
+            String grade = area.getGrade();
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressDialog();
-        }
+            bundle.putInt("totalReport", totalReport);
+            bundle.putInt("positiveReport", positiveReport);
+            bundle.putInt("negativeReport", negativeReport);
+            bundle.putString("volunteers", volunteers);
+            bundle.putString("animalTypes", animalTypes);
+            bundle.putString("timeRanges", timeRanges);
+            bundle.putString("grade", grade);
 
-        @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
-            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
-            String accessToken = sharedPrefUtil.getAccessToken();
-            return RequestDataUtil.get("/summary/areas/show-detail/?month=" + month + "/" + year + "&administrationAreaId=" + id, null, accessToken);
-        }
+            mTabHost.getTabWidget().removeAllViews();
+            mTabHost.getTabContentView().removeAllViews();
+            mTabHost.clearAllTabs();
 
-        @Override
-        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-            super.onPostExecute(resp);
-            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
-                Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+            mTabHost.addTab(
+                    mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                    VisualizationFragment.class, bundle);
+            mTabHost.addTab(
+                    mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                    VisualizationListVolunteer.class, bundle);
 
-                try {
-                    JSONObject obj = new JSONObject(resp.getRawData());
+            mTabHost.setCurrentTab(0);
+            mTabHost.setVisibility(View.VISIBLE);
 
-                    String grade = obj.optString("grade");
-                    int totalReport = obj.optInt("totalReport");
-
-                    int positiveReport = obj.optInt("positiveReport");
-                    int negativeReport = obj.optInt("negativeReport");
-                    String volunteers =  obj.optString("reporters");
-                    String animalTypes =  obj.optString("animalTypes");
-                    String timeRanges =  obj.optString("timeRanges");
-
-                    bundle.putString("grade", grade);
-
-                    bundle.putInt("totalReport", totalReport);
-                    bundle.putInt("positiveReport", positiveReport);
-                    bundle.putInt("negativeReport", negativeReport);
-
-                    bundle.putString("volunteers", volunteers);
-                    bundle.putString("animalTypes", animalTypes);
-                    bundle.putString("timeRanges", timeRanges);
-
-                    mTabHost.getTabWidget().removeAllViews();
-                    mTabHost.getTabContentView().removeAllViews();
-                    mTabHost.clearAllTabs();
-
-                    mTabHost.addTab(
-                            mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
-                            VisualizationFragment.class, bundle);
-                    mTabHost.addTab(
-                            mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
-                            VisualizationListVolunteer.class, bundle);
-
-                    mTabHost.setCurrentTab(0);
-                    mTabHost.setVisibility(View.VISIBLE);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else {
-                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(VisualizationAreaActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
-                } else {
-                    Crouton.makeText(VisualizationAreaActivity.this, "Administration area is incorrect!", Style.ALERT).show();
-                    TextView emptyText = (TextView) findViewById (android.R.id.empty);
-                    emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-                    emptyText.setVisibility(View.VISIBLE);
-                }
-
-            }
-            hideProgressDialog();
-
+            TextView emptyText = (TextView) findViewById(android.R.id.empty);
+            emptyText.setVisibility(View.GONE);
+        } else {
+            TextView emptyText = (TextView) findViewById(android.R.id.empty);
+            emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+            emptyText.setVisibility(View.VISIBLE);
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,5 +191,19 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mSyncReceiver);
+    }
+
+    private void startSyncVisualizationAreaService(long id, int month, int year) {
+        Intent intent = new Intent(this, VisualizationAreaService.class);
+        intent.putExtra("id", id);
+        intent.putExtra("month", month);
+        intent.putExtra("year", year);
+        startService(intent);
     }
 }

@@ -70,12 +70,21 @@ public class VisualizationAreaDataSource {
         values.put("_id", area.getId());
         values.put("name", area.getName());
         values.put("parent_name", area.getName());
+        values.put("total_report", area.getTotalReport());
+        values.put("positive_report", area.getPositiveReport());
+        values.put("negative_report", area.getNegativeReport());
+        values.put("volunteers", area.getVolunteers());
+        values.put("animal_type", area.getAnimalType());
+        values.put("time_ranges", area.getTimeRanges());
+        values.put("grade", area.getGrade());
+        values.put("month", area.getMonth());
+        values.put("year", area.getYear());
         long id = db.insert("visualization_area", null, values);
         db.close();
         return id;
     }
 
-    public VisualizationAdministrationArea getAllFromVolunteerByMonth(Long id, Integer month, Integer year) {
+    public VisualizationAdministrationArea getFromAreaByMonth(Long id, Integer month, Integer year) {
         VisualizationAdministrationArea area = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from visualization_area where _id= ?"
@@ -88,7 +97,7 @@ public class VisualizationAreaDataSource {
                     cursor.getString(cursor.getColumnIndex("parent_name"))
             );
             area.setTotalReport(cursor.getInt(cursor.getColumnIndex("total_report")));
-            area.setPositiveReport(cursor.getInt(cursor.getColumnIndex("position_report")));
+            area.setPositiveReport(cursor.getInt(cursor.getColumnIndex("positive_report")));
             area.setNegativeReport(cursor.getInt(cursor.getColumnIndex("negative_report")));
             area.setVolunteers(cursor.getString(cursor.getColumnIndex("volunteers")));
             area.setAnimalType(cursor.getString(cursor.getColumnIndex("animal_type")));
@@ -113,6 +122,8 @@ public class VisualizationAreaDataSource {
         values.put("animal_type", area.getAnimalType());
         values.put("time_ranges", area.getTimeRanges());
         values.put("grade", area.getGrade());
+        values.put("month", area.getMonth());
+        values.put("year", area.getYear());
         db.update("visualization_area", values, "_id = ? and month=? and year=?",
                 new String[] {Long.toString(area.getId()),
                         Integer.toString(area.getMonth()),
