@@ -89,7 +89,11 @@ public class ReportViewActivity extends ActionBarActivity {
                 Log.i(TAG, "Receiving action " + intent.getAction());
 
                 try {
-                    viewReport(new JSONObject(intent.getStringExtra("report")));
+                    JSONObject report = new JSONObject(intent.getStringExtra("report"));
+                    // First, check if we receive correct report data.
+                    if (report.getLong("id") == id) {
+                        viewReport(report);
+                    }
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON data");
                 }
