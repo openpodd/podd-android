@@ -21,9 +21,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import org.cm.podd.report.model.AdministrationArea;
+import org.cm.podd.report.model.Comment;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,31 +31,34 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdministrationAreaDataSource {
+public class CommentDataSource {
 
-    private static final String TAG = "AdministrationAreaDataSource";
+    private static final String TAG = "CommentDataSource";
     private ReportDatabaseHelper dbHelper;
 
     Context context;
 
-    public AdministrationAreaDataSource(Context context) {
+    public CommentDataSource(Context context) {
         this.context = context;
         dbHelper = new ReportDatabaseHelper(context);
     }
 
-    public void initNewData(String areas) {
+    public void initNewData(String area) {
         deleteAll();
         try {
-            JSONArray jsonArr = new JSONArray(areas);
+            JSONArray jsonArr = new JSONArray(area);
             for (int i = 0; i < jsonArr.length(); i++) {
                 JSONObject jsonObj = jsonArr.getJSONObject(i);
-                AdministrationArea administrationArea = new AdministrationArea(
+                JSONObject createdBy = new JSONObject(jsonObj.getString("createdBy"));
+                Comment comment = new Comment(
                         jsonObj.getLong("id"),
-                        jsonObj.getString("name"),
-                        jsonObj.getString("parentName"),
-                        jsonObj.getBoolean("isLeaf")? 1:0
+                        jsonObj.getLong("reportId"),
+                        jsonObj.getString("message"),
+                        jsonObj.getString("fileUrl"),
+                        createdBy.getString("firstName") + createdBy.getString("lastName"),
+                        jsonObj.getString("createdAt")
                 );
-                insert(administrationArea);
+                insert(comment);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -64,34 +67,38 @@ public class AdministrationAreaDataSource {
 
     public void deleteAll() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete("administration_area", null, null);
+        db.delete("comment", null, null);
         db.close();
     }
 
-    public long insert(AdministrationArea administrationArea) {
+    public long insert(Comment comment) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("_id", administrationArea.getId());
-        values.put("name", administrationArea.getName());
-        values.put("parent_name", administrationArea.getParentName());
-        values.put("is_leaf", administrationArea.getIsLeaf());
-        long id = db.insert("administration_area", null, values);
+        values.put("_id", comment.getId());
+        values.put("report_id", comment.getReportId());
+        values.put("message", comment.getMessage());
+        values.put("file_url", comment.getFileUrl());
+        values.put("created_by", comment.getCreatedAt());
+        values.put("created_at", comment.getCreatedAt());
+        long id = db.insert("comment", null, values);
         db.close();
         return id;
     }
 
-    public List<AdministrationArea> getAll() {
-        ArrayList<AdministrationArea> results = new ArrayList<AdministrationArea>();
+    public List<Comment> getAllFromReport(Long reportId) {
+        ArrayList<Comment> results = new ArrayList<Comment>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from administration_area order by _id asc", null);
+        Cursor cursor = db.rawQuery("select * from comment where report_id="+ reportId +" order by _id asc", null);
         while (cursor.moveToNext()) {
-            AdministrationArea administrationArea = new AdministrationArea(
+            Comment comment = new Comment(
                     cursor.getLong(cursor.getColumnIndex("_id")),
-                    cursor.getString(cursor.getColumnIndex("name")),
-                    cursor.getString(cursor.getColumnIndex("parent_name")),
-                    cursor.getInt(cursor.getColumnIndex("is_leaf"))
+                    cursor.getLong(cursor.getColumnIndex("report_id")),
+                    cursor.getString(cursor.getColumnIndex("message")),
+                    cursor.getString(cursor.getColumnIndex("file_url")),
+                    cursor.getString(cursor.getColumnIndex("created_by")),
+                    cursor.getString(cursor.getColumnIndex("created_at"))
             );
-            results.add(administrationArea);
+            results.add(comment);
         }
         cursor.close();
         db.close();
@@ -99,14 +106,17 @@ public class AdministrationAreaDataSource {
         return results;
     }
 
-    public void update(AdministrationArea administrationArea) {
+    public void update(Comment comment) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("name", administrationArea.getName());
-        values.put("parent_name", administrationArea.getParentName());
-        values.put("is_leaf", administrationArea.getIsLeaf());
-        db.update("administration_area", values, "_id = ?",
-                new String[] {Long.toString(administrationArea.getId())});
+        values.put("_id", comment.getId());
+        values.put("report_id", comment.getReportId());
+        values.put("message", comment.getMessage());
+        values.put("file_url", comment.getFileUrl());
+        values.put("created_by", comment.getCreatedAt());
+        values.put("created_at", comment.getCreatedAt());
+        db.update("comment", values, "_id = ?",
+                new String[] {Long.toString(comment.getId())});
         db.close();
     }
 
@@ -116,7 +126,7 @@ public class AdministrationAreaDataSource {
 
     public void removeAdministrationArea(Long id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete("administration_area", "_id = ?", new String[] {id.toString()} );
+        db.delete("comment", "_id = ?", new String[] {id.toString()} );
         db.close();
     }
 }

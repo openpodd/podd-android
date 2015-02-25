@@ -137,7 +137,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
-
         <activity
             android:name=".activity.VisualizationVolunteerActivity"
             android:label="@string/title_activity_visualization_volunteer"
@@ -200,7 +199,11 @@
             android:name=".service.ReportService"
             android:exported="false" >
         </service>
-
+        <service
+            android:name=".service.CommentService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

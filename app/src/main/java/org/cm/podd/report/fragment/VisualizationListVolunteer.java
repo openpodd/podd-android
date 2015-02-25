@@ -1,31 +1,24 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.activity.VisualizationAreaActivity;
 import org.cm.podd.report.activity.VisualizationVolunteerActivity;
-import org.cm.podd.report.model.AdministrationArea;
-import org.cm.podd.report.model.Volunteer;
+import org.cm.podd.report.model.VisualizationVolunteer;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -34,7 +27,7 @@ import java.util.List;
 public class VisualizationListVolunteer extends ListFragment {
 
     private volunteerAdapter adapter;
-    ArrayList<Volunteer> volunteers;
+    ArrayList<VisualizationVolunteer> volunteers;
 
     private int month;
     private int year;
@@ -49,7 +42,7 @@ public class VisualizationListVolunteer extends ListFragment {
         month = getArguments().getInt("month");
         year = getArguments().getInt("year");
 
-        volunteers = new ArrayList<Volunteer>();
+        volunteers = new ArrayList<VisualizationVolunteer>();
         try {
             JSONArray items = new JSONArray(getArguments().getString("volunteers"));
             for (int i = 0; i < items.length(); i++) {
@@ -61,9 +54,8 @@ public class VisualizationListVolunteer extends ListFragment {
                 int volunteerTotalReport = item.optInt("totalReport");
                 int volunteerPositiveReport = item.optInt("positiveReport");
                 int volunteerNegativeReport = item.optInt("negativeReport");
-
-                Volunteer volunteer = new Volunteer(volunteerId, volunteerName);
-                volunteer.setDetail(volunteerTotalReport, volunteerPositiveReport, volunteerNegativeReport, volunteerGrade);
+                String monthAndYear = month + "/" + year;
+                VisualizationVolunteer volunteer = new VisualizationVolunteer(volunteerId, volunteerName);
 
                 volunteers.add(volunteer);
             }
@@ -77,7 +69,7 @@ public class VisualizationListVolunteer extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        final Volunteer volunteer = adapter.getItem(position);
+        final VisualizationVolunteer volunteer = adapter.getItem(position);
 
         Intent intent = new Intent(getActivity(), VisualizationVolunteerActivity.class);
         intent.putExtra("month", month);
@@ -117,13 +109,13 @@ public class VisualizationListVolunteer extends ListFragment {
     /**
      * List Adapter
      */
-    private class volunteerAdapter extends ArrayAdapter<Volunteer> {
+    private class volunteerAdapter extends ArrayAdapter<VisualizationVolunteer> {
 
         Context context;
         int resource;
         Typeface face;
 
-        public volunteerAdapter(Context context, int resource, List<Volunteer> objects) {
+        public volunteerAdapter(Context context, int resource, List<VisualizationVolunteer> objects) {
             super(context, resource, objects);
             this.context = context;
             this.resource = resource;

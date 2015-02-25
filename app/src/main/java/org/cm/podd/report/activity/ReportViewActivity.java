@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.Spanned;
@@ -20,7 +22,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.fragment.CommentFragment;
 import org.cm.podd.report.fragment.FeedAdapter;
+import org.cm.podd.report.fragment.VisualizationFragment;
+import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
@@ -118,6 +123,17 @@ public class ReportViewActivity extends ActionBarActivity {
         contentWrapper.setVisibility(View.VISIBLE);
 
         try {
+            Bundle bundle = new Bundle();
+            bundle.putLong("reportId", Long.parseLong(report.getString("id")));
+
+            Fragment commentFragment = new CommentFragment();
+            commentFragment.setArguments(bundle);
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_comment, commentFragment, commentFragment.getClass().getSimpleName())
+                    .commit();
+
             dateView.setText(DateUtil.convertToThaiDateTime(
                     DateUtil.fromJsonDateString(report.getString("date"))));
             incidentDateView.setText(DateUtil.convertToThaiDate(
@@ -175,9 +191,11 @@ public class ReportViewActivity extends ActionBarActivity {
                 task.setContext(getApplicationContext());
                 task.execute(report.getString("id"));
             }
+
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         }
+
     }
 
     private class FollowUpItemAdapter extends ArrayAdapter<String> {

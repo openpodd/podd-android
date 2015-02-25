@@ -23,10 +23,6 @@ public class AdministrationArea {
     private String name;
     private String parentName;
     private int isLeaf;
-    private int totalReport;
-    private int positiveReport;
-    private int negativeReport;
-    private String grade;
 
     public AdministrationArea(long id, String name, String parentName, int isLeaf) {
         this.id = id;
@@ -65,13 +61,6 @@ public class AdministrationArea {
 
     public void setIsLeaf(int isLeaf) {
         this.isLeaf = isLeaf;
-    }
-
-    public void setDetail(int totalReport,  int positiveReport,  int negativeReport, String grade) {
-        this.totalReport = totalReport;
-        this.positiveReport = positiveReport;
-        this.negativeReport = negativeReport;
-        this.grade = grade;
     }
 
     @Override

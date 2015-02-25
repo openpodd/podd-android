@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -102,6 +102,46 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  updated_at INTEGER"
             + ")";
 
+    private static final String CREATE_TABLE_COMMENT = "create table if not exists comment"
+            + "("
+            + "  _id INTEGER PRIMARY KEY,"
+            + "  report_id INTEGER,"
+            + "  message TEXT,"
+            + "  file_url TEXT,"
+            + "  created_by TEXT,"
+            + "  created_at TEXT"
+            + ")";
+
+    private static final String CREATE_TABLE_VISUALIZATION_AREA = "create table if not exists visualization_area"
+            + "("
+            + "  _id INTEGER,"
+            + "  name TEXT,"
+            + "  parent_name TEXT,"
+            + "  total_report INTEGER,"
+            + "  positive_report INTEGER,"
+            + "  negative_report INTEGER,"
+            + "  volunteers TEXT," // json string
+            + "  animal_type TEXT," // json string
+            + "  time_ranges TEXT," // json string
+            + "  grade TEXT,"
+            + "  month INTEGER,"
+            + "  year INTEGER"
+            + ")";
+
+    private static final String CREATE_TABLE_VISUALIZATION_VOLUNTEER = "create table if not exists visualization_volunteer"
+            + "("
+            + "  _id INTEGER,"
+            + "  name TEXT,"
+            + "  total_report INTEGER,"
+            + "  positive_report INTEGER,"
+            + "  negative_report INTEGER,"
+            + "  animal_type TEXT," // json string
+            + "  time_ranges TEXT," // json string
+            + "  grade TEXT,"
+            + "  month INTEGER,"
+            + "  year INTEGER"
+            + ")";
+
     private static final String DROP_TABLE = "drop table report";
     private static final String DROP_TABLE_IMAGE = "drop table report_image";
     private static final String DROP_TABLE_QUEUE = "drop table report_queue";
@@ -109,6 +149,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
     private static final String DROP_TABLE_ADMINISTRATION_AREA = "drop table administration_area";
     private static final String DROP_TABLE_FEED_ITEM = "drop table feed_item";
+    private static final String DROP_TABLE_COMMENT = "drop table comment";
+    private static final String DROP_TABLE_VISUALIZATION_AREA = "drop table visualization_area";
+    private static final String DROP_TABLE_VISUALIZATION_VOLUNTEER = "drop table visualization_volunteer";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -123,6 +166,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_NOTIFICATION);
         sqLiteDatabase.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
         sqLiteDatabase.execSQL(CREATE_TABLE_FEED_ITEM);
+        sqLiteDatabase.execSQL(CREATE_TABLE_COMMENT);
+        sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
+        sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         Log.i("DB", "on create");
     }
 
@@ -146,6 +192,12 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
+            case 5:
+                Log.i("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
+                db.execSQL(CREATE_TABLE_COMMENT);
+                db.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
+                db.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         }
     }
 

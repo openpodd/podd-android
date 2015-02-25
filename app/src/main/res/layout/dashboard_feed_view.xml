@@ -143,12 +143,10 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/content_comment"
             android:layout_width="fill_parent"
             android:layout_height="100dp">
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Comments" />
+
         </FrameLayout>
     </LinearLayout>
 
