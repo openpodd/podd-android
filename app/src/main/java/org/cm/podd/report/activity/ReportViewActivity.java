@@ -1,9 +1,11 @@
 package org.cm.podd.report.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -45,6 +48,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private View contentWrapper;
 
+    private TextView flagView;
     private TextView dateView;
     private TextView incidentDateView;
     private TextView typeView;
@@ -69,6 +73,7 @@ public class ReportViewActivity extends ActionBarActivity {
         contentWrapper = findViewById(R.id.report_view_content);
         contentWrapper.setVisibility(View.GONE);
         // init views.
+        flagView = (TextView) findViewById(R.id.report_flag);
         dateView = (TextView) findViewById(R.id.report_view_report_date);
         incidentDateView = (TextView) findViewById(R.id.report_view_report_incidentDate);
         typeView = (TextView) findViewById(R.id.report_view_report_type);
@@ -145,11 +150,25 @@ public class ReportViewActivity extends ActionBarActivity {
             formDataExplanationView.setText(FeedAdapter.stripHTMLTags(
                     report.getString("formDataExplanation")));
 
+            // Add flag controller
+            Long reportFlag;
+            try {
+                reportFlag = report.getLong("flag");
+            } catch (JSONException e) {
+                reportFlag = 0L;
+            }
+            flagView.setText(getResources().getStringArray(
+                    R.array.flags_optional)[reportFlag.intValue()]);
+
             // Add follow up if exists.
-            if (report.getLong("flag") == 5) {
+            if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
             }
-            parentId = report.getLong("parent");
+            try {
+                parentId = report.getLong("parent");
+            } catch (JSONException e) {
+                parentId = 0L;
+            }
             if (parentId != 0) {
                 TextView reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
                 reportFollowUpTitle.setText(R.string.follow_up_parent);
@@ -178,6 +197,22 @@ public class ReportViewActivity extends ActionBarActivity {
         }
     }
 
+    private void updateFlag(Long flag) {
+        ReportService.FlagAsyncTask task = new ReportService.FlagAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                if (resp.getStatusCode() == 201) {
+                    // Do something.
+                } else {
+                    // Do something.
+                }
+            }
+        };
+
+        task.setContext(getApplicationContext());
+        task.execute(Long.toString(id), Long.toString(flag));
+    }
+
     private void fetchFollowUpReports(Long reportId) {
         ReportService.FollowUpAsyncTask task = new ReportService.FollowUpAsyncTask() {
             @Override
@@ -189,8 +224,6 @@ public class ReportViewActivity extends ActionBarActivity {
                     for (int i = 0; i != followUpReports.length(); ++i) {
                         JSONObject item = followUpReports.getJSONObject(i);
                         textList.add(item.getString("id"));
-
-                        // Append text view to list view.
                     }
 
                     followUpItemAdapter = new FollowUpItemAdapter(getContext(),

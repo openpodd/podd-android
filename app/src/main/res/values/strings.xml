@@ -93,5 +93,21 @@
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
     <string name="report_activity_title_template">รายงานหมายเลข #:id</string>
     <string name="title_activity_visualization_volunteer">VisualizationVolunteerActivity</string>
+    <string name="report_select_flag">ติดตามรายงาน :</string>
+    <string-array name="flags_optional">
+        <item>- เลือก -</item>
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+    </string-array>
+    <string-array name="flags_required">
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+    </string-array>
 
 </resources>

@@ -112,4 +112,24 @@ public class ReportService extends IntentService {
             return RequestDataUtil.get(ENDPOINT + params[0] + "/involved", null, accessToken);
         }
     }
+
+    public static class FlagAsyncTask extends ReportAsyncTask {
+        private static final String ENDPOINT = "/flags/";
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("reportId", params[0]);
+                data.put("priority", params[1]);
+            } catch (JSONException e) {
+                // Do nothing.
+            }
+
+            return RequestDataUtil.post(ENDPOINT, "", data.toString(), accessToken);
+        }
+    }
 }

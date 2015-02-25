@@ -15,6 +15,25 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report_select_flag"/>
+            <TextView
+                android:id="@+id/report_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginStart="10sp"
+                android:text="Flag"/>
+        </LinearLayout>
+
         <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
