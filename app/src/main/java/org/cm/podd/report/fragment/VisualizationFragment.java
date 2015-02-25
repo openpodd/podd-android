@@ -61,6 +61,7 @@ public class VisualizationFragment extends Fragment {
         id = getArguments().getInt("id", -99);
         name = getArguments().getString("name");
         parentName = getArguments().getString("parentName");
+        if(parentName.equalsIgnoreCase("null")) parentName = "";
 
         month = getArguments().getInt("month", -99);
         year = getArguments().getInt("year", -9999);
@@ -96,20 +97,27 @@ public class VisualizationFragment extends Fragment {
         valTotalReportView.setTypeface(face);
 
         /* set graph type report */
+        if (totalReport == 0){
+            mChartTypeReport = (PieChart) view.findViewById(R.id.chartReport);;
+            mChartTypeReport.setVisibility(View.GONE);
+        }else{
+            TextView emptyAnimalType = (TextView) view.findViewById (R.id.emptyReport);
+            emptyAnimalType.setVisibility(View.GONE);
 
-        int positiveReport = getArguments().getInt("positiveReport");
-        int negativeReport = getArguments().getInt("negativeReport");
+            int positiveReport = getArguments().getInt("positiveReport");
+            int negativeReport = getArguments().getInt("negativeReport");
 
-        mChartTypeReport = (PieChart) view.findViewById(R.id.chartReport);
-        mChartTypeReport.setDescription("");
-        mChartTypeReport.setValueTypeface(face);
+            mChartTypeReport = (PieChart) view.findViewById(R.id.chartReport);
+            mChartTypeReport.setDescription("");
+            mChartTypeReport.setValueTypeface(face);
 
-        String [] nameChart = { getString(R.string.positive_report), getString(R.string.negative_report) };
-        int [] countChart = { positiveReport, negativeReport };
+            String [] nameChart = { getString(R.string.positive_report), getString(R.string.negative_report) };
+            int [] countChart = { positiveReport, negativeReport };
 
-        setDataReportTypePieChart(mChartTypeReport, ColorTemplate.COLORFUL_COLORS, nameChart, countChart);
-        mChartTypeReport.animateXY(500, 500);
-        mChartTypeReport.setValueTypeface(face);
+            setDataReportTypePieChart(mChartTypeReport, ColorTemplate.COLORFUL_COLORS, nameChart, countChart);
+            mChartTypeReport.animateXY(500, 500);
+            mChartTypeReport.setValueTypeface(face);
+        }
 
         /* set animal type */
         ArrayList<AnimalType> animalTypes = new ArrayList<AnimalType>();

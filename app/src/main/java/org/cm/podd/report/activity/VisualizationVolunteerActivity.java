@@ -1,6 +1,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -10,9 +11,14 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.ReportListFragment;
@@ -41,12 +47,15 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
     private Bundle bundle;
     Fragment mCurrentFragment;
 
+    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visualization_volunteer);
 
         getWindow().setWindowAnimations(0);
+        context = this;
 
         Intent intent = getIntent();
         bundle = intent.getExtras();
@@ -155,6 +164,10 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
                     Crouton.makeText(VisualizationVolunteerActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
                     Crouton.makeText(VisualizationVolunteerActivity.this, "User is incorrect!", Style.ALERT).show();
+
+                    TextView emptyText = (TextView) findViewById (android.R.id.empty);
+                    emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+                    emptyText.setVisibility(View.VISIBLE);
                 }
 
             }
@@ -169,6 +182,7 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization_volunteer));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
+        actionBar.setHomeButtonEnabled(true);
         actionBar.setLogo(R.drawable.arrow_left_with_pad);
         return true;
     }
@@ -182,6 +196,10 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home){
+            this.finish();
             return true;
         }
 

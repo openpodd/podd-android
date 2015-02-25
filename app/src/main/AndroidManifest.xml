@@ -141,11 +141,7 @@
         <activity
             android:name=".activity.VisualizationVolunteerActivity"
             android:label="@string/title_activity_visualization_volunteer"
-            android:parentActivityName=".activity.VisualizationAreaActivity"
             android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.cm.podd.report.activity.VisualizationAreaActivity" />
         </activity>
 
         <receiver android:name=".service.ConnectivityChangeReceiver" >

@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +29,7 @@ import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -36,7 +39,7 @@ public class AdministrationAreaFragment extends ListFragment {
 
     AdministrationAreaDataSource administrationAreaDataSource;
     private administrationAreaAdapter adapter;
-
+    private  EditText editText;
     public AdministrationAreaFragment() {
     }
 
@@ -52,12 +55,13 @@ public class AdministrationAreaFragment extends ListFragment {
     }
 
     public void refreshAdapter() {
-//        if(administrationAreaDataSource.getAll().size() == 0){
-//            startSyncAdministrationAreaService();
-//        }
-
         adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getAll());
         setListAdapter(adapter);
+
+        try {
+            String search = editText.getText().toString();
+            adapter.getFilter().filter(search.toString());
+        }catch (Exception ex){}
 
     }
 
@@ -116,42 +120,59 @@ public class AdministrationAreaFragment extends ListFragment {
         emptyText.setVisibility(View.GONE);
         parent.addView(emptyText);
 
-        EditText editText = (EditText) view.findViewById (R.id.editTxt);
+        editText = (EditText) view.findViewById (R.id.editTxt);
         editText.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i(TAG, "Text [" + s + "]");
-                if(!s.equals(null))
+                try {
                     adapter.getFilter().filter(s.toString());
+                }catch (Exception ex){}
             }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
+
         return view;
     }
 
     /**
      * List Adapter
      */
-    private class administrationAreaAdapter extends ArrayAdapter<AdministrationArea> {
+    private class administrationAreaAdapter extends ArrayAdapter<AdministrationArea> implements Filterable {
 
         Context context;
         int resource;
         Typeface face;
+        List<AdministrationArea> originalData;
+        List<AdministrationArea> filteredData;
+        ItemFilter mFilter = new ItemFilter();
 
-        public administrationAreaAdapter(Context context, int resource, List<AdministrationArea> objects) {
-            super(context, resource, objects);
+        public int getCount() {
+            return filteredData.size();
+        }
+
+        public AdministrationArea getItem(int position) {
+            return filteredData.get(position);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public administrationAreaAdapter(Context context, int resource, List<AdministrationArea> originalData) {
+            super(context, resource, originalData);
             this.context = context;
             this.resource = resource;
+            this.originalData = originalData;
+            this.filteredData = originalData;
             face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
         @Override
@@ -173,6 +194,44 @@ public class AdministrationAreaFragment extends ListFragment {
             return view;
         }
 
+        public Filter getFilter() {
+            return mFilter;
+        }
+
+        private class ItemFilter extends Filter {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+
+                String filterString = constraint.toString().toLowerCase();
+
+                FilterResults results = new FilterResults();
+
+                final List<AdministrationArea> list = originalData;
+
+                int count = list.size();
+                final ArrayList<AdministrationArea> filterData = new ArrayList<AdministrationArea>(count);
+
+                for (int i = 0; i < count; i++) {
+                    AdministrationArea item = list.get(i);
+                    if ((item.getName() + " " + item.getParentName()).contains(filterString)) {
+                        filterData.add(item);
+                    }
+                }
+
+                results.values = filterData;
+                results.count = filterData.size();
+
+                return results;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredData = (ArrayList<AdministrationArea>) results.values;
+                notifyDataSetChanged();
+            }
+
+        }
     }
 
     private DatePickerDialog createDialogWithoutDateField(DatePickerDialog.OnDateSetListener callback){
