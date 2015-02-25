@@ -168,13 +168,9 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/content_comment"
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
-            android:background="@color/black">
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Placeholder for Comments" />
+            android:layout_height="100dp">
         </FrameLayout>
     </LinearLayout>
 </ScrollView>

@@ -62,6 +62,7 @@
     <string name="total_report">จำนวนรายงานทั้งหมด</string>
     <string name="type_report">ประเภทรายงาน</string>
     <string name="animal_report">จำนวนสัตว์ป่วย/ ตาย</string>
+    <string name="empty_report">ไม่พบรายงาน</string>
     <string name="empty_animal_report">ไม่พบรายงานสัตว์ป่วย/ ตาย</string>
     <string name="time_range_report">ช่วงเวลาการรายงานบ่อยสุด</string>
     <string name="negative_report">เหตุผิดปกติ</string>
@@ -71,7 +72,7 @@
     <string name="grade_C">เหรียญทองแดง</string>
     <string name="animal_sick">สัตว์ป่วย</string>
     <string name="animal_death">สัตว์ตาย</string>
-    <string name="title_picker_choose_month">เลือกเดือนที่ต้องการดูผลการประเมิน</string>
+    <string name="title_picker_choose_month">เลือกเดือนเพื่อดูผลประเมิน</string>
     <string name="hello_world">Hello world!</string>
 
     <!-- for report view -->
@@ -92,7 +93,6 @@
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
     <string name="report_activity_title_template">รายงานหมายเลข #:id</string>
-    <string name="title_activity_visualization_volunteer">VisualizationVolunteerActivity</string>
     <string name="report_select_flag">ติดตามรายงาน :</string>
     <string-array name="flags_optional">
         <item>- เลือก -</item>
@@ -109,5 +109,6 @@
         <item>Follow</item>
         <item>Case</item>
     </string-array>
+    <string name="title_activity_visualization_volunteer">อาสา</string>
 
 </resources>
