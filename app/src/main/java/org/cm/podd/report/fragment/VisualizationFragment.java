@@ -71,12 +71,12 @@ public class VisualizationFragment extends Fragment {
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
 
         TextView textNameView = (TextView) view.findViewById(R.id.month_and_year);
-        textNameView.setText("เดือน :" + month + "/" + year);
-        textNameView.setTypeface(face, Typeface.BOLD);
+        textNameView.setText("ประจำเดือน :" + month + "/" + year);
+        textNameView.setTypeface(face);
 
         TextView textParentNameView = (TextView) view.findViewById(R.id.name);
         textParentNameView.setText(name + " " + parentName);
-        textParentNameView.setTypeface(face, Typeface.BOLD);
+        textParentNameView.setTypeface(face);
 
         TextView textTotalReportView =  (TextView) view.findViewById(R.id.textTotalReport);
         TextView textTypeView =  (TextView) view.findViewById(R.id.textReportType);
@@ -84,11 +84,17 @@ public class VisualizationFragment extends Fragment {
         TextView textTimeRangeView =  (TextView) view.findViewById(R.id.textReportTimeRange);
         TextView textGradeView =  (TextView) view.findViewById(R.id.textGrade);
 
+        TextView emptyReportView =  (TextView) view.findViewById(R.id.emptyReport);
+        TextView emptyAnimalView =  (TextView) view.findViewById(R.id.emptyAnimalType);
+
         textTotalReportView.setTypeface(face, Typeface.BOLD);
         textTypeView.setTypeface(face, Typeface.BOLD);
         textAnimalView.setTypeface(face, Typeface.BOLD);
         textTimeRangeView.setTypeface(face, Typeface.BOLD);
         textGradeView.setTypeface(face, Typeface.BOLD);
+
+        emptyReportView.setTypeface(face);
+        emptyAnimalView.setTypeface(face);
 
         /* set total report */
         int totalReport = getArguments().getInt("totalReport");
@@ -174,13 +180,13 @@ public class VisualizationFragment extends Fragment {
         String timeRange = maxReportTimeRanges.toString();
         TextView valTimeRangeView =  (TextView) view.findViewById(R.id.valReportTimeRange);
         valTimeRangeView.setText(timeRange);
-        valTimeRangeView.setTypeface(face, Typeface.BOLD);
+        valTimeRangeView.setTypeface(face);
 
         /* set grade */
         String grade = getArguments().getString("grade");
         TextView valGradeView =  (TextView) view.findViewById(R.id.valGrade);
         valGradeView.setText(getGrade(grade));
-        valGradeView.setTypeface(face, Typeface.BOLD);
+        valGradeView.setTypeface(face);
 
         return view;
     }

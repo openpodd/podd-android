@@ -11,7 +11,7 @@
     <string-array name="menu_titles">
         <item>รายงาน</item>
         <item>ข่าวสาร</item>
-        <item>Dashboard</item>
-        <item>สรุปผล</item>
+        <item>เหตุการณ์ในพื้นที่</item>
+        <item>สรุปผลการรายงาน</item>
     </string-array>
 </resources>

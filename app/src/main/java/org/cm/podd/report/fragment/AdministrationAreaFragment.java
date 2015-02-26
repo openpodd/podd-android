@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -110,33 +112,41 @@ public class AdministrationAreaFragment extends ListFragment {
         View view = inflater.inflate(R.layout.fragment_administration_area, container, false);
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText("ไม่พบพื้นที่");
+        emptyText.setVisibility(View.GONE);
         listView.setEmptyView(emptyText);
 
-        emptyText.setVisibility(View.GONE);
-        parent.addView(emptyText);
-
-        editText = (EditText) view.findViewById (R.id.editTxt);
-        editText.addTextChangedListener(new TextWatcher() {
+        final SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView.setQueryHint(getString(R.string.search));
+        searchView.setIconified(false);
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    searchView.setFocusable(true);
+                    searchView.setIconified(false);
+                }
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
                 try {
-                    adapter.getFilter().filter(s.toString());
+                    adapter.getFilter().filter(newText.toString());
                 }catch (Exception ex){}
-            }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+                return false;
             }
         });
 
@@ -183,12 +193,16 @@ public class AdministrationAreaFragment extends ListFragment {
             TextView textView = (TextView) view.findViewById(R.id.name);
             textView.setTypeface(face);
             textView.setText(getItem(position).getName());
+            textView.setPadding(20, 10, 0, 10);
 
             boolean isLeaf = getItem(position).getIsLeaf() > 0;
             if(!isLeaf){
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                textView.setPadding(20, 5, 0, 5);
                 textView.setTypeface(face, Typeface.BOLD);
+
                 view.setEnabled(false);
+                view.setBackgroundColor(getResources().getColor(R.color.list_item_header_bg));
             }
 
             return view;

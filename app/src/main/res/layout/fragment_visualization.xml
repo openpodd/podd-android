@@ -12,24 +12,24 @@
         android:layout_gravity="center_horizontal">
 
         <TextView
-            android:id="@+id/month_and_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:text="hello"
-            android:paddingTop="10dp"
-            android:paddingLeft="20dp"
-            android:paddingBottom="10dp"
-            android:gravity="center_vertical" />
-
-        <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:text="hello"
-            android:paddingLeft="20dp"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:text="name"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/month_and_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="month"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
+            android:paddingRight="10dp"
             android:gravity="center_vertical" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/total_report"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -46,8 +46,9 @@
             android:id="@+id/valTotalReport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="75"
             android:textSize="25sp"
-            android:paddingLeft="40dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -57,14 +58,15 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/type_report"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/chartReport"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="300dp"
+            android:paddingBottom="10dp"/>
 
         <TextView
             android:id="@+id/emptyReport"
@@ -72,7 +74,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/empty_report"
-            android:paddingLeft="40dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -82,14 +84,15 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/animal_report"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chartAnimal"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="300dp"
+            android:paddingBottom="10dp" />
 
         <TextView
             android:id="@+id/emptyAnimalType"
@@ -97,7 +100,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/empty_animal_report"
-            android:paddingLeft="40dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -107,7 +110,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/time_range_report"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -115,8 +118,8 @@
             android:id="@+id/valReportTimeRange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:paddingLeft="40dp"
+            android:textSize="20sp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -126,7 +129,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="@string/grade"
-            android:paddingLeft="20dp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
@@ -134,8 +137,8 @@
             android:id="@+id/valGrade"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:paddingLeft="40dp"
+            android:textSize="20sp"
+            android:paddingLeft="10dp"
             android:paddingBottom="10dp"
             android:gravity="center_vertical" />
 
