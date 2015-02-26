@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.ProgressBar;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
@@ -39,6 +40,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected FeedAdapter mAdapter;
+    protected ProgressBar mProgressBar;
 
     private FeedItemDataSource feedItemDataSource;
 
@@ -67,6 +69,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         // set fragmentView to let super class know what to do next.
         mFragmentView = rootView;
 
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.dashboard_feed_list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mAdapter = new FeedAdapter(this);
@@ -93,6 +97,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     private void onRefreshComplete() {
         Log.d(TAG, "onRefreshComplete");
         setRefreshing(false);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
