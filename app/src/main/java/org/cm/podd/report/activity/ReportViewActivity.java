@@ -1,11 +1,15 @@
 package org.cm.podd.report.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,8 +23,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,6 +45,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +75,8 @@ public class ReportViewActivity extends ActionBarActivity {
     private ListView followUpListView;
     private TextView emptyFollowUpListView;
 
+    private LinearLayout imageListView;
+
     private FollowUpItemAdapter followUpItemAdapter;
 
     private BroadcastReceiver mReceiver;
@@ -91,6 +103,8 @@ public class ReportViewActivity extends ActionBarActivity {
         followUpListView.setVisibility(View.GONE);
         emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
         emptyFollowUpListView.setVisibility(View.VISIBLE);
+        // image list view.
+        imageListView = (LinearLayout) findViewById(R.id.report_image_list);
 
         // register receiver.
         mReceiver = new BroadcastReceiver() {
@@ -165,6 +179,40 @@ public class ReportViewActivity extends ActionBarActivity {
 
             formDataExplanationView.setText(FeedAdapter.stripHTMLTags(
                     report.getString("formDataExplanation")));
+
+            // Add image controller.
+            JSONArray images;
+            try {
+                images = report.getJSONArray("images");
+
+                View rootView = getWindow().getDecorView().getRootView();
+
+                for (int i = 0; i != images.length(); ++i) {
+                    JSONObject item = images.getJSONObject(i);
+                    final ImageView imageView = new ImageView(getApplicationContext());
+
+                    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+                    int rootWidth = rootView.getWidth();
+                    int imageWidth = rootWidth - 40;
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            imageWidth, imageWidth);
+                    layoutParams.setMargins(0, 0, 10, 0);
+                    imageView.setLayoutParams(layoutParams);
+
+                    imageListView.addView(imageView);
+
+                    new RemoteImageAsyncTask() {
+                        @Override
+                        protected void onPostExecute(Drawable thumb) {
+                            imageView.setImageDrawable(thumb);
+                        }
+                    }.execute(item.getString("thumbnailUrl"));
+                }
+            } catch (JSONException e) {
+                // nothing.
+            }
+
 
             // Add flag controller
             Long reportFlag;
@@ -298,5 +346,24 @@ public class ReportViewActivity extends ActionBarActivity {
     private void setActivityTitleWithReportId(Long id) {
         String template = getString(R.string.report_activity_title_template);
         setTitle(template.replace(":id", Long.toString(id)));
+    }
+
+    public static class RemoteImageAsyncTask extends AsyncTask<String, Void, Drawable> {
+        @Override
+        protected Drawable doInBackground(String... params) {
+            String url = params[0];
+            Drawable thumb_d = null;
+
+            try {
+                URL thumb_u = new URL(url);
+                thumb_d = Drawable.createFromStream(thumb_u.openStream(), "src");
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "Malformed URL", e);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot load image from :" + url, e);
+            }
+
+            return thumb_d;
+        }
     }
 }
