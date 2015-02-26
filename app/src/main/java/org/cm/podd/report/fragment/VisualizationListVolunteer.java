@@ -94,14 +94,13 @@ public class VisualizationListVolunteer extends ListFragment {
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText("ไม่พบอาสา");
-        listView.setEmptyView(emptyText);
-
         emptyText.setVisibility(View.GONE);
-        parent.addView(emptyText);
+
+        listView.setEmptyView(emptyText);
 
         return view;
     }

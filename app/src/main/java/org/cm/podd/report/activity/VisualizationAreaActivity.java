@@ -155,6 +155,15 @@ public class VisualizationAreaActivity extends ActionBarActivity {
                     mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
                     VisualizationListVolunteer.class, bundle);
 
+            Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+
+            for (int i = 0; i < mTabHost.getTabWidget().getChildCount(); i++) {
+                final TextView textTitleView = (TextView) mTabHost.getTabWidget().getChildAt(i)
+                        .findViewById(android.R.id.title);
+                textTitleView.setTextSize(15);
+                textTitleView.setTypeface(face, Typeface.BOLD);
+            }
+
             mTabHost.setCurrentTab(0);
             mTabHost.setVisibility(View.VISIBLE);
 

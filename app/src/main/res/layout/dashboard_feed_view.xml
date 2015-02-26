@@ -183,11 +183,20 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/report_comment_title"
+            android:text="@string/comment_reports"
+            android:textStyle="bold"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
         <FrameLayout
             android:id="@+id/content_comment"
             android:layout_width="fill_parent"
-            android:layout_height="100dp">
+            android:layout_height="150dp">
         </FrameLayout>
+
+
     </LinearLayout>
 </ScrollView>
 

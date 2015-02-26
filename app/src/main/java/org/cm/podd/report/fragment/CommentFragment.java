@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -34,11 +35,15 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.SyncReportTypeService;
+import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class CommentFragment extends ListFragment {
@@ -110,7 +115,7 @@ public class CommentFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comment, container, false);
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        final ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         ViewGroup parent = (ViewGroup) listView.getParent();
         TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
@@ -121,6 +126,14 @@ public class CommentFragment extends ListFragment {
 
         emptyText.setVisibility(View.GONE);
         parent.addView(emptyText);
+
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                listView.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
 
         return view;
     }
@@ -145,13 +158,26 @@ public class CommentFragment extends ListFragment {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
 
-            TextView messageTextView = (TextView) view.findViewById(android.R.id.text1);
+            TextView messageTextView = (TextView) view.findViewById(R.id.message);
             messageTextView.setTypeface(face);
             messageTextView.setText(getItem(position).getMessage());
 
-            TextView createdByTextView = (TextView) view.findViewById(android.R.id.text2);
+            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
             createdByTextView.setTypeface(face);
             createdByTextView.setText(getItem(position).getCreatedBy());
+
+            Date date = null;
+            String dateText = getItem(position).getCreatedAt();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+            try {
+                date = format.parse(dateText);
+            } catch (ParseException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
+            createdAtTextView.setTypeface(face);
+            createdAtTextView.setText(DateUtil.convertToThaiDateTime(date));
 
             return view;
         }
