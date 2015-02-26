@@ -254,10 +254,10 @@ public class VisualizationFragment extends Fragment {
         }
 
         BarDataSet set1 = new BarDataSet(yValues1, getString(R.string.animal_sick));
-        set1.setColor(Color.GREEN);
+        set1.setColor(getResources().getColor(R.color.graph_animal_sick));
 
         BarDataSet set2 = new BarDataSet(yValues2, getString(R.string.animal_death));
-        set2.setColor(Color.BLUE);
+        set2.setColor(getResources().getColor(R.color.graph_animal_death));
 
         ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
         dataSets.add(set1);

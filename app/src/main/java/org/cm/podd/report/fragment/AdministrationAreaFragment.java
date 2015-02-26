@@ -31,6 +31,7 @@ import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -256,13 +257,15 @@ public class AdministrationAreaFragment extends ListFragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), callback, year, month, 1);
         datePickerDialog.setTitle(getString(R.string.title_picker_choose_month));
         try{
-            java.lang.reflect.Field[] datePickerDialogFields = datePickerDialog.getClass().getDeclaredFields();
-            for (java.lang.reflect.Field datePickerDialogField : datePickerDialogFields) {
+            Field[] datePickerDialogFields = datePickerDialog.getClass().getDeclaredFields();
+            for (Field datePickerDialogField : datePickerDialogFields) {
                 if (datePickerDialogField.getName().equals("mDatePicker")) {
                     datePickerDialogField.setAccessible(true);
                     DatePicker datePicker = (DatePicker) datePickerDialogField.get(datePickerDialog);
-                    java.lang.reflect.Field[] datePickerFields = datePickerDialogField.getType().getDeclaredFields();
-                    for (java.lang.reflect.Field datePickerField : datePickerFields) {
+
+                    Field[] datePickerFields = datePickerDialogField.getType().getDeclaredFields();
+
+                    for (Field datePickerField : datePickerFields) {
                         Log.i(TAG, datePickerField.getName());
                         if ("mDaySpinner".equals(datePickerField.getName())) {
                             datePickerField.setAccessible(true);
