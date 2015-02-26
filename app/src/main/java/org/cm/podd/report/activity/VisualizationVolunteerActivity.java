@@ -1,8 +1,10 @@
 package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -21,9 +23,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.VisualizationAreaDataSource;
+import org.cm.podd.report.db.VisualizationVolunteerDataSource;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.fragment.VisualizationFragment;
 import org.cm.podd.report.fragment.VisualizationListVolunteer;
+import org.cm.podd.report.model.VisualizationAdministrationArea;
+import org.cm.podd.report.model.VisualizationVolunteer;
+import org.cm.podd.report.service.VisualizationAreaService;
+import org.cm.podd.report.service.VisualizationVolunteerService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -48,6 +56,15 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
     Fragment mCurrentFragment;
 
     Context context;
+    VisualizationVolunteerDataSource visualizationVolunteerDataSource;
+
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            VisualizationVolunteer item = visualizationVolunteerDataSource.getFromVolunteerFromMonth(id, month, year);
+            refreshData(item);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +84,14 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         month = intent.getIntExtra("month", -99);
         year = intent.getIntExtra("year", -9999);
 
+        visualizationVolunteerDataSource = new VisualizationVolunteerDataSource(this);
+        VisualizationVolunteer volunteer = visualizationVolunteerDataSource.getFromVolunteerFromMonth(id, month, year);
+        refreshData(volunteer);
+
+        registerReceiver(mSyncReceiver, new IntentFilter(VisualizationVolunteerService.SYNC));
+
         if (RequestDataUtil.hasNetworkConnection(this)) {
-            new VisualizationVolunteerTask().execute((Void[]) null);
+            startSyncVisualizationVolunteerService(id, month, year);
         }
     }
 
@@ -99,83 +122,41 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-    /**
-     * GET VOLUNTEER
-     */
-    public class VisualizationVolunteerTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressDialog();
-        }
+    private void refreshData(VisualizationVolunteer volunteer){
+        if (volunteer != null) {
+            int totalReport = volunteer.getTotalReport();
+            int positiveReport = volunteer.getPositiveReport();
+            int negativeReport = volunteer.getNegativeReport();
+            String animalTypes = volunteer.getAnimalType();
+            String timeRanges = volunteer.getTimeRanges();
+            String grade = volunteer.getGrade();
 
-        @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
-            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
-            String accessToken = sharedPrefUtil.getAccessToken();
-            return RequestDataUtil.get("/users/volunteer/visualization/?month=" + month + "/" + year + "&userId=" + id, null, accessToken);
-        }
+            bundle.putInt("totalReport", totalReport);
+            bundle.putInt("positiveReport", positiveReport);
+            bundle.putInt("negativeReport", negativeReport);
+            bundle.putString("animalTypes", animalTypes);
+            bundle.putString("timeRanges", timeRanges);
+            bundle.putString("grade", grade);
 
-        @Override
-        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-            super.onPostExecute(resp);
-            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
-                Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+            setTitle(name);
 
-                try {
-                    JSONObject obj = new JSONObject(resp.getRawData());
+            mCurrentFragment = new VisualizationFragment();
+            mCurrentFragment.setArguments(bundle);
 
-                    String grade = obj.optString("grade");
-                    int totalReport = obj.optInt("totalReport");
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                    .commit();
 
-                    int positiveReport = obj.optInt("positiveReport");
-                    int negativeReport = obj.optInt("negativeReport");
-                    String volunteers =  obj.optString("reporters");
-                    String animalTypes =  obj.optString("animalTypes");
-                    String timeRanges =  obj.optString("timeRanges");
-
-                    bundle.putString("grade", grade);
-
-                    bundle.putInt("totalReport", totalReport);
-                    bundle.putInt("positiveReport", positiveReport);
-                    bundle.putInt("negativeReport", negativeReport);
-
-                    bundle.putString("animalTypes", animalTypes);
-                    bundle.putString("timeRanges", timeRanges);
-
-                    setTitle(name);
-
-                    mCurrentFragment = new VisualizationFragment();
-                    mCurrentFragment.setArguments(bundle);
-
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                            .commit();
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else {
-                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(VisualizationVolunteerActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
-                } else {
-                    Crouton.makeText(VisualizationVolunteerActivity.this, "User is incorrect!", Style.ALERT).show();
-
-                    TextView emptyText = (TextView) findViewById (android.R.id.empty);
-                    emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-                    emptyText.setVisibility(View.VISIBLE);
-                }
-
-            }
-            hideProgressDialog();
-
+            TextView emptyText = (TextView) findViewById(android.R.id.empty);
+            emptyText.setVisibility(View.GONE);
+        } else {
+            TextView emptyText = (TextView) findViewById(android.R.id.empty);
+            emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+            emptyText.setVisibility(View.VISIBLE);
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,5 +185,19 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mSyncReceiver);
+    }
+
+    private void startSyncVisualizationVolunteerService(long id, int month, int year) {
+        Intent intent = new Intent(this, VisualizationVolunteerService.class);
+        intent.putExtra("id", id);
+        intent.putExtra("month", month);
+        intent.putExtra("year", year);
+        startService(intent);
     }
 }

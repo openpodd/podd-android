@@ -94,9 +94,7 @@ public class VisualizationAreaActivity extends ActionBarActivity {
 
         visualizationAreaDataSource = new VisualizationAreaDataSource(this);
         VisualizationAdministrationArea area = visualizationAreaDataSource.getFromAreaByMonth(id, month, year);
-        if(area != null){
-            refreshData(area);
-        }
+        refreshData(area);
 
         registerReceiver(mSyncReceiver, new IntentFilter(VisualizationAreaService.SYNC));
 

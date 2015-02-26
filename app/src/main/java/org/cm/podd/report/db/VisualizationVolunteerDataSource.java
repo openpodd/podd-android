@@ -71,12 +71,20 @@ public class VisualizationVolunteerDataSource {
         ContentValues values = new ContentValues();
         values.put("_id", volunteer.getId());
         values.put("name", volunteer.getName());
+        values.put("total_report", volunteer.getTotalReport());
+        values.put("positive_report", volunteer.getPositiveReport());
+        values.put("negative_report", volunteer.getNegativeReport());
+        values.put("animal_type", volunteer.getAnimalType());
+        values.put("time_ranges", volunteer.getTimeRanges());
+        values.put("grade", volunteer.getGrade());
+        values.put("month", volunteer.getMonth());
+        values.put("year", volunteer.getYear());
         long id = db.insert("visualization_volunteer", null, values);
         db.close();
         return id;
     }
 
-    public VisualizationVolunteer getAllFromVolunteerByMonth(Long id, Integer month, Integer year) {
+    public VisualizationVolunteer getFromVolunteerFromMonth(Long id, Integer month, Integer year) {
         VisualizationVolunteer volunteer = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from visualization_volunteer where _id= ?"
@@ -88,7 +96,7 @@ public class VisualizationVolunteerDataSource {
                     cursor.getString(cursor.getColumnIndex("name"))
             );
             volunteer.setTotalReport(cursor.getInt(cursor.getColumnIndex("total_report")));
-            volunteer.setPositiveReport(cursor.getInt(cursor.getColumnIndex("position_report")));
+            volunteer.setPositiveReport(cursor.getInt(cursor.getColumnIndex("positive_report")));
             volunteer.setNegativeReport(cursor.getInt(cursor.getColumnIndex("negative_report")));
             volunteer.setAnimalType(cursor.getString(cursor.getColumnIndex("animal_type")));
             volunteer.setTimeRanges(cursor.getString(cursor.getColumnIndex("time_ranges")));
@@ -110,6 +118,8 @@ public class VisualizationVolunteerDataSource {
         values.put("animal_type", volunteer.getAnimalType());
         values.put("time_ranges", volunteer.getTimeRanges());
         values.put("grade", volunteer.getGrade());
+        values.put("month", volunteer.getMonth());
+        values.put("year", volunteer.getYear());
         db.update("visualization_volunteer", values, "_id = ? and month=? and year=?",
                 new String[] {Long.toString(volunteer.getId()),
                         Integer.toString(volunteer.getMonth()),
