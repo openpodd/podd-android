@@ -5,24 +5,35 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.opengl.GLES10;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.view.ZoomableImageView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ImageActivity extends ActionBarActivity {
 
@@ -31,6 +42,7 @@ public class ImageActivity extends ActionBarActivity {
     final int REQUIRED_SIZE = 2048;
 
     ZoomableImageView mImageView;
+    ProgressBar mProgressBar;
     String imagePath;
     Bitmap mBitmap;
 
@@ -43,6 +55,7 @@ public class ImageActivity extends ActionBarActivity {
         setContentView(R.layout.activity_image);
 
         mImageView = (ZoomableImageView) findViewById(R.id.image_view);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -51,6 +64,29 @@ public class ImageActivity extends ActionBarActivity {
             imagePath = savedInstanceState.getString("imagePath");
         }
 
+        if (imagePath.matches("^https?://.*")) {
+            final File cacheDir = getCacheDir().getAbsoluteFile();
+            final String filePath = cacheDir + "/" + imagePath.replaceAll(".*/", "");
+            try {
+                InputStream cache = new BufferedInputStream(new FileInputStream(filePath));
+                setImage(filePath);
+            } catch (FileNotFoundException e) {
+                new RemoteImageAsyncTask() {
+                    @Override
+                    protected void onPostExecute(Boolean success) {
+                        if (success) {
+                            setImage(filePath);
+                        }
+                    }
+                }.execute(imagePath, filePath);
+            }
+        } else {
+            setImage(imagePath);
+        }
+
+    }
+
+    private void setImage(String imagePath) {
         Uri uri = Uri.parse(imagePath);
 
         // Get image from uri file:///path or content://path
@@ -70,6 +106,7 @@ public class ImageActivity extends ActionBarActivity {
                     mBitmap.getWidth(), mBitmap.getHeight(), matrix, false);
 
             mImageView.setImageBitmap(mBitmap);
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 
@@ -202,5 +239,44 @@ public class ImageActivity extends ActionBarActivity {
         }
         Log.d(TAG, "bmp w/h=" + bmp.getWidth() + "/" + bmp.getHeight());
         return bmp;
+    }
+
+    public static class RemoteImageAsyncTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            String url = params[0];
+            String filePath = params[1];
+
+            URL thumb_u;
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+
+            try {
+                thumb_u = new URL(url);
+                inputStream = thumb_u.openStream();
+
+                outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+                int bufferSize = 1024;
+                byte[] buffer = new byte[bufferSize];
+                int len = 0;
+                while ((len = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, len);
+                }
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "Malformed URL", e);
+                return false;
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot load image from :" + url, e);
+                return false;
+            }
+
+            return true;
+        }
     }
 }
