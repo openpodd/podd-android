@@ -3,4 +3,7 @@
     <dimen name="activity_horizontal_margin">20dp</dimen>
     <dimen name="activity_vertical_margin">20dp</dimen>
     <dimen name="page_padding">15dp</dimen>
+
+    <dimen name="feed_image_height">200dp</dimen>
+    <dimen name="feed_image_width">333.33dp</dimen>
 </resources>
