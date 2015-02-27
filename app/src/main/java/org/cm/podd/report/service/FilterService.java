@@ -45,7 +45,7 @@ public class FilterService extends IntentService {
     private static final String PARAM_TIMEZONE  = "tz";
     private static final String PARAM_PAGE_SIZE = "page_size";
 
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int DEFAULT_PAGE_SIZE = 800;
 
     SharedPrefUtil sharedPrefUtil;
     FeedItemDataSource feedItemDataSource;

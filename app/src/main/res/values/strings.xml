@@ -111,5 +111,8 @@
         <item>Case</item>
     </string-array>
     <string name="title_activity_visualization_volunteer">อาสา</string>
+    <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>
+    <string name="dummy_report_timeago">23 ก.พ. 2558</string>
+    <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
 
 </resources>

@@ -16,6 +16,7 @@ import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.util.DateUtil;
+import org.cm.podd.report.util.FontUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -35,11 +36,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private static final int[] flagColors = new int[]{
         R.drawable.icon_flag,
-        R.drawable.icon_flag_ignore,
-        R.drawable.icon_flag_ok,
-        R.drawable.icon_flag_contact,
-        R.drawable.icon_flag_follow,
-        R.drawable.icon_flag_case
+        R.drawable.flag_ignore,
+        R.drawable.flag_ok,
+        R.drawable.flag_contact,
+        R.drawable.flag_follow,
+        R.drawable.flag_case
     };
     
     public FeedAdapter(OnItemClickListener listener) {
@@ -52,8 +53,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         private final ImageView flagView;
         private final TextView reportTypeView;
         private final TextView timeagoView;
-        private final ImageView thumbView;
-        private final TextView animalTypeView;
         private final TextView descriptionView;
         private final TextView addressView;
 
@@ -63,11 +62,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             context = v.getContext();
             cardView = (CardView) v.findViewById(R.id.feed_card);
 
+            FontUtil.overrideFonts(context, v);
+
             flagView = (ImageView) v.findViewById(R.id.df_item_flag);
             reportTypeView = (TextView) v.findViewById(R.id.df_item_report_type);
             timeagoView = (TextView) v.findViewById(R.id.df_item_timeago);
-            thumbView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
-            animalTypeView = (TextView) v.findViewById(R.id.df_item_animal_type);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
             addressView = (TextView) v.findViewById(R.id.df_item_address);
         }
@@ -88,16 +87,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             return reportTypeView;
         }
 
-        public TextView getAnimalTypeView() {
-            return animalTypeView;
-        }
-
         public TextView getDescriptionView() {
             return descriptionView;
-        }
-
-        public ImageView getThumbView() {
-            return thumbView;
         }
 
         public TextView getTimeagoView() {
@@ -125,7 +116,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             // flag
             String flagString = report.getString("flag");
             int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
-            viewHolder.getFlagView().setImageResource(flagColors[flag]);
+            if (flag != 0) {
+                viewHolder.getFlagView().setImageResource(flagColors[flag]);
+            }
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
