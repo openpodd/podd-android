@@ -120,7 +120,7 @@ public class AdministrationAreaService extends IntentService {
         } else {
             Log.e(TAG, "Server error");
         }
-
+        sendBroadcast(new Intent(SYNC));
     }
 
     private AdministrationArea requireAreaUpdate(JSONObject updateAdministrationArea, List<AdministrationArea> administrationAreas) {

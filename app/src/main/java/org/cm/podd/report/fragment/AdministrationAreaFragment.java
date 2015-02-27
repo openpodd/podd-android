@@ -2,8 +2,10 @@ package org.cm.podd.report.fragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -29,7 +31,10 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.VisualizationAreaActivity;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.model.AdministrationArea;
+import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.service.AdministrationAreaService;
+import org.cm.podd.report.service.CommentService;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.lang.reflect.Field;
@@ -55,11 +60,24 @@ public class AdministrationAreaFragment extends ListFragment {
         super.onAttach(activity);
     }
 
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getAll());
+            setListAdapter(adapter);
+        }
+    };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         administrationAreaDataSource = new AdministrationAreaDataSource(getActivity());
         face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+
+        getActivity().registerReceiver(mSyncReceiver, new IntentFilter(AdministrationAreaService.SYNC));
+
+        if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+            startSyncAdministrationAreaService();
+        }
     }
 
     public void refreshAdapter() {
@@ -103,6 +121,7 @@ public class AdministrationAreaFragment extends ListFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        getActivity().unregisterReceiver(mSyncReceiver);
     }
 
     @Override
