@@ -23,14 +23,16 @@ public class Comment {
     private long reportId;
     private String message;
     private String fileUrl;
+    private String avatarCreatedBy;
     private String createdBy;
     private String createdAt;
 
-    public Comment(long id, long reportId, String message, String fileUrl, String createdBy, String createdAt) {
+    public Comment(long id, long reportId, String message, String fileUrl, String avatarCreatedBy, String createdBy, String createdAt) {
         this.id = id;
         this.reportId = reportId;
         this.message = message;
         this.fileUrl = fileUrl;
+        this.avatarCreatedBy = avatarCreatedBy;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
@@ -64,6 +66,12 @@ public class Comment {
     }
 
     public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl;}
+
+    public String getAvatarCreatedBy() {
+        return avatarCreatedBy;
+    }
+
+    public void setAvatarCreatedBy(String avatarCreatedBy) { this.avatarCreatedBy = avatarCreatedBy;}
 
     public String getCreatedBy() {
         return createdBy;

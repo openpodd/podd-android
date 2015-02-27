@@ -55,6 +55,7 @@ public class CommentDataSource {
                         jsonObj.getLong("reportId"),
                         jsonObj.getString("message"),
                         jsonObj.getString("fileUrl"),
+                        jsonObj.getString("avatarCreatedBy"),
                         createdBy.getString("firstName") + createdBy.getString("lastName"),
                         jsonObj.getString("createdAt")
                 );
@@ -78,6 +79,7 @@ public class CommentDataSource {
         values.put("report_id", comment.getReportId());
         values.put("message", comment.getMessage());
         values.put("file_url", comment.getFileUrl());
+        values.put("avatar_created_by", comment.getAvatarCreatedBy());
         values.put("created_by", comment.getCreatedBy());
         values.put("created_at", comment.getCreatedAt());
         long id = db.insert("comment", null, values);
@@ -95,6 +97,7 @@ public class CommentDataSource {
                     cursor.getLong(cursor.getColumnIndex("report_id")),
                     cursor.getString(cursor.getColumnIndex("message")),
                     cursor.getString(cursor.getColumnIndex("file_url")),
+                    cursor.getString(cursor.getColumnIndex("avatar_created_by")),
                     cursor.getString(cursor.getColumnIndex("created_by")),
                     cursor.getString(cursor.getColumnIndex("created_at"))
             );
@@ -113,6 +116,7 @@ public class CommentDataSource {
         values.put("report_id", comment.getReportId());
         values.put("message", comment.getMessage());
         values.put("file_url", comment.getFileUrl());
+        values.put("avatar_created_by", comment.getAvatarCreatedBy());
         values.put("created_by", comment.getCreatedBy());
         values.put("created_at", comment.getCreatedAt());
         db.update("comment", values, "_id = ?",

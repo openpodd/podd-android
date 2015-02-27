@@ -66,13 +66,16 @@ public class CommentService extends IntentService {
                         comment.setReportId(result.optLong("reportId"));
                         comment.setMessage(result.optString("message"));
                         comment.setFileUrl(result.optString("fileUrl"));
+                        String avatarCreatedBy = "";
                         String createdBy = "";
 
                         try {
                             JSONObject jsonCreatedBy = new JSONObject(result.optString("createdBy"));
-                            createdBy = jsonCreatedBy.getString("firstName") + jsonCreatedBy.getString("lastName");
+                            createdBy = jsonCreatedBy.getString("firstName") + " " + jsonCreatedBy.getString("lastName");
+                            avatarCreatedBy = jsonCreatedBy.getString("thumbnailAvatarUrl");
                         }catch (Exception ex){}
 
+                        comment.setAvatarCreatedBy(avatarCreatedBy);
                         comment.setCreatedBy(createdBy);
                         comment.setCreatedAt(result.optString("createdAt"));
 
@@ -81,12 +84,15 @@ public class CommentService extends IntentService {
                         long commentId = updateComment.optInt("id");
                         String message = updateComment.optString("message");
                         String fileUrl = updateComment.optString("fileUrl");
+                        String avatarCreatedBy = "";
                         String createdBy = "";
 
                         try {
                             JSONObject jsonCreatedBy = new JSONObject(updateComment.optString("createdBy"));
-                            createdBy = jsonCreatedBy.getString("firstName") + jsonCreatedBy.getString("lastName");
+                            createdBy = jsonCreatedBy.getString("firstName") + " " + jsonCreatedBy.getString("lastName");
+                            avatarCreatedBy = jsonCreatedBy.getString("thumbnailAvatarUrl");
                         }catch (Exception ex){}
+
 
                         String createdAt = updateComment.optString("createdAt");
 
@@ -97,7 +103,7 @@ public class CommentService extends IntentService {
 
                         JSONObject result = new JSONObject(resp2.getRawData());
 
-                        comment = new Comment(commentId, reportId, message, fileUrl, createdBy, createdAt);
+                        comment = new Comment(commentId, reportId, message, avatarCreatedBy, fileUrl, createdBy, createdAt);
 
                         dbSource.insert(comment);
                     }
@@ -127,11 +133,13 @@ public class CommentService extends IntentService {
             long reportId = updateComment.optLong("reportId");
             String message = updateComment.optString("message");
             String fileUrl = updateComment.optString("fileUrl");
+            String avatarCreatedBy = "";
             String createdBy = "";
 
             try {
                 JSONObject jsonCreatedBy = new JSONObject(updateComment.optString("createdBy"));
-                createdBy = jsonCreatedBy.getString("firstName") + jsonCreatedBy.getString("lastName");
+                createdBy = jsonCreatedBy.getString("firstName") + " " + jsonCreatedBy.getString("lastName");
+                avatarCreatedBy = jsonCreatedBy.getString("thumbnailAvatarUrl");
             }catch (Exception ex){}
 
             String createdAt = updateComment.optString("createdAt");
@@ -143,16 +151,19 @@ public class CommentService extends IntentService {
                 found.setReportId(comment.getReportId());
                 found.setMessage(comment.getMessage());
                 found.setFileUrl(comment.getFileUrl());
+                found.setAvatarCreatedBy(comment.getAvatarCreatedBy());
                 found.setCreatedBy(comment.getCreatedBy());
                 found.setCreatedAt(comment.getCreatedAt());
 
                 if (!message.equals(comment.getMessage()) || !fileUrl.equals(comment.getFileUrl()) ||
-                        !createdBy.equals(comment.getCreatedBy()) || !createdAt.equals(comment.getCreatedAt())) {
+                        !createdBy.equals(comment.getCreatedBy()) || !createdAt.equals(comment.getCreatedAt()) ||
+                        !avatarCreatedBy.equals(comment.getAvatarCreatedBy())) {
                     Log.d(TAG, "id:" + updateCommentId + ": update");
 
                     found.setReportId(reportId);
                     found.setMessage(message);
                     found.setFileUrl(fileUrl);
+                    found.setAvatarCreatedBy(avatarCreatedBy);
                     found.setCreatedBy(createdBy);
                     found.setCreatedAt(createdAt);
                 }

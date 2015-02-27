@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -31,17 +32,21 @@ import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 public class AdministrationAreaFragment extends ListFragment {
 
-    private static final String TAG = "VisualizationFragment";
+    private static final String TAG = "AreaFragment";
 
     AdministrationAreaDataSource administrationAreaDataSource;
+    Typeface face;
+
     private administrationAreaAdapter adapter;
     private  EditText editText;
+
     public AdministrationAreaFragment() {
     }
 
@@ -54,6 +59,7 @@ public class AdministrationAreaFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         administrationAreaDataSource = new AdministrationAreaDataSource(getActivity());
+        face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
     }
 
     public void refreshAdapter() {
@@ -73,7 +79,7 @@ public class AdministrationAreaFragment extends ListFragment {
         final AdministrationArea area = adapter.getItem(position);
         boolean isLeaf = area.getIsLeaf() > 0;
         if(isLeaf) {
-            DatePickerDialog.OnDateSetListener callback = new DatePickerDialog.OnDateSetListener() {
+            StaticTitleDatePickerDialog datePickerDialog = createDialogWithoutDateField(new DatePickerDialog.OnDateSetListener() {
 
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -89,9 +95,7 @@ public class AdministrationAreaFragment extends ListFragment {
                     intent.putExtra("id", administrationAreaId);
                     startActivity(intent);
                 }
-
-            };
-            DatePickerDialog datePickerDialog = createDialogWithoutDateField(callback);
+            });
             datePickerDialog.show();
         }
     }
@@ -160,7 +164,6 @@ public class AdministrationAreaFragment extends ListFragment {
 
         Context context;
         int resource;
-        Typeface face;
         List<AdministrationArea> originalData;
         List<AdministrationArea> filteredData;
         ItemFilter mFilter = new ItemFilter();
@@ -183,7 +186,6 @@ public class AdministrationAreaFragment extends ListFragment {
             this.resource = resource;
             this.originalData = originalData;
             this.filteredData = originalData;
-            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -248,35 +250,52 @@ public class AdministrationAreaFragment extends ListFragment {
         }
     }
 
-    private DatePickerDialog createDialogWithoutDateField(DatePickerDialog.OnDateSetListener callback){
+    private StaticTitleDatePickerDialog createDialogWithoutDateField(DatePickerDialog.OnDateSetListener callback){
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) - 1;
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), callback, year, month, 1);
-        datePickerDialog.setTitle(getString(R.string.title_picker_choose_month));
-        try{
-            java.lang.reflect.Field[] datePickerDialogFields = datePickerDialog.getClass().getDeclaredFields();
-            for (java.lang.reflect.Field datePickerDialogField : datePickerDialogFields) {
-                if (datePickerDialogField.getName().equals("mDatePicker")) {
-                    datePickerDialogField.setAccessible(true);
-                    DatePicker datePicker = (DatePicker) datePickerDialogField.get(datePickerDialog);
-                    java.lang.reflect.Field[] datePickerFields = datePickerDialogField.getType().getDeclaredFields();
-                    for (java.lang.reflect.Field datePickerField : datePickerFields) {
-                        Log.i(TAG, datePickerField.getName());
-                        if ("mDaySpinner".equals(datePickerField.getName())) {
-                            datePickerField.setAccessible(true);
-                            Object dayPicker = new Object();
-                            dayPicker = datePickerField.get(datePicker);
-                            ((View) dayPicker).setVisibility(View.GONE);
-                        }
+        StaticTitleDatePickerDialog datePickerDialog = new StaticTitleDatePickerDialog(getActivity(), callback, year, month, 1,
+                getString(R.string.title_picker_choose_month));
+
+        return datePickerDialog;
+
+    }
+
+    class StaticTitleDatePickerDialog extends DatePickerDialog {
+        String title;
+        public StaticTitleDatePickerDialog(Context context, OnDateSetListener callBack,
+                                           int year, int monthOfYear, int dayOfMonth, String title) {
+            super(context, callBack, year, monthOfYear, dayOfMonth);
+            this.title = title;
+            setTitle(title);
+
+            DatePicker datePicker = getDatePicker();
+            try{
+                Field[] datePickerFields = getDatePicker().getClass().getDeclaredFields();
+
+                for (Field datePickerField : datePickerFields) {
+                    Log.i(TAG, datePickerField.getName());
+
+                    if ("mDaySpinner".equals(datePickerField.getName())) {
+                        datePickerField.setAccessible(true);
+                        Object dayPicker = new Object();
+                        dayPicker = datePickerField.get(datePicker);
+                        ((View) dayPicker).setVisibility(View.GONE);
                     }
                 }
 
+            }catch(Exception ex){
+                Log.e(TAG, ex.toString());
             }
-        }catch(Exception ex){
         }
-        return datePickerDialog;
+
+        @Override
+        public void onDateChanged(DatePicker view, int year,
+                                  int month, int day) {
+            super.onDateChanged(view, year, month, day);
+            setTitle(title);
+        }
 
     }
 

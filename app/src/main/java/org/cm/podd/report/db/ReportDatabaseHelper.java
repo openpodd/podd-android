@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 5;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -108,6 +108,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  report_id INTEGER,"
             + "  message TEXT,"
             + "  file_url TEXT,"
+            + "  avatar_created_by TEXT,"
             + "  created_by TEXT,"
             + "  created_at TEXT"
             + ")";
@@ -188,16 +189,15 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 3:
                 Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
-            case 4:
-                Log.i("DB", String.format(">> sql:\n%s", sql));
-                db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
-                db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
-            case 8:
-                Log.i("DB", String.format(">> sql:\n%s", sql));
                 db.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
                 db.execSQL(CREATE_TABLE_COMMENT);
                 db.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
                 db.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
+            case 4:
+                Log.i("DB", String.format(">> sql:\n%s", sql));
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE comment ADD COLUMN avatar_created_by TEXT");
         }
     }
 
