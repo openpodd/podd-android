@@ -170,17 +170,6 @@ public class ReportViewActivity extends ActionBarActivity {
         try {
             setActivityTitleWithType(report.getString("reportTypeName"));
 
-            Bundle bundle = new Bundle();
-            bundle.putLong("reportId", Long.parseLong(report.getString("id")));
-
-            Fragment commentFragment = new CommentFragment();
-            commentFragment.setArguments(bundle);
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_comment, commentFragment, commentFragment.getClass().getSimpleName())
-                    .commit();
-
             dateView.setText(DateUtil.convertToThaiDateTime(
                     DateUtil.fromJsonDateString(report.getString("date"))));
             incidentDateView.setText(DateUtil.convertToThaiDate(
@@ -218,11 +207,11 @@ public class ReportViewActivity extends ActionBarActivity {
 
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-                    int rootWidth = rootView.getWidth();
-                    int imageWidth = rootWidth - 40;
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            imageWidth, imageWidth);
-                    layoutParams.setMargins(0, 0, 10, 0);
+                            StyleUtil.convertDpToPx(232.50F, getResources().getDisplayMetrics()),
+                            StyleUtil.convertDpToPx(157.50F, getResources().getDisplayMetrics()));
+                    layoutParams.setMargins(0, 0,
+                            StyleUtil.convertDpToPx(10F, getResources().getDisplayMetrics()), 0);
                     imageView.setLayoutParams(layoutParams);
 
                     final String imageUrl = item.getString("imageUrl");
@@ -303,6 +292,17 @@ public class ReportViewActivity extends ActionBarActivity {
                     }
                 });
             }
+
+            Bundle bundle = new Bundle();
+            bundle.putLong("reportId", Long.parseLong(report.getString("id")));
+
+            Fragment commentFragment = new CommentFragment();
+            commentFragment.setArguments(bundle);
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_comment, commentFragment, commentFragment.getClass().getSimpleName())
+                    .commit();
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
