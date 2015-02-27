@@ -114,7 +114,8 @@ public class CommentFragment extends Fragment {
     public void refreshAdapter() {
 //        adapter = new commentAdapter(getActivity(), R.layout.list_item_comment, commentDataSource.getAllFromReport(reportId));
 //        setListAdapter(adapter);
-
+        listView.removeAllViews();
+        
         ArrayList<Comment> comments = getAll();
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
@@ -158,7 +159,7 @@ public class CommentFragment extends Fragment {
                 new ImageDownloader(avatarCreatedByView).execute(comments.get(i).getAvatarCreatedBy());
             }
 
-            if (i == comments.size()){
+            if (i == comments.size() -1){
                 LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
                 line.setVisibility(View.GONE);
             }

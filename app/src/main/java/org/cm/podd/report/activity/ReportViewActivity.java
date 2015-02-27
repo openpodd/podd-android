@@ -27,6 +27,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -61,8 +62,13 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by siriwat on 2/23/15.
@@ -85,7 +91,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView createdByTelephoneView;
     private TextView createdByProjectTelephoneView;
     private TextView formDataExplanationView;
-    private ListView followUpListView;
+    private LinearLayout followUpListView;
 //    private TextView emptyFollowUpListView;
     private TextView countFollowUpTextView;
 
@@ -119,8 +125,7 @@ public class ReportViewActivity extends ActionBarActivity {
         createdByTelephoneView = (TextView) findViewById(R.id.report_view_reporter_telephone);
         createdByProjectTelephoneView = (TextView) findViewById(R.id.report_view_reporter_project_telephone);
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
-        followUpListView = (ListView) findViewById(R.id.report_follow_up_list);
-        followUpListView.setVisibility(View.GONE);
+        followUpListView = (LinearLayout) findViewById(R.id.report_follow_up_list);
 //        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
 //        emptyFollowUpListView.setVisibility(View.VISIBLE);
         countFollowUpTextView = (TextView) findViewById(R.id.report_follow_up_count);
@@ -280,19 +285,21 @@ public class ReportViewActivity extends ActionBarActivity {
                 ArrayList<String> textList = new ArrayList<String>();
                 textList.add(Long.toString(report.getLong("parent")));
 
-                followUpItemAdapter = new FollowUpItemAdapter(getApplicationContext(),
-                        R.layout.list_item_follow_up_report, textList);
-                followUpListView.setAdapter(followUpItemAdapter);
+                refreshFollowUp(textList);
 
-                followUpListView.setVisibility(View.VISIBLE);
-                followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getApplicationContext(), ReportViewActivity.class);
-                        intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
-                        startActivityForResult(intent, 0);
-                    }
-                });
+//                followUpItemAdapter = new FollowUpItemAdapter(getApplicationContext(),
+//                        R.layout.list_item_follow_up_report, textList);
+//                followUpListView.setAdapter(followUpItemAdapter);
+//
+//                followUpListView.setVisibility(View.VISIBLE);
+//                followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                        Intent intent = new Intent(getApplicationContext(), ReportViewActivity.class);
+//                        intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
+//                        startActivityForResult(intent, 0);
+//                    }
+//                });
             }
 
             Bundle bundle = new Bundle();
@@ -308,6 +315,8 @@ public class ReportViewActivity extends ActionBarActivity {
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
+        } catch (IllegalStateException e){
+            Log.e(TAG, "Error IllegalStateException", e);
         }
 
     }
@@ -341,22 +350,24 @@ public class ReportViewActivity extends ActionBarActivity {
                         textList.add(item.getString("id"));
                     }
 
-                    followUpItemAdapter = new FollowUpItemAdapter(getContext(),
-                            R.layout.list_item_follow_up_report, textList);
-                    followUpListView.setAdapter(followUpItemAdapter);
+                    refreshFollowUp(textList);
+//                    for (int i =0; i < textList.size(); i++){
+//
+//                    }
+//                    followUpItemAdapter = new FollowUpItemAdapter(getContext(),
+//                            R.layout.list_item_follow_up_report, textList);
+//                    followUpListView.setAdapter(followUpItemAdapter);
+//
+//                    followUpListView.setVisibility(View.VISIBLE);
+//                    followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            Intent intent = new Intent(context, ReportViewActivity.class);
+//                            intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
+//                            startActivityForResult(intent, 0);
+//                        }
+//                    });
 
-                    followUpListView.setVisibility(View.VISIBLE);
-                    followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(context, ReportViewActivity.class);
-                            intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
-                            startActivityForResult(intent, 0);
-                        }
-                    });
-                    if (textList.size() > 0){
-                        countFollowUpTextView.setText(textList.size() + "");
-                    }
 
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON data", e);
@@ -367,6 +378,39 @@ public class ReportViewActivity extends ActionBarActivity {
         task.execute(Long.toString(reportId));
     }
 
+    private void refreshFollowUp(ArrayList<String> textList){
+        followUpListView.removeAllViews();
+
+        for (int i = 0; i < textList.size(); i++){
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View view = inflater.inflate(R.layout.list_item_follow_up_report, null, false);
+
+            final long id = Long.parseLong(textList.get(i));
+
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            textView.setText(getString(R.string.follow_up_report_item_template)
+                    .replace(":id", textList.get(i)));
+
+            if (i == textList.size() - 1){
+                LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
+                line.setVisibility(View.GONE);
+            }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ReportViewActivity.this, ReportViewActivity.class);
+                    intent.putExtra("id", id);
+                    startActivity(intent);
+                }
+            });
+            followUpListView.addView(view);
+        }
+
+        if (textList.size() > 0){
+            countFollowUpTextView.setText(textList.size() + "");
+        }
+    }
     private class FollowUpItemAdapter extends ArrayAdapter<String> {
 
         Context context;
@@ -568,10 +612,30 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home){
+            this.finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
+        actionBar.setHomeButtonEnabled(true);
         actionBar.setLogo(R.drawable.arrow_left_with_pad);
         return true;
     }

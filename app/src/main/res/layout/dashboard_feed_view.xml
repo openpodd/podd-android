@@ -401,12 +401,12 @@
                             </RelativeLayout>
                         </LinearLayout>
 
-                        <ListView
+                        <LinearLayout
                             android:id="@+id/report_follow_up_list"
+                            android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
-
-                        </ListView>
+                        </LinearLayout>
 
                         <!--<TextView-->
                             <!--android:id="@+id/empty_follow_up_list_text"-->
