@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content">
                     <TextView
                         android:id="@+id/df_item_report_type"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:ellipsize="marquee"
                         android:layout_weight="1"
@@ -90,7 +90,7 @@
                     android:layout_height="fill_parent"
                     android:ellipsize="end"
                     android:layout_marginTop="10dp"
-                    android:text="Description here to inform user that something happened." />
+                    android:text="@string/dummy_report_description" />
             </LinearLayout>
 
         </LinearLayout>

@@ -38,7 +38,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
 
     private static final int[] flagColors = new int[]{
-        R.drawable.icon_flag,
+        R.drawable.blank,
         R.drawable.flag_ignore,
         R.drawable.flag_ok,
         R.drawable.flag_contact,
@@ -119,9 +119,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             // flag
             String flagString = report.getString("flag");
             int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
-            if (flag != 0) {
-                viewHolder.getFlagView().setImageResource(flagColors[flag]);
-            }
+            viewHolder.getFlagView().setImageResource(flagColors[flag]);
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
