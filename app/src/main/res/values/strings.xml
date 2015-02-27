@@ -113,5 +113,9 @@
     </string-array>
     <string name="title_activity_visualization_volunteer">อาสา</string>
     <string name="comment_date">โพสต์เมื่อ</string>
+    <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>
+    <string name="dummy_report_timeago">23 ก.พ. 2558</string>
+    <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
+    <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
 
 </resources>

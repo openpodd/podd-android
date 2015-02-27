@@ -8,108 +8,92 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="8.33dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
-        card_view:contentPadding="10dp"
+        card_view:contentPaddingLeft="13.33dp"
+        card_view:contentPaddingRight="13.33dp"
+        card_view:contentPaddingTop="8.33dp"
+        card_view:contentPaddingBottom="13.33dp"
         card_view:cardCornerRadius="@dimen/cardview_default_radius"
         card_view:cardElevation="@dimen/cardview_default_elevation">
 
 
-
-        <FrameLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="32dp">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/df_item_flag"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/icon_flag" />
+                android:layout_width="16.67dp"
+                android:layout_height="30dp" />
 
-            <TextView
-                android:id="@+id/df_item_report_type"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:ellipsize="marquee"
-                android:layout_marginLeft="48dp"
-                android:layout_marginRight="100dp"
-                android:layout_marginStart="48dp"
-                android:layout_marginEnd="100dp"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:text="Report type" />
-
-            <TextView
-                android:id="@+id/df_item_timeago"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/wallet_dim_foreground_disabled_holo_dark"
-                android:text="3 days ago" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="32dp"
-            android:layout_marginTop="32dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/icon_marker" />
-
-            <TextView
-                android:id="@+id/df_item_address"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="36dp"
-                android:text="Location of report by administration area" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp">
 
-        </FrameLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/df_item_report_type"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="marquee"
+                        android:layout_weight="1"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="@string/dummy_report_type" />
+                    <TextView
+                        android:id="@+id/df_item_timeago"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/wallet_dim_foreground_disabled_holo_dark"
+                        android:text="@string/dummy_report_timeago" />
+                </LinearLayout>
 
-        <TextView
-            android:id="@+id/df_item_description"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginTop="62dp"
-            android:ellipsize="end"
-            android:textStyle="italic"
-            android:text="Description here to inform user that something happened." />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="64dp">
+                    <ImageView
+                        android:layout_marginTop="4dp"
+                        android:layout_width="9dp"
+                        android:layout_height="13dp"
+                        android:src="@drawable/pin" />
 
-            <ImageView
-                android:id="@+id/df_item_thumbnail"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/ic_launcher"/>
+                    <TextView
+                        android:textSize="16sp"
+                        android:textColor="#666"
+                        android:layout_marginLeft="6.67dp"
+                        android:layout_marginStart="6.67dp"
+                        android:id="@+id/df_item_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dummy_report_address" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/df_item_animal_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:layout_marginLeft="90dp"
-                android:textSize="18dp"
-                android:textStyle="bold"
-                android:text="Animal type"/>
+                <TextView
+                    android:textSize="18sp"
+                    android:id="@+id/df_item_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:ellipsize="end"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/dummy_report_description" />
+            </LinearLayout>
 
-            <!-- <TextView
-                android:id="@+id/df_item_description"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="90dp"
-                android:ellipsize="end"
-                android:text="Description here to inform user that something happened." /> -->
-        </FrameLayout>
+        </LinearLayout>
 
 
     </android.support.v7.widget.CardView>
