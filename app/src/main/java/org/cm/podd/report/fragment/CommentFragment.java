@@ -8,7 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
@@ -17,6 +21,7 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -55,6 +60,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentFragment extends ListFragment {
 
@@ -189,15 +196,11 @@ public class CommentFragment extends ListFragment {
             createdAtTextView.setTypeface(face);
             createdAtTextView.setText(DateUtil.convertToThaiDateTime(date));
 
-            ImageView avatarCreatedByView = (ImageView) view.findViewById(R.id.imageView);
-
-            Uri imgUri=Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.drawable.logo_mini);
-            avatarCreatedByView.setImageURI(imgUri);
+            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 
             if(!getItem(position).getAvatarCreatedBy().equals(null)){
                 new ImageDownloader(avatarCreatedByView).execute(getItem(position).getAvatarCreatedBy());
             }
-
             return view;
         }
     }
