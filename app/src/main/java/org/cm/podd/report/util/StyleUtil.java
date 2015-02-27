@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -48,5 +50,10 @@ public class StyleUtil {
 
     public static Typeface getSecondTypeface(AssetManager assets, int type) {
         return Typeface.createFromAsset(assets, type == Typeface.BOLD ? "Roboto-Bold.ttf" : "Roboto-Light.ttf");
+    }
+
+    public static int convertDpToPx(float dp, DisplayMetrics displayMetrics) {
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
+        return Math.round(pixels);
     }
 }

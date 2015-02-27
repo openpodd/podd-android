@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="8.33dp"
-        android:layout_marginBottom="8.33dp"
+        android:layout_marginBottom="0dp"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginRight="10dp"
@@ -74,6 +74,7 @@
 
                     <TextView
                         android:textSize="16sp"
+                        android:textColor="#666"
                         android:layout_marginLeft="6.67dp"
                         android:layout_marginStart="6.67dp"
                         android:id="@+id/df_item_address"

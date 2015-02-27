@@ -8,6 +8,9 @@
         android:id="@+id/dashboard_feed_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:paddingTop="0dp"
+        android:paddingBottom="10dp"
+        android:clipToPadding="false"
         android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
 
     <ProgressBar
