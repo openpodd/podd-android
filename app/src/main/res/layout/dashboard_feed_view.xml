@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
 <ScrollView
+    android:id="@+id/report_main_scrollview"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
@@ -13,8 +15,22 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:padding="10dp">
 
+        <HorizontalScrollView
+            android:id="@+id/report_image_list_scrollview"
+            android:hapticFeedbackEnabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/report_image_list"
+                android:orientation="horizontal"
+                android:background="#900"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></LinearLayout>
+        </HorizontalScrollView>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -189,5 +205,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/expanded_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#DD000000"
+        android:visibility="invisible"/>
 
 </FrameLayout>
