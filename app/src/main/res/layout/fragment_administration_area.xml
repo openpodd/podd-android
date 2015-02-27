@@ -6,10 +6,9 @@
 
     <LinearLayout
         android:id="@+id/header"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_set">
+        android:layout_height="wrap_content">
 
         <SearchView
             android:layout_width="match_parent"
@@ -17,6 +16,11 @@
             android:focusable="true"
             android:id="@+id/searchView" />
 
+        <LinearLayout
+            android:background="@color/report_row_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+        </LinearLayout>
     </LinearLayout>
 
     <ListView

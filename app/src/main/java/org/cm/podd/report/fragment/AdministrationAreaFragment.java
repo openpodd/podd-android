@@ -211,19 +211,25 @@ public class AdministrationAreaFragment extends ListFragment {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
 
-            TextView textView = (TextView) view.findViewById(R.id.name);
-            textView.setTypeface(face);
-            textView.setText(getItem(position).getName());
-            textView.setPadding(20, 10, 0, 10);
+            TextView textLeafView = (TextView) view.findViewById(R.id.nameLeaf);
+            TextView textParentView = (TextView) view.findViewById(R.id.nameParent);
 
             boolean isLeaf = getItem(position).getIsLeaf() > 0;
             if(!isLeaf){
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                textView.setPadding(20, 5, 0, 5);
-                textView.setTypeface(face, Typeface.BOLD);
+                textLeafView.setVisibility(View.GONE);
+                textParentView.setVisibility(View.VISIBLE);
+
+                textParentView.setTypeface(face, Typeface.BOLD);
+                textParentView.setText(getItem(position).getName());
 
                 view.setEnabled(false);
                 view.setBackgroundColor(getResources().getColor(R.color.list_item_header_bg));
+            }else{
+                textLeafView.setVisibility(View.VISIBLE);
+                textParentView.setVisibility(View.GONE);
+
+                textLeafView.setTypeface(face);
+                textLeafView.setText(getItem(position).getName());
             }
 
             return view;

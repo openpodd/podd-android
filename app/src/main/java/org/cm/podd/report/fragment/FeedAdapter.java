@@ -33,7 +33,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
 
-    private static final int[] flagColors = new int[]{
+    public static final int[] flagColors = new int[]{
         R.drawable.icon_flag,
         R.drawable.icon_flag_ignore,
         R.drawable.icon_flag_ok,

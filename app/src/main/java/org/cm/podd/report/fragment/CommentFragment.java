@@ -135,15 +135,13 @@ public class CommentFragment extends ListFragment {
         final ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText("ไม่พบความคิดเห็น");
-        listView.setEmptyView(emptyText);
-
         emptyText.setVisibility(View.GONE);
-        parent.addView(emptyText);
 
+        listView.setEmptyView(emptyText);
         listView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -194,7 +192,7 @@ public class CommentFragment extends ListFragment {
 
             TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
             createdAtTextView.setTypeface(face);
-            createdAtTextView.setText(DateUtil.convertToThaiDateTime(date));
+            createdAtTextView.setText(getString(R.string.comment_date) + DateUtil.convertToThaiDateTime(date));
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 

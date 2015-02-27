@@ -90,7 +90,7 @@ public class CommentDataSource {
     public List<Comment> getAllFromReport(Long reportId) {
         ArrayList<Comment> results = new ArrayList<Comment>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from comment where report_id="+ reportId +" order by _id asc", null);
+        Cursor cursor = db.rawQuery("select * from comment where report_id="+ reportId +" order by _id desc", null);
         while (cursor.moveToNext()) {
             Comment comment = new Comment(
                     cursor.getLong(cursor.getColumnIndex("_id")),

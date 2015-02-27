@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -47,7 +49,9 @@ import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +74,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
     private ProgressBar progressBar;
     private View contentWrapper;
-
+    private ImageView flagImageView;
     private TextView flagView;
     private TextView dateView;
     private TextView incidentDateView;
@@ -96,10 +100,14 @@ public class ReportViewActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.dashboard_feed_view);
+
+        FontUtil.overrideFonts(this, getWindow().getDecorView());
+
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
         contentWrapper = findViewById(R.id.report_view_content);
         contentWrapper.setVisibility(View.GONE);
         // init views.
+        flagImageView = (ImageView) findViewById(R.id.flag_image_view);
         flagView = (TextView) findViewById(R.id.report_flag);
         dateView = (TextView) findViewById(R.id.report_view_report_date);
         incidentDateView = (TextView) findViewById(R.id.report_view_report_incidentDate);
@@ -160,7 +168,7 @@ public class ReportViewActivity extends ActionBarActivity {
         contentWrapper.setVisibility(View.VISIBLE);
 
         try {
-            setActivityTitleWithReportId(report.getLong("id"));
+            setActivityTitleWithType(report.getString("reportTypeName"));
 
             Bundle bundle = new Bundle();
             bundle.putLong("reportId", Long.parseLong(report.getString("id")));
@@ -188,6 +196,11 @@ public class ReportViewActivity extends ActionBarActivity {
             String projectTelephone = report.getString("createdByProjectMobileNumber");
             createdByProjectTelephoneView.setText(linkify(projectTelephone, "tel:" + projectTelephone));
             createdByProjectTelephoneView.setMovementMethod(LinkMovementMethod.getInstance());
+
+            if (projectTelephone.equals("null")){
+                LinearLayout projectTelephoneLayout = (LinearLayout) findViewById(R.id.reporter_project_telephone_layout);
+                projectTelephoneLayout.setVisibility(View.GONE);
+            }
 
             formDataExplanationView.setText(FeedAdapter.stripHTMLTags(
                     report.getString("formDataExplanation")));
@@ -232,10 +245,13 @@ public class ReportViewActivity extends ActionBarActivity {
                         }
                     }.execute(item.getString("thumbnailUrl"));
                 }
+
+                if (imageListView.getChildCount() == 0){
+                    imageListView.setVisibility(View.GONE);
+                }
             } catch (JSONException e) {
                 // nothing.
             }
-
 
             // Add flag controller
             Long reportFlag;
@@ -244,9 +260,17 @@ public class ReportViewActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 reportFlag = 0L;
             }
+
             flagView.setText(getResources().getStringArray(
                     R.array.flags_optional)[reportFlag.intValue()]);
 
+            if(reportFlag.intValue() == 0){
+                LinearLayout flagLayout = (LinearLayout) findViewById(R.id.flag_layout);
+                flagLayout.setVisibility(View.GONE);
+            }else{
+                Uri flagUri = Uri.parse("android.resource://" + getPackageName() + "/" + FeedAdapter.flagColors[reportFlag.intValue()]);
+                flagImageView.setImageURI(flagUri);
+            }
             // Add follow up if exists.
             if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
@@ -366,9 +390,9 @@ public class ReportViewActivity extends ActionBarActivity {
 
     }
 
-    private void setActivityTitleWithReportId(Long id) {
+    private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
-        setTitle(template.replace(":id", Long.toString(id)));
+        setTitle(template.replace(":type", type));
     }
 
     public static class RemoteImageAsyncTask extends AsyncTask<String, Void, Drawable> {
@@ -537,4 +561,14 @@ public class ReportViewActivity extends ActionBarActivity {
             }
         }.execute(imageUrl);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(0);
+        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        return true;
+    }
+
 }

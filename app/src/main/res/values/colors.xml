@@ -20,7 +20,7 @@
     <color name="list_item_header_text_color">#F0F0F0</color>
     <color name="graph_animal_sick">#A47FB9</color>
     <color name="graph_animal_death">#5B4088</color>
-
+    <color name="view_report_header_bg">#8E519F</color>
     <color name="color_scheme_1_1">#33B5E5</color>
     <color name="color_scheme_1_2">#99CC00</color>
     <color name="color_scheme_1_3">#FFBB33</color>

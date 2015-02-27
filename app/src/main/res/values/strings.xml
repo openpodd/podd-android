@@ -85,6 +85,7 @@
     <string name="reporter_telephone">เบอร์โทรส่วนตัว</string>
     <string name="reporter_project_telephone">เบอร์โทรในโครงการ</string>
     <string name="report_summary">ข้อมูลรายงาน</string>
+    <string name="data_explanation">ข้อมูลแบบสอบถาม</string>
     <string name="form_data_explanation">คำอธิบายรายงาน</string>
 
     <string name="title_activity_main">MainActivity</string>
@@ -93,7 +94,7 @@
     <string name="follow_up_parent">รายงานที่เกี่ยวข้อง (Case)</string>
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
-    <string name="report_activity_title_template">รายงานหมายเลข #:id</string>
+    <string name="report_activity_title_template">รายงาน:type</string>
     <string name="report_select_flag">ติดตามรายงาน :</string>
     <string-array name="flags_optional">
         <item>- เลือก -</item>
@@ -111,5 +112,6 @@
         <item>Case</item>
     </string-array>
     <string name="title_activity_visualization_volunteer">อาสา</string>
+    <string name="comment_date">โพสต์เมื่อ</string>
 
 </resources>
