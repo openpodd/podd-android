@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -85,7 +86,8 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView createdByProjectTelephoneView;
     private TextView formDataExplanationView;
     private ListView followUpListView;
-    private TextView emptyFollowUpListView;
+//    private TextView emptyFollowUpListView;
+    private TextView countFollowUpTextView;
 
     private LinearLayout imageListView;
     private Animator mCurrentAnimator;
@@ -119,8 +121,9 @@ public class ReportViewActivity extends ActionBarActivity {
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
         followUpListView = (ListView) findViewById(R.id.report_follow_up_list);
         followUpListView.setVisibility(View.GONE);
-        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
-        emptyFollowUpListView.setVisibility(View.VISIBLE);
+//        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
+//        emptyFollowUpListView.setVisibility(View.VISIBLE);
+        countFollowUpTextView = (TextView) findViewById(R.id.report_follow_up_count);
         // image list view.
         imageListView = (LinearLayout) findViewById(R.id.report_image_list);
         // Retrieve and cache the system's default "short" animation time.
@@ -236,7 +239,8 @@ public class ReportViewActivity extends ActionBarActivity {
                 }
 
                 if (imageListView.getChildCount() == 0){
-                    imageListView.setVisibility(View.GONE);
+                    HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.report_image_list_scrollview);
+                    horizontalScrollView.setVisibility(View.GONE);
                 }
             } catch (JSONException e) {
                 // nothing.
@@ -272,8 +276,6 @@ public class ReportViewActivity extends ActionBarActivity {
             if (parentId != 0) {
                 TextView reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
                 reportFollowUpTitle.setText(R.string.follow_up_parent);
-
-                emptyFollowUpListView.setVisibility(View.GONE);
 
                 ArrayList<String> textList = new ArrayList<String>();
                 textList.add(Long.toString(report.getLong("parent")));
@@ -352,7 +354,10 @@ public class ReportViewActivity extends ActionBarActivity {
                             startActivityForResult(intent, 0);
                         }
                     });
-                    emptyFollowUpListView.setVisibility(View.GONE);
+                    if (textList.size() > 0){
+                        countFollowUpTextView.setText(textList.size() + "");
+                    }
+
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON data", e);
                 }

@@ -313,6 +313,12 @@
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
+                        <ProgressBar
+                            style="?android:attr/progressBarStyleLarge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/progressBar2" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -344,6 +350,13 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <ImageView
+                        android:id="@+id/expanded_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#DD000000"
+                        android:visibility="invisible"/>
+
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_marginLeft="13dp"
@@ -353,24 +366,54 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/report_follow_up_title"
-                            android:text="@string/follow_up_reports"
-                            android:textStyle="bold"
-                            android:textSize="15sp"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content" />
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:background="@drawable/round_corner"
+                            android:layout_width="match_parent"
+                            android:layout_height="33dp">
+
+                            <TextView
+                                android:id="@+id/report_follow_up_title"
+                                android:text="@string/follow_up_reports"
+                                android:textStyle="bold"
+                                android:textSize="15sp"
+                                android:layout_marginLeft="13dp"
+                                android:layout_weight="1"
+                                android:layout_gravity="center_vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <RelativeLayout
+                                android:background="@drawable/circle"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginRight="13dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp">
+                                <TextView
+                                    android:id="@+id/report_follow_up_count"
+                                    android:textColor="@color/white"
+                                    android:textSize="15sp"
+                                    android:text="0"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </RelativeLayout>
+                        </LinearLayout>
+
                         <ListView
                             android:id="@+id/report_follow_up_list"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"></ListView>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/empty_follow_up_list_text"
-                            android:text="@string/empty_follow_up_list"
-                            android:textSize="15sp"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content" />
+                        </ListView>
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/empty_follow_up_list_text"-->
+                            <!--android:text="@string/empty_follow_up_list"-->
+                            <!--android:textSize="15sp"-->
+                            <!--android:layout_width="fill_parent"-->
+                            <!--android:layout_height="wrap_content" />-->
                     </LinearLayout>
 
                 </LinearLayout>
@@ -437,12 +480,5 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
-
-    <ImageView
-        android:id="@+id/expanded_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#DD000000"
-        android:visibility="invisible"/>
 
 </RelativeLayout>
