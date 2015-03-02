@@ -58,6 +58,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -458,22 +459,40 @@ public class ReportImageFragment extends Fragment {
             selectedImagePath = uri.getPath();
         } else {
             cursor.moveToFirst();
+            Log.d(TAG, "column0 = " + cursor.getColumnName(0) + ",column1 = " + cursor.getColumnName(1) + ",column2 = " + cursor.getColumnName(2));
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-            selectedImagePath = cursor.getString(idx);
+            if (idx >= 0) {
+                selectedImagePath = cursor.getString(idx);
+            }
         }
 
-        Bitmap thumb1 =  ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(selectedImagePath), 400, 400);
+        Bitmap thumb1,thumb2 = null;
+        if (selectedImagePath == null) {
+            if (uri.toString().startsWith("content://com.google.android.apps.photos.content")) {
+                try {
+                    InputStream is = getActivity().getContentResolver().openInputStream(uri);
+                    thumb2 = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeStream(is), 400, 400);
 
-        int rotate = neededRotation(new File(selectedImagePath));
-        Bitmap thumb2 = null;
-        if (rotate != 0) {
-            Matrix m = new Matrix();
-            m.postRotate(rotate);
-            thumb2 = thumb1.createBitmap(thumb1, 0, 0, 400, 400, m, true);
-            thumb1.recycle();
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "can't fetch image from google plus", e);
+                }
+            }
         } else {
-            thumb2 = thumb1;
+            thumb1 =  ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(selectedImagePath), 400, 400);
+            int rotate = neededRotation(new File(selectedImagePath));
+            thumb2 = null;
+            if (rotate != 0) {
+                Matrix m = new Matrix();
+                m.postRotate(rotate);
+                thumb2 = thumb1.createBitmap(thumb1, 0, 0, 400, 400, m, true);
+                thumb1.recycle();
+            } else {
+                thumb2 = thumb1;
+            }
         }
+
+
+
 
         return thumb2;
     }
