@@ -89,7 +89,7 @@
     <string name="form_data_explanation">คำอธิบายรายงาน</string>
 
     <string name="title_activity_main">MainActivity</string>
-    <string name="follow_up_reports">รายงานที่เกี่ยวข้อง (Follow-up)</string>
+    <string name="follow_up_reports">รายงานที่เกี่ยวข้อง</string>
     <string name="comment_reports">ความคิดเห็น</string>
     <string name="follow_up_parent">รายงานที่เกี่ยวข้อง (Case)</string>
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>

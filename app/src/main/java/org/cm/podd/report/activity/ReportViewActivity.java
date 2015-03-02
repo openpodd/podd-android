@@ -215,8 +215,11 @@ public class ReportViewActivity extends ActionBarActivity {
 
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
+                    int widthRootView = getResources().getDisplayMetrics().widthPixels;
+                    int widthMargin = StyleUtil.convertDpToPx(23.0F, getResources().getDisplayMetrics());
+
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            StyleUtil.convertDpToPx(232.50F, getResources().getDisplayMetrics()),
+                            widthRootView - 2 * widthMargin,
                             StyleUtil.convertDpToPx(157.50F, getResources().getDisplayMetrics()));
                     layoutParams.setMargins(0, 0,
                             StyleUtil.convertDpToPx(10F, getResources().getDisplayMetrics()), 0);
