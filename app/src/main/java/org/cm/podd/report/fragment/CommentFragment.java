@@ -151,7 +151,7 @@ public class CommentFragment extends Fragment {
 
             TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
             createdAtTextView.setTypeface(face);
-            createdAtTextView.setText(getString(R.string.comment_date) + DateUtil.convertToThaiDateTime(date));
+            createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.convertToThaiDateTime(date));
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 
