@@ -100,6 +100,7 @@ public class DataSubmitService extends IntentService {
 
                 Log.d(TAG, String.format("type= %s, report id= %d, image id= %d", type, reportId, imageId));
                 boolean success = false;
+                boolean forceSkipUpload = false;
 
                 if (type.equals(ReportQueueDataSource.DATA_TYPE)) {
                     // get report data
@@ -124,20 +125,24 @@ public class DataSubmitService extends IntentService {
                     if (image != null) {
                         String uriStr = image.getImageUri();
                         Uri uri = Uri.parse(uriStr);
-                        String filePath;
+                        String filePath = null;
 
                         // find image file path
                         Cursor c = getContentResolver().query(uri, null, null, null, null);
                         if (c == null) {
                             filePath = uri.getPath();
                         } else {
-                            c.moveToFirst();
-                            int idx = c.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                            filePath = c.getString(idx);
-                            c.close();
+                            if (c.moveToFirst()) { // กรณีรูปลบไปก่อนที่จะ upload จะไม่มีรูป
+                                int idx = c.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                                filePath = c.getString(idx);
+                                c.close();
+                            } else {
+                                forceSkipUpload = true;
+                            }
                         }
-
-                        success = uploadToS3(image.getGuid(), filePath, image.getThumbnail());
+                        if (filePath != null) {
+                            success = uploadToS3(image.getGuid(), filePath, image.getThumbnail());
+                        }
 
                         // submit image bytes
                         if (success) {
@@ -156,9 +161,13 @@ public class DataSubmitService extends IntentService {
                     startService(syncIntent);
                 }
 
-                if (success) {
+                if (success || forceSkipUpload) {
                     // After queue was submitted successfully then remove it
-                    Log.i(TAG, "success! submit report " + type);
+                    if (success) {
+                        Log.i(TAG, "success! submit report " + type);
+                    } else {
+                        Log.i(TAG, "force skip upload! report " + type);
+                    }
                     queueDataSource.remove(id);
                 }
             }
