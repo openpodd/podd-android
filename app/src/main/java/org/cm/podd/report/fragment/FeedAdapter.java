@@ -1,6 +1,8 @@
 package org.cm.podd.report.fragment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -11,15 +13,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.cm.podd.report.R;
+import org.cm.podd.report.TouchHighlightImageButton;
+import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -38,12 +46,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
 
     public static final int[] flagColors = new int[]{
-        R.drawable.icon_flag,
-        R.drawable.icon_flag_ignore,
-        R.drawable.icon_flag_ok,
-        R.drawable.icon_flag_contact,
-        R.drawable.icon_flag_follow,
-        R.drawable.icon_flag_case
+        R.drawable.blank,
+        R.drawable.flag_ignore,
+        R.drawable.flag_ok,
+        R.drawable.flag_contact,
+        R.drawable.flag_follow,
+        R.drawable.flag_case
 
     };
     
@@ -59,6 +67,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         private final TextView timeagoView;
         private final TextView descriptionView;
         private final TextView addressView;
+        private final RelativeLayout thumbnailViewWrapper;
+        private final ImageView thumbnailView;
 
         public ViewHolder(View v) {
             super(v);
@@ -73,6 +83,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             timeagoView = (TextView) v.findViewById(R.id.df_item_timeago);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
             addressView = (TextView) v.findViewById(R.id.df_item_address);
+            thumbnailViewWrapper = (RelativeLayout) v.findViewById(R.id.df_item_thumbnail_wrapper);
+            thumbnailView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
         }
 
         public CardView getCardView() {
@@ -101,6 +113,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         public TextView getAddressView() {
             return addressView;
+        }
+
+        public ImageView getThumbnailView() {
+            return thumbnailView;
+        }
+
+        public RelativeLayout getThumbnailViewWrapper() {
+            return thumbnailViewWrapper;
         }
     }
 
@@ -140,6 +160,28 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                     mListener.onClick(view, position);
                 }
             });
+
+            // set thumbnail.
+            RelativeLayout thumbnailViewWrapper = viewHolder.getThumbnailViewWrapper();
+            ImageView thumbnailView = viewHolder.getThumbnailView();
+            String thumbnailUrl;
+            try {
+                thumbnailUrl = report.getString("firstImageThumbnail");
+                if (!thumbnailUrl.isEmpty()) {
+                    thumbnailViewWrapper.setVisibility(View.VISIBLE);
+
+                    Picasso.with(viewHolder.getContext())
+                            .load(thumbnailUrl)
+                            .fit()
+                            .centerCrop()
+                            .into(thumbnailView);
+                } else {
+                    thumbnailViewWrapper.setVisibility(View.GONE);
+                }
+            } catch (JSONException e) {
+                thumbnailViewWrapper.setVisibility(View.GONE);
+            }
+
             
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);

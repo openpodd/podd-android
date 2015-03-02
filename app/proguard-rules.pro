@@ -62,6 +62,7 @@
 -dontwarn org.ietf.jgss.**
 -dontwarn org.joda.convert.**
 -dontwarn org.w3c.dom.bootstrap.**
+-dontwarn com.squareup.okhttp.**
 
 -dontwarn com.amazonaws.services.s3.**
 

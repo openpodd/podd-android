@@ -105,6 +105,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:21.0.3'
     compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'de.hdodenhof:circleimageview:1.2.2'
+    compile 'com.squareup.picasso:picasso:2.5.0'
     compile files('libs/aws-android-sdk-2.1.5-core.jar')
     compile files('libs/aws-android-sdk-2.1.5-s3.jar')
     compile files('libs/gson-2.1.jar')
