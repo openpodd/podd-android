@@ -164,7 +164,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
                     Picasso.with(viewHolder.getContext())
                             .load(thumbnailUrl)
-                            .resizeDimen(R.dimen.feed_image_width, R.dimen.feed_image_height)
+                            .fit()
                             .centerCrop()
                             .into(thumbnailView);
                 } else {
