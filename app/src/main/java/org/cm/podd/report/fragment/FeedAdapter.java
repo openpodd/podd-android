@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -66,6 +67,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         private final TextView timeagoView;
         private final TextView descriptionView;
         private final TextView addressView;
+        private final RelativeLayout thumbnailViewWrapper;
         private final ImageView thumbnailView;
 
         public ViewHolder(View v) {
@@ -81,6 +83,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             timeagoView = (TextView) v.findViewById(R.id.df_item_timeago);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
             addressView = (TextView) v.findViewById(R.id.df_item_address);
+            thumbnailViewWrapper = (RelativeLayout) v.findViewById(R.id.df_item_thumbnail_wrapper);
             thumbnailView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
         }
 
@@ -114,6 +117,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         public ImageView getThumbnailView() {
             return thumbnailView;
+        }
+
+        public RelativeLayout getThumbnailViewWrapper() {
+            return thumbnailViewWrapper;
         }
     }
 
@@ -155,12 +162,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             });
 
             // set thumbnail.
+            RelativeLayout thumbnailViewWrapper = viewHolder.getThumbnailViewWrapper();
             ImageView thumbnailView = viewHolder.getThumbnailView();
             String thumbnailUrl;
             try {
                 thumbnailUrl = report.getString("firstImageThumbnail");
                 if (!thumbnailUrl.isEmpty()) {
-                    thumbnailView.setVisibility(View.VISIBLE);
+                    thumbnailViewWrapper.setVisibility(View.VISIBLE);
 
                     Picasso.with(viewHolder.getContext())
                             .load(thumbnailUrl)
@@ -168,10 +176,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                             .centerCrop()
                             .into(thumbnailView);
                 } else {
-                    thumbnailView.setVisibility(View.GONE);
+                    thumbnailViewWrapper.setVisibility(View.GONE);
                 }
             } catch (JSONException e) {
-                thumbnailView.setVisibility(View.GONE);
+                thumbnailViewWrapper.setVisibility(View.GONE);
             }
 
             
