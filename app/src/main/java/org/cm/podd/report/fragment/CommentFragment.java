@@ -18,6 +18,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,6 +35,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -63,13 +65,16 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CommentFragment extends ListFragment {
+public class CommentFragment extends Fragment {
 
     private static final String TAG = "CommentFragment";
 
     CommentDataSource commentDataSource;
-    private commentAdapter adapter;
+
+//    private commentAdapter adapter;
     private long reportId;
+    private LinearLayout listView;
+    private TextView emptyText;
 
     public CommentFragment() {
     }
@@ -83,8 +88,7 @@ public class CommentFragment extends ListFragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             ArrayList<Comment> items = getAll();
-            adapter = new commentAdapter(context, R.layout.list_item_comment, items);
-            setListAdapter(adapter);
+            refreshAdapter();
         }
     };
 
@@ -108,14 +112,67 @@ public class CommentFragment extends ListFragment {
     }
 
     public void refreshAdapter() {
-        adapter = new commentAdapter(getActivity(), R.layout.list_item_comment, commentDataSource.getAllFromReport(reportId));
-        setListAdapter(adapter);
+//        adapter = new commentAdapter(getActivity(), R.layout.list_item_comment, commentDataSource.getAllFromReport(reportId));
+//        setListAdapter(adapter);
+        listView.removeAllViews();
+        
+        ArrayList<Comment> comments = getAll();
+
+        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+        emptyText.setText("ไม่พบความคิดเห็น");
+
+        if (comments.size() == 0){
+            emptyText.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+
+        for (int i = 0; i< comments.size(); i++){
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            View view = inflater.inflate(R.layout.list_item_comment, null, false);
+
+            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
+            createdByTextView.setTypeface(face, Typeface.BOLD);
+            createdByTextView.setText(comments.get(i).getCreatedBy());
+
+            TextView messageTextView = (TextView) view.findViewById(R.id.message);
+            messageTextView.setTypeface(face);
+            messageTextView.setText(comments.get(i).getMessage());
+
+            Date date = null;
+            String dateText = comments.get(i).getCreatedAt();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+            try {
+                date = format.parse(dateText);
+            } catch (ParseException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
+            createdAtTextView.setTypeface(face);
+            createdAtTextView.setText(getString(R.string.comment_date) + DateUtil.convertToThaiDateTime(date));
+
+            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
+
+            if (!comments.get(i).getAvatarCreatedBy().equals(null)){
+                new ImageDownloader(avatarCreatedByView).execute(comments.get(i).getAvatarCreatedBy());
+            }
+
+            if (i == comments.size() -1){
+                LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
+                line.setVisibility(View.GONE);
+            }
+            listView.addView(view);
+        }
+
+        emptyText.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-    }
+//    @Override
+//    public void onListItemClick(ListView l, View v, int position, long id) {
+//        super.onListItemClick(l, v, position, id);
+//    }
 
     @Override
     public void onDestroy() {
@@ -132,76 +189,76 @@ public class CommentFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comment, container, false);
-        final ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
+        listView = (LinearLayout) view.findViewById(R.id.list);
+//        ViewGroup parent = (ViewGroup) listView.getParent();
 
-        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่พบความคิดเห็น");
-        emptyText.setVisibility(View.GONE);
+        emptyText = (TextView) view.findViewById(android.R.id.empty);
+//        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
+//        emptyText.setText("ไม่พบความคิดเห็น");
+//        emptyText.setVisibility(View.GONE);
 
-        listView.setEmptyView(emptyText);
-        listView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                listView.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });
-
+//        listView.setEmptyView(emptyText);
+//        listView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                listView.getParent().requestDisallowInterceptTouchEvent(true);
+//                return false;
+//            }
+//        });
+        refreshAdapter();
         return view;
     }
 
     /**
      * List Adapter
      */
-    private class commentAdapter extends ArrayAdapter<Comment> {
-
-        Context context;
-        int resource;
-        Typeface face;
-
-        public commentAdapter(Context context, int resource, List<Comment> originalData) {
-            super(context, resource, originalData);
-            this.context = context;
-            this.resource = resource;
-            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(this.resource, parent, false);
-
-            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
-            createdByTextView.setTypeface(face, Typeface.BOLD);
-            createdByTextView.setText(getItem(position).getCreatedBy());
-
-            TextView messageTextView = (TextView) view.findViewById(R.id.message);
-            messageTextView.setTypeface(face);
-            messageTextView.setText(getItem(position).getMessage());
-
-            Date date = null;
-            String dateText = getItem(position).getCreatedAt();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
-            try {
-                date = format.parse(dateText);
-            } catch (ParseException e) {
-                Log.e(TAG, e.toString());
-            }
-
-            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
-            createdAtTextView.setTypeface(face);
-            createdAtTextView.setText(getString(R.string.comment_date) + DateUtil.convertToThaiDateTime(date));
-
-            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
-
-            if(!getItem(position).getAvatarCreatedBy().equals(null)){
-                new ImageDownloader(avatarCreatedByView).execute(getItem(position).getAvatarCreatedBy());
-            }
-            return view;
-        }
-    }
+//    private class commentAdapter extends ArrayAdapter<Comment> {
+//
+//        Context context;
+//        int resource;
+//        Typeface face;
+//
+//        public commentAdapter(Context context, int resource, List<Comment> originalData) {
+//            super(context, resource, originalData);
+//            this.context = context;
+//            this.resource = resource;
+//            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
+//        }
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            LayoutInflater inflater = LayoutInflater.from(context);
+//            View view = inflater.inflate(this.resource, parent, false);
+//
+//            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
+//            createdByTextView.setTypeface(face, Typeface.BOLD);
+//            createdByTextView.setText(getItem(position).getCreatedBy());
+//
+//            TextView messageTextView = (TextView) view.findViewById(R.id.message);
+//            messageTextView.setTypeface(face);
+//            messageTextView.setText(getItem(position).getMessage());
+//
+//            Date date = null;
+//            String dateText = getItem(position).getCreatedAt();
+//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+//            try {
+//                date = format.parse(dateText);
+//            } catch (ParseException e) {
+//                Log.e(TAG, e.toString());
+//            }
+//
+//            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
+//            createdAtTextView.setTypeface(face);
+//            createdAtTextView.setText(getString(R.string.comment_date) + DateUtil.convertToThaiDateTime(date));
+//
+//            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
+//
+//            if(!getItem(position).getAvatarCreatedBy().equals(null)){
+//                new ImageDownloader(avatarCreatedByView).execute(getItem(position).getAvatarCreatedBy());
+//            }
+//            return view;
+//        }
+//    }
 
     class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
@@ -232,6 +289,5 @@ public class CommentFragment extends ListFragment {
         intent.putExtra("reportId", reportId);
         getActivity().startService(intent);
     }
-
 
 }
