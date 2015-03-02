@@ -63,7 +63,13 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             VisualizationAdministrationArea item = visualizationAreaDataSource.getFromAreaByMonth(id, month, year);
-            refreshData(item);
+
+            String error = intent.getStringExtra("error");
+            if (error != null && item == null) {
+                Crouton.makeText(VisualizationAreaActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+            } else {
+                refreshData(item);
+            }
         }
     };
 

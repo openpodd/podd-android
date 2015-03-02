@@ -62,7 +62,12 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             VisualizationVolunteer item = visualizationVolunteerDataSource.getFromVolunteerFromMonth(id, month, year);
-            refreshData(item);
+
+            String error = intent.getStringExtra("error");
+            if (error != null && item == null)
+                Crouton.makeText(VisualizationVolunteerActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+            else
+                refreshData(item);
         }
     };
 
