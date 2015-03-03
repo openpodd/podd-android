@@ -43,24 +43,12 @@
                             android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_gravity="center_vertical"
-                                android:layout_width="wrap_content"
+                            <Spinner
+                                android:id="@+id/flag_spinner"
+                                android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="13dp"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginBottom="12dp"
-                                android:id="@+id/flag_image_view" />
-
-                            <TextView
-                                android:id="@+id/report_flag"
-                                android:layout_gravity="center_vertical"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="6dp"
-                                android:textSize="15sp"
-                                android:text="Flag"/>
+                                android:layout_margin="0dp"
+                                android:padding="4dp"></Spinner>
                         </LinearLayout>
 
                         <LinearLayout

@@ -1,7 +1,9 @@
 package org.cm.podd.report.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,11 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
@@ -24,6 +30,7 @@ import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -34,6 +41,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by siriwat on 2/17/15.
@@ -44,6 +52,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private OnItemClickListener mListener;
 
     protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
+    protected HashMap<Long, ViewHolder> viewHolderHashMap = new HashMap<Long, ViewHolder>();
 
     public static final int[] flagColors = new int[]{
         R.drawable.blank,
@@ -58,6 +67,35 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     public FeedAdapter(OnItemClickListener listener) {
         mListener = listener;
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                JSONObject report = new JSONObject(intent.getStringExtra("report"));
+                // check if report matching current existing items.
+                ViewHolder viewHolder = viewHolderHashMap.get(report.getLong("id"));
+                Long flag = report.getLong("flag");
+                viewHolder.getFlagView().setImageResource(flagColors[flag.intValue()]);
+
+                for (int i = 0; i != mDataSet.size(); i++) {
+                    FeedItem item = mDataSet.get(i);
+                    if (item.getItemId() == report.getLong("id")) {
+
+
+//                        JsonObject updatedJson = new JsonObject();
+//                        updatedJson.addProperty("flag", Long.toString(flag));
+//                        updatedJson.addProperty("reportTypeName", report.getString("reportTypeName"));
+//                        updatedJson.addProperty("date", report.getString("date"));
+//                        updatedJson.addProperty("formDataExplanation", report.getString("formDataExplanation"));
+//                        updatedJson.addProperty("administrationAreaAddress", report.getString("administrationAreaAddress"));
+                    }
+                }
+            } catch (JSONException e) {
+                // skip.
+            }
+        }
+    };
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
@@ -182,6 +220,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 thumbnailViewWrapper.setVisibility(View.GONE);
             }
 
+            viewHolderHashMap.put(feedItem.getItemId(), viewHolder);
             
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
