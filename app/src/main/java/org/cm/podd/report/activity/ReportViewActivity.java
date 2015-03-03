@@ -277,6 +277,7 @@ public class ReportViewActivity extends ActionBarActivity {
                 reportFlag = 0L;
             }
             currentFlag = reportFlag;
+            oldFlag = reportFlag;
 
             // Flag spinner.
             mFlagAdapter = new HintAdapter(getApplicationContext(),
@@ -290,7 +291,7 @@ public class ReportViewActivity extends ActionBarActivity {
             flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (position != mFlagAdapter.getCount()) {
+                    if (position != mFlagAdapter.getCount() && !oldFlag.equals(currentFlag)) {
                         updateFlag(Long.parseLong(Integer.toString(position + 1)));
                     } else {
                         // do nothings.
