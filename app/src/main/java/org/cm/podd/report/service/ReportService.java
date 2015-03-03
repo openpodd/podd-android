@@ -30,6 +30,7 @@ public class ReportService extends IntentService {
 
     public static final String ACTION_FETCH = "podd.report.fetch";
     public static final String ACTION_FETCH_DONE = "podd.report.fetch.done";
+    public static final String ACTION_FLAG_SET_DONE = "podd.report.flag.set.done";
 
     public static final String PARAM_REPORT_ID = "id";
 

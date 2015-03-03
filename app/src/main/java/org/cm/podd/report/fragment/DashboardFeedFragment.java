@@ -22,8 +22,12 @@ import android.widget.ProgressBar;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
+import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FilterService;
+import org.cm.podd.report.service.ReportService;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,6 +46,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected FeedAdapter mAdapter;
     protected ProgressBar mProgressBar;
 
+    private final static int DEFAULT_PAGE_SIZE = 800;
+
     private FeedItemDataSource feedItemDataSource;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -53,11 +59,25 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         }
     };
 
+    private BroadcastReceiver mFlagSetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Long reportId = intent.getLongExtra("reportId", 0);
+            Long flag = intent.getLongExtra("flag", 0);
+
+            FeedAdapter.ViewHolder viewHolder = mAdapter.viewHolderHashMap.get(reportId);
+            if (viewHolder != null) {
+                viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
+            }
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         feedItemDataSource = new FeedItemDataSource(getActivity().getApplicationContext());
         getActivity().registerReceiver(mReceiver, new IntentFilter(FilterService.ACTION_QUERY_DONE));
+        getActivity().registerReceiver(mFlagSetReceiver, new IntentFilter(ReportService.ACTION_FLAG_SET_DONE));
     }
 
     @Override
@@ -109,6 +129,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     public void onDestroyView() {
         super.onDestroyView();
         getActivity().unregisterReceiver(mReceiver);
+        getActivity().unregisterReceiver(mFlagSetReceiver);
     }
 
     @Override
@@ -137,7 +158,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     }
 
     private void refreshAdapter() {
-        mAdapter.mDataSet = feedItemDataSource.latest();
+        mAdapter.mDataSet = feedItemDataSource.latest(DEFAULT_PAGE_SIZE);
         mAdapter.notifyDataSetChanged();
     }
 

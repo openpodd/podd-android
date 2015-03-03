@@ -111,6 +111,14 @@
         <item>Follow</item>
         <item>Case</item>
     </string-array>
+    <string-array name="flags_with_hint">
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+        <item>- ตั้งค่ารายงาน -</item>
+    </string-array>
     <string name="title_activity_visualization_volunteer">อาสา</string>
     <string name="comment_date">โพสต์เมื่อ</string>
     <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>

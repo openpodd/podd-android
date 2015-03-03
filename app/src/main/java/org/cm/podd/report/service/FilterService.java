@@ -148,6 +148,12 @@ public class FilterService extends IntentService {
         List<NameValuePair> params = new LinkedList<NameValuePair>();
         String queryString = null;
 
+        // Limit only last 2 weeks.
+        if (query == null) {
+            query = "";
+        }
+        query += " date:last 14 days ";
+
         // Prepare query parameters
         if (!query.isEmpty() || !timezone.isEmpty()) {
             if (!query.isEmpty()) {

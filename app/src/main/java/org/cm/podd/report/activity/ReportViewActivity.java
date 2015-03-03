@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.text.Layout;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -53,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by siriwat on 2/23/15.
@@ -61,13 +63,29 @@ public class ReportViewActivity extends ActionBarActivity {
 
     private static final String TAG = "ReportViewActivity";
 
+    private static final int[] flagColors = new int[]{
+            R.drawable.flag_ignore,
+            R.drawable.flag_ok,
+            R.drawable.flag_contact,
+            R.drawable.flag_follow,
+            R.drawable.flag_case,
+            R.drawable.blank,
+
+    };
+
     private Long id;
+    private Long currentFlag;
+    private Long oldFlag;
 
     private ScrollView scrollView;
     private ProgressBar progressBar;
     private View contentWrapper;
+
     private ImageView flagImageView;
     private TextView flagView;
+    private Spinner flagSpinnerView;
+    private HintAdapter mFlagAdapter;
+
     private TextView dateView;
     private TextView incidentDateView;
     private TextView typeView;
@@ -108,8 +126,8 @@ public class ReportViewActivity extends ActionBarActivity {
         contentWrapper = findViewById(R.id.report_view_content);
         contentWrapper.setVisibility(View.GONE);
         // init views.
-        flagImageView = (ImageView) findViewById(R.id.flag_image_view);
-        flagView = (TextView) findViewById(R.id.report_flag);
+        flagSpinnerView = (Spinner) findViewById(R.id.flag_spinner);
+
         dateView = (TextView) findViewById(R.id.report_view_report_date);
         incidentDateView = (TextView) findViewById(R.id.report_view_report_incidentDate);
         typeView = (TextView) findViewById(R.id.report_view_report_type);
@@ -266,17 +284,33 @@ public class ReportViewActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 reportFlag = 0L;
             }
+            currentFlag = reportFlag;
 
-            flagView.setText(getResources().getStringArray(
-                    R.array.flags_optional)[reportFlag.intValue()]);
-
-            if(reportFlag.intValue() == 0){
-                LinearLayout flagLayout = (LinearLayout) findViewById(R.id.flag_layout);
-                flagLayout.setVisibility(View.GONE);
-            }else{
-                Uri flagUri = Uri.parse("android.resource://" + getPackageName() + "/" + FeedAdapter.flagColors[reportFlag.intValue()]);
-                flagImageView.setImageURI(flagUri);
+            // Flag spinner.
+            mFlagAdapter = new HintAdapter(getApplicationContext(),
+                    getResources().getStringArray(R.array.flags_with_hint));
+            flagSpinnerView.setAdapter(mFlagAdapter);
+            if (reportFlag > 0) {
+                flagSpinnerView.setSelection(reportFlag.intValue() - 1);
+            } else {
+                flagSpinnerView.setSelection(mFlagAdapter.getCount());
             }
+            flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position != mFlagAdapter.getCount()) {
+                        updateFlag(Long.parseLong(Integer.toString(position + 1)));
+                    } else {
+                        // do nothings.
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
             // Add follow up if exists.
             if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
@@ -294,20 +328,6 @@ public class ReportViewActivity extends ActionBarActivity {
                 textList.add(Long.toString(report.getLong("parent")));
 
                 refreshFollowUp(textList);
-
-//                followUpItemAdapter = new FollowUpItemAdapter(getApplicationContext(),
-//                        R.layout.list_item_follow_up_report, textList);
-//                followUpListView.setAdapter(followUpItemAdapter);
-//
-//                followUpListView.setVisibility(View.VISIBLE);
-//                followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        Intent intent = new Intent(getApplicationContext(), ReportViewActivity.class);
-//                        intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
-//                        startActivityForResult(intent, 0);
-//                    }
-//                });
             }
 
             final Long reportId = Long.parseLong(report.getString("id"));
@@ -336,12 +356,19 @@ public class ReportViewActivity extends ActionBarActivity {
 
     }
 
-    private void updateFlag(Long flag) {
+    private void updateFlag(final Long flag) {
+        oldFlag = currentFlag;
+
         ReportService.FlagAsyncTask task = new ReportService.FlagAsyncTask() {
             @Override
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 if (resp.getStatusCode() == 201) {
-                    // Do something.
+                    currentFlag = flag;
+                    // notify report data.
+                    Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
+                    intent.putExtra("reportId", id);
+                    intent.putExtra("flag", flag);
+                    sendBroadcast(intent);
                 } else {
                     // Do something.
                 }
@@ -350,6 +377,49 @@ public class ReportViewActivity extends ActionBarActivity {
 
         task.setContext(getApplicationContext());
         task.execute(Long.toString(id), Long.toString(flag));
+    }
+
+    public class HintAdapter extends ArrayAdapter<String> {
+
+        public HintAdapter(Context context, String[] objects) {
+            super(context, android.R.layout.simple_list_item_1, android.R.id.text1, objects);
+        }
+
+        @Override
+        public int getCount() {
+            // don't display last item. It is used as hint.
+            int count = super.getCount();
+            return count > 0 ? count - 1 : count;
+        }
+
+        public int getRealCount() {
+            return super.getCount();
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            return getView(position, convertView, parent);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+            if (convertView != null) {
+                view = convertView;
+            } else {
+                LayoutInflater inflater = LayoutInflater.from(getContext());
+                view = inflater.inflate(R.layout.flag_spinner_item, parent, false);
+            }
+
+            ImageView iconView = (ImageView) view.findViewById(R.id.flag_icon);
+            iconView.setImageResource(flagColors[position]);
+
+            TextView textView = (TextView) view.findViewById(R.id.flag_name);
+            textView.setText(getItem(position));
+
+            return view;
+        }
+
     }
 
     private void fetchFollowUpReports(Long reportId) {
@@ -366,22 +436,6 @@ public class ReportViewActivity extends ActionBarActivity {
                     }
 
                     refreshFollowUp(textList);
-//                    for (int i =0; i < textList.size(); i++){
-//
-//                    }
-//                    followUpItemAdapter = new FollowUpItemAdapter(getContext(),
-//                            R.layout.list_item_follow_up_report, textList);
-//                    followUpListView.setAdapter(followUpItemAdapter);
-//
-//                    followUpListView.setVisibility(View.VISIBLE);
-//                    followUpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            Intent intent = new Intent(context, ReportViewActivity.class);
-//                            intent.putExtra("id", Long.parseLong(followUpItemAdapter.getItem(position)));
-//                            startActivityForResult(intent, 0);
-//                        }
-//                    });
 
 
                 } catch (JSONException e) {
