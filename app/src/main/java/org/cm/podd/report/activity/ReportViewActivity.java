@@ -4,24 +4,18 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -31,54 +25,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Scroller;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
 import org.cm.podd.report.fragment.CommentFragment;
 import org.cm.podd.report.fragment.FeedAdapter;
-import org.cm.podd.report.fragment.VisualizationFragment;
-import org.cm.podd.report.service.CommentService;
-import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by siriwat on 2/23/15.
@@ -105,16 +79,16 @@ public class ReportViewActivity extends ActionBarActivity {
     private LinearLayout followUpListView;
 //    private TextView emptyFollowUpListView;
     private TextView countFollowUpTextView;
-    private CardView sectionViewComment;
-    private EditText commentText;
-    private Button submitCommentText;
 
     private LinearLayout imageListView;
     private LinearLayout sectionPostComment;
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
-    private Fragment commentFragment;
+    private CommentFragment commentFragment;
+
+    private RelativeLayout moveToCommentButton;
+
     private FragmentManager fragmentManager;
     private FollowUpItemAdapter followUpItemAdapter;
 
@@ -145,6 +119,8 @@ public class ReportViewActivity extends ActionBarActivity {
         createdByProjectTelephoneView = (TextView) findViewById(R.id.report_view_reporter_project_telephone);
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
         followUpListView = (LinearLayout) findViewById(R.id.report_follow_up_list);
+
+        moveToCommentButton = (RelativeLayout) findViewById(R.id.move_to_comment);
 //        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
 //        emptyFollowUpListView.setVisibility(View.VISIBLE);
         countFollowUpTextView = (TextView) findViewById(R.id.report_follow_up_count);
@@ -152,42 +128,6 @@ public class ReportViewActivity extends ActionBarActivity {
         imageListView = (LinearLayout) findViewById(R.id.report_image_list);
         // Retrieve and cache the system's default "short" animation time.
         mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-        sectionPostComment = (LinearLayout) findViewById(R.id.section_post_comment);
-        sectionViewComment = (CardView) findViewById(R.id.section_view_comment);
-
-        submitCommentText = (Button) findViewById(R.id.button);
-
-        commentText = (EditText) findViewById(R.id.editText);
-        commentText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commentText.setFocusableInTouchMode(true);
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
-
-        (findViewById(R.id.content)).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int height = scrollView.getHeight() + commentText.getHeight();
-                scrollView.setMinimumHeight(height);
-            }
-        });
-
-        submitCommentText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (RequestDataUtil.hasNetworkConnection(ReportViewActivity.this)) {
-                    if (!commentText.getText().toString().equals(""))
-                        new PostCommentTask().execute((Void[]) null);
-                } else {
-                    Crouton.makeText(ReportViewActivity.this, "Network isn't available. Cannot post comment!", Style.ALERT).show();
-                }
-            }
-        });
-//
-//        commentText.setFocusableInTouchMode();
 
         // register receiver.
         mReceiver = new BroadcastReceiver() {
@@ -360,28 +300,30 @@ public class ReportViewActivity extends ActionBarActivity {
 //                });
             }
 
-            bundle = new Bundle();
-            bundle.putLong("reportId", Long.parseLong(report.getString("id")));
+            final Long reportId = Long.parseLong(report.getString("id"));
+            moveToCommentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    commentText.setFocusableInTouchMode(true);
+//                    commentText.setFocusable(true);
+//
+//                    commentText.requestFocus();
+//                    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    inputMethodManager.showSoftInput(commentText, InputMethodManager.SHOW_IMPLICIT);
+                    Intent intent = new Intent(ReportViewActivity.this, ReportCommentActivity.class);
+                    intent.putExtra("reportId", reportId);
+                    startActivity(intent);
+//                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
 
-            refreshComment();
-            refreshComment();
-
+           moveToCommentButton.setVisibility(View.VISIBLE);
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         } catch (IllegalStateException e){
             Log.e(TAG, "Error IllegalStateException", e);
         }
 
-    }
-
-    private void refreshComment(){
-        commentFragment = new CommentFragment();
-        commentFragment.setArguments(bundle);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_comment, commentFragment, commentFragment.getClass().getSimpleName())
-                .commit();
     }
 
     private void updateFlag(Long flag) {
@@ -501,6 +443,7 @@ public class ReportViewActivity extends ActionBarActivity {
         }
 
     }
+
 
     private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
@@ -674,57 +617,6 @@ public class ReportViewActivity extends ActionBarActivity {
         }.execute(imageUrl);
     }
 
-    /**
-     * Post comment
-     */
-    public class PostCommentTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
-            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
-            String accessToken = sharedPrefUtil.getAccessToken();
-
-            String reqData = null;
-            try {
-                JSONObject json = new JSONObject();
-                json.put("reportId", id);
-                json.put("message", commentText.getText().toString());
-                reqData = json.toString();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return RequestDataUtil.post("/reportComments/", null, reqData, accessToken);
-        }
-
-        @Override
-        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-            super.onPostExecute(resp);
-            JSONObject obj = resp.getJsonObject();
-            if (resp.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
-                commentText.setText("");
-                refreshComment();
-            } else {
-                // alert error
-
-                Log.e(TAG, resp.getStatusCode() + "" + resp.getJsonObject());
-
-                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(ReportViewActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
-                } else {
-                    Crouton.makeText(ReportViewActivity.this, "Cannot post comment!", Style.ALERT).show();
-                }
-
-            }
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -735,10 +627,6 @@ public class ReportViewActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == android.R.id.home){
-            this.finish();
             return true;
         }
 

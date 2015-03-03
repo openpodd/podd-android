@@ -1,0 +1,88 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="org.cm.podd.report.activity.ReportCommentActivity">
+
+    <RelativeLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/list" />
+
+        </ScrollView>
+
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:text="ไม่พบความคิดเห็น">
+        </TextView>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/section_post_comment"
+        android:background="@color/report_row_bg"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:background="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height=".5dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:hint="แสดงความคิดเห็น"
+                android:focusable="false"
+                android:id="@+id/editText" />
+
+            <LinearLayout
+                android:id="@+id/submit"
+                android:clickable="true"
+                android:background="@color/view_report_header_bg"
+                android:layout_marginRight="13dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/imageButton"
+                    android:src="@drawable/ic_post_comment" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

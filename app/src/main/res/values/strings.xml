@@ -118,5 +118,6 @@
     <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
     <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
     <string name="thumbnail_description">Thumbnail image</string>
+    <string name="title_activity_comment">ความคิดเห็น</string>
 
 </resources>
