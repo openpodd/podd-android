@@ -17,10 +17,8 @@
 
 package org.cm.podd.report.model.view;
 
-import android.R;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,9 +62,11 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.simple_list_item_multiple_choice, viewGroup, false);
+            view = inflater.inflate(org.cm.podd.report.R.layout.multi_line_item, viewGroup, false);
         }
         CheckedTextView ctv = (CheckedTextView) view;
+        ctv.setSingleLine(false);
+
         // Remove android checkbox
         ctv.setCheckMarkDrawable(0);
         if (question.getSelectionType() == MultipleChoiceSelection.MULTIPLE) {
@@ -75,7 +75,7 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
             ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_single_state, 0, 0, 0);
         }
         MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
-        ctv.setText(item.getText());
+        ctv.setText(item.getText().replaceAll("\\\\n", "\n"));
         ctv.setPadding(0, 0, 0, 24);
         ctv.setTextAppearance(this.context, org.cm.podd.report.R.style.ReportTextLabel);
         ctv.setTypeface(StyleUtil.getDefaultTypeface(this.context.getAssets(), Typeface.NORMAL));
