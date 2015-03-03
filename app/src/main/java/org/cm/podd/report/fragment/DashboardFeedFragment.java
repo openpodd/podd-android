@@ -46,6 +46,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected FeedAdapter mAdapter;
     protected ProgressBar mProgressBar;
 
+    private final static int DEFAULT_PAGE_SIZE = 800;
+
     private FeedItemDataSource feedItemDataSource;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -156,7 +158,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     }
 
     private void refreshAdapter() {
-        mAdapter.mDataSet = feedItemDataSource.latest();
+        mAdapter.mDataSet = feedItemDataSource.latest(DEFAULT_PAGE_SIZE);
         mAdapter.notifyDataSetChanged();
     }
 
