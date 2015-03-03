@@ -68,35 +68,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         mListener = listener;
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            try {
-                JSONObject report = new JSONObject(intent.getStringExtra("report"));
-                // check if report matching current existing items.
-                ViewHolder viewHolder = viewHolderHashMap.get(report.getLong("id"));
-                Long flag = report.getLong("flag");
-                viewHolder.getFlagView().setImageResource(flagColors[flag.intValue()]);
-
-                for (int i = 0; i != mDataSet.size(); i++) {
-                    FeedItem item = mDataSet.get(i);
-                    if (item.getItemId() == report.getLong("id")) {
-
-
-//                        JsonObject updatedJson = new JsonObject();
-//                        updatedJson.addProperty("flag", Long.toString(flag));
-//                        updatedJson.addProperty("reportTypeName", report.getString("reportTypeName"));
-//                        updatedJson.addProperty("date", report.getString("date"));
-//                        updatedJson.addProperty("formDataExplanation", report.getString("formDataExplanation"));
-//                        updatedJson.addProperty("administrationAreaAddress", report.getString("administrationAreaAddress"));
-                    }
-                }
-            } catch (JSONException e) {
-                // skip.
-            }
-        }
-    };
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
         private final CardView cardView;
