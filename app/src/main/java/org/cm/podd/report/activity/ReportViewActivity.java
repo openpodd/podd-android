@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -37,7 +38,6 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
-import org.cm.podd.report.fragment.CommentFragment;
 import org.cm.podd.report.fragment.FeedAdapter;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
@@ -85,8 +85,8 @@ public class ReportViewActivity extends ActionBarActivity {
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
-    private CommentFragment commentFragment;
-
+    private RelativeLayout sectionComment;
+    private LinearLayout alertComment;
     private RelativeLayout moveToCommentButton;
 
     private FragmentManager fragmentManager;
@@ -120,6 +120,8 @@ public class ReportViewActivity extends ActionBarActivity {
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
         followUpListView = (LinearLayout) findViewById(R.id.report_follow_up_list);
 
+        sectionComment = (RelativeLayout) findViewById(R.id.section_comment);
+        alertComment = (LinearLayout) findViewById(R.id.alert_comment);
         moveToCommentButton = (RelativeLayout) findViewById(R.id.move_to_comment);
 //        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
 //        emptyFollowUpListView.setVisibility(View.VISIBLE);
@@ -150,6 +152,14 @@ public class ReportViewActivity extends ActionBarActivity {
 
         id = getIntent().getLongExtra(ReportService.PARAM_REPORT_ID, 0);
         ReportService.doFetch(getApplicationContext(), id);
+
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                alertComment.setVisibility(View.INVISIBLE);
+                return false;
+            };
+        });
     }
 
     @Override
@@ -317,7 +327,7 @@ public class ReportViewActivity extends ActionBarActivity {
                 }
             });
 
-           moveToCommentButton.setVisibility(View.VISIBLE);
+            sectionComment.setVisibility(View.VISIBLE);
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         } catch (IllegalStateException e){
@@ -627,6 +637,10 @@ public class ReportViewActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home){
+            this.finish();
             return true;
         }
 

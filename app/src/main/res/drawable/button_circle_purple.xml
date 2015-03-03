@@ -7,7 +7,7 @@ android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval" >
             <solid android:color="@color/selected_image_mask"/>
-            <stroke android:width=".5dp" android:color="@color/report_row_type" />
+            <stroke android:width=".5dp" android:color="@color/report_row_divider" />
             <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp" />
         </shape>
     </item>
@@ -15,7 +15,7 @@ android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval" >
             <solid android:color="@color/selected_image_mask"/>
-            <stroke android:width=".5dp" android:color="@color/report_row_type" />
+            <stroke android:width=".5dp" android:color="@color/report_row_divider" />
             <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp" />
         </shape>
     </item>
@@ -23,7 +23,7 @@ android:exitFadeDuration="@android:integer/config_mediumAnimTime" >
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval" >
             <solid android:color="@color/view_report_header_bg"/>
-            <stroke android:width=".5dp" android:color="@color/black" />
+            <stroke android:width=".5dp" android:color="@color/report_row_divider" />
             <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp" />
         </shape>
     </item>
