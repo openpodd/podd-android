@@ -40,6 +40,7 @@ public class SharedPrefUtil {
     public static final String GCM_REGISTRATION_ID = "gcm_registration_id";
     public static final String GCM_APP_VERSION = "gcm_app_version";
     public static final String PROFILE_IMAGE_FILE_PATH = "profile_image_file_path";
+    public static final String IS_VOLUNTEER = "is_volunteer";
     private static final String TAG = "SharedPrefUtil";
 
     private SharedPreferences sharedPrefs;
@@ -138,6 +139,16 @@ public class SharedPrefUtil {
     public void setProfileImageFilePath(String filePath) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(PROFILE_IMAGE_FILE_PATH, filePath);
+        editor.commit();
+    }
+
+    public Boolean getIsVolunteer() {
+        return sharedPrefs.getBoolean(IS_VOLUNTEER, true);
+    }
+
+    public void setIsVolunteer(Boolean isVolunteer) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean(IS_VOLUNTEER, isVolunteer);
         editor.commit();
     }
 }

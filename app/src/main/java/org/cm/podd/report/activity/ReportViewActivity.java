@@ -50,6 +50,7 @@ import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,6 +91,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private View contentWrapper;
 
+    private LinearLayout flagReadOnlyView;
     private ImageView flagImageView;
     private TextView flagView;
     private Spinner flagSpinnerView;
@@ -126,6 +128,8 @@ public class ReportViewActivity extends ActionBarActivity {
     private BroadcastReceiver mReceiver;
     private Bundle bundle;
 
+    private SharedPrefUtil sharedPrefUtil;
+
     // quick fix.
     private Long selectedCaseId;
 
@@ -144,6 +148,9 @@ public class ReportViewActivity extends ActionBarActivity {
         // init views.
 
         // Flag.
+        flagReadOnlyView = (LinearLayout) findViewById(R.id.flag_read_only);
+        flagView = (TextView) findViewById(R.id.flag_name);
+        flagImageView = (ImageView) findViewById(R.id.flag_icon);
         flagSpinnerView = (Spinner) findViewById(R.id.flag_spinner);
         caseDialog = (RelativeLayout) findViewById(R.id.case_dialog);
         caseRadioGroup = (RadioGroup) findViewById(R.id.case_radio);
@@ -171,6 +178,9 @@ public class ReportViewActivity extends ActionBarActivity {
         imageListView = (LinearLayout) findViewById(R.id.report_image_list);
         // Retrieve and cache the system's default "short" animation time.
         mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        // Preference
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
         // register receiver.
         mReceiver = new BroadcastReceiver() {
@@ -314,6 +324,23 @@ public class ReportViewActivity extends ActionBarActivity {
             oldFlag = reportFlag;
 
             // Flag spinner.
+            if (sharedPrefUtil.getIsVolunteer()) {
+                if (currentFlag.equals(0L)) {
+                    // hide flag read only view if not set yet.
+                    flagReadOnlyView.setVisibility(View.GONE);
+                } else {
+                    flagReadOnlyView.setVisibility(View.VISIBLE);
+                }
+
+                flagSpinnerView.setVisibility(View.GONE);
+            } else {
+                flagReadOnlyView.setVisibility(View.GONE);
+                flagSpinnerView.setVisibility(View.VISIBLE);
+            }
+            flagImageView.setImageResource(FeedAdapter.flagColors[currentFlag.intValue()]);
+            flagView.setText(getResources().getStringArray(
+                    R.array.flags_optional)[currentFlag.intValue()]);
+
             mFlagAdapter = new HintAdapter(getApplicationContext(),
                     getResources().getStringArray(R.array.flags_with_hint));
             flagSpinnerView.setAdapter(mFlagAdapter);
@@ -590,6 +617,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
             TextView textView = (TextView) view.findViewById(R.id.flag_name);
             textView.setText(getItem(position));
+            FontUtil.overrideFonts(getContext(), textView);
 
             return view;
         }

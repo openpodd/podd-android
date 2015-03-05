@@ -41,7 +41,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <LinearLayout
-                            android:orientation="horizontal"
+                            android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <Spinner
@@ -50,6 +50,32 @@
                                 android:layout_height="wrap_content"
                                 android:layout_margin="0dp"
                                 android:padding="4dp"></Spinner>
+
+                            <LinearLayout
+                                android:id="@+id/flag_read_only"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="4dp">
+
+                                <ImageView
+                                    android:id="@+id/flag_icon"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="13dp"
+                                    android:layout_marginStart="13dp"/>
+
+                                <TextView
+                                    android:id="@+id/flag_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="6dp"
+                                    android:layout_marginStart="6dp"
+                                    android:textSize="15sp"
+                                    android:textColor="@color/black"/>
+
+                            </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -505,7 +531,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp"
-        android:background="#90000000">
+        android:background="#90000000"
+        android:visibility="gone">
 
         <LinearLayout
             android:orientation="vertical"

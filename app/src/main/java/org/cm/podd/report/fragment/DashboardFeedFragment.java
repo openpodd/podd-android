@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -31,6 +32,7 @@ import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -55,6 +57,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected ProgressBar mProgressBar;
     protected RelativeLayout mEmpty;
     protected Button mEmptyRetryButton;
+    protected SharedPrefUtil sharedPrefUtil;
 
     private final static int DEFAULT_PAGE_SIZE = 800;
 
@@ -99,6 +102,9 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_dashboard_feed, container, false);
         rootView.setTag(TAG);
+
+        // update profile data.
+        updateUserStatus();
 
         // set fragmentView to let super class know what to do next.
         mFragmentView = rootView;
@@ -198,6 +204,42 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     private void refreshAdapter() {
         mAdapter.mDataSet = feedItemDataSource.latest(DEFAULT_PAGE_SIZE);
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void updateUserStatus() {
+        sharedPrefUtil = new SharedPrefUtil(getActivity().getApplicationContext());
+        ProfileAsyncTask task = new ProfileAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                if (resp.getStatusCode() == 200) {
+                    try {
+                        JSONObject result = new JSONObject(resp.getRawData());
+
+                        if (result.getString("status").equals("VOLUNTEER")) {
+                            sharedPrefUtil.setIsVolunteer(true);
+                        } else {
+                            sharedPrefUtil.setIsVolunteer(false);
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing JSON data", e);
+                    }
+                }
+            }
+        };
+        task.setContext(getActivity().getApplicationContext());
+        task.execute();
+    }
+
+    public static class ProfileAsyncTask extends ReportService.ReportAsyncTask {
+        private static final String ENDPOINT = "/users/profile";
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            return RequestDataUtil.get(ENDPOINT, "", accessToken);
+        }
     }
 
 }
