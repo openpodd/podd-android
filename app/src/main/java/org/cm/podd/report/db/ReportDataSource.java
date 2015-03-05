@@ -311,6 +311,10 @@ public class ReportDataSource {
         db.delete("report_type", null, null);
         db.delete("notification", null, null);
         db.delete("administration_area", null, null);
+        db.delete("feed_item", null, null);
+        db.delete("comment", null, null);
+        db.delete("visualization_area", null, null);
+        db.delete("visualization_volunteer", null, null);
         db.close();
     }
 

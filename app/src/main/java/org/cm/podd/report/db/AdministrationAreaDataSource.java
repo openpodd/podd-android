@@ -84,6 +84,7 @@ public class AdministrationAreaDataSource {
         ArrayList<AdministrationArea> results = new ArrayList<AdministrationArea>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from administration_area order by _id asc", null);
+        String parent_name = "";
         while (cursor.moveToNext()) {
             AdministrationArea administrationArea = new AdministrationArea(
                     cursor.getLong(cursor.getColumnIndex("_id")),
@@ -93,6 +94,42 @@ public class AdministrationAreaDataSource {
             );
             results.add(administrationArea);
         }
+
+        cursor.close();
+        db.close();
+
+        return results;
+    }
+
+    public List<AdministrationArea> getLeafAll() {
+        ArrayList<AdministrationArea> results = new ArrayList<AdministrationArea>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from administration_area where is_leaf=1 order by parent_name asc", null);
+        String parent_name = "";
+        while (cursor.moveToNext()) {
+            if (parent_name.equals("") || cursor.getString(cursor.getColumnIndex("parent_name")).equals("null")
+                    || !parent_name.equals(cursor.getString(cursor.getColumnIndex("parent_name")))){
+                parent_name = cursor.getString(cursor.getColumnIndex("parent_name"));
+                if (!parent_name.equals("null")) {
+                    AdministrationArea administrationArea = new AdministrationArea(
+                            0,
+                            cursor.getString(cursor.getColumnIndex("parent_name")),
+                            cursor.getString(cursor.getColumnIndex("parent_name")),
+                            0
+                    );
+                    results.add(administrationArea);
+                }
+            }
+
+            AdministrationArea administrationArea = new AdministrationArea(
+                    cursor.getLong(cursor.getColumnIndex("_id")),
+                    cursor.getString(cursor.getColumnIndex("name")),
+                    cursor.getString(cursor.getColumnIndex("parent_name")),
+                    cursor.getInt(cursor.getColumnIndex("is_leaf"))
+            );
+            results.add(administrationArea);
+        }
+
         cursor.close();
         db.close();
 

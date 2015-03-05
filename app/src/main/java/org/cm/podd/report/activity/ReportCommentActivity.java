@@ -143,7 +143,7 @@ public class ReportCommentActivity extends ActionBarActivity {
                     if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                         Crouton.makeText(ReportCommentActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                     } else {
-                        Crouton.makeText(ReportCommentActivity.this, "Cannot post comment!", Style.ALERT).show();
+                        Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT).show();
                     }
                 }
                 commentText.setText("");

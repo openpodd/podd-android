@@ -87,6 +87,28 @@ public class CommentDataSource {
         return id;
     }
 
+    public List<Comment> getAll() {
+        ArrayList<Comment> results = new ArrayList<Comment>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from comment order by _id asc", null);
+        while (cursor.moveToNext()) {
+            Comment comment = new Comment(
+                    cursor.getLong(cursor.getColumnIndex("_id")),
+                    cursor.getLong(cursor.getColumnIndex("report_id")),
+                    cursor.getString(cursor.getColumnIndex("message")),
+                    cursor.getString(cursor.getColumnIndex("file_url")),
+                    cursor.getString(cursor.getColumnIndex("avatar_created_by")),
+                    cursor.getString(cursor.getColumnIndex("created_by")),
+                    cursor.getString(cursor.getColumnIndex("created_at"))
+            );
+            results.add(comment);
+        }
+        cursor.close();
+        db.close();
+
+        return results;
+    }
+
     public List<Comment> getAllFromReport(Long reportId) {
         ArrayList<Comment> results = new ArrayList<Comment>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();

@@ -272,7 +272,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="83dp"
                 card_view:cardCornerRadius="0dp">
 
                 <LinearLayout
@@ -440,6 +440,7 @@
 
             <LinearLayout
                 android:id="@+id/alert_comment"
+                android:clickable="true"
                 android:orientation="horizontal"
                 android:background="@drawable/alert_round_corner"
                 android:layout_alignParentBottom="true"

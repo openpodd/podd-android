@@ -103,7 +103,6 @@ public class AdministrationAreaService extends IntentService {
                         JSONObject result = new JSONObject(resp2.getRawData());
 
                         area = new AdministrationArea(administrationAreaId, name, parentName, isLeaf);
-
                         dbSource.insert(area);
                     }
                 }
