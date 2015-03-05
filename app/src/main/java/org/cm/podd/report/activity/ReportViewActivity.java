@@ -514,7 +514,16 @@ public class ReportViewActivity extends ActionBarActivity {
         } catch (IllegalStateException e){
             Log.e(TAG, "Error IllegalStateException", e);
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (caseDialog != null && caseDialog.getVisibility() == View.VISIBLE) {
+            caseDialog.setVisibility(View.GONE);
+            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void follow(final Long flag, final Long parentId) {
