@@ -42,6 +42,8 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
 import org.cm.podd.report.fragment.FeedAdapter;
@@ -296,14 +298,13 @@ public class ReportViewActivity extends ActionBarActivity {
                         }
                     });
 
-                    imageListView.addView(imageView);
+                    Picasso.with(getApplicationContext())
+                            .load(item.getString("thumbnailUrl"))
+                            .fit()
+                            .centerCrop()
+                            .into(imageView);
 
-                    new RemoteImageAsyncTask() {
-                        @Override
-                        protected void onPostExecute(Drawable thumb) {
-                            imageView.setImageDrawable(thumb);
-                        }
-                    }.execute(item.getString("thumbnailUrl"));
+                    imageListView.addView(imageView);
                 }
 
                 if (imageListView.getChildCount() == 0){
