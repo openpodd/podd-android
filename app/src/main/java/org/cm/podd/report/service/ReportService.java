@@ -148,6 +148,28 @@ public class ReportService extends IntentService {
         }
     }
 
+    public static class FollowAsyncTask extends ReportAsyncTask {
+        private static final String ENDPOINT = "/reports/";
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            String reportId = params[0];
+            String parentId = params[1];
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("parent", parentId);
+            } catch (JSONException e) {
+                // Do nothing.
+            }
+
+            return RequestDataUtil.post(ENDPOINT + reportId + "/follow/", "", data.toString(), accessToken);
+        }
+    }
+
     /**
      * Post comment
      */

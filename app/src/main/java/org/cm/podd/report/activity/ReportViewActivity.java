@@ -30,10 +30,13 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -42,6 +45,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
 import org.cm.podd.report.fragment.FeedAdapter;
+import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
@@ -87,6 +91,9 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView flagView;
     private Spinner flagSpinnerView;
     private HintAdapter mFlagAdapter;
+    private RelativeLayout caseDialog;
+    private RadioGroup caseRadioGroup;
+    private ProgressBar caseDialogProgressBar;
 
     private TextView dateView;
     private TextView incidentDateView;
@@ -116,6 +123,9 @@ public class ReportViewActivity extends ActionBarActivity {
     private BroadcastReceiver mReceiver;
     private Bundle bundle;
 
+    // quick fix.
+    private Long selectedCaseId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,7 +139,14 @@ public class ReportViewActivity extends ActionBarActivity {
         contentWrapper = findViewById(R.id.report_view_content);
         contentWrapper.setVisibility(View.GONE);
         // init views.
+
+        // Flag.
         flagSpinnerView = (Spinner) findViewById(R.id.flag_spinner);
+        caseDialog = (RelativeLayout) findViewById(R.id.case_dialog);
+        caseRadioGroup = (RadioGroup) findViewById(R.id.case_radio);
+        caseDialogProgressBar = (ProgressBar) findViewById(R.id.case_dialog_progressbar);
+        // init flag element.
+        caseDialog.setVisibility(View.GONE);
 
         dateView = (TextView) findViewById(R.id.report_view_report_date);
         incidentDateView = (TextView) findViewById(R.id.report_view_report_incidentDate);
@@ -198,6 +215,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private void viewReport(final JSONObject report) {
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
+        caseDialog.setVisibility(View.GONE);
 
         try {
             setActivityTitleWithType(report.getString("reportTypeName"));
@@ -300,8 +318,90 @@ public class ReportViewActivity extends ActionBarActivity {
             flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (position != mFlagAdapter.getCount() && !oldFlag.equals(currentFlag)) {
-                        updateFlag(Long.parseLong(Integer.toString(position + 1)));
+                    final int flag = position + 1;
+                    if (position != mFlagAdapter.getCount() && oldFlag.intValue() != flag) {
+                        // Show case list dialog when flag = 4 (follow).
+                        if (flag == 4) {
+                            caseRadioGroup.removeAllViews();
+                            caseDialog.setVisibility(View.VISIBLE);
+
+                            try {
+                                String query = "administrationArea:" + Long.toString(report.getLong("administrationAreaId")) +
+                                                " AND date:last 70 days" +
+                                                " AND flag:case";
+
+                                final Long parentId = id;
+                                Button okButton = (Button) findViewById(R.id.ok_button);
+                                okButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        caseDialog.setVisibility(View.GONE);
+                                        follow(Long.parseLong(Integer.toString(flag)), selectedCaseId);
+                                    }
+                                });
+                                Button cancelButton = (Button) findViewById(R.id.cancel_button);
+                                cancelButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        caseDialog.setVisibility(View.GONE);
+                                        flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                    }
+                                });
+
+                                FilterService.FilterAsyncTask task = new FilterService.FilterAsyncTask() {
+                                    @Override
+                                    protected void onPostExecute(RequestDataUtil.ResponseObject responseObject) {
+                                        caseDialogProgressBar.setVisibility(View.GONE);
+
+                                        try {
+                                            JSONObject result = new JSONObject(responseObject.getRawData());
+                                            JSONArray items = result.getJSONArray("results");
+
+                                            RadioButton radioChoiceTemplate = (RadioButton) findViewById(R.id.case_choice_template);
+
+                                            for (int i = 0; i != items.length(); i++) {
+                                                JSONObject item = items.getJSONObject(i);
+                                                final Long caseId = item.getLong("id");
+
+                                                if (caseId == parentId) {
+                                                    continue;
+                                                }
+
+                                                RadioButton radioButton = new RadioButton(getApplicationContext());
+                                                radioButton.setText(
+                                                        getString(R.string.follow_up_report_item_template)
+                                                                .replace(":id", Long.toString(item.getLong("id"))));
+                                                radioButton.setLayoutParams(radioChoiceTemplate.getLayoutParams());
+                                                radioButton.setTextColor(radioChoiceTemplate.getTextColors());
+                                                radioButton.setTextSize(radioChoiceTemplate.getTextSize());
+                                                radioButton.setBackgroundColor(radioChoiceTemplate.getDrawingCacheBackgroundColor());
+                                                radioButton.setVisibility(View.VISIBLE);
+
+                                                radioButton.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        selectedCaseId = caseId;
+                                                    }
+                                                });
+
+                                                caseRadioGroup.addView(radioButton);
+                                            }
+                                        } catch (JSONException e) {
+                                            // do nothing.
+                                            Log.e(TAG, "Error parsing JSON data", e);
+                                        }
+                                    }
+                                };
+                                task.setContext(getApplicationContext());
+                                task.execute(query, null);
+                            } catch (JSONException e) {
+                                // TODO: reverse choice.
+                                Log.e(TAG, "Error parsing JSON data", e);
+                            }
+
+                        } else {
+                            updateFlag(Long.parseLong(Integer.toString(flag)));
+                        }
                     } else {
                         // do nothings.
                     }
@@ -386,6 +486,30 @@ public class ReportViewActivity extends ActionBarActivity {
 
     }
 
+    private void follow(final Long flag, final Long parentId) {
+        oldFlag = currentFlag;
+
+        ReportService.FollowAsyncTask task = new ReportService.FollowAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                if (resp.getStatusCode() == 201 || resp.getStatusCode() == 200) {
+                    currentFlag = flag;
+                    oldFlag = flag;
+                    // notify report data.
+                    Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
+                    intent.putExtra("reportId", id);
+                    intent.putExtra("flag", flag);
+                    sendBroadcast(intent);
+                } else {
+                    // Do something.
+                }
+            }
+        };
+
+        task.setContext(getApplicationContext());
+        task.execute(Long.toString(id), Long.toString(parentId));
+    }
+
     private void updateFlag(final Long flag) {
         oldFlag = currentFlag;
 
@@ -394,6 +518,7 @@ public class ReportViewActivity extends ActionBarActivity {
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 if (resp.getStatusCode() == 201) {
                     currentFlag = flag;
+                    oldFlag = flag;
                     // notify report data.
                     Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
                     intent.putExtra("reportId", id);
