@@ -138,5 +138,7 @@
     <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
     <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
     <string name="try_again">ลองใหม่</string>
+    <string name="flag_confirm_case_title">ยืนยันการเปลี่ยนค่า</string>
+    <string name="flag_confirm_case_message">คุณต้องการยืนยันการเปลี่ยนค่านี้หรือไม่?</string>
 
 </resources>

@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
@@ -16,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
 import android.text.Html;
 import android.text.Layout;
 import android.text.Spanned;
@@ -233,6 +236,7 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     private void viewReport(final JSONObject report) {
+
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
         caseDialog.setVisibility(View.GONE);
@@ -363,8 +367,8 @@ public class ReportViewActivity extends ActionBarActivity {
 
                             try {
                                 String query = "administrationArea:" + Long.toString(report.getLong("administrationAreaId")) +
-                                                " AND date:last 70 days" +
-                                                " AND flag:case";
+                                        " AND date:last 70 days" +
+                                        " AND flag:case";
 
                                 final Long parentId = id;
                                 Button okButton = (Button) findViewById(R.id.ok_button);
@@ -434,7 +438,27 @@ public class ReportViewActivity extends ActionBarActivity {
                                 // TODO: reverse choice.
                                 Log.e(TAG, "Error parsing JSON data", e);
                             }
-
+                        } else if (flag == 5) {
+                            // Show prompt dialog.
+                            new AlertDialog.Builder(ReportViewActivity.this)
+                                    .setTitle(R.string.flag_confirm_case_title)
+                                    .setMessage(R.string.flag_confirm_case_message)
+                                    .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            updateFlag(Long.parseLong(Integer.toString(flag)));
+                                        }
+                                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                        }
+                                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                        @Override
+                                        public void onCancel(DialogInterface dialog) {
+                                            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                        }
+                                    }).create().show();
                         } else {
                             updateFlag(Long.parseLong(Integer.toString(flag)));
                         }
