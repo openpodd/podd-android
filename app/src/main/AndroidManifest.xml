@@ -75,6 +75,15 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".activity.ReportFollowUpActivity"
+            android:label="@string/title_activity_report"
+            android:parentActivityName=".activity.ReportViewActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.ReportViewActivity" />
+        </activity>
+        <activity
             android:name=".activity.ReportTypeActivity"
             android:label="@string/title_activity_report_type"
             android:noHistory="true"

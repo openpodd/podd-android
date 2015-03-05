@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -109,15 +110,14 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView createdByTelephoneView;
     private TextView createdByProjectTelephoneView;
     private TextView formDataExplanationView;
-    private LinearLayout followUpListView;
-//    private TextView emptyFollowUpListView;
+
+    private LinearLayout reportFollowUpList;
+    private TextView reportFollowUpTitle;
     private TextView countFollowUpTextView;
 
     private LinearLayout imageListView;
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
-
-    private FollowUpItemAdapter followUpItemAdapter;
 
     private BroadcastReceiver mReceiver;
 
@@ -143,9 +143,9 @@ public class ReportViewActivity extends ActionBarActivity {
         createdByTelephoneView = (TextView) findViewById(R.id.report_view_reporter_telephone);
         createdByProjectTelephoneView = (TextView) findViewById(R.id.report_view_reporter_project_telephone);
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
-        followUpListView = (LinearLayout) findViewById(R.id.report_follow_up_list);
-//        emptyFollowUpListView = (TextView) findViewById(R.id.empty_follow_up_list_text);
-//        emptyFollowUpListView.setVisibility(View.VISIBLE);
+        // Follow-up
+        reportFollowUpList = (LinearLayout) findViewById(R.id.report_follow_up_list);
+        reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
         countFollowUpTextView = (TextView) findViewById(R.id.report_follow_up_count);
         // image list view.
         imageListView = (LinearLayout) findViewById(R.id.report_image_list);
@@ -188,8 +188,6 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     private void viewReport(final JSONObject report) {
-        Long parentId;
-
         progressBar.setVisibility(View.GONE);
         contentWrapper.setVisibility(View.VISIBLE);
 
@@ -307,20 +305,48 @@ public class ReportViewActivity extends ActionBarActivity {
             // Add follow up if exists.
             if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
+                // Start follow-up activity when click.
+                reportFollowUpTitle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getApplicationContext(), ReportFollowUpActivity.class);
+                        intent.putExtra("parentReportId", id);
+                        startActivity(intent);
+                    }
+                });
             }
+
+            Long parentId;
             try {
                 parentId = report.getLong("parent");
             } catch (JSONException e) {
                 parentId = 0L;
             }
+            // In case this is a follow-up report which parent exists, then show only parent.
             if (parentId != 0) {
-                TextView reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
                 reportFollowUpTitle.setText(R.string.follow_up_parent);
+                countFollowUpTextView.setText("1");
 
-                ArrayList<String> textList = new ArrayList<String>();
-                textList.add(Long.toString(report.getLong("parent")));
+                LayoutInflater inflater = LayoutInflater.from(this);
+                View view = inflater.inflate(R.layout.list_item_follow_up_report, null, false);
 
-                refreshFollowUp(textList);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setText(
+                        getString(R.string.follow_up_report_item_template)
+                                .replace(":id", Long.toString(parentId)));
+
+                final Long innerParentId = parentId;
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(ReportViewActivity.this, ReportViewActivity.class);
+                        intent.putExtra("id", innerParentId);
+                        startActivity(intent);
+                    }
+                });
+
+                reportFollowUpList.removeAllViews();
+                reportFollowUpList.addView(view);
             }
 
             Bundle bundle = new Bundle();
@@ -414,16 +440,11 @@ public class ReportViewActivity extends ActionBarActivity {
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 try {
                     JSONArray followUpReports = new JSONArray(resp.getRawData());
-                    ArrayList<String> textList = new ArrayList<String>();
+                    int followUpCount = followUpReports.length();
 
-                    for (int i = 0; i != followUpReports.length(); ++i) {
-                        JSONObject item = followUpReports.getJSONObject(i);
-                        textList.add(item.getString("id"));
+                    if (followUpCount > 0){
+                        countFollowUpTextView.setText(Integer.toString(followUpCount));
                     }
-
-                    refreshFollowUp(textList);
-
-
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON data", e);
                 }
@@ -433,39 +454,6 @@ public class ReportViewActivity extends ActionBarActivity {
         task.execute(Long.toString(reportId));
     }
 
-    private void refreshFollowUp(ArrayList<String> textList){
-        followUpListView.removeAllViews();
-
-        for (int i = 0; i < textList.size(); i++){
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View view = inflater.inflate(R.layout.list_item_follow_up_report, null, false);
-
-            final long id = Long.parseLong(textList.get(i));
-
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
-            textView.setText(getString(R.string.follow_up_report_item_template)
-                    .replace(":id", textList.get(i)));
-
-            if (i == textList.size() - 1){
-                LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
-                line.setVisibility(View.GONE);
-            }
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ReportViewActivity.this, ReportViewActivity.class);
-                    intent.putExtra("id", id);
-                    startActivity(intent);
-                }
-            });
-            followUpListView.addView(view);
-        }
-
-        if (textList.size() > 0){
-            countFollowUpTextView.setText(textList.size() + "");
-        }
-    }
     private class FollowUpItemAdapter extends ArrayAdapter<String> {
 
         Context context;

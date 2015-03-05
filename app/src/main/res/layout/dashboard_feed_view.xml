@@ -54,7 +54,7 @@
                         <LinearLayout
                             android:background="@color/report_row_divider"
                             android:layout_width="match_parent"
-                            android:layout_height=".5dp">
+                            android:layout_height="0.5dp">
                         </LinearLayout>
 
                     </LinearLayout>
@@ -156,7 +156,7 @@
                         <LinearLayout
                             android:background="@color/black"
                             android:layout_width="match_parent"
-                            android:layout_height=".5dp">
+                            android:layout_height="0.5dp">
                         </LinearLayout>
 
                     </LinearLayout>
@@ -334,7 +334,7 @@
                         <LinearLayout
                             android:background="@color/report_row_divider"
                             android:layout_width="match_parent"
-                            android:layout_height=".5dp">
+                            android:layout_height="0.5dp">
                         </LinearLayout>
                     </LinearLayout>
 
@@ -468,5 +468,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
+
 
 </RelativeLayout>
