@@ -89,7 +89,7 @@
     <string name="form_data_explanation">คำอธิบายรายงาน</string>
 
     <string name="title_activity_main">MainActivity</string>
-    <string name="follow_up_reports">รายงานที่เกี่ยวข้อง (Follow-up)</string>
+    <string name="follow_up_reports">รายงานที่เกี่ยวข้อง</string>
     <string name="comment_reports">ความคิดเห็น</string>
     <string name="follow_up_parent">รายงานที่เกี่ยวข้อง (Case)</string>
     <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
@@ -126,5 +126,7 @@
     <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
     <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
     <string name="thumbnail_description">Thumbnail image</string>
+    <string name="title_activity_comment">ความคิดเห็น</string>
+    <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
 
 </resources>

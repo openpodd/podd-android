@@ -1,11 +1,16 @@
 package org.cm.podd.report.service;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
+import org.cm.podd.report.activity.ReportViewActivity;
+import org.cm.podd.report.db.CommentDataSource;
+import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
@@ -13,6 +18,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 
 public class ReportService extends IntentService {
@@ -89,6 +97,12 @@ public class ReportService extends IntentService {
             return context;
         }
 
+        protected ReportViewActivity activity;
+
+        public void setActivity(ReportViewActivity activity) { this.activity = activity; }
+
+        public ReportViewActivity getActivity() { return activity; }
+
         @Override
         protected RequestDataUtil.ResponseObject doInBackground(String... params) {
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
@@ -131,6 +145,56 @@ public class ReportService extends IntentService {
             }
 
             return RequestDataUtil.post(ENDPOINT, "", data.toString(), accessToken);
+        }
+    }
+
+    /**
+     * Post comment
+     */
+    public static class PostCommentTask extends ReportAsyncTask {
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            String reqData = null;
+            try {
+                JSONObject json = new JSONObject();
+                json.put("reportId", params[0]);
+                json.put("message", params[1]);
+                reqData = json.toString();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return RequestDataUtil.post("/reportComments/", null, reqData, accessToken);
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            JSONObject obj = resp.getJsonObject();
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
+                long commentId = obj.optInt("id");
+                long reportId = obj.optInt("reportId");
+                String message = obj.optString("message");
+                String fileUrl = obj.optString("fileUrl");
+                String avatarCreatedBy = "";
+                String createdBy = "";
+                try {
+                    JSONObject jsonCreatedBy = new JSONObject(obj.optString("createdBy"));
+                    createdBy = jsonCreatedBy.getString("firstName") + " " + jsonCreatedBy.getString("lastName");
+                    avatarCreatedBy = jsonCreatedBy.getString("thumbnailAvatarUrl");
+                } catch (Exception ex) {}
+
+                String createdAt = obj.optString("createdAt");
+                Log.d(TAG, "Found new comment id= " + commentId);
+
+                Comment comment = new Comment(commentId, reportId, message, avatarCreatedBy, fileUrl, createdBy, createdAt);
+
+                CommentDataSource dbSource = new CommentDataSource(getContext());
+                dbSource.insert(comment);
+            }
         }
     }
 }

@@ -25,6 +25,8 @@ public class VisualizationVolunteerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Intent sendIntent = new Intent(SYNC);
+
         long userId = intent.getLongExtra("id", -99);
         int month = intent.getIntExtra("month", -99);
         int year = intent.getIntExtra("year", -99);
@@ -76,13 +78,14 @@ public class VisualizationVolunteerService extends IntentService {
 
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage(), e);
+                sendIntent.putExtra("error", e.getMessage());
             }
-
             dbSource.close();
         } else {
             Log.e(TAG, "Server error");
+            sendIntent.putExtra("error", "Server error");
         }
-        sendBroadcast(new Intent(SYNC));
+        sendBroadcast(sendIntent);
     }
 
     private VisualizationVolunteer requireAreaUpdate(JSONObject updateArea, VisualizationVolunteer volunteer) {

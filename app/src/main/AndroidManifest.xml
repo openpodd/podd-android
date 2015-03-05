@@ -215,6 +215,12 @@
             android:name=".service.VisualizationVolunteerService"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name=".activity.ReportCommentActivity"
+            android:label="@string/title_activity_comment"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

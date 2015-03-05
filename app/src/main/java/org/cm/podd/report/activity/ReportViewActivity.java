@@ -4,21 +4,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
@@ -38,19 +33,15 @@ import android.widget.ArrayAdapter;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
-import org.cm.podd.report.fragment.CommentFragment;
 import org.cm.podd.report.fragment.FeedAdapter;
-import org.cm.podd.report.fragment.VisualizationFragment;
-import org.cm.podd.report.service.CommentService;
-import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
@@ -59,19 +50,13 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by siriwat on 2/23/15.
@@ -94,6 +79,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private Long currentFlag;
     private Long oldFlag;
 
+    private ScrollView scrollView;
     private ProgressBar progressBar;
     private View contentWrapper;
 
@@ -116,10 +102,19 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView countFollowUpTextView;
 
     private LinearLayout imageListView;
+    private LinearLayout sectionPostComment;
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
+    private RelativeLayout sectionComment;
+    private LinearLayout alertComment;
+    private RelativeLayout moveToCommentButton;
+
+    private FragmentManager fragmentManager;
+    private FollowUpItemAdapter followUpItemAdapter;
+
     private BroadcastReceiver mReceiver;
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +124,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
+        scrollView = (ScrollView) findViewById(R.id.report_main_scrollview);
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
         contentWrapper = findViewById(R.id.report_view_content);
         contentWrapper.setVisibility(View.GONE);
@@ -143,6 +139,10 @@ public class ReportViewActivity extends ActionBarActivity {
         createdByTelephoneView = (TextView) findViewById(R.id.report_view_reporter_telephone);
         createdByProjectTelephoneView = (TextView) findViewById(R.id.report_view_reporter_project_telephone);
         formDataExplanationView = (TextView) findViewById(R.id.report_view_form_data_explanation);
+        // Comment.
+        sectionComment = (RelativeLayout) findViewById(R.id.section_comment);
+        alertComment = (LinearLayout) findViewById(R.id.alert_comment);
+        moveToCommentButton = (RelativeLayout) findViewById(R.id.move_to_comment);
         // Follow-up
         reportFollowUpList = (LinearLayout) findViewById(R.id.report_follow_up_list);
         reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
@@ -173,6 +173,14 @@ public class ReportViewActivity extends ActionBarActivity {
 
         id = getIntent().getLongExtra(ReportService.PARAM_REPORT_ID, 0);
         ReportService.doFetch(getApplicationContext(), id);
+
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                alertComment.setVisibility(View.INVISIBLE);
+                return false;
+            };
+        });
     }
 
     @Override
@@ -231,8 +239,11 @@ public class ReportViewActivity extends ActionBarActivity {
 
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
+                    int widthRootView = getResources().getDisplayMetrics().widthPixels;
+                    int widthMargin = StyleUtil.convertDpToPx(23.0F, getResources().getDisplayMetrics());
+
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            StyleUtil.convertDpToPx(232.50F, getResources().getDisplayMetrics()),
+                            widthRootView - 2 * widthMargin,
                             StyleUtil.convertDpToPx(157.50F, getResources().getDisplayMetrics()));
                     layoutParams.setMargins(0, 0,
                             StyleUtil.convertDpToPx(10F, getResources().getDisplayMetrics()), 0);
@@ -349,17 +360,24 @@ public class ReportViewActivity extends ActionBarActivity {
                 reportFollowUpList.addView(view);
             }
 
-            Bundle bundle = new Bundle();
-            bundle.putLong("reportId", Long.parseLong(report.getString("id")));
+            final Long reportId = Long.parseLong(report.getString("id"));
+            moveToCommentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    commentText.setFocusableInTouchMode(true);
+//                    commentText.setFocusable(true);
+//
+//                    commentText.requestFocus();
+//                    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    inputMethodManager.showSoftInput(commentText, InputMethodManager.SHOW_IMPLICIT);
+                    Intent intent = new Intent(ReportViewActivity.this, ReportCommentActivity.class);
+                    intent.putExtra("reportId", reportId);
+                    startActivity(intent);
+//                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
 
-            Fragment commentFragment = new CommentFragment();
-            commentFragment.setArguments(bundle);
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_comment, commentFragment, commentFragment.getClass().getSimpleName())
-                    .commit();
-
+            sectionComment.setVisibility(View.VISIBLE);
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         } catch (IllegalStateException e){
@@ -481,6 +499,7 @@ public class ReportViewActivity extends ActionBarActivity {
         }
 
     }
+
 
     private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
@@ -653,6 +672,7 @@ public class ReportViewActivity extends ActionBarActivity {
             }
         }.execute(imageUrl);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

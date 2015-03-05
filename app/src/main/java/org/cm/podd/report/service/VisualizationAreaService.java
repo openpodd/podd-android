@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import org.cm.podd.report.activity.VisualizationAreaActivity;
 import org.cm.podd.report.db.VisualizationAreaDataSource;
 import org.cm.podd.report.model.VisualizationAdministrationArea;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -12,6 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class VisualizationAreaService extends IntentService {
 
@@ -25,6 +29,8 @@ public class VisualizationAreaService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Intent sendIntent = new Intent(SYNC);
+
         long areaId = intent.getLongExtra("id", -99);
         int month = intent.getIntExtra("month", -99);
         int year = intent.getIntExtra("year", -99);
@@ -80,13 +86,14 @@ public class VisualizationAreaService extends IntentService {
 
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage(), e);
+                sendIntent.putExtra("error", e.getMessage());
             }
-
             dbSource.close();
         } else {
             Log.e(TAG, "Server error");
+            sendIntent.putExtra("error", "Server error");
         }
-        sendBroadcast(new Intent(SYNC));
+        sendBroadcast(sendIntent);
     }
 
     private VisualizationAdministrationArea requireAreaUpdate(JSONObject updateArea, VisualizationAdministrationArea area) {

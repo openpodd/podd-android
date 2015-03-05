@@ -104,7 +104,6 @@ public class CommentService extends IntentService {
                         JSONObject result = new JSONObject(resp2.getRawData());
 
                         comment = new Comment(commentId, reportId, message, avatarCreatedBy, fileUrl, createdBy, createdAt);
-
                         dbSource.insert(comment);
                     }
                 }
