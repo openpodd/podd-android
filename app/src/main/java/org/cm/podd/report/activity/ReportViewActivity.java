@@ -421,7 +421,13 @@ public class ReportViewActivity extends ActionBarActivity {
                 }
             });
 
+            // Reset view.
+            reportFollowUpList.removeAllViews();
+            reportFollowUpTitle.setText(R.string.follow_up_reports);
+            countFollowUpTextView.setText("0");
+
             // Add follow up if exists.
+            reportFollowUpTitle.setText(R.string.follow_up_reports);
             if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
                 // Start follow-up activity when click.
@@ -464,7 +470,6 @@ public class ReportViewActivity extends ActionBarActivity {
                     }
                 });
 
-                reportFollowUpList.removeAllViews();
                 reportFollowUpList.addView(view);
             }
 
@@ -472,16 +477,9 @@ public class ReportViewActivity extends ActionBarActivity {
             moveToCommentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    commentText.setFocusableInTouchMode(true);
-//                    commentText.setFocusable(true);
-//
-//                    commentText.requestFocus();
-//                    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    inputMethodManager.showSoftInput(commentText, InputMethodManager.SHOW_IMPLICIT);
                     Intent intent = new Intent(ReportViewActivity.this, ReportCommentActivity.class);
                     intent.putExtra("reportId", reportId);
                     startActivity(intent);
-//                    scrollView.fullScroll(View.FOCUS_DOWN);
                 }
             });
 
@@ -507,6 +505,8 @@ public class ReportViewActivity extends ActionBarActivity {
                     intent.putExtra("reportId", id);
                     intent.putExtra("flag", flag);
                     sendBroadcast(intent);
+
+                    ReportService.doFetch(context, id);
                 } else if (resp.getStatusCode() == 403) {
                     currentFlag = oldFlag;
                     flagSpinnerView.setSelection(oldFlag.intValue() - 1);
@@ -536,6 +536,8 @@ public class ReportViewActivity extends ActionBarActivity {
                     intent.putExtra("reportId", id);
                     intent.putExtra("flag", flag);
                     sendBroadcast(intent);
+
+                    ReportService.doFetch(context, id);
                 } else if (resp.getStatusCode() == 403) {
                     currentFlag = oldFlag;
                     flagSpinnerView.setSelection(oldFlag.intValue() - 1);
