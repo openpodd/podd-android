@@ -137,5 +137,6 @@
     <string name="set_flag_error">เกิดความผิดพลาด กรุณาลองใหม่</string>
     <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
     <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
+    <string name="try_again">ลองใหม่</string>
 
 </resources>
