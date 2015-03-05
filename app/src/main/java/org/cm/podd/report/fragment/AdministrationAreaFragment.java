@@ -305,7 +305,7 @@ public class AdministrationAreaFragment extends ListFragment {
                 for (Field datePickerField : datePickerFields) {
                     Log.i(TAG, datePickerField.getName());
 
-                    if ("mDaySpinner".equals(datePickerField.getName())) {
+                    if ( "mDayPicker".equals(datePickerField.getName()) || "mDaySpinner".equals(datePickerField.getName())) {
                         datePickerField.setAccessible(true);
                         Object dayPicker = new Object();
                         dayPicker = datePickerField.get(datePicker);

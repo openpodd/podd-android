@@ -187,6 +187,7 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
+        actionBar.setHomeButtonEnabled(true);
         actionBar.setLogo(R.drawable.arrow_left_with_pad);
         return true;
     }
@@ -202,7 +203,10 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
+//        if (id == android.R.id.home){
+//            this.finish();
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
