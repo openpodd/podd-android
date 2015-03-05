@@ -27,13 +27,17 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                card_view:cardCornerRadius="0dp">
+                card_view:cardCornerRadius="0dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <LinearLayout
                     android:background="@color/white"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
 
                     <LinearLayout
                         android:id="@+id/flag_layout"
@@ -86,25 +90,40 @@
 
                     </LinearLayout>
 
-                    <HorizontalScrollView
-                        android:id="@+id/report_image_list_scrollview"
-                        android:layout_marginLeft="13dp"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginBottom="13dp"
-                        android:layout_marginRight="13dp"
-                        android:hapticFeedbackEnabled="false"
-                        android:scrollbars="none"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginStart="-12dp"
+                        android:layout_marginRight="-12dp"
+                        android:layout_marginEnd="-12dp"
+                        android:padding="0dp"
+                        android:clipToPadding="true"
+                        android:clipChildren="true">
+                        <HorizontalScrollView
+                            android:id="@+id/report_image_list_scrollview"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="13dp"
+                            android:layout_marginRight="0dp"
+                            android:paddingLeft="23dp"
+                            android:paddingRight="23dp"
+                            android:hapticFeedbackEnabled="false"
+                            android:scrollbars="none"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:clipChildren="false">
 
-                        <LinearLayout
-                            android:id="@+id/report_image_list"
-                            android:orientation="horizontal"
-                            android:background="@color/white"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"></LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/report_image_list"
+                                android:orientation="horizontal"
+                                android:background="@null"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></LinearLayout>
 
-                    </HorizontalScrollView>
+                        </HorizontalScrollView>
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
