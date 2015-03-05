@@ -3,12 +3,14 @@ package org.cm.podd.report.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.JsonReader;
 import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -80,6 +82,7 @@ public class FilterService extends IntentService {
 
         try {
             RequestDataUtil.ResponseObject resp;
+            Intent intent = new Intent(ACTION_QUERY_DONE);
 
             Log.i(TAG, "Streaming data from network: " + ENDPOINT);
             resp = filterQuery(query, timezone);
@@ -107,7 +110,8 @@ public class FilterService extends IntentService {
                     }
 
                     // notify feed updated.
-                    sendBroadcast(new Intent(ACTION_QUERY_DONE));
+                    intent.putExtra("error", false);
+                    sendBroadcast(intent);
                 } catch (JSONException e) {
                     // DO NOTHING.
                     Log.e(TAG, "No results, skipping");
@@ -116,6 +120,8 @@ public class FilterService extends IntentService {
                 }
             } else {
                 Log.d(TAG, "Filtering fail with errorCode:" + resp.getStatusCode());
+                intent.putExtra("error", true);
+                sendBroadcast(intent);
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
@@ -174,6 +180,64 @@ public class FilterService extends IntentService {
         }
 
         return RequestDataUtil.get(ENDPOINT, queryString, sharedPrefUtil.getAccessToken());
+    }
+
+    public static class FilterAsyncTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        protected Context context;
+
+        public void setContext(Context context) {
+            this.context = context;
+        }
+
+        public Context getContext() {
+            return context;
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            List<NameValuePair> queryParams = new LinkedList<NameValuePair>();
+            String queryString = null;
+
+            String query = params[0];
+            String timezone = params[1];
+            if (timezone == null) {
+                timezone = "";
+            }
+
+            // Limit only last 2 weeks.
+            if (query == null) {
+                query = "";
+            }
+
+            // Prepare query parameters
+            if (!query.isEmpty() || !timezone.isEmpty()) {
+                if (!query.isEmpty()) {
+                    queryParams.add(new BasicNameValuePair(PARAM_QUERY, query));
+                }
+
+                if (!timezone.isEmpty()) {
+                    queryParams.add(new BasicNameValuePair(PARAM_TIMEZONE, timezone));
+                }
+                else {
+                    queryParams.add(new BasicNameValuePair(PARAM_TIMEZONE, getTimezoneOffset()));
+                }
+
+                // Fixed page size.
+                queryParams.add(new BasicNameValuePair(PARAM_PAGE_SIZE, Integer.toString(DEFAULT_PAGE_SIZE)));
+
+                queryString = URLEncodedUtils.format(queryParams, "utf-8");
+            }
+
+            return RequestDataUtil.get(ENDPOINT, queryString, accessToken);
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject responseObject) {
+            super.onPostExecute(responseObject);
+        }
     }
 
     private static String getTimezoneOffset() {

@@ -26,6 +26,7 @@ import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +34,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by siriwat on 2/17/15.
@@ -54,7 +58,11 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Receiving action " + intent.getAction());
-            refreshAdapter();
+            if (intent.getBooleanExtra("error", false)) {
+                Crouton.makeText(getActivity(), R.string.fail_refresh_dashboard, Style.ALERT).show();
+            } else {
+                refreshAdapter();
+            }
             onRefreshComplete();
         }
     };
@@ -102,15 +110,21 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
             @Override
             public void onRefresh() {
                 Log.d(TAG, "onRefresh");
-                setRefreshing(true);
-                FilterService.doQuery(container.getContext(), "negative:true", null);
+
+                if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+                    feedItemDataSource.clear();
+                    setRefreshing(true);
+                    FilterService.doQuery(container.getContext(), "negative:true AND date:last 14 days", null);
+                } else {
+                    refreshAdapter();
+                    onRefreshComplete();
+                }
             }
         };
 
         View wrappedView = super.onCreateView(inflater, container, savedInstanceState);
-
-        feedItemDataSource.clear();
         mRefreshListener.onRefresh();
+
         return wrappedView;
     }
 
