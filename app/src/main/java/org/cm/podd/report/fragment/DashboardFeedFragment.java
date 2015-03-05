@@ -16,8 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
@@ -26,6 +29,7 @@ import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +53,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected RecyclerView.LayoutManager mLayoutManager;
     protected FeedAdapter mAdapter;
     protected ProgressBar mProgressBar;
+    protected RelativeLayout mEmpty;
+    protected Button mEmptyRetryButton;
 
     private final static int DEFAULT_PAGE_SIZE = 800;
 
@@ -122,6 +128,18 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
             }
         };
 
+        mEmpty = (RelativeLayout) rootView.findViewById(R.id.empty);
+        mEmpty.setVisibility(View.GONE);
+        mEmptyRetryButton = (Button) rootView.findViewById(R.id.empty_retry_button);
+        mEmptyRetryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEmpty.setVisibility(View.GONE);
+                mRefreshListener.onRefresh();
+            }
+        });
+        FontUtil.overrideFonts(getActivity(), mEmpty);
+
         View wrappedView = super.onCreateView(inflater, container, savedInstanceState);
         mRefreshListener.onRefresh();
 
@@ -132,6 +150,12 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         Log.d(TAG, "onRefreshComplete");
         setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
+
+        if (mAdapter.mDataSet.size() == 0) {
+            mEmpty.setVisibility(View.VISIBLE);
+        } else {
+            mEmpty.setVisibility(View.GONE);
+        }
     }
 
     @Override
