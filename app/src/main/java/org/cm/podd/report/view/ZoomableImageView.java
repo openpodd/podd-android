@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -141,6 +142,14 @@ public class ZoomableImageView extends ImageView {
         bmHeight = bm.getHeight();
     }
 
+    @Override
+    public void setImageDrawable(Drawable drawable) {
+        super.setImageDrawable(drawable);
+        if (drawable != null) {
+            bmWidth = drawable.getIntrinsicWidth();
+            bmHeight = drawable.getIntrinsicHeight();
+        }
+    }
 
 
     public void setMaxZoom(float x) {

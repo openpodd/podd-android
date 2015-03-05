@@ -18,7 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.view.ZoomableImageView;
@@ -65,21 +70,9 @@ public class ImageActivity extends ActionBarActivity {
         }
 
         if (imagePath.matches("^https?://.*")) {
-            final File cacheDir = getCacheDir().getAbsoluteFile();
-            final String filePath = cacheDir + "/" + imagePath.replaceAll(".*/", "");
-            try {
-                InputStream cache = new BufferedInputStream(new FileInputStream(filePath));
-                setImage(filePath);
-            } catch (FileNotFoundException e) {
-                new RemoteImageAsyncTask() {
-                    @Override
-                    protected void onPostExecute(Boolean success) {
-                        if (success) {
-                            setImage(filePath);
-                        }
-                    }
-                }.execute(imagePath, filePath);
-            }
+           Picasso.with(getApplicationContext())
+                   .load(imagePath)
+                   .into(mImageView);
         } else {
             setImage(imagePath);
         }
