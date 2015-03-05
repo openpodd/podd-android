@@ -82,6 +82,7 @@ public class FilterService extends IntentService {
 
         try {
             RequestDataUtil.ResponseObject resp;
+            Intent intent = new Intent(ACTION_QUERY_DONE);
 
             Log.i(TAG, "Streaming data from network: " + ENDPOINT);
             resp = filterQuery(query, timezone);
@@ -109,7 +110,8 @@ public class FilterService extends IntentService {
                     }
 
                     // notify feed updated.
-                    sendBroadcast(new Intent(ACTION_QUERY_DONE));
+                    intent.putExtra("error", false);
+                    sendBroadcast(intent);
                 } catch (JSONException e) {
                     // DO NOTHING.
                     Log.e(TAG, "No results, skipping");
@@ -118,6 +120,8 @@ public class FilterService extends IntentService {
                 }
             } else {
                 Log.d(TAG, "Filtering fail with errorCode:" + resp.getStatusCode());
+                intent.putExtra("error", true);
+                sendBroadcast(intent);
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
