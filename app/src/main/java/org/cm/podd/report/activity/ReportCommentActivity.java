@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -56,6 +58,7 @@ public class ReportCommentActivity extends ActionBarActivity {
     private EditText commentText;
     private LinearLayout submitCommentText;
     private ScrollView scrollView;
+    private ProgressBar progressBar;
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
@@ -78,6 +81,7 @@ public class ReportCommentActivity extends ActionBarActivity {
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 
         linearLayout = (LinearLayout) findViewById(R.id.list);
         emptyText = (TextView) findViewById(android.R.id.empty);
@@ -105,13 +109,19 @@ public class ReportCommentActivity extends ActionBarActivity {
         Intent intent = getIntent();
         reportId = intent.getLongExtra("reportId", -99);
         commentDataSource = new CommentDataSource(this);
-        refreshComment();
 
         registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             startSyncCommentService(reportId);
         }
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                showProgressBar();
+                refreshComment();
+            }
+        });
     }
 
     private void fetchComments(final Long reportId) {
@@ -153,6 +163,7 @@ public class ReportCommentActivity extends ActionBarActivity {
 
         if (comments.size() == 0){
             emptyText.setVisibility(View.VISIBLE);
+            hideProgressBar();
             return;
         }
 
@@ -197,6 +208,7 @@ public class ReportCommentActivity extends ActionBarActivity {
         }
 
         emptyText.setVisibility(View.GONE);
+        hideProgressBar();
     }
 
     public void addComment() {
@@ -248,14 +260,26 @@ public class ReportCommentActivity extends ActionBarActivity {
             line.setVisibility(View.GONE);
         }
         linearLayout.addView(view);
-
         emptyText.setVisibility(View.GONE);
 
-        scrollView.fullScroll(View.FOCUS_DOWN);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        }, 1000);
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             startSyncCommentService(reportId);
         }
+    }
+
+    private void hideProgressBar(){
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void showProgressBar(){
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     class ImageDownloader extends AsyncTask<String, Void, Bitmap> {

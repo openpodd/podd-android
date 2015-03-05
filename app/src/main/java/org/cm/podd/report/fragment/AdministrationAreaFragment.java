@@ -38,8 +38,11 @@ import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AdministrationAreaFragment extends ListFragment {
@@ -308,6 +311,17 @@ public class AdministrationAreaFragment extends ListFragment {
                         dayPicker = datePickerField.get(datePicker);
                         ((View) dayPicker).setVisibility(View.GONE);
                     }
+                }
+                Date minDate = null;
+                Date maxDate = null;
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    minDate = format.parse(getString(R.string.min_date));
+                    maxDate = format.parse(year + "-" + (monthOfYear + 1) + "-01");
+                    datePicker.setMinDate(minDate.getTime());
+                    datePicker.setMaxDate(maxDate.getTime());
+                } catch (ParseException e) {
+                    Log.e(TAG, e.toString());
                 }
 
             }catch(Exception ex){
