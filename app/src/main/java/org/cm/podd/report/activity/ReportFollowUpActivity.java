@@ -39,11 +39,13 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
     private final static String TAG = "ReportFollowUpAct";
 
     private Long parentReportId;
+    private Long parentReportFlag;
 
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ReportAdapter mAdapter;
     protected ProgressBar mProgressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         parentReportId = getIntent().getLongExtra("parentReportId", 0);
+        parentReportFlag = getIntent().getLongExtra("parentReportFlag", 0);
+
         fetchFollowUpReports(parentReportId);
     }
 
@@ -88,6 +92,10 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
                         for (int i = 0; i != items.length(); ++i) {
                             JSONObject item = items.getJSONObject(i);
 
+                            // Show only `case` report.
+                            String flagString = item.getString("flag");
+                            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
+
                             // Prepare FeedItem object.
                             FeedItem feedItem = new FeedItem();
                             feedItem.setItemId(item.getLong("id"));
@@ -98,7 +106,13 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
                             feedItem.setDate(formatter.parse(item.getString("date")));
                             feedItem.setJsonString(item.toString());
 
-                            feedItems.add(feedItem);
+                            if (parentReportFlag == 4) {
+                                if (flag == 5) {
+                                    feedItems.add(feedItem);
+                                }
+                            } else {
+                                feedItems.add(feedItem);
+                            }
                         }
 
                         mAdapter.mDataSet = feedItems;
@@ -141,7 +155,11 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, getString(R.string.follow_up_reports));
+        if (parentReportFlag == 4) {
+            StyleUtil.setActionBarTitle(this, getString(R.string.follow_up_parent));
+        } else {
+            StyleUtil.setActionBarTitle(this, getString(R.string.follow_up_reports));
+        }
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(0);
         actionBar.setHomeButtonEnabled(true);

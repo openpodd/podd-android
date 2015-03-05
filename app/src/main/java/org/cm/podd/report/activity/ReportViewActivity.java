@@ -453,11 +453,18 @@ public class ReportViewActivity extends ActionBarActivity {
             countFollowUpTextView.setText("0");
 
             // Add follow up if exists.
-            reportFollowUpTitle.setText(R.string.follow_up_reports);
-            if (reportFlag == 5) {
-                fetchFollowUpReports(report.getLong("id"));
-                // Start follow-up activity when click.
-            }
+            fetchFollowUpReports(report.getLong("id"));
+            sectionFollowUp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Integer.parseInt(countFollowUpTextView.getText().toString()) > 0) {
+                        Intent intent = new Intent(getApplicationContext(), ReportFollowUpActivity.class);
+                        intent.putExtra("parentReportId", id);
+                        intent.putExtra("parentReportFlag", currentFlag);
+                        startActivity(intent);
+                    }
+                }
+            });
 
             Long parentId;
             try {
@@ -465,6 +472,7 @@ public class ReportViewActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 parentId = 0L;
             }
+
             // In case this is a follow-up report which parent exists, then show only parent.
             if (parentId != 0) {
                 reportFollowUpTitle.setText(R.string.follow_up_parent);
@@ -487,21 +495,6 @@ public class ReportViewActivity extends ActionBarActivity {
                         startActivity(intent);
                     }
                 });
-
-
-                sectionFollowUp.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (Integer.parseInt(countFollowUpTextView.getText().toString()) > 0){
-                            Intent intent = new Intent(getApplicationContext(), ReportFollowUpActivity.class);
-                            intent.putExtra("parentReportId", id);
-                            startActivity(intent);
-                        }
-                    }
-                });
-
-//                reportFollowUpList.removeAllViews();
-//                reportFollowUpList.addView(view);
             }
 
             final Long reportId = Long.parseLong(report.getString("id"));
@@ -637,7 +630,11 @@ public class ReportViewActivity extends ActionBarActivity {
                     JSONArray followUpReports = new JSONArray(resp.getRawData());
                     int followUpCount = followUpReports.length();
 
-                    if (followUpCount > 0){
+                    if (currentFlag == 4) {
+                        reportFollowUpTitle.setText(R.string.follow_up_parent);
+                        countFollowUpTextView.setText("1");
+                    } else {
+                        reportFollowUpTitle.setText(R.string.follow_up_reports);
                         countFollowUpTextView.setText(Integer.toString(followUpCount));
                     }
                 } catch (JSONException e) {
