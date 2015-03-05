@@ -129,5 +129,6 @@
     <string name="title_activity_comment">ความคิดเห็น</string>
     <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
     <string name="min_date">2014-12-01</string>
+    <string name="comment_error">ขออภัย คุณไม่สามารถแสดงความคิดเห็นได้</string>
 
 </resources>

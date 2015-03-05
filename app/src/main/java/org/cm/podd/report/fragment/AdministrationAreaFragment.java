@@ -66,7 +66,7 @@ public class AdministrationAreaFragment extends ListFragment {
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getAll());
+            adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
             setListAdapter(adapter);
         }
     };
@@ -84,7 +84,7 @@ public class AdministrationAreaFragment extends ListFragment {
     }
 
     public void refreshAdapter() {
-        adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getAll());
+        adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
         setListAdapter(adapter);
 
         try {
