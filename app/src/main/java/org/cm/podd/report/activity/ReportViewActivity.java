@@ -62,6 +62,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 /**
  * Created by siriwat on 2/23/15.
  */
@@ -189,7 +192,12 @@ public class ReportViewActivity extends ActionBarActivity {
         registerReceiver(mReceiver, new IntentFilter(ReportService.ACTION_FETCH_DONE));
 
         id = getIntent().getLongExtra(ReportService.PARAM_REPORT_ID, 0);
-        ReportService.doFetch(getApplicationContext(), id);
+
+        if (RequestDataUtil.hasNetworkConnection(this)) {
+            ReportService.doFetch(getApplicationContext(), id);
+        } else {
+            // TODO: fetch from database.
+        }
 
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -487,21 +495,26 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     private void follow(final Long flag, final Long parentId) {
-        oldFlag = currentFlag;
+        currentFlag = flag;
 
         ReportService.FollowAsyncTask task = new ReportService.FollowAsyncTask() {
             @Override
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 if (resp.getStatusCode() == 201 || resp.getStatusCode() == 200) {
-                    currentFlag = flag;
-                    oldFlag = flag;
+                    oldFlag = currentFlag;
                     // notify report data.
                     Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
                     intent.putExtra("reportId", id);
                     intent.putExtra("flag", flag);
                     sendBroadcast(intent);
+                } else if (resp.getStatusCode() == 403) {
+                    currentFlag = oldFlag;
+                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
+                    Crouton.makeText(getActivity(), getString(R.string.set_flag_forbidden), Style.ALERT).show();
                 } else {
-                    // Do something.
+                    currentFlag = oldFlag;
+                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
+                    Crouton.makeText(getActivity(), getString(R.string.set_flag_error), Style.ALERT).show();
                 }
             }
         };
@@ -511,21 +524,26 @@ public class ReportViewActivity extends ActionBarActivity {
     }
 
     private void updateFlag(final Long flag) {
-        oldFlag = currentFlag;
+        currentFlag = flag;
 
         ReportService.FlagAsyncTask task = new ReportService.FlagAsyncTask() {
             @Override
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 if (resp.getStatusCode() == 201) {
-                    currentFlag = flag;
-                    oldFlag = flag;
+                    oldFlag = currentFlag;
                     // notify report data.
                     Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
                     intent.putExtra("reportId", id);
                     intent.putExtra("flag", flag);
                     sendBroadcast(intent);
+                } else if (resp.getStatusCode() == 403) {
+                    currentFlag = oldFlag;
+                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
+                    Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_forbidden), Style.ALERT).show();
                 } else {
-                    // Do something.
+                    currentFlag = oldFlag;
+                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
+                    Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_error), Style.ALERT).show();
                 }
             }
         };
