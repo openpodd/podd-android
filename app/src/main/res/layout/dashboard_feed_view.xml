@@ -350,8 +350,10 @@
                         android:layout_height="wrap_content">
 
                         <LinearLayout
+                            android:id="@+id/section_follow_up"
+                            android:clickable="true"
                             android:orientation="horizontal"
-                            android:background="@drawable/round_corner"
+                            android:background="@drawable/button_round_corner"
                             android:layout_marginTop="11dp"
                             android:layout_width="match_parent"
                             android:layout_height="33dp">
@@ -391,12 +393,12 @@
                             </RelativeLayout>
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/report_follow_up_list"
-                            android:orientation="vertical"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                        </LinearLayout>
+                        <!--<LinearLayout-->
+                            <!--android:id="@+id/report_follow_up_list"-->
+                            <!--android:orientation="vertical"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content">-->
+                        <!--</LinearLayout>-->
 
                         <!--<TextView-->
                             <!--android:id="@+id/empty_follow_up_list_text"-->

@@ -107,12 +107,12 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView createdByProjectTelephoneView;
     private TextView formDataExplanationView;
 
-    private LinearLayout reportFollowUpList;
+//    private LinearLayout reportFollowUpList;
     private TextView reportFollowUpTitle;
     private TextView countFollowUpTextView;
 
     private LinearLayout imageListView;
-    private LinearLayout sectionPostComment;
+    private LinearLayout sectionFollowUp;
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
@@ -164,11 +164,12 @@ public class ReportViewActivity extends ActionBarActivity {
         alertComment = (LinearLayout) findViewById(R.id.alert_comment);
         moveToCommentButton = (RelativeLayout) findViewById(R.id.move_to_comment);
         // Follow-up
-        reportFollowUpList = (LinearLayout) findViewById(R.id.report_follow_up_list);
+//        reportFollowUpList = (LinearLayout) findViewById(R.id.report_follow_up_list);
         reportFollowUpTitle = (TextView) findViewById(R.id.report_follow_up_title);
         countFollowUpTextView = (TextView) findViewById(R.id.report_follow_up_count);
         // image list view.
         imageListView = (LinearLayout) findViewById(R.id.report_image_list);
+        sectionFollowUp = (LinearLayout) findViewById(R.id.section_follow_up);
         // Retrieve and cache the system's default "short" animation time.
         mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -424,14 +425,6 @@ public class ReportViewActivity extends ActionBarActivity {
             if (reportFlag == 5) {
                 fetchFollowUpReports(report.getLong("id"));
                 // Start follow-up activity when click.
-                reportFollowUpTitle.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(), ReportFollowUpActivity.class);
-                        intent.putExtra("parentReportId", id);
-                        startActivity(intent);
-                    }
-                });
             }
 
             Long parentId;
@@ -463,8 +456,20 @@ public class ReportViewActivity extends ActionBarActivity {
                     }
                 });
 
-                reportFollowUpList.removeAllViews();
-                reportFollowUpList.addView(view);
+
+                sectionFollowUp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (Integer.parseInt(countFollowUpTextView.getText().toString()) > 0){
+                            Intent intent = new Intent(getApplicationContext(), ReportFollowUpActivity.class);
+                            intent.putExtra("parentReportId", id);
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+//                reportFollowUpList.removeAllViews();
+//                reportFollowUpList.addView(view);
             }
 
             final Long reportId = Long.parseLong(report.getString("id"));
