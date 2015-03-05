@@ -424,6 +424,7 @@
 
     <RelativeLayout
         android:id="@+id/section_comment"
+        android:visibility="invisible"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="26dp"

@@ -528,10 +528,13 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 } else {
                     counterView.setVisibility(View.INVISIBLE);
                 }
-            } else if (position == 3) {
-                iconView.setImageResource(R.drawable.ic_menu_list);
+            } else if (position == 2) {
+                iconView.setImageResource(R.drawable.ic_cast_menu);
                 counterView.setVisibility(View.INVISIBLE);
-
+            }
+            else if (position == 3) {
+                iconView.setImageResource(R.drawable.ic_stat_menu);
+                counterView.setVisibility(View.INVISIBLE);
             }else {
                 counterView.setVisibility(View.INVISIBLE);
             }

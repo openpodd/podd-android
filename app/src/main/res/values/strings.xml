@@ -128,8 +128,10 @@
     <string name="thumbnail_description">Thumbnail image</string>
     <string name="title_activity_comment">ความคิดเห็น</string>
     <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
+
     <string name="ok">ตกลง</string>
     <string name="choose">เลือก</string>
     <string name="choose_case">เลือก Case ที่ต้องการติดตาม</string>
+    <string name="min_date">2014-12-01</string>
 
 </resources>
