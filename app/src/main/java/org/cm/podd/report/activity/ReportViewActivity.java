@@ -174,13 +174,12 @@ public class ReportViewActivity extends ActionBarActivity {
         id = getIntent().getLongExtra(ReportService.PARAM_REPORT_ID, 0);
         ReportService.doFetch(getApplicationContext(), id);
 
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                alertComment.setVisibility(View.INVISIBLE);
-                return false;
-            };
-        });
+//        alertComment.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                alertComment.setVisibility(View.INVISIBLE);
+//            }
+//        });
     }
 
     @Override
