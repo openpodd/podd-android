@@ -96,6 +96,9 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         registerReceiver(mSyncReceiver, new IntentFilter(VisualizationVolunteerService.SYNC));
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
+            if (volunteer == null)
+                showProgressDialog();
+
             startSyncVisualizationVolunteerService(id, month, year);
         }
     }
@@ -161,6 +164,7 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
             emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
             emptyText.setVisibility(View.VISIBLE);
         }
+        hideProgressDialog();
     }
 
     @Override

@@ -57,27 +57,23 @@ public class CommentService extends IntentService {
                     if (comment != null) {
                         Log.d(TAG, "Update comment id= " + comment.getId());
 
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/reportComments/" + comment.getId(), null, accessToken);
 
-                        JSONObject result = new JSONObject(resp2.getRawData());
-                        Log.i(TAG, result.toString());
-
-                        comment.setReportId(result.optLong("reportId"));
-                        comment.setMessage(result.optString("message"));
-                        comment.setFileUrl(result.optString("fileUrl"));
+                        comment.setReportId(updateComment.optLong("reportId"));
+                        comment.setMessage(updateComment.optString("message"));
+                        comment.setFileUrl(updateComment.optString("fileUrl"));
                         String avatarCreatedBy = "";
                         String createdBy = "";
 
                         try {
-                            JSONObject jsonCreatedBy = new JSONObject(result.optString("createdBy"));
+                            JSONObject jsonCreatedBy = new JSONObject(updateComment.optString("createdBy"));
                             createdBy = jsonCreatedBy.getString("firstName") + " " + jsonCreatedBy.getString("lastName");
                             avatarCreatedBy = jsonCreatedBy.getString("thumbnailAvatarUrl");
                         }catch (Exception ex){}
 
                         comment.setAvatarCreatedBy(avatarCreatedBy);
                         comment.setCreatedBy(createdBy);
-                        comment.setCreatedAt(result.optString("createdAt"));
+
+                        comment.setCreatedAt(updateComment.optString("createdAt"));
 
                         dbSource.update(comment);
                     }else{
@@ -97,11 +93,6 @@ public class CommentService extends IntentService {
                         String createdAt = updateComment.optString("createdAt");
 
                         Log.d(TAG, "Found new comment id= " + commentId);
-
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/reportComments/" + commentId, null, accessToken);
-
-                        JSONObject result = new JSONObject(resp2.getRawData());
 
                         comment = new Comment(commentId, reportId, message, avatarCreatedBy, fileUrl, createdBy, createdAt);
                         dbSource.insert(comment);

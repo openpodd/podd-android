@@ -19,6 +19,7 @@ import android.view.View;
 
 import android.support.v4.app.FragmentTabHost;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -105,6 +106,9 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         registerReceiver(mSyncReceiver, new IntentFilter(VisualizationAreaService.SYNC));
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
+            if (area == null)
+                showProgressDialog();
+
             startSyncVisualizationAreaService(id, month, year);
         }
     }
@@ -180,6 +184,8 @@ public class VisualizationAreaActivity extends ActionBarActivity {
             emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
             emptyText.setVisibility(View.VISIBLE);
         }
+
+        hideProgressDialog();
     }
 
     @Override
@@ -223,4 +229,5 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         intent.putExtra("year", year);
         startService(intent);
     }
+
 }

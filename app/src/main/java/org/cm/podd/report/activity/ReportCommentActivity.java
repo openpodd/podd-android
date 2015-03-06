@@ -112,16 +112,21 @@ public class ReportCommentActivity extends ActionBarActivity {
 
         registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
 
-        if (RequestDataUtil.hasNetworkConnection(this)) {
-            startSyncCommentService(reportId);
-        }
-
         runOnUiThread(new Runnable() {
             public void run() {
                 showProgressBar();
                 refreshComment();
             }
         });
+
+        if (RequestDataUtil.hasNetworkConnection(this)) {
+            if(getAll().size() == 0)
+                showProgressBar();
+
+            startSyncCommentService(reportId);
+        }
+
+
     }
 
     private void fetchComments(final Long reportId) {
@@ -279,6 +284,7 @@ public class ReportCommentActivity extends ActionBarActivity {
     }
 
     private void showProgressBar(){
+        emptyText.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 

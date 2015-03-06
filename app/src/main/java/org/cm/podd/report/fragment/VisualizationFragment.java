@@ -278,4 +278,5 @@ public class VisualizationFragment extends Fragment {
             return getString(R.string.grade_B);
         return getString(R.string.grade_C);
     }
+
 }

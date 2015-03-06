@@ -74,20 +74,10 @@ public class AdministrationAreaService extends IntentService {
                     AdministrationArea area = requireAreaUpdate(updateAdministrationArea, origAdministrationArea);
 
                     if (area != null) {
-                        String name = updateAdministrationArea.optString("name");
-                        String parentName = updateAdministrationArea.optString("parentName");
-                        boolean isLeaf = updateAdministrationArea.optBoolean("isLeaf");
 
-                        Log.d(TAG, "Update administration area id= " + area.getId());
-
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/administrationArea/" + area.getId(), null, accessToken);
-
-                        JSONObject result = new JSONObject(resp2.getRawData());
-                        Log.i(TAG, result.toString());
-                        area.setName(result.optString("name"));
-                        area.setParentName(result.optString("parentName"));
-                        area.setIsLeaf(result.optBoolean("isLeaf")? 1: 0);
+                        area.setName(updateAdministrationArea.optString("name"));
+                        area.setParentName(updateAdministrationArea.optString("parentName"));
+                        area.setIsLeaf(updateAdministrationArea.optBoolean("isLeaf")? 1: 0);
 
                         dbSource.update(area);
                     }else{
@@ -95,12 +85,8 @@ public class AdministrationAreaService extends IntentService {
                         String name = updateAdministrationArea.optString("name");
                         String parentName = updateAdministrationArea.optString("parentName");
                         int isLeaf = updateAdministrationArea.optBoolean("isLeaf")? 1: 0;
+
                         Log.d(TAG, "Found new administration area id= " + administrationAreaId);
-
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/administrationArea/" + administrationAreaId, null, accessToken);
-
-                        JSONObject result = new JSONObject(resp2.getRawData());
 
                         area = new AdministrationArea(administrationAreaId, name, parentName, isLeaf);
                         dbSource.insert(area);

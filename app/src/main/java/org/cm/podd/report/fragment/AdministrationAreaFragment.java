@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -53,7 +54,9 @@ public class AdministrationAreaFragment extends ListFragment {
     Typeface face;
 
     private administrationAreaAdapter adapter;
-    private  EditText editText;
+    private EditText editText;
+    private ProgressBar progressBar;
+    private TextView emptyText;
 
     public AdministrationAreaFragment() {
     }
@@ -68,6 +71,8 @@ public class AdministrationAreaFragment extends ListFragment {
         public void onReceive(Context context, Intent intent) {
             adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
             setListAdapter(adapter);
+
+            hideProgressBar();
         }
     };
     @Override
@@ -79,6 +84,8 @@ public class AdministrationAreaFragment extends ListFragment {
         getActivity().registerReceiver(mSyncReceiver, new IntentFilter(AdministrationAreaService.SYNC));
 
         if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+            if (administrationAreaDataSource.getLeafAll().size() == 0)
+                showProgressBar();
             startSyncAdministrationAreaService();
         }
     }
@@ -87,10 +94,12 @@ public class AdministrationAreaFragment extends ListFragment {
         adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
         setListAdapter(adapter);
 
-        try {
-            String search = editText.getText().toString();
-            adapter.getFilter().filter(search.toString());
-        }catch (Exception ex){}
+        hideProgressBar();
+//
+//        try {
+//            String search = editText.getText().toString();
+//            adapter.getFilter().filter(search.toString());
+//        }catch (Exception ex){}
 
     }
 
@@ -138,7 +147,7 @@ public class AdministrationAreaFragment extends ListFragment {
         View view = inflater.inflate(R.layout.fragment_administration_area, container, false);
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
+        emptyText = (TextView) view.findViewById(android.R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText("ไม่พบพื้นที่");
@@ -175,6 +184,8 @@ public class AdministrationAreaFragment extends ListFragment {
                 return false;
             }
         });
+
+        progressBar = (ProgressBar) view.findViewById(R.id.loading_spinner);
 
         return view;
     }
@@ -341,5 +352,14 @@ public class AdministrationAreaFragment extends ListFragment {
     private void startSyncAdministrationAreaService() {
         Intent intent = new Intent(getActivity(), AdministrationAreaService.class);
         getActivity().startService(intent);
+    }
+
+    private void hideProgressBar(){
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private void showProgressBar(){
+        emptyText.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 }
