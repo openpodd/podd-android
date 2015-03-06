@@ -268,7 +268,12 @@ public class AdministrationAreaFragment extends ListFragment {
 
                 for (int i = 0; i < count; i++) {
                     AdministrationArea item = list.get(i);
-                    if ((item.getName() + " " + item.getParentName()).contains(filterString)) {
+
+                    String name = item.getName();
+                    String parentName = item.getParentName().equals("null")? "": item.getParentName();
+                    String query = name + " "+ parentName;
+
+                    if ((query).contains(filterString)) {
                         filterData.add(item);
                     }
                 }
