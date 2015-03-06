@@ -41,6 +41,7 @@ public class SharedPrefUtil {
     public static final String GCM_APP_VERSION = "gcm_app_version";
     public static final String PROFILE_IMAGE_FILE_PATH = "profile_image_file_path";
     public static final String IS_VOLUNTEER = "is_volunteer";
+    public static final String CAN_SET_FLAG = "can_set_flag";
     private static final String TAG = "SharedPrefUtil";
 
     private SharedPreferences sharedPrefs;
@@ -149,6 +150,16 @@ public class SharedPrefUtil {
     public void setIsVolunteer(Boolean isVolunteer) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putBoolean(IS_VOLUNTEER, isVolunteer);
+        editor.commit();
+    }
+
+    public Boolean getCanSetFlag() {
+        return sharedPrefs.getBoolean(CAN_SET_FLAG, false);
+    }
+
+    public void setCanSetFlag(Boolean canSetFlag) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean(CAN_SET_FLAG, canSetFlag);
         editor.commit();
     }
 }

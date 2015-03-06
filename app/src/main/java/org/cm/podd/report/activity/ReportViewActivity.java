@@ -333,7 +333,10 @@ public class ReportViewActivity extends ActionBarActivity {
             oldFlag = reportFlag;
 
             // Flag spinner.
-            if (sharedPrefUtil.getIsVolunteer()) {
+            if (sharedPrefUtil.getCanSetFlag()) {
+                flagReadOnlyView.setVisibility(View.GONE);
+                flagSpinnerView.setVisibility(View.VISIBLE);
+            } else {
                 if (currentFlag.equals(0L)) {
                     // hide flag read only view if not set yet.
                     flagReadOnlyView.setVisibility(View.GONE);
@@ -342,9 +345,6 @@ public class ReportViewActivity extends ActionBarActivity {
                 }
 
                 flagSpinnerView.setVisibility(View.GONE);
-            } else {
-                flagReadOnlyView.setVisibility(View.GONE);
-                flagSpinnerView.setVisibility(View.VISIBLE);
             }
             flagImageView.setImageResource(FeedAdapter.flagColors[currentFlag.intValue()]);
             flagView.setText(getResources().getStringArray(
