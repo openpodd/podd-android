@@ -82,12 +82,6 @@ public class AdministrationAreaFragment extends ListFragment {
         face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
 
         getActivity().registerReceiver(mSyncReceiver, new IntentFilter(AdministrationAreaService.SYNC));
-
-        if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-            if (administrationAreaDataSource.getLeafAll().size() == 0)
-                showProgressBar();
-            startSyncAdministrationAreaService();
-        }
     }
 
     public void refreshAdapter() {
@@ -187,6 +181,12 @@ public class AdministrationAreaFragment extends ListFragment {
 
         progressBar = (ProgressBar) view.findViewById(R.id.loading_spinner);
 
+        if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+            if (administrationAreaDataSource.getLeafAll().size() == 0)
+                showProgressBar();
+            startSyncAdministrationAreaService();
+        }
+        
         return view;
     }
 
