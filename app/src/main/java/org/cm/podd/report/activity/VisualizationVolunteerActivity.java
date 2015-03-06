@@ -64,10 +64,13 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
             VisualizationVolunteer item = visualizationVolunteerDataSource.getFromVolunteerFromMonth(id, month, year);
 
             String error = intent.getStringExtra("error");
-            if (error != null && item == null)
+            if (error != null && item == null){
                 Crouton.makeText(VisualizationVolunteerActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
-            else
+                hideProgressDialog();
+            }
+            else {
                 refreshData(item);
+            }
         }
     };
 

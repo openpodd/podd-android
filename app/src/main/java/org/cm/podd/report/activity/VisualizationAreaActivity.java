@@ -68,6 +68,7 @@ public class VisualizationAreaActivity extends ActionBarActivity {
             String error = intent.getStringExtra("error");
             if (error != null && item == null) {
                 Crouton.makeText(VisualizationAreaActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                hideProgressDialog();
             } else {
                 refreshData(item);
             }
