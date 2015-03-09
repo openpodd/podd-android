@@ -76,11 +76,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@color/view_report_header_bg" >
-                    <!--<ImageView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_marginLeft="12dp"-->
-                        <!--android:src="@drawable/ic_report" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/ic_report" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -110,11 +110,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@color/view_report_header_bg" >
-                    <!--<ImageView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_marginLeft="12dp"-->
-                        <!--android:src="@drawable/ic_questionnaire" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/ic_questionnaire" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -149,11 +149,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@color/view_report_header_bg" >
-                    <!--<ImageView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_marginLeft="12dp"-->
-                        <!--android:src="@drawable/ic_report" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/ic_questionnaire" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -188,11 +188,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@color/view_report_header_bg" >
-                    <!--<ImageView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_marginLeft="12dp"-->
-                        <!--android:src="@drawable/ic_report" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/ic_time" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -220,11 +220,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:background="@color/view_report_header_bg" >
-                    <!--<ImageView-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_marginLeft="12dp"-->
-                        <!--android:src="@drawable/ic_report" />-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="12dp"
+                        android:src="@drawable/ic_rating" />
 
                     <TextView
                         android:layout_width="match_parent"
