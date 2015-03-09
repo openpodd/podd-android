@@ -23,6 +23,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import org.cm.podd.report.R;
 import org.cm.podd.report.model.AnimalType;
 import org.cm.podd.report.model.TimeRange;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -78,20 +79,8 @@ public class VisualizationFragment extends Fragment {
         textParentNameView.setText(name + " " + parentName);
         textParentNameView.setTypeface(face);
 
-        TextView textTotalReportView =  (TextView) view.findViewById(R.id.textTotalReport);
-        TextView textTypeView =  (TextView) view.findViewById(R.id.textReportType);
-        TextView textAnimalView =  (TextView) view.findViewById(R.id.textAnimalType);
-        TextView textTimeRangeView =  (TextView) view.findViewById(R.id.textReportTimeRange);
-        TextView textGradeView =  (TextView) view.findViewById(R.id.textGrade);
-
         TextView emptyReportView =  (TextView) view.findViewById(R.id.emptyReport);
         TextView emptyAnimalView =  (TextView) view.findViewById(R.id.emptyAnimalType);
-
-        textTotalReportView.setTypeface(face, Typeface.BOLD);
-        textTypeView.setTypeface(face, Typeface.BOLD);
-        textAnimalView.setTypeface(face, Typeface.BOLD);
-        textTimeRangeView.setTypeface(face, Typeface.BOLD);
-        textGradeView.setTypeface(face, Typeface.BOLD);
 
         emptyReportView.setTypeface(face);
         emptyAnimalView.setTypeface(face);
@@ -188,6 +177,7 @@ public class VisualizationFragment extends Fragment {
         valGradeView.setText(getGrade(grade));
         valGradeView.setTypeface(face);
 
+        FontUtil.overrideFonts(getActivity(), view);
         return view;
     }
 
