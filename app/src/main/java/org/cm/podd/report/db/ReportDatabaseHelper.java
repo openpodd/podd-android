@@ -195,9 +195,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
             case 4:
                 Log.i("DB", String.format(">> sql:\n%s", sql));
-                db.execSQL("ALTER TABLE feed_item ADD COLUMN created_at INTEGER DEFAULT 0");
-                db.execSQL("ALTER TABLE feed_item ADD COLUMN updated_at INTEGER DEFAULT 0");
-                db.execSQL("ALTER TABLE comment ADD COLUMN avatar_created_by TEXT");
         }
     }
 

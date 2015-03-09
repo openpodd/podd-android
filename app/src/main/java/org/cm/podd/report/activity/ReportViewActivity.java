@@ -60,6 +60,7 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -101,6 +102,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView flagView;
     private Spinner flagSpinnerView;
     private HintAdapter mFlagAdapter;
+    private TextView caseDialogTitle;
     private RelativeLayout caseDialog;
     private RadioGroup caseRadioGroup;
     private ProgressBar caseDialogProgressBar;
@@ -157,6 +159,7 @@ public class ReportViewActivity extends ActionBarActivity {
         flagView = (TextView) findViewById(R.id.flag_name);
         flagImageView = (ImageView) findViewById(R.id.flag_icon);
         flagSpinnerView = (Spinner) findViewById(R.id.flag_spinner);
+        caseDialogTitle = (TextView) findViewById(R.id.case_dialog_title);
         caseDialog = (RelativeLayout) findViewById(R.id.case_dialog);
         caseRadioGroup = (RadioGroup) findViewById(R.id.case_radio);
         caseDialogProgressBar = (ProgressBar) findViewById(R.id.case_dialog_progressbar);
@@ -330,7 +333,10 @@ public class ReportViewActivity extends ActionBarActivity {
             oldFlag = reportFlag;
 
             // Flag spinner.
-            if (sharedPrefUtil.getIsVolunteer()) {
+            if (sharedPrefUtil.getCanSetFlag()) {
+                flagReadOnlyView.setVisibility(View.GONE);
+                flagSpinnerView.setVisibility(View.VISIBLE);
+            } else {
                 if (currentFlag.equals(0L)) {
                     // hide flag read only view if not set yet.
                     flagReadOnlyView.setVisibility(View.GONE);
@@ -339,9 +345,6 @@ public class ReportViewActivity extends ActionBarActivity {
                 }
 
                 flagSpinnerView.setVisibility(View.GONE);
-            } else {
-                flagReadOnlyView.setVisibility(View.GONE);
-                flagSpinnerView.setVisibility(View.VISIBLE);
             }
             flagImageView.setImageResource(FeedAdapter.flagColors[currentFlag.intValue()]);
             flagView.setText(getResources().getStringArray(
@@ -371,7 +374,10 @@ public class ReportViewActivity extends ActionBarActivity {
                                         " AND flag:case";
 
                                 final Long parentId = id;
-                                Button okButton = (Button) findViewById(R.id.ok_button);
+                                final Button okButton = (Button) findViewById(R.id.ok_button);
+                                if (selectedCaseId == null) {
+                                    okButton.setEnabled(false);
+                                }
                                 okButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -384,7 +390,8 @@ public class ReportViewActivity extends ActionBarActivity {
                                     @Override
                                     public void onClick(View v) {
                                         caseDialog.setVisibility(View.GONE);
-                                        flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                        reverseFlag();
+                                        selectedCaseId = null;
                                     }
                                 });
 
@@ -421,10 +428,17 @@ public class ReportViewActivity extends ActionBarActivity {
                                                     @Override
                                                     public void onClick(View v) {
                                                         selectedCaseId = caseId;
+                                                        okButton.setEnabled(true);
                                                     }
                                                 });
 
                                                 caseRadioGroup.addView(radioButton);
+                                            }
+
+                                            if (items.length() == 0) {
+                                                caseDialogTitle.setText(getString(R.string.no_case_to_follow));
+                                            } else {
+                                                caseDialogTitle.setText(getString(R.string.choose_case));
                                             }
                                         } catch (JSONException e) {
                                             // do nothing.
@@ -451,12 +465,12 @@ public class ReportViewActivity extends ActionBarActivity {
                                     }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int whichButton) {
-                                            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                            reverseFlag();
                                         }
                                     }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                                         @Override
                                         public void onCancel(DialogInterface dialog) {
-                                            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+                                            reverseFlag();
                                         }
                                     }).create().show();
                         } else {
@@ -544,7 +558,8 @@ public class ReportViewActivity extends ActionBarActivity {
     public void onBackPressed() {
         if (caseDialog != null && caseDialog.getVisibility() == View.VISIBLE) {
             caseDialog.setVisibility(View.GONE);
-            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+            reverseFlag();
+            selectedCaseId = null;
         } else {
             super.onBackPressed();
         }
@@ -565,14 +580,14 @@ public class ReportViewActivity extends ActionBarActivity {
                     sendBroadcast(intent);
 
                     ReportService.doFetch(context, id);
-                } else if (resp.getStatusCode() == 403) {
-                    currentFlag = oldFlag;
-                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
-                    Crouton.makeText(getActivity(), getString(R.string.set_flag_forbidden), Style.ALERT).show();
                 } else {
-                    currentFlag = oldFlag;
-                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
-                    Crouton.makeText(getActivity(), getString(R.string.set_flag_error), Style.ALERT).show();
+                    reverseFlag();
+
+                    if (resp.getStatusCode() == 403) {
+                        Crouton.makeText(getActivity(), getString(R.string.set_flag_forbidden), Style.ALERT).show();
+                    } else {
+                        Crouton.makeText(getActivity(), getString(R.string.set_flag_error), Style.ALERT).show();
+                    }
                 }
             }
         };
@@ -596,20 +611,29 @@ public class ReportViewActivity extends ActionBarActivity {
                     sendBroadcast(intent);
 
                     ReportService.doFetch(context, id);
-                } else if (resp.getStatusCode() == 403) {
-                    currentFlag = oldFlag;
-                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
-                    Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_forbidden), Style.ALERT).show();
                 } else {
-                    currentFlag = oldFlag;
-                    flagSpinnerView.setSelection(oldFlag.intValue() - 1);
-                    Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_error), Style.ALERT).show();
+                    reverseFlag();
+
+                    if (resp.getStatusCode() == 403) {
+                        Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_forbidden), Style.ALERT).show();
+                    } else {
+                        Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_error), Style.ALERT).show();
+                    }
                 }
             }
         };
 
         task.setContext(getApplicationContext());
         task.execute(Long.toString(id), Long.toString(flag));
+    }
+
+    private void reverseFlag() {
+        currentFlag = oldFlag;
+        if (currentFlag == 0) {
+            flagSpinnerView.setSelection(mFlagAdapter.getCount());
+        } else {
+            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
+        }
     }
 
     public class HintAdapter extends ArrayAdapter<String> {

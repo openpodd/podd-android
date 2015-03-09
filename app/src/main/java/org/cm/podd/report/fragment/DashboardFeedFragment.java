@@ -220,6 +220,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                         } else {
                             sharedPrefUtil.setIsVolunteer(false);
                         }
+                        sharedPrefUtil.setCanSetFlag(result.getBoolean("canSetFlag"));
                     } catch (JSONException e) {
                         Log.e(TAG, "Error parsing JSON data", e);
                     }
