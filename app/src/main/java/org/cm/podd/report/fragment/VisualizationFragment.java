@@ -72,7 +72,7 @@ public class VisualizationFragment extends Fragment {
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
 
         TextView textNameView = (TextView) view.findViewById(R.id.month_and_year);
-        textNameView.setText("ประจำเดือน :" + month + "/" + year);
+        textNameView.setText(getString(R.string.visual_month) + " " + month + "/" + year);
         textNameView.setTypeface(face);
 
         TextView textParentNameView = (TextView) view.findViewById(R.id.name);
