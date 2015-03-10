@@ -144,5 +144,7 @@
 
     <string name="summary_detail">ข้อมูลการประเมิน</string>
     <string name="visual_month">ประจำเดือน : </string>
+    <string name="mention_regex">"@\\[([\\w-]+)]"</string>
+    <string name="mention_render"><![CDATA[<a href=\'.\'>@$1</a>]]></string>
 
 </resources>

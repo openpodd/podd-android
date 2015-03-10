@@ -11,30 +11,44 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.CommentDataSource;
+import org.cm.podd.report.db.ReportTypeDataSource;
+import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Comment;
+import org.cm.podd.report.model.User;
 import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -43,6 +57,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -53,12 +68,20 @@ public class ReportCommentActivity extends ActionBarActivity {
     private Long reportId;
 
     private CommentDataSource commentDataSource;
-    private LinearLayout linearLayout;
-    private TextView emptyText;
+
     private EditText commentText;
+    private LinearLayout linearLayout;
     private LinearLayout submitCommentText;
-    private ScrollView scrollView;
+    private ListView listView;
     private ProgressBar progressBar;
+    private ScrollView scrollView;
+    private TextView emptyText;
+
+    private UserAdapter adapter;
+
+    private int queryStart = -1;
+    private int queryEnd = -1;
+    private boolean mention = false;
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
@@ -81,6 +104,7 @@ public class ReportCommentActivity extends ActionBarActivity {
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        listView = (ListView) findViewById(R.id.list_view);
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 
         linearLayout = (LinearLayout) findViewById(R.id.list);
@@ -96,13 +120,31 @@ public class ReportCommentActivity extends ActionBarActivity {
                 scrollView.fullScroll(View.FOCUS_DOWN);
             }
         });
+        commentText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                fetchMentions(s, start, before, count);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         submitCommentText = (LinearLayout) findViewById(R.id.submit);
         submitCommentText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!commentText.getText().toString().equals(null) || !commentText.getText().toString().equals(""))
+                if (!commentText.getText().toString().equals(null) || !commentText.getText().toString().equals("")){
+                    showProgressBar();
                     fetchComments(reportId);
+                }
             }
         });
 
@@ -129,6 +171,31 @@ public class ReportCommentActivity extends ActionBarActivity {
 
     }
 
+    private void fetchMentions(CharSequence s, int start, int before, int count){
+        if (s.length() > 0){
+            if (mention){
+                queryEnd = s.length() - 1;
+                if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
+                    String query = commentText.toString().substring(queryStart, queryEnd).replace("@", "");
+                    new SyncUserTask().execute(new String[]{query});
+                    listView.setVisibility(View.VISIBLE);
+                }
+            }
+
+            if (s.charAt(s.length()-1) == '@'){
+                mention = true;
+                queryStart = s.length() - 1;
+                listView.setVisibility(View.VISIBLE);
+            }else if(s.charAt(s.length()-1) == ' '){
+                mention = false;
+                queryStart = -1;
+                queryEnd = -1;
+                listView.setVisibility(View.INVISIBLE);
+            }
+
+        }
+    }
+
     private void fetchComments(final Long reportId) {
         ReportService.PostCommentTask task = new ReportService.PostCommentTask(){
             @Override
@@ -150,8 +217,8 @@ public class ReportCommentActivity extends ActionBarActivity {
                     } else {
                         Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT).show();
                     }
+                    hideProgressBar();
                 }
-                commentText.setText("");
             }
         };
         task.setContext(getApplicationContext());
@@ -182,9 +249,12 @@ public class ReportCommentActivity extends ActionBarActivity {
             createdByTextView.setTypeface(face, Typeface.BOLD);
             createdByTextView.setText(comments.get(i).getCreatedBy());
 
+            String message = comments.get(i).getMessage();
+            message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
+
             TextView messageTextView = (TextView) view.findViewById(R.id.message);
             messageTextView.setTypeface(face);
-            messageTextView.setText(comments.get(i).getMessage());
+            messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
 
             Date date = null;
             String dateText = comments.get(i).getCreatedAt();
@@ -274,6 +344,8 @@ public class ReportCommentActivity extends ActionBarActivity {
             }
         }, 1000);
 
+        commentText.setText("");
+
         if (RequestDataUtil.hasNetworkConnection(this)) {
             startSyncCommentService(reportId);
         }
@@ -312,6 +384,74 @@ public class ReportCommentActivity extends ActionBarActivity {
         }
     }
 
+    public class SyncUserTask extends AsyncTask<String[], Void, RequestDataUtil.ResponseObject> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String[]... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+            return RequestDataUtil.get("/users/search/?username=" + params[0], null, sharedPrefUtil.getAccessToken());
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                try {
+                    ArrayList<User> users = new ArrayList<User>();
+                    JSONArray items = new JSONArray(resp.getRawData());
+
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        Long id = item.optLong("id", -99);
+                        String userName = item.optString("username");
+                        String fullName = item.optString("fullName");
+                        User user = new User(id, userName, fullName);
+                        users.add(user);
+                    }
+
+                    adapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
+                    listView.setAdapter(adapter);
+                    listView.setVisibility(View.VISIBLE);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    private class UserAdapter extends ArrayAdapter<User> {
+
+        Context context;
+        int resource;
+
+        public UserAdapter(Context context, int resource, List<User> users) {
+            super(context, resource, users);
+            this.context = context;
+            this.resource = resource;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(this.resource, parent, false);
+
+            TextView textFullNameView = (TextView) view.findViewById(R.id.full_name);
+            TextView textUserNameView = (TextView) view.findViewById(R.id.username);
+
+
+            textFullNameView.setText(getItem(position).getFullName());
+            textUserNameView.setText(getItem(position).getUsername());
+
+            FontUtil.overrideFonts(getContext(), view);
+            return view;
+        }
+    }
     private void startSyncCommentService(long reportId) {
         Intent intent = new Intent(this, CommentService.class);
         intent.putExtra("reportId", reportId);
