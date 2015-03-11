@@ -24,7 +24,7 @@
         </ScrollView>
 
         <TextView
-            android:id="@android:id/empty"
+            android:id="@+id/comment_empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="25dp"
@@ -32,19 +32,36 @@
             android:text="ไม่พบความคิดเห็น">
         </TextView>
 
-        <ProgressBar android:id="@+id/loading_spinner"
-            style="?android:progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"/>
-
         <ListView
             android:visibility="invisible"
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/list_view" />
+
+        <RelativeLayout
+            android:id="@+id/empty_user_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+            <TextView
+                android:id="@+id/user_empty"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:textSize="25dp"
+                android:gravity="center"
+                android:text="ไม่พบผู้ใช้">
+            </TextView>
+        </RelativeLayout>
+
+        <ProgressBar android:id="@+id/loading_spinner"
+            style="?android:progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
 
     </RelativeLayout>
 

@@ -21,23 +21,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Filterable;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.CommentDataSource;
-import org.cm.podd.report.db.ReportTypeDataSource;
-import org.cm.podd.report.model.AdministrationArea;
 import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.model.User;
 import org.cm.podd.report.service.CommentService;
@@ -72,16 +68,19 @@ public class ReportCommentActivity extends ActionBarActivity {
     private EditText commentText;
     private LinearLayout linearLayout;
     private LinearLayout submitCommentText;
+    private RelativeLayout emptyUserLayout;
     private ListView listView;
     private ProgressBar progressBar;
     private ScrollView scrollView;
-    private TextView emptyText;
+    private TextView commentEmptyText;
+    private TextView userEmptyText;
 
     private UserAdapter adapter;
 
-    private int queryStart = -1;
-    private int queryEnd = -1;
+    private int mentionStart = -1;
+    private int mentionEnd = -1;
     private boolean mention = false;
+    private boolean delete = false;
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
@@ -104,11 +103,19 @@ public class ReportCommentActivity extends ActionBarActivity {
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
+
         listView = (ListView) findViewById(R.id.list_view);
+        userEmptyText = (TextView) findViewById(R.id.user_empty);
+        userEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        userEmptyText.setVisibility(View.INVISIBLE);
+        listView.setEmptyView(userEmptyText);
+
+        emptyUserLayout = (RelativeLayout) findViewById(R.id.empty_user_layout);
+
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 
         linearLayout = (LinearLayout) findViewById(R.id.list);
-        emptyText = (TextView) findViewById(android.R.id.empty);
+        commentEmptyText = (TextView) findViewById(R.id.comment_empty);
 
         commentText = (EditText) findViewById(R.id.editText);
         commentText.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +135,7 @@ public class ReportCommentActivity extends ActionBarActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hideProgressBar();
                 fetchMentions(s, start, before, count);
             }
 
@@ -144,6 +152,8 @@ public class ReportCommentActivity extends ActionBarActivity {
                 if (!commentText.getText().toString().equals(null) || !commentText.getText().toString().equals("")){
                     showProgressBar();
                     fetchComments(reportId);
+                    commentText.setEnabled(false);
+                    submitCommentText.setEnabled(false);
                 }
             }
         });
@@ -168,32 +178,47 @@ public class ReportCommentActivity extends ActionBarActivity {
             startSyncCommentService(reportId);
         }
 
-
     }
 
     private void fetchMentions(CharSequence s, int start, int before, int count){
-        if (s.length() > 0){
-            if (mention){
-                queryEnd = s.length() - 1;
-                if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
-                    String query = commentText.toString().substring(queryStart, queryEnd).replace("@", "");
-                    new SyncUserTask().execute(new String[]{query});
-                    listView.setVisibility(View.VISIBLE);
+        String query = "";
+        String messages[] = s.toString().trim().split(" ");
+        if (s.toString().length() - 1 > 0 && s.toString().charAt(s.toString().length() - 1) == ' ') {
+            mention = false;
+        } else {
+            int messageLen = 0;
+            for (int i = 0; i < messages.length; i++) {
+                String message = messages[i];
+                messageLen += message.length();
+
+                if (start <= messageLen) {
+                    if (message.length() > 0 && message.charAt(0) == '@') {
+                        query = message.replace("@", "");
+                        mentionStart = messageLen - message.length();
+                        mentionEnd = messageLen;
+                        mention = true;
+                        break;
+                    }
+                    mention = false;
                 }
-            }
+                messageLen +=  1;
 
-            if (s.charAt(s.length()-1) == '@'){
-                mention = true;
-                queryStart = s.length() - 1;
-                listView.setVisibility(View.VISIBLE);
-            }else if(s.charAt(s.length()-1) == ' '){
-                mention = false;
-                queryStart = -1;
-                queryEnd = -1;
-                listView.setVisibility(View.INVISIBLE);
+                if (i == messages.length - 1)
+                    mention = false;
             }
-
         }
+
+        if (mention) {
+            if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
+                showProgressBar();
+                new SyncUserTask().execute(new String[]{query});
+                listView.setVisibility(View.VISIBLE);
+            }
+        }else{
+            listView.setVisibility(View.INVISIBLE);
+            emptyUserLayout.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     private void fetchComments(final Long reportId) {
@@ -218,11 +243,15 @@ public class ReportCommentActivity extends ActionBarActivity {
                         Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT).show();
                     }
                     hideProgressBar();
+                    commentText.setEnabled(true);
+                    submitCommentText.setEnabled(true);
                 }
             }
         };
         task.setContext(getApplicationContext());
-        task.execute((new String[]{reportId.toString(), commentText.getText().toString()}));
+        String message = commentText.getText().toString();
+        message = message.replaceAll(getString(R.string.comment_mention_regex), getString(R.string.comment_mention_render));
+        task.execute((new String[]{reportId.toString(), message}));
     }
 
     public void refreshComment() {
@@ -230,11 +259,11 @@ public class ReportCommentActivity extends ActionBarActivity {
 
         ArrayList<Comment> comments = getAll();
 
-        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่พบความคิดเห็น");
+        commentEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        commentEmptyText.setText("ไม่พบความคิดเห็น");
 
         if (comments.size() == 0){
-            emptyText.setVisibility(View.VISIBLE);
+            commentEmptyText.setVisibility(View.VISIBLE);
             hideProgressBar();
             return;
         }
@@ -282,18 +311,18 @@ public class ReportCommentActivity extends ActionBarActivity {
             linearLayout.addView(view);
         }
 
-        emptyText.setVisibility(View.GONE);
+        commentEmptyText.setVisibility(View.GONE);
         hideProgressBar();
     }
 
     public void addComment() {
         ArrayList<Comment> comments = getAll();
 
-        emptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่พบความคิดเห็น");
+        commentEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        commentEmptyText.setText("ไม่พบความคิดเห็น");
 
         if (comments.size() == 0){
-            emptyText.setVisibility(View.VISIBLE);
+            commentEmptyText.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -307,9 +336,12 @@ public class ReportCommentActivity extends ActionBarActivity {
         createdByTextView.setTypeface(face, Typeface.BOLD);
         createdByTextView.setText(comments.get(i).getCreatedBy());
 
+        String message = comments.get(i).getMessage();
+        message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
+
         TextView messageTextView = (TextView) view.findViewById(R.id.message);
         messageTextView.setTypeface(face);
-        messageTextView.setText(comments.get(i).getMessage());
+        messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
 
         Date date = null;
         String dateText = comments.get(i).getCreatedAt();
@@ -335,14 +367,16 @@ public class ReportCommentActivity extends ActionBarActivity {
             line.setVisibility(View.GONE);
         }
         linearLayout.addView(view);
-        emptyText.setVisibility(View.GONE);
+        commentEmptyText.setVisibility(View.GONE);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 scrollView.fullScroll(View.FOCUS_DOWN);
+                commentText.setEnabled(true);
+                submitCommentText.setEnabled(true);
             }
-        }, 1000);
+        }, 500);
 
         commentText.setText("");
 
@@ -356,7 +390,8 @@ public class ReportCommentActivity extends ActionBarActivity {
     }
 
     private void showProgressBar(){
-        emptyText.setVisibility(View.INVISIBLE);
+        commentEmptyText.setVisibility(View.INVISIBLE);
+        emptyUserLayout.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -384,14 +419,14 @@ public class ReportCommentActivity extends ActionBarActivity {
         }
     }
 
-    public class SyncUserTask extends AsyncTask<String[], Void, RequestDataUtil.ResponseObject> {
+    public class SyncUserTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected RequestDataUtil.ResponseObject doInBackground(String[]... params) {
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
             return RequestDataUtil.get("/users/search/?username=" + params[0], null, sharedPrefUtil.getAccessToken());
         }
@@ -399,9 +434,10 @@ public class ReportCommentActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
+            hideProgressBar();
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
-                    ArrayList<User> users = new ArrayList<User>();
+                    final ArrayList<User> users = new ArrayList<User>();
                     JSONArray items = new JSONArray(resp.getRawData());
 
                     for (int i = 0; i < items.length(); i++) {
@@ -415,8 +451,23 @@ public class ReportCommentActivity extends ActionBarActivity {
 
                     adapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
                     listView.setAdapter(adapter);
-                    listView.setVisibility(View.VISIBLE);
+                    listView.setOnItemClickListener (new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String mention = users.get(position).getUsername();
+                            String message = commentText.getText().toString();
+                            String lastMessage = "";
+                            if (mentionEnd + 1 < message.length() - 1)
+                                lastMessage = message.substring(mentionEnd + 1);
+                            message = message.substring(0, mentionStart) + "@" + mention + " " + lastMessage;
+                            commentText.setText(message, TextView.BufferType.EDITABLE);
 
+                            int positionText = commentText.getText().length();
+                            commentText.setSelection(positionText);
+                            listView.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    emptyUserLayout.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -444,8 +495,11 @@ public class ReportCommentActivity extends ActionBarActivity {
             TextView textFullNameView = (TextView) view.findViewById(R.id.full_name);
             TextView textUserNameView = (TextView) view.findViewById(R.id.username);
 
+            if (getItem(position).getFullName().equals(""))
+                textFullNameView.setText(getItem(position).getUsername());
+            else
+                textFullNameView.setText(getItem(position).getFullName());
 
-            textFullNameView.setText(getItem(position).getFullName());
             textUserNameView.setText(getItem(position).getUsername());
 
             FontUtil.overrideFonts(getContext(), view);
