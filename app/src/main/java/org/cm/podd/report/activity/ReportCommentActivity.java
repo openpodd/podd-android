@@ -38,6 +38,7 @@ import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.model.User;
 import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.util.CacheUtil;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -47,8 +48,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,12 +83,12 @@ public class ReportCommentActivity extends ActionBarActivity {
     private int mentionStart = -1;
     private int mentionEnd = -1;
     private boolean mention = false;
-    private boolean delete = false;
+
+    private String cacheKeyName = "mention-keyword-";
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ArrayList<Comment> items = getAll();
             refreshComment();
         }
     };
@@ -211,8 +214,20 @@ public class ReportCommentActivity extends ActionBarActivity {
         if (mention) {
             if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
                 showProgressBar();
-                new SyncUserTask().execute(new String[]{query});
-                listView.setVisibility(View.VISIBLE);
+                String key = cacheKeyName + query;
+                try {
+                    byte [] data = CacheUtil.retrieveData(ReportCommentActivity.this, key);
+                    if (data != null) {
+                        String jsonMentionsData = new String(data, "UTF-8");
+                        showMentionList(jsonMentionsData);
+                    } else {
+                        new SyncUserTask().execute(new String[]{query});
+                    }
+                    listView.setVisibility(View.VISIBLE);
+                }
+                catch (IOException ex){
+
+                }
             }
         }else{
             listView.setVisibility(View.INVISIBLE);
@@ -420,6 +435,7 @@ public class ReportCommentActivity extends ActionBarActivity {
     }
 
     public class SyncUserTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        String query;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -427,8 +443,10 @@ public class ReportCommentActivity extends ActionBarActivity {
 
         @Override
         protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            query = params[0];
+
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
-            return RequestDataUtil.get("/users/search/?username=" + params[0], null, sharedPrefUtil.getAccessToken());
+            return RequestDataUtil.get("/users/search/?username=" + query, null, sharedPrefUtil.getAccessToken());
         }
 
         @Override
@@ -437,38 +455,11 @@ public class ReportCommentActivity extends ActionBarActivity {
             hideProgressBar();
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
-                    final ArrayList<User> users = new ArrayList<User>();
-                    JSONArray items = new JSONArray(resp.getRawData());
+                    String key = cacheKeyName + query;
+                    showMentionList(resp.getRawData());
+                    CacheUtil.cacheData(ReportCommentActivity.this, resp.getRawData().getBytes(Charset.forName("UTF-8")), key);
 
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        Long id = item.optLong("id", -99);
-                        String userName = item.optString("username");
-                        String fullName = item.optString("fullName");
-                        User user = new User(id, userName, fullName);
-                        users.add(user);
-                    }
-
-                    adapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
-                    listView.setAdapter(adapter);
-                    listView.setOnItemClickListener (new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            String mention = users.get(position).getUsername();
-                            String message = commentText.getText().toString();
-                            String lastMessage = "";
-                            if (mentionEnd + 1 < message.length() - 1)
-                                lastMessage = message.substring(mentionEnd + 1);
-                            message = message.substring(0, mentionStart) + "@" + mention + " " + lastMessage;
-                            commentText.setText(message, TextView.BufferType.EDITABLE);
-
-                            int positionText = commentText.getText().length();
-                            commentText.setSelection(positionText);
-                            listView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                    emptyUserLayout.setVisibility(View.VISIBLE);
-                } catch (JSONException e) {
+                }catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -506,6 +497,46 @@ public class ReportCommentActivity extends ActionBarActivity {
             return view;
         }
     }
+
+    private void showMentionList(String jsonUsers){
+        try {
+            final ArrayList<User> users = new ArrayList<User>();
+            JSONArray items = new JSONArray(jsonUsers);
+
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+                Long id = item.optLong("id", -99);
+                String userName = item.optString("username");
+                String fullName = item.optString("fullName");
+                User user = new User(id, userName, fullName);
+                users.add(user);
+            }
+
+            adapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String mention = users.get(position).getUsername();
+                    String message = commentText.getText().toString();
+                    String lastMessage = "";
+                    if (mentionEnd + 1 < message.length() - 1)
+                        lastMessage = message.substring(mentionEnd + 1);
+                    message = message.substring(0, mentionStart) + "@" + mention + " " + lastMessage;
+                    commentText.setText(message, TextView.BufferType.EDITABLE);
+
+                    int positionText = commentText.getText().length();
+                    commentText.setSelection(positionText);
+                    listView.setVisibility(View.INVISIBLE);
+                }
+            });
+            emptyUserLayout.setVisibility(View.VISIBLE);
+            hideProgressBar();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void startSyncCommentService(long reportId) {
         Intent intent = new Intent(this, CommentService.class);
         intent.putExtra("reportId", reportId);
