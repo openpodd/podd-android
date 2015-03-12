@@ -55,9 +55,12 @@ public class AdministrationAreaFragment extends ListFragment {
     Typeface face;
 
     private administrationAreaAdapter adapter;
-    private EditText editText;
+    private  SearchView searchView;
     private ProgressBar progressBar;
     private TextView emptyText;
+
+    private boolean isOkayClicked = false;
+    private StaticTitleDatePickerDialog datePickerDialog;
 
     public AdministrationAreaFragment() {
     }
@@ -70,10 +73,7 @@ public class AdministrationAreaFragment extends ListFragment {
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
-            setListAdapter(adapter);
-
-            hideProgressBar();
+            refreshAdapter();
         }
     };
     @Override
@@ -87,13 +87,11 @@ public class AdministrationAreaFragment extends ListFragment {
 
     public void refreshAdapter() {
         adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
+        adapter.getFilter().filter(searchView.getQuery().toString());
         setListAdapter(adapter);
 
         hideProgressBar();
     }
-
-    private boolean isOkayClicked = false;
-    private StaticTitleDatePickerDialog datePickerDialog;
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -171,7 +169,7 @@ public class AdministrationAreaFragment extends ListFragment {
         emptyText.setVisibility(View.GONE);
         listView.setEmptyView(emptyText);
 
-        final SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView = (SearchView) view.findViewById(R.id.searchView);
         searchView.setQueryHint(getString(R.string.search));
         searchView.setIconified(false);
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
