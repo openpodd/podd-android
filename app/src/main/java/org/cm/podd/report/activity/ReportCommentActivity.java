@@ -218,6 +218,8 @@ public class ReportCommentActivity extends ActionBarActivity {
                 } else {
                     if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
                         new SyncUserTask().execute(new String[]{query});
+                    }else{
+                        hideProgressBar();
                     }
                 }
                 listUserView.setVisibility(View.VISIBLE);
