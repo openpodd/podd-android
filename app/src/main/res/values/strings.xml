@@ -149,5 +149,6 @@
 
     <string name="comment_mention_regex">"@([\\w-]+)"</string>
     <string name="comment_mention_render">"@[$1]"</string>
+    <string name="server_error">Error on Server, please contact administration</string>
 
 </resources>

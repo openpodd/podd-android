@@ -65,7 +65,7 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
 
             String error = intent.getStringExtra("error");
             if (error != null && item == null){
-                Crouton.makeText(VisualizationVolunteerActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                Crouton.makeText(VisualizationVolunteerActivity.this, getString(R.string.server_error), Style.ALERT).show();
                 hideProgressDialog();
             }
             else {

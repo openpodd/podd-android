@@ -7,9 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Created by sudarat on 3/12/15 AD.
- */
 public class CacheUtil {
 
     private static final long MAX_SIZE = 2 * 1024 * 1024; // 2MB
