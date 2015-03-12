@@ -31,6 +31,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.CommentDataSource;
 import org.cm.podd.report.model.Comment;
@@ -104,7 +106,6 @@ public class ReportCommentActivity extends ActionBarActivity {
         setContentView(R.layout.activity_report_comment);
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
-//        scrollView = (ScrollView) findViewById(R.id.scroll_view);
         listCommentView = (ListView) findViewById(R.id.list_comment);
 
         listUserView = (ListView) findViewById(R.id.list_user);
@@ -294,30 +295,6 @@ public class ReportCommentActivity extends ActionBarActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public ImageDownloader(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String url = urls[0];
-            Bitmap mImage = null;
-            try {
-                InputStream in = new java.net.URL(url).openStream();
-                mImage = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-            }
-            return mImage;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
-    }
-
     public class SyncUserTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
         String query;
         @Override
@@ -359,8 +336,8 @@ public class ReportCommentActivity extends ActionBarActivity {
 
         public CommentAdapter(Context context, int resource, List<Comment> originalData) {
             super(context, resource, originalData);
-          this.context = context;
-           this.resource = resource;
+            this.context = context;
+            this.resource = resource;
             face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
         @Override
@@ -394,8 +371,8 @@ public class ReportCommentActivity extends ActionBarActivity {
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 
-            if(!getItem(position).getAvatarCreatedBy().equals(null)){
-               new ImageDownloader(avatarCreatedByView).execute(getItem(position).getAvatarCreatedBy());
+            if (!getItem(position).getAvatarCreatedBy().equals("null")) {
+                Picasso.with(getContext()).load(getItem(position).getAvatarCreatedBy()).into(avatarCreatedByView);
             }
             return view;
         }
