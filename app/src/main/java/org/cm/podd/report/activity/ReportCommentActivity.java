@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
@@ -69,16 +68,16 @@ public class ReportCommentActivity extends ActionBarActivity {
     private CommentDataSource commentDataSource;
 
     private EditText commentText;
-    private LinearLayout linearLayout;
     private LinearLayout submitCommentText;
     private RelativeLayout emptyUserLayout;
-    private ListView listView;
+    private ListView listCommentView;
+    private ListView listUserView;
     private ProgressBar progressBar;
-    private ScrollView scrollView;
     private TextView commentEmptyText;
     private TextView userEmptyText;
 
-    private UserAdapter adapter;
+    private CommentAdapter commentAdapter;
+    private UserAdapter userAdapter;
 
     private int mentionStart = -1;
     private int mentionEnd = -1;
@@ -105,20 +104,22 @@ public class ReportCommentActivity extends ActionBarActivity {
         setContentView(R.layout.activity_report_comment);
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+//        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        listCommentView = (ListView) findViewById(R.id.list_comment);
 
-        listView = (ListView) findViewById(R.id.list_view);
+        listUserView = (ListView) findViewById(R.id.list_user);
         userEmptyText = (TextView) findViewById(R.id.user_empty);
         userEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         userEmptyText.setVisibility(View.INVISIBLE);
-        listView.setEmptyView(userEmptyText);
+        listUserView.setEmptyView(userEmptyText);
 
         emptyUserLayout = (RelativeLayout) findViewById(R.id.empty_user_layout);
 
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
 
-        linearLayout = (LinearLayout) findViewById(R.id.list);
+//        linearLayout = (LinearLayout) findViewById(R.id.list);
         commentEmptyText = (TextView) findViewById(R.id.comment_empty);
+        listCommentView.setEmptyView(commentEmptyText);
 
         commentText = (EditText) findViewById(R.id.editText);
         commentText.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +128,7 @@ public class ReportCommentActivity extends ActionBarActivity {
                 commentText.setFocusableInTouchMode(true);
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(commentText, InputMethodManager.SHOW_IMPLICIT);
-                scrollView.fullScroll(View.FOCUS_DOWN);
+                listCommentView.setSelection(listCommentView.getAdapter().getCount() - 1);
             }
         });
         commentText.addTextChangedListener(new TextWatcher() {
@@ -166,13 +167,7 @@ public class ReportCommentActivity extends ActionBarActivity {
         commentDataSource = new CommentDataSource(this);
 
         registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
-
-        runOnUiThread(new Runnable() {
-            public void run() {
-                showProgressBar();
-                refreshComment();
-            }
-        });
+        refreshComment();
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             if(getAll().size() == 0)
@@ -224,13 +219,13 @@ public class ReportCommentActivity extends ActionBarActivity {
                         new SyncUserTask().execute(new String[]{query});
                     }
                 }
-                listView.setVisibility(View.VISIBLE);
+                listUserView.setVisibility(View.VISIBLE);
             }
             catch (IOException ex){
                 ex.printStackTrace();
             }
         }else{
-            listView.setVisibility(View.INVISIBLE);
+            listUserView.setVisibility(View.INVISIBLE);
             emptyUserLayout.setVisibility(View.INVISIBLE);
         }
 
@@ -248,12 +243,7 @@ public class ReportCommentActivity extends ActionBarActivity {
                 super.onPostExecute(resp);
                 JSONObject obj = resp.getJsonObject();
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            addComment();
-                        }
-                    });
-
+                    addComment();
                 } else {
                     Log.e(TAG, resp.getStatusCode() + "" + resp.getJsonObject());
 
@@ -263,141 +253,30 @@ public class ReportCommentActivity extends ActionBarActivity {
                         Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT).show();
                     }
                     hideProgressBar();
-                    commentText.setEnabled(true);
-                    submitCommentText.setEnabled(true);
                 }
+                commentText.setEnabled(true);
+                submitCommentText.setEnabled(true);
             }
         };
-        task.setContext(getApplicationContext());
         String message = commentText.getText().toString();
         message = message.replaceAll(getString(R.string.comment_mention_regex), getString(R.string.comment_mention_render));
+
+        task.setContext(getApplicationContext());
         task.execute((new String[]{reportId.toString(), message}));
     }
 
     public void refreshComment() {
-        linearLayout.removeAllViews();
-
         ArrayList<Comment> comments = getAll();
 
-        commentEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        commentEmptyText.setText("ไม่พบความคิดเห็น");
+        commentAdapter = new CommentAdapter(this, R.layout.list_item_comment, comments);
+        listCommentView.setAdapter(commentAdapter);
 
-        if (comments.size() == 0){
-            commentEmptyText.setVisibility(View.VISIBLE);
-            hideProgressBar();
-            return;
-        }
-
-        Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
-
-        for (int i = 0; i < comments.size(); i++){
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View view = inflater.inflate(R.layout.list_item_comment, null, false);
-
-            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
-            createdByTextView.setTypeface(face, Typeface.BOLD);
-            createdByTextView.setText(comments.get(i).getCreatedBy());
-
-            String message = comments.get(i).getMessage();
-            message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
-
-            TextView messageTextView = (TextView) view.findViewById(R.id.message);
-            messageTextView.setTypeface(face);
-            messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
-
-            Date date = null;
-            String dateText = comments.get(i).getCreatedAt();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
-            try {
-                date = format.parse(dateText);
-            } catch (ParseException e) {
-                Log.e(TAG, e.toString());
-            }
-
-            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
-            createdAtTextView.setTypeface(face);
-            createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.convertToThaiDateTime(date));
-
-            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
-
-            if (!comments.get(i).getAvatarCreatedBy().equals(null)){
-                new ImageDownloader(avatarCreatedByView).execute(comments.get(i).getAvatarCreatedBy());
-            }
-
-            if (i == comments.size() -1){
-                LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
-                line.setVisibility(View.GONE);
-            }
-            linearLayout.addView(view);
-        }
-
-        commentEmptyText.setVisibility(View.GONE);
+        listCommentView.setSelection(listCommentView.getAdapter().getCount() - 1);
         hideProgressBar();
     }
 
     public void addComment() {
-        ArrayList<Comment> comments = getAll();
-
-        commentEmptyText.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        commentEmptyText.setText("ไม่พบความคิดเห็น");
-
-        if (comments.size() == 0){
-            commentEmptyText.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
-
-        int i = comments.size() - 1;
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View view = inflater.inflate(R.layout.list_item_comment, null, false);
-
-        TextView createdByTextView = (TextView) view.findViewById(R.id.name);
-        createdByTextView.setTypeface(face, Typeface.BOLD);
-        createdByTextView.setText(comments.get(i).getCreatedBy());
-
-        String message = comments.get(i).getMessage();
-        message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
-
-        TextView messageTextView = (TextView) view.findViewById(R.id.message);
-        messageTextView.setTypeface(face);
-        messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
-
-        Date date = null;
-        String dateText = comments.get(i).getCreatedAt();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
-        try {
-            date = format.parse(dateText);
-        } catch (ParseException e) {
-            Log.e(TAG, e.toString());
-        }
-
-        TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
-        createdAtTextView.setTypeface(face);
-        createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.convertToThaiDateTime(date));
-
-        CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
-
-        if (!comments.get(i).getAvatarCreatedBy().equals(null)){
-            new ImageDownloader(avatarCreatedByView).execute(comments.get(i).getAvatarCreatedBy());
-        }
-
-        if (i == comments.size() -1){
-            LinearLayout line = (LinearLayout) view.findViewById(R.id.line);
-            line.setVisibility(View.GONE);
-        }
-        linearLayout.addView(view);
-        commentEmptyText.setVisibility(View.GONE);
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
-                commentText.setEnabled(true);
-                submitCommentText.setEnabled(true);
-            }
-        }, 500);
-
+        refreshComment();
         commentText.setText("");
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
@@ -472,6 +351,56 @@ public class ReportCommentActivity extends ActionBarActivity {
 
     }
 
+    private class CommentAdapter extends ArrayAdapter<Comment> {
+
+        Context context;
+        int resource;
+        Typeface face;
+
+        public CommentAdapter(Context context, int resource, List<Comment> originalData) {
+            super(context, resource, originalData);
+          this.context = context;
+           this.resource = resource;
+            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(this.resource, parent, false);
+
+            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
+            createdByTextView.setTypeface(face, Typeface.BOLD);
+            createdByTextView.setText(getItem(position).getCreatedBy());
+
+            String message = getItem(position).getMessage();
+            message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
+
+            TextView messageTextView = (TextView) view.findViewById(R.id.message);
+            messageTextView.setTypeface(face);
+            messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
+
+            Date date = null;
+            String dateText = getItem(position).getCreatedAt();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
+            try {
+               date = format.parse(dateText);
+            } catch (ParseException e) {
+                Log.e(TAG, e.toString());
+            }
+
+            TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
+            createdAtTextView.setTypeface(face);
+            createdAtTextView.setText(getString(R.string.comment_date) + "" + DateUtil.convertToThaiDateTime(date));
+
+            CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
+
+            if(!getItem(position).getAvatarCreatedBy().equals(null)){
+               new ImageDownloader(avatarCreatedByView).execute(getItem(position).getAvatarCreatedBy());
+            }
+            return view;
+        }
+    }
+
     private class UserAdapter extends ArrayAdapter<User> {
 
         Context context;
@@ -517,9 +446,9 @@ public class ReportCommentActivity extends ActionBarActivity {
                 users.add(user);
             }
 
-            adapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
-            listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            userAdapter = new UserAdapter(ReportCommentActivity.this, R.layout.list_item_user, users);
+            listUserView.setAdapter(userAdapter);
+            listUserView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String mention = users.get(position).getUsername();
@@ -532,7 +461,7 @@ public class ReportCommentActivity extends ActionBarActivity {
 
                     int positionText = commentText.getText().length();
                     commentText.setSelection(positionText);
-                    listView.setVisibility(View.INVISIBLE);
+                    listUserView.setVisibility(View.INVISIBLE);
                 }
             });
             emptyUserLayout.setVisibility(View.VISIBLE);

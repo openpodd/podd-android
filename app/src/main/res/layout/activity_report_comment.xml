@@ -9,19 +9,13 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ScrollView
-            android:id="@+id/scroll_view"
+
+        <ListView
+            android:visibility="invisible"
             android:background="@color/white"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/list" />
-
-        </ScrollView>
+            android:layout_height="match_parent"
+            android:id="@+id/list_comment" />
 
         <TextView
             android:id="@+id/comment_empty"
@@ -37,7 +31,7 @@
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/list_view" />
+            android:id="@+id/list_user" />
 
         <RelativeLayout
             android:id="@+id/empty_user_layout"
