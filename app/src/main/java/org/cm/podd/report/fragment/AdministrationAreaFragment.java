@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -89,13 +90,10 @@ public class AdministrationAreaFragment extends ListFragment {
         setListAdapter(adapter);
 
         hideProgressBar();
-//
-//        try {
-//            String search = editText.getText().toString();
-//            adapter.getFilter().filter(search.toString());
-//        }catch (Exception ex){}
-
     }
+
+    private boolean isOkayClicked = false;
+    private StaticTitleDatePickerDialog datePickerDialog;
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -103,23 +101,48 @@ public class AdministrationAreaFragment extends ListFragment {
         final AdministrationArea area = adapter.getItem(position);
         boolean isLeaf = area.getIsLeaf() > 0;
         if(isLeaf) {
-            StaticTitleDatePickerDialog datePickerDialog = createDialogWithoutDateField(new DatePickerDialog.OnDateSetListener() {
+            datePickerDialog = createDialogWithoutDateField(new DatePickerDialog.OnDateSetListener() {
 
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    Long administrationAreaId = area.getId();
-                    String name = area.getName();
-                    String parentName = area.getParentName();
-
-                    Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
-                    intent.putExtra("month", monthOfYear + 1);
-                    intent.putExtra("year", year);
-                    intent.putExtra("parentName", parentName);
-                    intent.putExtra("name", name);
-                    intent.putExtra("id", administrationAreaId);
-                    startActivity(intent);
+                    if (isOkayClicked) {
+                        Long administrationAreaId = area.getId();
+                        String name = area.getName();
+                        String parentName = area.getParentName();
+                        Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
+                        intent.putExtra("month", monthOfYear + 1);
+                        intent.putExtra("year", year);
+                        intent.putExtra("parentName", parentName);
+                        intent.putExtra("name", name);
+                        intent.putExtra("id", administrationAreaId);
+                        startActivity(intent);
+                    }
                 }
             });
+
+            datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                    getString(R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                dialog.cancel();
+                                isOkayClicked = false;
+                            }
+                        }
+                    });
+
+            datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                    getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                isOkayClicked = true;
+                            }
+                        }
+                    });
+
+            datePickerDialog.setCancelable(false);
             datePickerDialog.show();
         }
     }

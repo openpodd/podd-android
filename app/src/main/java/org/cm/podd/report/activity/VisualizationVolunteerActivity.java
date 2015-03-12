@@ -53,7 +53,7 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
     private int year;
 
     private Bundle bundle;
-    Fragment mCurrentFragment;
+    private Fragment mCurrentFragment;
 
     Context context;
     VisualizationVolunteerDataSource visualizationVolunteerDataSource;
@@ -103,6 +103,8 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
                 showProgressDialog();
 
             startSyncVisualizationVolunteerService(id, month, year);
+        } else {
+
         }
     }
 
