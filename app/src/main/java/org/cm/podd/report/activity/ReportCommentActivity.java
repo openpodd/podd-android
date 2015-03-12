@@ -153,8 +153,8 @@ public class ReportCommentActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (!commentText.getText().toString().equals(null) || !commentText.getText().toString().equals("")){
-                    showProgressBar();
                     fetchComments(reportId);
+                    showProgressBar();
                     commentText.setEnabled(false);
                     submitCommentText.setEnabled(false);
                 }
@@ -212,22 +212,22 @@ public class ReportCommentActivity extends ActionBarActivity {
         }
 
         if (mention) {
-            if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
-                showProgressBar();
-                String key = cacheKeyName + query;
-                try {
-                    byte [] data = CacheUtil.retrieveData(ReportCommentActivity.this, key);
-                    if (data != null) {
-                        String jsonMentionsData = new String(data, "UTF-8");
-                        showMentionList(jsonMentionsData);
-                    } else {
+            showProgressBar();
+            String key = cacheKeyName + query;
+            try {
+                byte [] data = CacheUtil.retrieveData(ReportCommentActivity.this, key);
+                if (data != null) {
+                    String jsonMentionsData = new String(data, "UTF-8");
+                    showMentionList(jsonMentionsData);
+                } else {
+                    if (RequestDataUtil.hasNetworkConnection(ReportCommentActivity.this)) {
                         new SyncUserTask().execute(new String[]{query});
                     }
-                    listView.setVisibility(View.VISIBLE);
                 }
-                catch (IOException ex){
-
-                }
+                listView.setVisibility(View.VISIBLE);
+            }
+            catch (IOException ex){
+                ex.printStackTrace();
             }
         }else{
             listView.setVisibility(View.INVISIBLE);
@@ -248,7 +248,12 @@ public class ReportCommentActivity extends ActionBarActivity {
                 super.onPostExecute(resp);
                 JSONObject obj = resp.getJsonObject();
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
-                    addComment();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            addComment();
+                        }
+                    });
+
                 } else {
                     Log.e(TAG, resp.getStatusCode() + "" + resp.getJsonObject());
 
