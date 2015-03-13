@@ -1,7 +1,5 @@
 package org.cm.podd.report.model;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,7 +15,10 @@ public class FeedItem {
     private long id = 0;
     private long itemId;
     private String type;
-    private String jsonString;
+    private String detail;
+    private String explanation;
+    private String flag;
+    private String follow;
     private Date date;
     private Date createdAt;
     private Date updatedAt;
@@ -46,12 +47,36 @@ public class FeedItem {
         return type;
     }
 
-    public void setJsonString(String jsonString) {
-        this.jsonString = jsonString;
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 
-    public String getJsonString() {
-        return jsonString;
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setExplanation(String explanation) {
+        this.explanation = explanation;
+    }
+
+    public String getExplanation() {
+        return explanation;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFollow(String follow) {
+        this.follow = follow;
+    }
+
+    public String getFollow() {
+        return follow;
     }
 
     public void setDate(Date date) {
@@ -80,7 +105,7 @@ public class FeedItem {
 
     public JSONObject getJSONObject() {
         try {
-            return new JSONObject(jsonString);
+            return new JSONObject(explanation);
         } catch (JSONException e) {
             return null;
         }

@@ -624,5 +624,14 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="25dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="ไม่พบรายงาน">
+    </TextView>
 
 </RelativeLayout>

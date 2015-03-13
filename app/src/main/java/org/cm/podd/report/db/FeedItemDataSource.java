@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.ListAdapter;
 
 import org.cm.podd.report.model.FeedItem;
 import org.json.JSONException;
@@ -13,8 +12,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by siriwat on 2/19/15.
@@ -26,19 +23,22 @@ public class FeedItemDataSource {
     private ReportDatabaseHelper reportDatabaseHelper;
     private static final String TABLE_NAME = "feed_item";
 
-    private static int COLUMN_ID         = 0;
-    private static int COLUMN_ITEM_ID    = 1;
-    private static int COLUMN_TYPE       = 2;
-    private static int COLUMN_DATE       = 3;
-    private static int COLUMN_JSONSTRING = 4;
-    private static int COLUMN_CREATED_AT = 5;
-    private static int COLUMN_UPDATED_AT = 6;
+    private static int COLUMN_ID          = 0;
+    private static int COLUMN_ITEM_ID     = 1;
+    private static int COLUMN_TYPE        = 2;
+    private static int COLUMN_DATE        = 3;
+    private static int COLUMN_DETAIL      = 4;
+    private static int COLUMN_EXPLANATION = 5;
+    private static int COLUMN_FLAG        = 6;
+    private static int COLUMN_FOLLOW      = 7;
+    private static int COLUMN_CREATED_AT  = 8;
+    private static int COLUMN_UPDATED_AT  = 9;
 
     public FeedItemDataSource(Context context) {
         reportDatabaseHelper = new ReportDatabaseHelper(context);
     }
 
-    public void save(FeedItem feedItem) {
+    public void saveFeedItem(FeedItem feedItem) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         Cursor existingRow;
         String[] columns = new String[] { "_id" };
@@ -51,7 +51,7 @@ public class FeedItemDataSource {
         ContentValues values = new ContentValues();
         values.put("item_id", feedItem.getItemId());
         values.put("type", feedItem.getType());
-        values.put("json_string", feedItem.getJsonString());
+        values.put("explanation", feedItem.getExplanation());
         values.put("date", feedItem.getDate().getTime());
 
         Date now = new Date();
@@ -70,6 +70,51 @@ public class FeedItemDataSource {
         if (existingRow != null) {
             existingRow.close();
         }
+        db.close();
+    }
+
+    public void saveItemDetail(FeedItem feedItem) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        Cursor existingRow;
+        String[] columns = new String[] { "_id" };
+
+        existingRow = db.query(TABLE_NAME, columns, "item_id = ? AND type = ?",
+                new String[]{ Long.toString(feedItem.getItemId()), "report" },
+                null, null, null);
+
+        Date now = new Date();
+
+        ContentValues values = new ContentValues();
+        values.put("detail", feedItem.getDetail());
+        values.put("flag", feedItem.getFlag());
+        values.put("updated_at", now.getTime());
+
+        if (existingRow != null && existingRow.moveToNext())
+            db.update(TABLE_NAME, values, "_id = ?",
+                new String[] { Long.toString(existingRow.getLong(COLUMN_ID)) });
+
+        db.close();
+    }
+
+    public void saveItemFollow(FeedItem feedItem) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        Cursor existingRow;
+        String[] columns = new String[] { "_id" };
+
+        existingRow = db.query(TABLE_NAME, columns, "item_id = ? AND type = ?",
+                new String[]{ Long.toString(feedItem.getItemId()), "report" },
+                null, null, null);
+
+        Date now = new Date();
+
+        ContentValues values = new ContentValues();
+        values.put("follow", feedItem.getFollow());
+        values.put("updated_at", now.getTime());
+
+        if (existingRow != null && existingRow.moveToNext())
+            db.update(TABLE_NAME, values, "_id = ?",
+                new String[] { Long.toString(existingRow.getLong(COLUMN_ID)) });
+
         db.close();
     }
 
@@ -123,17 +168,39 @@ public class FeedItemDataSource {
         return feedItem;
     }
 
+    public FeedItem loadByItemId(long itemId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        FeedItem feedItem = null;
+
+        Cursor result = db.query(TABLE_NAME, null, "item_id = ? AND type = ?",
+                new String[]{ Long.toString(itemId), "report" }, null, null, null);
+
+        try {
+            if (result.moveToNext()) {
+                feedItem = loadByCursor(result);
+            }
+        } finally {
+            result.close();
+            db.close();
+        }
+
+        return feedItem;
+    }
+
     public FeedItem loadByCursor(Cursor cursor) {
         FeedItem feedItem = new FeedItem();
 
         try {
-            JSONObject jsonObject = new JSONObject(cursor.getString(COLUMN_JSONSTRING));
+            JSONObject jsonObject = new JSONObject(cursor.getString(COLUMN_EXPLANATION));
 
-            feedItem.setJsonString(cursor.getString(COLUMN_JSONSTRING));
             feedItem.setId(cursor.getLong(COLUMN_ID));
             feedItem.setItemId(jsonObject.getLong("id"));
             feedItem.setType("report");
             feedItem.setDate(new Date(cursor.getLong(COLUMN_DATE)));
+            feedItem.setDetail(cursor.getString(COLUMN_DETAIL));
+            feedItem.setExplanation(cursor.getString(COLUMN_EXPLANATION));
+            feedItem.setFlag(cursor.getString(COLUMN_FLAG));
+            feedItem.setFollow(cursor.getString(COLUMN_FOLLOW));
             feedItem.setCreatedAt(new Date(cursor.getLong(COLUMN_CREATED_AT)));
             feedItem.setUpdatedAt(new Date(cursor.getLong(COLUMN_UPDATED_AT)));
         } catch (JSONException e) {

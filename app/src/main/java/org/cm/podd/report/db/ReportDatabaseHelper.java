@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -97,7 +97,10 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  item_id INTEGER,"
             + "  type TEXT,"
             + "  date INTEGER,"
-            + "  json_string TEXT,"
+            + "  detail TEXT,"
+            + "  explanation TEXT,"
+            + "  flag TEXT,"
+            + "  follow TEXT,"
             + "  created_at INTEGER,"
             + "  updated_at INTEGER"
             + ")";
@@ -195,6 +198,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
             case 4:
                 Log.i("DB", String.format(">> sql:\n%s", sql));
+            case 5:
+                db.execSQL(DROP_TABLE_FEED_ITEM);
+                db.execSQL(CREATE_TABLE_FEED_ITEM);
         }
     }
 

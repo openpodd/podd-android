@@ -49,7 +49,9 @@ import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
+import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.fragment.FeedAdapter;
+import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
@@ -116,6 +118,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private TextView createdByProjectTelephoneView;
     private TextView formDataExplanationView;
 
+    private TextView emptyView;
 //    private LinearLayout reportFollowUpList;
     private TextView reportFollowUpTitle;
     private TextView countFollowUpTextView;
@@ -188,6 +191,7 @@ public class ReportViewActivity extends ActionBarActivity {
         // Retrieve and cache the system's default "short" animation time.
         mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
+        emptyView = (TextView) findViewById(android.R.id.empty);
         // Preference
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
@@ -196,18 +200,10 @@ public class ReportViewActivity extends ActionBarActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "Receiving action " + intent.getAction());
-
-                try {
-                    JSONObject report = new JSONObject(intent.getStringExtra("report"));
-                    // First, check if we receive correct report data.
-                    if (report.getLong("id") == id) {
-                        viewReport(report);
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing JSON data");
-                }
+                refreshViewRefresh();
             }
         };
+
         registerReceiver(mReceiver, new IntentFilter(ReportService.ACTION_FETCH_DONE));
 
         id = getIntent().getLongExtra(ReportService.PARAM_REPORT_ID, 0);
@@ -215,7 +211,7 @@ public class ReportViewActivity extends ActionBarActivity {
         if (RequestDataUtil.hasNetworkConnection(this)) {
             ReportService.doFetch(getApplicationContext(), id);
         } else {
-            // TODO: fetch from database.
+            refreshViewRefresh();
         }
 
 //        alertComment.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +220,24 @@ public class ReportViewActivity extends ActionBarActivity {
 //                alertComment.setVisibility(View.INVISIBLE);
 //            }
 //        });
+    }
+
+    private void refreshViewRefresh(){
+        FeedItemDataSource feedItemDataSource = new FeedItemDataSource(this);
+        FeedItem feedItem = feedItemDataSource.loadByItemId(id);
+        try {
+            if (feedItem !=null && feedItem.getDetail() != null ) {
+                JSONObject report = new JSONObject(feedItem.getDetail());
+                if (report.getLong("id") == id) {
+                    viewReport(report);
+                }
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON data");
+        }
     }
 
     @Override
@@ -684,16 +698,23 @@ public class ReportViewActivity extends ActionBarActivity {
         ReportService.FollowUpAsyncTask task = new ReportService.FollowUpAsyncTask() {
             @Override
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-                try {
-                    JSONArray followUpReports = new JSONArray(resp.getRawData());
-                    int followUpCount = followUpReports.length();
+                super.onPostExecute(resp);
 
-                    if (currentFlag == 4) {
-                        reportFollowUpTitle.setText(R.string.follow_up_parent);
-                        countFollowUpTextView.setText("1");
-                    } else {
-                        reportFollowUpTitle.setText(R.string.follow_up_reports);
-                        countFollowUpTextView.setText(Integer.toString(followUpCount));
+                FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getContext());
+                FeedItem feedItem = feedItemDataSource.loadByItemId(id);
+                try {
+
+                    if (feedItem != null & feedItem.getFollow() != null) {
+                        JSONArray followUpReports = new JSONArray(feedItem.getFollow());
+                        int followUpCount = followUpReports.length();
+
+                        if (currentFlag == 4) {
+                            reportFollowUpTitle.setText(R.string.follow_up_parent);
+                            countFollowUpTextView.setText("1");
+                        } else {
+                            reportFollowUpTitle.setText(R.string.follow_up_reports);
+                            countFollowUpTextView.setText(Integer.toString(followUpCount));
+                        }
                     }
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing JSON data", e);

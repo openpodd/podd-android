@@ -4,13 +4,11 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.JsonReader;
 import android.util.Log;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -104,9 +102,9 @@ public class FilterService extends IntentService {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
                                 Locale.getDefault());
                         feedItem.setDate(formatter.parse(item.getString("date")));
-                        feedItem.setJsonString(item.toString());
+                        feedItem.setExplanation(item.toString());
 
-                        feedItemDataSource.save(feedItem);
+                        feedItemDataSource.saveFeedItem(feedItem);
                     }
 
                     // notify feed updated.

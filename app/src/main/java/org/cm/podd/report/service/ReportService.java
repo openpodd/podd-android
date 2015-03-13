@@ -10,14 +10,20 @@ import android.view.View;
 
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.CommentDataSource;
+import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.Comment;
+import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -57,10 +63,32 @@ public class ReportService extends IntentService {
             resp = fetch(id);
 
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
-                // notify report data.
+
                 Intent intent = new Intent(ACTION_FETCH_DONE);
                 intent.putExtra("report", resp.getRawData());
+
+                try {
+                    JSONObject obj = new JSONObject(resp.getRawData());
+                    long itemId = obj.optInt("id");
+                    String detail = resp.getRawData();
+                    String explanation = obj.optString("formDataExplanation");
+                    String flag = obj.optString("flag");
+
+                    Log.d(TAG, "Found update feed item id= " + itemId);
+
+                    FeedItem feedItem = new FeedItem();
+                    feedItem.setItemId(itemId);
+                    feedItem.setDetail(detail);
+                    feedItem.setFlag(flag);
+
+                    FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getApplicationContext());
+                    feedItemDataSource.saveItemDetail(feedItem);
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 sendBroadcast(intent);
+
             } else {
                 Log.d(TAG, "Fail with errorCode:" + resp.getStatusCode());
             }
@@ -119,12 +147,56 @@ public class ReportService extends IntentService {
 
     public static class FollowUpAsyncTask extends ReportAsyncTask {
 
+        Long reportId;
         @Override
         protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            this.reportId = Long.parseLong(params[0]);
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
             String accessToken = sharedPrefUtil.getAccessToken();
-
             return RequestDataUtil.get(ENDPOINT + params[0] + "/involved", null, accessToken);
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                try {
+                    JSONArray items = new JSONArray(resp.getRawData());
+
+                    if (items.length() > 0) {
+                        long itemId = reportId;
+                        String follow = resp.getRawData();
+
+                        Log.d(TAG, "Found update feed item id= " + itemId);
+
+                        FeedItem feedItem = new FeedItem();
+                        feedItem.setItemId(itemId);
+                        feedItem.setFollow(follow);
+
+                        FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getContext());
+                        feedItemDataSource.saveItemFollow(feedItem);
+
+                        for (int i = 0; i < items.length(); i++) {
+                            JSONObject involvedReports = items.getJSONObject(i);
+
+                            FeedItem feedInvolvedItem = new FeedItem();
+                            feedInvolvedItem.setItemId(involvedReports.getLong("id"));
+                            feedInvolvedItem.setType("report");
+
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                    Locale.getDefault());
+                            feedInvolvedItem.setDate(formatter.parse(involvedReports.getString("date")));
+                            feedInvolvedItem.setExplanation(involvedReports.toString());
+
+                            feedItemDataSource.saveFeedItem(feedInvolvedItem);
+                        }
+                    }
+                } catch (ParseException ex){
+                    ex.printStackTrace();
+                } catch (JSONException ex){
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
