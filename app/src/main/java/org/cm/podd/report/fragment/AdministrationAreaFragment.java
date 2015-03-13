@@ -55,8 +55,10 @@ public class AdministrationAreaFragment extends ListFragment {
     Typeface face;
 
     private administrationAreaAdapter adapter;
-    private  SearchView searchView;
+
+    private ListView listView;
     private ProgressBar progressBar;
+    private SearchView searchView;
     private TextView emptyText;
 
     private boolean isOkayClicked = false;
@@ -87,8 +89,10 @@ public class AdministrationAreaFragment extends ListFragment {
 
     public void refreshAdapter() {
         adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
+        adapter.getFilter().filter(searchView.getQuery().toString());
         setListAdapter(adapter);
 
+        listView.setEmptyView(emptyText);
         hideProgressBar();
     }
 
@@ -159,14 +163,11 @@ public class AdministrationAreaFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_administration_area, container, false);
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        listView = (ListView) view.findViewById(android.R.id.list);
 
-        emptyText = (TextView) view.findViewById(android.R.id.empty);
-
+        emptyText = (TextView) view.findViewById(R.id.empty);
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่พบพื้นที่");
         emptyText.setVisibility(View.GONE);
-        listView.setEmptyView(emptyText);
 
         searchView = (SearchView) view.findViewById(R.id.searchView);
         searchView.setQueryHint(getString(R.string.search));
@@ -201,12 +202,12 @@ public class AdministrationAreaFragment extends ListFragment {
 
         progressBar = (ProgressBar) view.findViewById(R.id.loading_spinner);
 
+        refreshAdapter();
+
         if (RequestDataUtil.hasNetworkConnection(getActivity())) {
             if (administrationAreaDataSource.getLeafAll().size() == 0)
                 showProgressBar();
             startSyncAdministrationAreaService();
-        } else {
-            refreshAdapter();
         }
         
         return view;
@@ -386,7 +387,7 @@ public class AdministrationAreaFragment extends ListFragment {
     }
 
     private void showProgressBar(){
-        emptyText.setVisibility(View.INVISIBLE);
+        emptyText.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
     }
 }

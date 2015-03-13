@@ -120,7 +120,6 @@ public class ReportCommentActivity extends ActionBarActivity {
 
 //        linearLayout = (LinearLayout) findViewById(R.id.list);
         commentEmptyText = (TextView) findViewById(R.id.comment_empty);
-        listCommentView.setEmptyView(commentEmptyText);
 
         commentText = (EditText) findViewById(R.id.editText);
         commentText.setOnClickListener(new View.OnClickListener() {
@@ -168,13 +167,14 @@ public class ReportCommentActivity extends ActionBarActivity {
         commentDataSource = new CommentDataSource(this);
 
         registerReceiver(mSyncReceiver, new IntentFilter(CommentService.SYNC));
-        refreshComment();
 
         if (RequestDataUtil.hasNetworkConnection(this)) {
             if(getAll().size() == 0)
                 showProgressBar();
 
             startSyncCommentService(reportId);
+        }else {
+            refreshComment();
         }
 
     }
@@ -275,6 +275,8 @@ public class ReportCommentActivity extends ActionBarActivity {
         listCommentView.setAdapter(commentAdapter);
 
         listCommentView.setSelection(listCommentView.getAdapter().getCount() - 1);
+        listCommentView.setEmptyView(commentEmptyText);
+
         hideProgressBar();
     }
 
