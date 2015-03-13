@@ -102,7 +102,6 @@ public class VisualizationAreaActivity extends ActionBarActivity {
 
         visualizationAreaDataSource = new VisualizationAreaDataSource(this);
         VisualizationAdministrationArea area = visualizationAreaDataSource.getFromAreaByMonth(id, month, year);
-        refreshData(area);
 
         registerReceiver(mSyncReceiver, new IntentFilter(VisualizationAreaService.SYNC));
 
@@ -111,6 +110,8 @@ public class VisualizationAreaActivity extends ActionBarActivity {
                 showProgressDialog();
 
             startSyncVisualizationAreaService(id, month, year);
+        }else {
+            refreshData(area);
         }
     }
 

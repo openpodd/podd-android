@@ -94,7 +94,6 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
 
         visualizationVolunteerDataSource = new VisualizationVolunteerDataSource(this);
         VisualizationVolunteer volunteer = visualizationVolunteerDataSource.getFromVolunteerFromMonth(id, month, year);
-        refreshData(volunteer);
 
         registerReceiver(mSyncReceiver, new IntentFilter(VisualizationVolunteerService.SYNC));
 
@@ -104,7 +103,7 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
 
             startSyncVisualizationVolunteerService(id, month, year);
         } else {
-
+            refreshData(volunteer);
         }
     }
 
