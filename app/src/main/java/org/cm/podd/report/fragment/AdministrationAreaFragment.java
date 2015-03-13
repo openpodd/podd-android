@@ -87,7 +87,6 @@ public class AdministrationAreaFragment extends ListFragment {
 
     public void refreshAdapter() {
         adapter = new administrationAreaAdapter(getActivity(), R.layout.list_item_administration_area, administrationAreaDataSource.getLeafAll());
-        adapter.getFilter().filter(searchView.getQuery().toString());
         setListAdapter(adapter);
 
         hideProgressBar();
@@ -154,7 +153,7 @@ public class AdministrationAreaFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        refreshAdapter();
+//        refreshAdapter();
     }
 
     @Override
@@ -206,6 +205,8 @@ public class AdministrationAreaFragment extends ListFragment {
             if (administrationAreaDataSource.getLeafAll().size() == 0)
                 showProgressBar();
             startSyncAdministrationAreaService();
+        } else {
+            refreshAdapter();
         }
         
         return view;
