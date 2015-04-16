@@ -1,42 +1,5 @@
 apply plugin: 'com.android.application'
 
-def funfConfig = """
-{
-    "@type": "edu.mit.media.funf.pipeline.BasicPipeline",
-    "name": "default",
-    "version": 1,
-    "archive": {
-        "@schedule": {"interval": ${60 * 60 * 4}}
-    },
-    "upload": {
-        "url": \\"http://apidev.cmonehealth.org/funf/upload/\\",
-        "@schedule": {"interval": ${60 * 60 * 12}}
-    },
-    "update": {
-        "url": \\"http://www.cmonehealth.org/funfconfig\\",
-        "@schedule": {"interval": ${60 * 60 * 24}}
-    },
-    "data": [
-        {
-            "@type": "edu.mit.media.funf.probe.builtin.BatteryProbe",
-            "@schedule": {"interval": ${60 * 60 * 2}}
-        },
-        {
-            "@type": "edu.mit.media.funf.probe.builtin.RunningApplicationsProbe",
-            "@schedule": {"interval": ${60 * 60 * 4}}
-        },
-        {
-            "@type": "edu.mit.media.funf.probe.builtin.SimpleLocationProbe",
-            "@schedule": {"interval": ${60 * 60 * 4}}
-        },
-        {
-            "@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe"
-        }
-    ]
-
-}
-
-"""
 android {
     compileSdkVersion 20
     buildToolsVersion "19.1.0"
@@ -49,7 +12,6 @@ android {
         versionName "1.0.19"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
-        resValue "string", "funf_pipeline", funfConfig
     }
 
     signingConfigs {
@@ -83,7 +45,6 @@ android {
         server_production {
             buildConfigField "String", "SERVER_URL", "\"https://api.cmonehealth.org\""
             buildConfigField "String", "BUCKET_NAME", "\"podd\""
-            resValue "string", "funf_pipeline", funfConfig.replaceAll("apidev", "api").replaceAll("http://api", "https://api")
         }
     }
 
@@ -108,8 +69,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile files('libs/aws-android-sdk-2.1.5-core.jar')
     compile files('libs/aws-android-sdk-2.1.5-s3.jar')
-    compile files('libs/gson-2.1.jar')
-    compile files('libs/funf-0.4.2.jar')
     compile files('libs/mpandroidchartlibrary-1-7-4.jar')
 }
 

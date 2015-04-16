@@ -163,23 +163,7 @@
         <service
             android:name=".service.AdministrationAreaService"
             android:exported="false" />
-        <service android:name="edu.mit.media.funf.FunfManager" >
-            <meta-data
-                android:name="default"
-                android:value="@string/funf_pipeline" /> <!-- this resource is in generated.xml -->
-        </service>
 
-        <receiver
-            android:name="edu.mit.media.funf.Launcher"
-            android:enabled="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.BATTERY_CHANGED" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.DOCK_EVENT" />
-                <action android:name="android.intent.action.ACTION_SCREEN_ON" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
         <receiver
             android:name=".service.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
