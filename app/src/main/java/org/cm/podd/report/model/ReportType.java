@@ -27,6 +27,7 @@ public class ReportType {
     private int version;
     private String definition;
     private int nextVersion;
+    private double weight = 0.0;
 
     public ReportType(long id, String name) {
         this.id = id;
@@ -81,5 +82,15 @@ public class ReportType {
     public String toString() {
         return name;
     }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+
 
 }

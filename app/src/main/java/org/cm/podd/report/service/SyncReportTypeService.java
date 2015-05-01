@@ -84,13 +84,19 @@ public class SyncReportTypeService extends IntentService {
                             rt.setDefinition(result.optJSONObject("definition").toString());
                             rt.setVersion(result.optInt("version"));
                             rt.setName(result.optString("name"));
+                            rt.setWeight(result.optDouble("weight", 0.0));
 
                             Log.d(TAG, String.format("Report type id %d updated to version %d",
                                     rt.getId(), rt.getVersion()));
                             Log.d(TAG, "new definition = " + rt.getDefinition());
 
                             dbSource.update(rt);
+                        } else {
+                            // update weight if changed
+                            dbSource.updateWeight(rt, updateReportType.optDouble("weight", 0.0));
                         }
+
+
 
                     } else {
                         long reportTypeId = updateReportType.optInt("id");
@@ -105,6 +111,7 @@ public class SyncReportTypeService extends IntentService {
                         rt = new ReportType(reportTypeId, name);
                         rt.setDefinition(result.optJSONObject("definition").toString());
                         rt.setVersion(result.optInt("version"));
+                        rt.setWeight(result.optDouble("weight", 0.0));
 
                         dbSource.insert(rt);
                     }

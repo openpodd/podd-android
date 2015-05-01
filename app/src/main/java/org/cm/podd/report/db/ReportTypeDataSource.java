@@ -72,6 +72,7 @@ public class ReportTypeDataSource {
                 );
                 reportType.setVersion(jsonObj.getInt("version"));
                 reportType.setDefinition(jsonObj.getString("definition"));
+                reportType.setWeight(jsonObj.optDouble("weight", 0.0));
 
                 insert(reportType);
             }
@@ -93,6 +94,7 @@ public class ReportTypeDataSource {
         values.put("name", reportType.getName());
         values.put("version", reportType.getVersion());
         values.put("definition", reportType.getDefinition());
+        values.put("weight", reportType.getWeight());
 
         long id = db.insert("report_type", null, values);
         db.close();
@@ -141,13 +143,14 @@ public class ReportTypeDataSource {
 //        results.add(new ReportType(6, "สัตว์กัด"));
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from report_type order by _id asc", null);
+        Cursor cursor = db.rawQuery("select * from report_type order by weight, name asc", null);
         while (cursor.moveToNext()) {
             ReportType reportType = new ReportType(
                     cursor.getLong(cursor.getColumnIndex("_id")),
                     cursor.getString(cursor.getColumnIndex("name"))
             );
             reportType.setVersion(cursor.getInt(cursor.getColumnIndex("version")));
+            reportType.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
             results.add(reportType);
         }
         cursor.close();
@@ -287,5 +290,16 @@ public class ReportTypeDataSource {
 
     public ReportType getNormalCaseReportType() {
         return new ReportType(0, context.getString(R.string.normal_case));
+    }
+
+    public void updateWeight(ReportType rt, double weight) {
+        if (weight != rt.getWeight()) {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("weight", weight);
+            db.update("report_type", values, "_id = ?",
+                    new String[] {Long.toString(rt.getId())});
+            db.close();
+        }
     }
 }

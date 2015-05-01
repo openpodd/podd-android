@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -201,6 +201,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 5:
                 db.execSQL(DROP_TABLE_FEED_ITEM);
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
+            case 6:
+                db.execSQL("ALTER TABLE report_type ADD COLUMN weight float DEFAULT 0.0");
         }
     }
 
