@@ -19,10 +19,12 @@ package org.cm.podd.report.model.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -34,6 +36,9 @@ import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by pphetra on 9/30/14 AD.
  */
@@ -41,9 +46,10 @@ public class QuestionView extends LinearLayout {
 
     private final Question question;
 
-    public QuestionView(Context context, Question q, boolean readonly) {
+    public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
         this.question = q;
+        final String hintText = context.getString(R.string.edittext_hint);
 
         setOrientation(VERTICAL);
 
@@ -55,16 +61,54 @@ public class QuestionView extends LinearLayout {
 
         ViewGroup.LayoutParams itemParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        final EditText editView = new EditText(context);
+
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
         titleView.setLayoutParams(itemParams);
         titleView.setTextAppearance(context, R.style.ReportTextLabel);
         titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+        titleView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if (! readonly) {
+                    editView.requestFocus();
+                    (new android.os.Handler()).postDelayed(new Runnable() {
+
+                        public void run() {
+                            editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                            editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                        }
+                    }, 200);
+
+                }
+            }
+        });
         addView(titleView);
 
-        final EditText editView = new EditText(context);
         editView.setLayoutParams(params);
-        editView.setPadding(0,0,0,0);
+        editView.setPadding(0, 0, 0, 0);
+        editView.setClickable(true);
+        editView.setHint(hintText);
+        editView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                editView.setHint("");
+                return false;
+            }
+
+        });
+
+        editView.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    editView.setHint(hintText);
+                }
+            }
+        });
         editView.setTextAppearance(context, R.style.EditTextFlat);
         editView.setBackgroundResource(R.drawable.ab_solid_white_podd);
         editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
