@@ -49,6 +49,10 @@ public class Report {
     private String formData;
     private int reportTypeVersion;
 
+    private int followFlag;
+    private java.util.Date followDate;
+    private String parentGuid;
+
     public Report(long id, long type, Date date, int negative, int draft, int submit) {
         this.id = id;
         this.type = type;
@@ -205,6 +209,30 @@ public class Report {
 
     public void setReportTypeVersion(int reportTypeVersion) {
         this.reportTypeVersion = reportTypeVersion;
+    }
+
+    public int getFollowFlag() {
+        return followFlag;
+    }
+
+    public void setFollowFlag(int followFlag) {
+        this.followFlag = followFlag;
+    }
+
+    public java.util.Date getFollowDate() {
+        return followDate;
+    }
+
+    public void setFollowDate(java.util.Date followDate) {
+        this.followDate = followDate;
+    }
+
+    public String getParentGuid() {
+        return parentGuid;
+    }
+
+    public void setParentGuid(String parentGuid) {
+        this.parentGuid = parentGuid;
     }
 
 }

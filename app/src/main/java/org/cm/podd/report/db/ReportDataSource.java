@@ -54,13 +54,75 @@ public class ReportDataSource {
      */
     public long createDraftReport(long type) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+
         ContentValues values = new ContentValues();
         values.put("date", new Date().getTime());
         values.put("type", type);
         values.put("draft", 1);
         values.put("negative", 1);
+        values.put("follow_date", Long.MAX_VALUE);
         values.put("submit", 0);
+
+        Cursor typeCursor = db.rawQuery("select followable, follow_days from report_type where _id = ?", new String[] {Long.toString(type)});
+        if (typeCursor.moveToFirst()) {
+            int followable = typeCursor.getInt(typeCursor.getColumnIndex("followable"));
+            if (followable == Report.TRUE) {
+                int followDays = typeCursor.getInt(typeCursor.getColumnIndex("follow_days"));
+                Date today = new Date();
+                long until = today.getTime() + (followDays * 24 * 60 * 60 * 1000);
+                Log.d(TAG, String.format("follow case value, followDays = %d until %d", followDays, until));
+                values.put("follow_until", until);
+            }
+        }
+        typeCursor.close();
+
         long id = db.insert("report", null, values);
+        db.close();
+        return id;
+    }
+
+    public long createFollowReport(long sourceId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT r.* FROM report r where r._id = ?", new String[]{Long.toString(sourceId)});
+        cursor.moveToFirst();
+
+        long type = cursor.getLong(cursor.getColumnIndex("type"));
+        Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
+        Date startDate = null;
+        if (cursor.getInt(cursor.getColumnIndex("start_date")) != 0) {
+            long t = cursor.getLong(cursor.getColumnIndex("start_date"));
+            startDate = new Date(t);
+        }
+        long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
+        String formData = cursor.getString(cursor.getColumnIndex("form_data"));
+        String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
+        int follow_date = cursor.getInt(cursor.getColumnIndex("follow_date"));
+        if (follow_date == 0) {
+            db.execSQL("update report set follow_date = ? where _id = ?", new Object[] {Long.MAX_VALUE, sourceId });
+        }
+
+        Cursor formCursor = db.rawQuery("select form_data from report where parent_guid = ? order by _id desc limit 1", new String[]{guid});
+        if (formCursor.moveToFirst()) {
+            formData = formCursor.getString(formCursor.getColumnIndex("form_data"));
+        }
+        formCursor.close();
+
+        ContentValues values = new ContentValues();
+        values.put("date", date.getTime());
+        values.put("type", type);
+        values.put("draft", 1);
+        values.put("negative", 1);
+        values.put("submit", 0);
+        values.put("follow_flag", 1);
+        values.put("follow_date", new Date().getTime());
+        values.put("form_data", formData);
+        values.put("start_date", startDate.getTime());
+        values.put("region_id", regionId);
+        values.put("parent_guid", guid);
+        long id = db.insert("report", null, values);
+
         db.close();
         return id;
     }
@@ -86,15 +148,15 @@ public class ReportDataSource {
     }
 
     public Cursor getAllWithTypeName() {
-        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         return db.rawQuery(
-                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name FROM report r "
-                + "left join report_type rt on r.type = rt._id order by r._id desc", null);
+                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name, r.follow_flag, r.follow_date, r.follow_until FROM report r "
+                + "left join report_type rt on r.type = rt._id order by r.date desc, r.follow_date desc", null);
     }
 
     public Report getById(long id) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r._id = ?", new String[] {Long.toString(id)});
+        Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r._id = ?", new String[]{Long.toString(id)});
         cursor.moveToFirst();
 
         long type = cursor.getLong(cursor.getColumnIndex("type"));
@@ -113,6 +175,11 @@ public class ReportDataSource {
         String remark = cursor.getString(cursor.getColumnIndex("remark"));
         String guid = cursor.getString(cursor.getColumnIndex("guid"));
 
+        int followFlag = cursor.getInt(cursor.getColumnIndex("follow_flag"));
+        Date followDate = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
+        String parentGuid = cursor.getString(cursor.getColumnIndex("parent_guid"));
+
+
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
         report.setLatitude(latitude);
@@ -121,6 +188,10 @@ public class ReportDataSource {
         report.setRegionId(regionId);
         report.setRemark(remark);
         report.setGuid(guid);
+        report.setFollowDate(followDate);
+        report.setFollowFlag(followFlag);
+        report.setParentGuid(parentGuid);
+
         report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
         cursor.close();
         db.close();

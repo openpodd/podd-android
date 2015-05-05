@@ -73,6 +73,9 @@ public class ReportTypeDataSource {
                 reportType.setVersion(jsonObj.getInt("version"));
                 reportType.setDefinition(jsonObj.getString("definition"));
                 reportType.setWeight(jsonObj.optDouble("weight", 0.0));
+                reportType.setWeight(jsonObj.optDouble("weight", 0.0));
+                reportType.setFollowable(jsonObj.optBoolean("followable", false));
+                reportType.setFollowDay(jsonObj.optInt("followDays", 0));
 
                 insert(reportType);
             }
@@ -95,6 +98,8 @@ public class ReportTypeDataSource {
         values.put("version", reportType.getVersion());
         values.put("definition", reportType.getDefinition());
         values.put("weight", reportType.getWeight());
+        values.put("followable", reportType.getFollowable());
+        values.put("follow_days", reportType.getFollowDay());
 
         long id = db.insert("report_type", null, values);
         db.close();
@@ -149,8 +154,11 @@ public class ReportTypeDataSource {
                     cursor.getLong(cursor.getColumnIndex("_id")),
                     cursor.getString(cursor.getColumnIndex("name"))
             );
+            reportType.setDefinition(cursor.getString(cursor.getColumnIndex("definition")));
             reportType.setVersion(cursor.getInt(cursor.getColumnIndex("version")));
             reportType.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
+            reportType.setFollowable(cursor.getInt(cursor.getColumnIndex("followable")));
+            reportType.setFollowDay(cursor.getInt(cursor.getColumnIndex("follow_days")));
             results.add(reportType);
         }
         cursor.close();
@@ -245,6 +253,9 @@ public class ReportTypeDataSource {
         values.put("name", reportType.getName());
         values.put("version", reportType.getVersion());
         values.put("definition", reportType.getDefinition());
+        values.put("weight", reportType.getWeight());
+        values.put("followable", reportType.getFollowable());
+        values.put("follow_days", reportType.getFollowDay());
         db.update("report_type", values, "_id = ?",
                 new String[] {Long.toString(reportType.getId())});
         db.close();
@@ -260,46 +271,8 @@ public class ReportTypeDataSource {
         db.close();
     }
 
-    public ReportType getReportTypeById(long id) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = null;
-        ReportType reportType = null;
-
-        if (id != 0) {
-            cursor = db.query("report_type", null, "_id = ?",
-                    new String[]{ Long.toString(id) }, null, null, null, "1");
-            if (cursor.moveToFirst()) {
-                reportType = new ReportType(
-                        cursor.getLong(cursor.getColumnIndex("_id")),
-                        cursor.getString(cursor.getColumnIndex("name"))
-                );
-            } else {
-                reportType = getNormalCaseReportType();
-            }
-        } else {
-            reportType = getNormalCaseReportType();
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-        db.close();
-
-        return reportType;
-    }
-
     public ReportType getNormalCaseReportType() {
         return new ReportType(0, context.getString(R.string.normal_case));
     }
 
-    public void updateWeight(ReportType rt, double weight) {
-        if (weight != rt.getWeight()) {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put("weight", weight);
-            db.update("report_type", values, "_id = ?",
-                    new String[] {Long.toString(rt.getId())});
-            db.close();
-        }
-    }
 }

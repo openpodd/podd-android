@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,9 +43,6 @@ import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Date;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * A fragment representing a list of Items.
@@ -96,8 +92,7 @@ public class ReportListFragment extends ListFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getListView().setDivider(new ColorDrawable(getResources().getColor(R.color.report_row_divider)));
-        getListView().setDividerHeight(1);
+        getListView().setDividerHeight(0);
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -311,11 +306,37 @@ public class ReportListFragment extends ListFragment {
 
     }
 
+    private void follow(final long reportId, final long reportType) {
+        new AlertDialog.Builder(getActivity()).setTitle("ยืนยัน")
+                .setMessage("คุณต้องการรายงาน การติดตาม ไช่หรือไม่")
+                .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, String.format("follow report %d, report type %d", reportId, reportType));
+                        Intent intent = new Intent(getActivity(), ReportActivity.class);
+                        intent.putExtra("reportType", reportType);
+                        intent.putExtra("reportId", reportId);
+                        intent.putExtra("follow", true);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .create().show();
+    }
+
 
     public class ReportCursorAdapter extends CursorAdapter {
 
+        long now;
+
         public ReportCursorAdapter(Context context, Cursor cursor) {
             super(context, cursor);
+            now = new Date().getTime();
         }
 
         @Override
@@ -338,16 +359,22 @@ public class ReportListFragment extends ListFragment {
             holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
             holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
+            holder.followText = (TextView) retView.findViewById(R.id.report_follow);
+            holder.followText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
             // cache drawable
             holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
             holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
+            holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
 
             CheckableLayout checkableView = new CheckableLayout(context);
             checkableView.setLayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             checkableView.addView(retView);
             checkableView.setTag(holder);
+
+            holder.separatorFull = retView.findViewById(R.id.separator_full);
+            holder.separatorSubTopic = retView.findViewById(R.id.separator_subtopic);
 
             return checkableView;
         }
@@ -358,34 +385,76 @@ public class ReportListFragment extends ListFragment {
             int draft = cursor.getInt(cursor.getColumnIndex("draft"));
             int submit = cursor.getInt(cursor.getColumnIndex("submit"));
             int negative = cursor.getInt(cursor.getColumnIndex("negative"));
+            int follow = cursor.getInt(cursor.getColumnIndex("follow_flag"));
 
             String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
             if (typeName == null) {
                 holder.typeText.setText(R.string.normal_case);
             } else {
-                holder.typeText.setText(typeName);
+                if (follow == Report.TRUE) {
+                    holder.typeText.setText("ติดตาม");
+                } else {
+                    holder.typeText.setText(typeName);
+                }
             }
             holder.draftText.setVisibility(
                     draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
 
             Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
+            if (follow == Report.TRUE) {
+                date = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
+                holder.separatorSubTopic.setVisibility(View.VISIBLE);
+                holder.separatorFull.setVisibility(View.INVISIBLE);
+                holder.statusImage.setVisibility(View.VISIBLE);
+                holder.typeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+                holder.statusImage.setImageDrawable(holder.follow);
+
+            } else {
+                holder.separatorSubTopic.setVisibility(View.INVISIBLE);
+                holder.separatorFull.setVisibility(View.VISIBLE);
+                holder.statusImage.setVisibility(View.VISIBLE);
+                holder.typeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+
+                if (negative == Report.TRUE) {
+                    holder.statusImage.setImageDrawable(holder.negative);
+                } else {
+                    holder.statusImage.setImageDrawable(holder.positive);
+                }
+            }
+
             String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 
-            if (negative == Report.TRUE) {
-                holder.statusImage.setImageDrawable(holder.negative);
-            } else {
-                holder.statusImage.setImageDrawable(holder.positive);
-            }
+
+
+            holder.followText.setVisibility(View.INVISIBLE);
 
             if (submit == Report.FALSE && draft == Report.FALSE) {
                 holder.queueImage.setVisibility(View.VISIBLE);
                 // submit pending in queue
                 ((CheckableLayout) view).setBackgroundSubmitState(false);
             } else {
+                if (draft == Report.FALSE && follow != Report.TRUE) {
+                    long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
+                    Log.d(TAG, String.format("now = %d, until = %d", now, until));
+                    if (until > now) {
+                        Log.d(TAG, String.format("follow button should display"));
+                        final long id = cursor.getLong(cursor.getColumnIndex("_id"));
+                        final long type = cursor.getLong(cursor.getColumnIndex("type"));
+                        holder.followText.setVisibility(View.VISIBLE);
+                        holder.followText.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                follow(id, type);
+                            }
+                        });
+                    }
+                }
                 holder.queueImage.setVisibility(View.INVISIBLE);
                 ((CheckableLayout) view).setBackgroundSubmitState(true);
             }
+
 
         }
 
@@ -397,6 +466,10 @@ public class ReportListFragment extends ListFragment {
             ImageView queueImage;
             Drawable positive;
             Drawable negative;
+            Drawable follow;
+            TextView followText;
+            View separatorFull;
+            View separatorSubTopic;
         }
     }
 

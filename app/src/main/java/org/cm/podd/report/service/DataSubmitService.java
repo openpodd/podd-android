@@ -209,7 +209,13 @@ public class DataSubmitService extends IntentService {
             data.put("reportId", report.getId());
             data.put("guid", report.getGuid());
             data.put("reportTypeId", report.getType());
-            data.put("date", sdfDateTime.format(report.getDate()));
+            if (report.getFollowFlag() == Report.TRUE) {
+                data.put("date", sdfDateTime.format(report.getFollowDate()));
+                data.put("followFlag", Report.TRUE);
+                data.put("parentGuid", report.getParentGuid());
+            } else {
+                data.put("date", sdfDateTime.format(report.getDate()));
+            }
             Date startDate = report.getStartDate();
             if (startDate == null) {
                 startDate = new Date();

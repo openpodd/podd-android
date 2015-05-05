@@ -28,6 +28,8 @@ public class ReportType {
     private String definition;
     private int nextVersion;
     private double weight = 0.0;
+    private int followable;
+    private int followDay;
 
     public ReportType(long id, String name) {
         this.id = id;
@@ -91,6 +93,31 @@ public class ReportType {
         this.weight = weight;
     }
 
+    public int getFollowable() {
+        return followable;
+    }
 
+    public void setFollowable(int followable) {
+        this.followable = followable;
+    }
 
+    public void setFollowable(boolean followable) {
+        if (followable) {
+            this.followable = 1;
+        } else {
+            this.followable = 0;
+        }
+    }
+
+    public boolean isFollowable() {
+        return this.followable == 1;
+    }
+
+    public int getFollowDay() {
+        return followDay;
+    }
+
+    public void setFollowDay(int followDay) {
+        this.followDay = followDay;
+    }
 }

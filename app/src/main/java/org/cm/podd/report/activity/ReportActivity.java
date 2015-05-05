@@ -99,6 +99,7 @@ public class ReportActivity extends ActionBarActivity
 
     private long reportId;
     private long reportType;
+    private boolean follow;
     private FormIterator formIterator;
 
     private double currentLatitude = 0.00;
@@ -172,6 +173,7 @@ public class ReportActivity extends ActionBarActivity
             currentFragment = savedInstanceState.getString("currentFragment");
             reportId = savedInstanceState.getLong("reportId");
             reportType = savedInstanceState.getLong("reportType");
+            follow = savedInstanceState.getBoolean("follow");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
@@ -184,6 +186,12 @@ public class ReportActivity extends ActionBarActivity
             Intent intent = getIntent();
             reportType = intent.getLongExtra("reportType", 0);
             reportId = intent.getLongExtra("reportId", -99);
+            follow = intent.getBooleanExtra("follow", false);
+
+            if (follow) {
+                reportId = reportDataSource.createFollowReport(reportId);
+            }
+
             formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
 
             if (reportId == -99) {
@@ -226,6 +234,7 @@ public class ReportActivity extends ActionBarActivity
         outState.putString("currentFragment", currentFragment);
         outState.putLong("reportId", reportId);
         outState.putLong("reportType", reportType);
+        outState.putBoolean("follow", follow);
         outState.putSerializable("formIterator", formIterator);
         outState.putDouble("currentLatitude", currentLatitude);
         outState.putDouble("currentLongitude", currentLongitude);
@@ -533,6 +542,7 @@ public class ReportActivity extends ActionBarActivity
 
         if (action != ReportDataInterface.CANCEL_ACTION) {
             if (reportSubmit == 0) {
+
                 reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {

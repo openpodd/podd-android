@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 10;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -43,7 +43,11 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  negative INTEGER,"   // 1 -> found incident, 0 -> no incident
             + "  draft INTEGER,"      // 1 -> save for edit, 0 -> ready to send to server
             + "  submit INTEGER,"     // already submit to server
-            + "  guid TEXT"           // uuid that tells this report is added into submit queue list
+            + "  guid TEXT,"           // uuid that tells this report is added into submit queue list
+            + "  parent_guid TEXT,"
+            + "  follow_date INTEGER,"
+            + "  follow_flag INTEGER,"
+            + "  follow_until INTEGER"
             + ")";
 
     private static final String CREATE_TABLE_IMAGE = "create table report_image"
@@ -71,6 +75,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  _id INTEGER PRIMARY KEY,"
             + "  name TEXT,"
             + "  version INTEGER,"
+            + "  weight DOUBLE,"
+            + "  followable INTEGER,"
+            + "  follow_days INTEGER,"
             + "  definition TEXT"       // json string
             + ")";
 
@@ -183,26 +190,41 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         switch (oldVersion) {
             case 1:
                 sql = CREATE_TABLE_NOTIFICATION;
-                Log.i("DB", String.format(">> sql:\n%s", sql));
+                Log.i("DB", ">> upgrade from version 1");
                 db.execSQL(sql);
             case 2:
                 sql = "ALTER TABLE notification ADD COLUMN seen INTEGER DEFAULT 0";
-                Log.i("DB", String.format(">> sql:\n%s", sql));
+                Log.i("DB", ">> upgrade from version 2");
                 db.execSQL(sql);
             case 3:
-                Log.i("DB", String.format(">> sql:\n%s", sql));
+                Log.i("DB", ">> upgrade from version 3");
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
                 db.execSQL(CREATE_TABLE_ADMINISTRATION_AREA);
                 db.execSQL(CREATE_TABLE_COMMENT);
                 db.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
                 db.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
             case 4:
-                Log.i("DB", String.format(">> sql:\n%s", sql));
+                Log.i("DB", ">> upgrade from version 4");
             case 5:
+                Log.i("DB", ">> upgrade from version 5");
                 db.execSQL(DROP_TABLE_FEED_ITEM);
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
             case 6:
+                Log.i("DB", ">> upgrade from version 6");
                 db.execSQL("ALTER TABLE report_type ADD COLUMN weight float DEFAULT 0.0");
+            case 7:
+                Log.i("DB", ">> upgrade from version 7");
+                db.execSQL("ALTER TABLE report ADD COLUMN follow_date INTEGER");
+                db.execSQL("ALTER TABLE report ADD COLUMN parent_guid TEXT");
+                db.execSQL("ALTER TABLE report ADD COLUMN follow_flag INTEGER");
+            case 8:
+                Log.i("DB", ">> upgrade from version 8");
+                db.execSQL("ALTER TABLE report_type ADD COLUMN followable INTEGER");
+                db.execSQL("ALTER TABLE report_type ADD COLUMN follow_days INTEGER");
+            case 9:
+                Log.i("DB", ">> upgrade from version 9");
+                db.execSQL("ALTER TABLE report ADD COLUMN follow_until INTEGER");
+
         }
     }
 

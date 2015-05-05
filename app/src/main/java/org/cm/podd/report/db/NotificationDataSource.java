@@ -61,7 +61,7 @@ public class NotificationDataSource {
     }
 
     public int getUnseenCount() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select count(*) as cnt from notification where seen = 0", null);
         cursor.moveToFirst();
         return cursor.getInt(cursor.getColumnIndex("cnt"));
