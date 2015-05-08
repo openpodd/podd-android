@@ -1,4 +1,4 @@
-package org.cm.podd.report.fragment;
+package org.cm.podd.report.model;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.json.JSONException;
@@ -33,8 +32,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private static final String TAG = "FeedAdapter";
     private OnItemClickListener mListener;
 
-    protected ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
-    protected HashMap<Long, ViewHolder> viewHolderHashMap = new HashMap<Long, ViewHolder>();
+    private ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
+    private HashMap<Long, ViewHolder> viewHolderHashMap = new HashMap<Long, ViewHolder>();
 
     public static final int[] flagColors = new int[]{
         R.drawable.blank,
@@ -48,6 +47,22 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     
     public FeedAdapter(OnItemClickListener listener) {
         mListener = listener;
+    }
+
+    public ArrayList<FeedItem> getmDataSet() {
+        return mDataSet;
+    }
+
+    public void setmDataSet(ArrayList<FeedItem> mDataSet) {
+        this.mDataSet = mDataSet;
+    }
+
+    public HashMap<Long, ViewHolder> getViewHolderHashMap() {
+        return viewHolderHashMap;
+    }
+
+    public void setViewHolderHashMap(HashMap<Long, ViewHolder> viewHolderHashMap) {
+        this.viewHolderHashMap = viewHolderHashMap;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -124,7 +139,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        FeedItem feedItem = mDataSet.get(position);
+        FeedItem feedItem = getmDataSet().get(position);
         JSONObject report = feedItem.getJSONObject();
 
         try {
@@ -173,7 +188,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 thumbnailViewWrapper.setVisibility(View.GONE);
             }
 
-            viewHolderHashMap.put(feedItem.getItemId(), viewHolder);
+            getViewHolderHashMap().put(feedItem.getItemId(), viewHolder);
             
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
@@ -182,7 +197,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return getmDataSet().size();
     }
 
     @Override

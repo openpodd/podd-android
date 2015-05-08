@@ -5,29 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
-import org.cm.podd.report.model.FeedItem;
-import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.FontUtil;
@@ -35,11 +28,6 @@ import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -82,7 +70,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
             Long reportId = intent.getLongExtra("reportId", 0);
             Long flag = intent.getLongExtra("flag", 0);
 
-            FeedAdapter.ViewHolder viewHolder = mAdapter.viewHolderHashMap.get(reportId);
+            FeedAdapter.ViewHolder viewHolder = mAdapter.getViewHolderHashMap().get(reportId);
             if (viewHolder != null) {
                 viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
             }
@@ -157,7 +145,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         setRefreshing(false);
         mProgressBar.setVisibility(View.GONE);
 
-        if (mAdapter.mDataSet.size() == 0) {
+        if (mAdapter.getmDataSet().size() == 0) {
             mEmpty.setVisibility(View.VISIBLE);
         } else {
             mEmpty.setVisibility(View.GONE);
@@ -185,7 +173,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         Log.d(TAG, "Clicked on position: " + Integer.toString(position));
 
         Intent intent = new Intent(getActivity(), ReportViewActivity.class);
-        intent.putExtra("id", mAdapter.mDataSet.get(position).getItemId());
+        intent.putExtra("id", mAdapter.getmDataSet().get(position).getItemId());
         startActivity(intent);
     }
 
@@ -202,7 +190,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     }
 
     private void refreshAdapter() {
-        mAdapter.mDataSet = feedItemDataSource.latest(DEFAULT_PAGE_SIZE);
+        mAdapter.setmDataSet(feedItemDataSource.latest(DEFAULT_PAGE_SIZE));
         mAdapter.notifyDataSetChanged();
     }
 

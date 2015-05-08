@@ -1,4 +1,4 @@
-package org.cm.podd.report.fragment;
+package org.cm.podd.report.model;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.json.JSONException;
