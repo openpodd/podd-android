@@ -112,11 +112,18 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             refreshNotificationListAdapter();
         }
     };
+    private MenuItem settingMenuItem;
+    private MenuItem badgeMenuItem;
+    private MenuItem newEventMenuItem;
+    private Button badgeCounterButton;
+    private View notifCountView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
 
         // notification receiver from gcm intent service
         registerReceiver(mNotificationReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
@@ -204,26 +211,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         super.onSaveInstanceState(outState);
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
-        menu.findItem(R.id.action_new_event).setVisible(!drawerOpen);
-        if (drawerPosition > 0) {
-            menu.findItem(R.id.action_new_event).setVisible(false);
-        }
-
-        MenuItem item = menu.findItem(R.id.badge);
-        item.setVisible(mNotificationCount > 0);
-
-        MenuItemCompat.setActionView(item, R.layout.notif_count);
-        Button counter = (Button) MenuItemCompat.getActionView(item);
-        counter.setText(String.valueOf(mNotificationCount));
-
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -286,7 +273,32 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
+
+        settingMenuItem = menu.findItem(R.id.action_settings);
+        newEventMenuItem = menu.findItem(R.id.action_new_event);
+        badgeMenuItem = menu.findItem(R.id.badge);
+        MenuItemCompat.setActionView(badgeMenuItem, notifCountView);
+        badgeCounterButton = (Button) MenuItemCompat.getActionView(badgeMenuItem);
+
         return true;
+    }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+
+        settingMenuItem.setVisible(!drawerOpen);
+        newEventMenuItem.setVisible(!drawerOpen);
+        if (drawerPosition > 0) {
+            newEventMenuItem.setVisible(false);
+        }
+
+        badgeMenuItem.setVisible(mNotificationCount > 0);
+        badgeCounterButton.setText(String.valueOf(mNotificationCount));
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -510,44 +522,63 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View rootView = LayoutInflater.from(context).inflate(resource, parent, false);
-            TextView titleView = (TextView) rootView.findViewById(R.id.title);
-            titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-            TextView counterView = (TextView) rootView.findViewById(R.id.counter);
-            counterView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
-            counterView.setText(String.valueOf(unseenNotificationCount));
+            View rootView = convertView;
+            DrawerItemHolder holder;
 
-            ImageView iconView = (ImageView) rootView.findViewById(R.id.icon);
+            if (convertView == null) {
+                rootView = getLayoutInflater().inflate(R.layout.drawer_list_item, parent, false);
+
+                holder = new DrawerItemHolder();
+                holder.titleView = (TextView) rootView.findViewById(R.id.title);
+                holder.counterView = (TextView) rootView.findViewById(R.id.counter);
+                holder.iconView = (ImageView) rootView.findViewById(R.id.icon);
+
+                rootView.setTag(holder);
+            } else {
+                holder = (DrawerItemHolder) rootView.getTag();
+            }
+
+            holder.titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+
+            holder.counterView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            holder.counterView.setText(String.valueOf(unseenNotificationCount));
+
 
             if (position == 0) {
-                iconView.setImageResource(R.drawable.ic_action_view_as_list);
-                counterView.setVisibility(View.INVISIBLE);
+                holder.iconView.setImageResource(R.drawable.ic_action_view_as_list);
+                holder.counterView.setVisibility(View.INVISIBLE);
 
             } else if (position == 1) {
-                iconView.setImageResource(R.drawable.ic_action_event);
+                holder.iconView.setImageResource(R.drawable.ic_action_event);
 
                 if (unseenNotificationCount > 0) {
-                    counterView.setVisibility(View.VISIBLE);
+                    holder.counterView.setVisibility(View.VISIBLE);
                 } else {
-                    counterView.setVisibility(View.INVISIBLE);
+                    holder.counterView.setVisibility(View.INVISIBLE);
                 }
             } else if (position == 2) {
-                iconView.setImageResource(R.drawable.ic_cast_menu);
-                counterView.setVisibility(View.INVISIBLE);
+                holder.iconView.setImageResource(R.drawable.ic_cast_menu);
+                holder.counterView.setVisibility(View.INVISIBLE);
             }
             else if (position == 3) {
-                iconView.setImageResource(R.drawable.ic_stat_menu);
-                counterView.setVisibility(View.INVISIBLE);
+                holder.iconView.setImageResource(R.drawable.ic_stat_menu);
+                holder.counterView.setVisibility(View.INVISIBLE);
             }else {
-                counterView.setVisibility(View.INVISIBLE);
+                holder.counterView.setVisibility(View.INVISIBLE);
             }
-            titleView.setText(getItem(position));
+            holder.titleView.setText(getItem(position));
 
             // Re-draw menu.
             invalidateOptionsMenu();
 
             return rootView;
+        }
+
+        private class DrawerItemHolder {
+            TextView titleView;
+            ImageView iconView;
+            TextView counterView;
         }
     }
 
