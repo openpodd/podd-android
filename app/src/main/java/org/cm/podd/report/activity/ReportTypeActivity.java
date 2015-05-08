@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -59,10 +60,12 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
     private static final String TAG = "ReportTypeActivity";
     private ArrayAdapter<ReportType> adapter;
     private ListView listView;
+    private CheckBox testCheckbox;
     private ProgressBar progressBar;
     private ReportTypeDataSource dataSource;
     private ReportDataSource reportDataSource;
     private ReportQueueDataSource reportQueueDataSource;
+    private Typeface typeface;
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
@@ -79,9 +82,14 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        typeface = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+
         setContentView(R.layout.activity_report_type);
         listView = (ListView) findViewById(R.id.report_type_list_view);
         progressBar = (ProgressBar) findViewById(R.id.report_type_progress_bar);
+        testCheckbox = (CheckBox) findViewById(R.id.test_checkbox);
+        testCheckbox.setTypeface(typeface);
 
         dataSource = new ReportTypeDataSource(this);
         reportDataSource = new ReportDataSource(this);
@@ -153,6 +161,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             } else {
                 Intent intent = new Intent(this, ReportActivity.class);
                 intent.putExtra("reportType", item.getId());
+                intent.putExtra("test", true);
                 startActivity(intent);
             }
 
@@ -194,28 +203,29 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
         Context context;
         int resource;
-        Typeface face;
 
         public ReportTypeAdapter(Context context, int resource, List<ReportType> objects) {
             super(context, resource, objects);
             this.context = context;
             this.resource = resource;
-            face = StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View view = inflater.inflate(this.resource, parent, false);
+            View view = convertView;
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                view = inflater.inflate(this.resource, parent, false);
+            }
 
             TextView textView = (TextView) view.findViewById(android.R.id.text1);
-            textView.setTypeface(face);
+            textView.setTypeface(typeface);
             textView.setText(getItem(position).getName());
 
             int version = getItem(position).getVersion();
             if (version > 0) {
                 TextView versionView = (TextView) view.findViewById(android.R.id.text2);
-                versionView.setTypeface(face);
+                versionView.setTypeface(typeface);
                 versionView.setText("v" + version);
             }
             return view;

@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"/>
 
     <TextView
         android:id="@android:id/text1"
@@ -17,7 +17,7 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="hello"
+        android:text="@null"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

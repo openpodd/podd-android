@@ -205,6 +205,7 @@ public class ReportListFragment extends ListFragment {
                 Intent intent = new Intent(getActivity(), ReportActivity.class);
                 intent.putExtra("reportType", report.getType());
                 intent.putExtra("reportId", reportId);
+                intent.putExtra("test", report.isTestReport());
                 startActivityForResult(intent, REQUEST_FOR_EDIT);
             } else {
                 // do nothing
@@ -341,7 +342,7 @@ public class ReportListFragment extends ListFragment {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            LayoutInflater inflater = LayoutInflater.from(context);
             View retView = inflater.inflate(R.layout.report_list_item, parent, false);
 
             ViewHolder holder = new ViewHolder();
@@ -366,6 +367,7 @@ public class ReportListFragment extends ListFragment {
             holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
             holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
             holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+            holder.testReport = context.getResources().getDrawable(R.drawable.icon_flag_ignore);
 
             CheckableLayout checkableView = new CheckableLayout(context);
             checkableView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -386,6 +388,7 @@ public class ReportListFragment extends ListFragment {
             int submit = cursor.getInt(cursor.getColumnIndex("submit"));
             int negative = cursor.getInt(cursor.getColumnIndex("negative"));
             int follow = cursor.getInt(cursor.getColumnIndex("follow_flag"));
+            int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
 
             String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
             if (typeName == null) {
@@ -422,6 +425,9 @@ public class ReportListFragment extends ListFragment {
                     holder.statusImage.setImageDrawable(holder.positive);
                 }
             }
+            if (testReport == Report.TRUE) {
+                holder.statusImage.setImageDrawable(holder.testReport);
+            }
 
             String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
@@ -435,7 +441,7 @@ public class ReportListFragment extends ListFragment {
                 // submit pending in queue
                 ((CheckableLayout) view).setBackgroundSubmitState(false);
             } else {
-                if (draft == Report.FALSE && follow != Report.TRUE) {
+                if (draft == Report.FALSE && follow != Report.TRUE && testReport != Report.TRUE) {
                     long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
                     Log.d(TAG, String.format("now = %d, until = %d", now, until));
                     if (until > now) {
@@ -467,6 +473,7 @@ public class ReportListFragment extends ListFragment {
             Drawable positive;
             Drawable negative;
             Drawable follow;
+            Drawable testReport;
             TextView followText;
             View separatorFull;
             View separatorSubTopic;

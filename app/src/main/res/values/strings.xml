@@ -152,5 +152,7 @@
     <string name="server_error">Error on Server, please contact administration</string>
     <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
     <string name="follow">ติดตาม</string>
+    <string name="test_title">ทดสอบ</string>
+    <string name="test_label">ทดสอบรายงาน</string>
 
 </resources>

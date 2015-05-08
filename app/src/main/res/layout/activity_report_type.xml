@@ -3,16 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingTop="10dp"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="org.cm.podd.report.activity.ReportTypeActivity">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/test_section"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/test_checkbox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/test_label"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"/>
+
+        <View android:id="@+id/separator_full"
+            android:background="@color/report_row_divider"
+            android:layout_width = "fill_parent"
+            android:layout_height="1dip"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/report_type_list_view"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below='@id/test_section'
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        >
     </ListView>
 
     <ProgressBar
@@ -20,6 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_below='@id/test_section'/>
 
 </RelativeLayout>

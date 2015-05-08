@@ -40,6 +40,7 @@ public class Report {
     private int negative;
     private int draft;
     private int submit;
+    private int testReport;
 
     private String guid;
 
@@ -235,4 +236,15 @@ public class Report {
         this.parentGuid = parentGuid;
     }
 
+    public int getTestReport() {
+        return testReport;
+    }
+
+    public void setTestReport(int testReport) {
+        this.testReport = testReport;
+    }
+
+    public boolean isTestReport() {
+        return this.testReport == TRUE;
+    }
 }

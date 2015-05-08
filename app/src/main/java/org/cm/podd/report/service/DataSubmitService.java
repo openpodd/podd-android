@@ -240,6 +240,12 @@ public class DataSubmitService extends IntentService {
             formObj.put("reportTypeVersion", report.getReportTypeVersion());
             data.put("formData", formObj);
 
+            if (report.isTestReport()) {
+                data.put("testFlag", true);
+            } else {
+                data.put("testFlag", false);
+            }
+
             post.setEntity(new StringEntity(data.toString(), HTTP.UTF_8));
             Log.d(TAG, "request with " + EntityUtils.toString(post.getEntity()));
 

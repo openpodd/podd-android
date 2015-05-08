@@ -52,15 +52,19 @@ public class ReportDataSource {
      * create draft report
      * @return row id of new report
      */
-    public long createDraftReport(long type) {
+    public long createDraftReport(long type, boolean test) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
-
+        int testReport = Report.FALSE;
+        if (test) {
+            testReport = Report.TRUE;
+        }
         ContentValues values = new ContentValues();
         values.put("date", new Date().getTime());
         values.put("type", type);
         values.put("draft", 1);
         values.put("negative", 1);
         values.put("follow_date", Long.MAX_VALUE);
+        values.put("test_report", testReport);
         values.put("submit", 0);
 
         Cursor typeCursor = db.rawQuery("select followable, follow_days from report_type where _id = ?", new String[] {Long.toString(type)});
@@ -150,7 +154,7 @@ public class ReportDataSource {
     public Cursor getAllWithTypeName() {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         return db.rawQuery(
-                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name, r.follow_flag, r.follow_date, r.follow_until FROM report r "
+                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name, r.follow_flag, r.follow_date, r.follow_until, r.test_report FROM report r "
                 + "left join report_type rt on r.type = rt._id order by r.date desc, r.follow_date desc", null);
     }
 
@@ -174,6 +178,7 @@ public class ReportDataSource {
         long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
         String remark = cursor.getString(cursor.getColumnIndex("remark"));
         String guid = cursor.getString(cursor.getColumnIndex("guid"));
+        int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
 
         int followFlag = cursor.getInt(cursor.getColumnIndex("follow_flag"));
         Date followDate = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
@@ -191,6 +196,7 @@ public class ReportDataSource {
         report.setFollowDate(followDate);
         report.setFollowFlag(followFlag);
         report.setParentGuid(parentGuid);
+        report.setTestReport(testReport);
 
         report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
         cursor.close();

@@ -91,6 +91,7 @@ public class ReportActivity extends ActionBarActivity
     private Button nextBtn;
     private Button cameraBtn;
     private View disableMaskView;
+    private boolean testReport;
 
     private String currentFragment;
     private ReportDataSource reportDataSource;
@@ -174,6 +175,7 @@ public class ReportActivity extends ActionBarActivity
             reportId = savedInstanceState.getLong("reportId");
             reportType = savedInstanceState.getLong("reportType");
             follow = savedInstanceState.getBoolean("follow");
+            testReport = savedInstanceState.getBoolean("testReport");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
@@ -187,6 +189,7 @@ public class ReportActivity extends ActionBarActivity
             reportType = intent.getLongExtra("reportType", 0);
             reportId = intent.getLongExtra("reportId", -99);
             follow = intent.getBooleanExtra("follow", false);
+            testReport = intent.getBooleanExtra("test", false);
 
             if (follow) {
                 reportId = reportDataSource.createFollowReport(reportId);
@@ -195,7 +198,7 @@ public class ReportActivity extends ActionBarActivity
             formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
 
             if (reportId == -99) {
-                reportId = reportDataSource.createDraftReport(reportType);
+                reportId = reportDataSource.createDraftReport(reportType, testReport);
                 startLocationService();
             } else {
                 loadFormData();
@@ -238,6 +241,7 @@ public class ReportActivity extends ActionBarActivity
         outState.putSerializable("formIterator", formIterator);
         outState.putDouble("currentLatitude", currentLatitude);
         outState.putDouble("currentLongitude", currentLongitude);
+        outState.putBoolean("testReport", testReport);
         super.onSaveInstanceState(outState);
     }
 
@@ -448,10 +452,13 @@ public class ReportActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
+        String title = getString(R.string.title_activity_report);
+        if (testReport) {
+            title = getString(R.string.test_title) + title;
+        }
+        StyleUtil.setActionBarTitle(this, title);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.report, menu);
