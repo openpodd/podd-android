@@ -22,6 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.CommentDataSource;
 import org.cm.podd.report.db.VisualizationAreaDataSource;
@@ -113,6 +117,10 @@ public class VisualizationAreaActivity extends ActionBarActivity {
         }else {
             refreshData(area);
         }
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("VisualizationArea");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     ProgressDialog pd;

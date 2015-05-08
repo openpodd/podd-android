@@ -23,6 +23,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.model.Report;
@@ -52,6 +56,10 @@ public class WebContentActivity extends ActionBarActivity {
             WebContentUtil.launch(webView, title, body);
             notificationDataSource.markAsSeen(id, Report.TRUE);
         }
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("WebContent");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     @Override

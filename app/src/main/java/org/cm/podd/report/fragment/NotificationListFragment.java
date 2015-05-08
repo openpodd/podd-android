@@ -31,6 +31,10 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.WebContentActivity;
 import org.cm.podd.report.db.NotificationDataSource;
@@ -62,6 +66,9 @@ public class NotificationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         notificationDataSource = new NotificationDataSource(getActivity());
+        Tracker tracker = ((PoddApplication) getActivity().getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("NotificationList");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     public void refreshAdapter() {

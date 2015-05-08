@@ -11,13 +11,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.FeedItemDataSource;
-import org.cm.podd.report.fragment.ReportAdapter;
+import org.cm.podd.report.model.ReportAdapter;
 import org.cm.podd.report.model.FeedItem;
-import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.FontUtil;
-import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +60,10 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
         parentReportFlag = getIntent().getLongExtra("parentReportFlag", 0);
 
         fetchFollowUpReports(parentReportId);
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("ReportFollowUp");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     @Override

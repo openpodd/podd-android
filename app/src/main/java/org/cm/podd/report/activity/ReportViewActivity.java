@@ -13,21 +13,17 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
 import android.text.Html;
-import android.text.Layout;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -45,12 +41,15 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
 import org.cm.podd.report.db.FeedItemDataSource;
-import org.cm.podd.report.fragment.FeedAdapter;
+import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
@@ -62,14 +61,11 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -213,6 +209,10 @@ public class ReportViewActivity extends ActionBarActivity {
         } else {
             refreshViewRefresh();
         }
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("ReportView");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
 
 //        alertComment.setOnClickListener(new View.OnClickListener() {
 //            @Override

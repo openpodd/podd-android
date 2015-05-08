@@ -22,6 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.VisualizationAreaDataSource;
 import org.cm.podd.report.db.VisualizationVolunteerDataSource;
@@ -105,6 +109,10 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
         } else {
             refreshData(volunteer);
         }
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("VisualizationVolunteer");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     ProgressDialog pd;

@@ -38,7 +38,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.service.UploadProfileService;
@@ -93,23 +97,23 @@ public class SettingActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(me)
-                    .setTitle("ยืนยันการออกจากระบบ")
-                    .setMessage("ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง\n\n"
-                            + "คุณต้องการออกจากระบบหรือไม่")
-                    .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            logout();
-                        }
-                    })
-                    .setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create()
-                    .show();
+                        .setTitle("ยืนยันการออกจากระบบ")
+                        .setMessage("ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง\n\n"
+                                + "คุณต้องการออกจากระบบหรือไม่")
+                        .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                logout();
+                            }
+                        })
+                        .setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
@@ -134,6 +138,10 @@ public class SettingActivity extends ActionBarActivity {
                 fragment.show(getSupportFragmentManager(), "MediaChoiceDialog");
             }
         });
+
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("Setting");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     private void cropImage() {

@@ -31,8 +31,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.CommentDataSource;
 import org.cm.podd.report.model.Comment;
@@ -177,6 +180,9 @@ public class ReportCommentActivity extends ActionBarActivity {
             refreshComment();
         }
 
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("ReportComment");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     private void fetchMentions(CharSequence s, int start, int before, int count){
