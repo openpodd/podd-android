@@ -1,6 +1,7 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ public class ReportConfirmFragment extends Fragment {
     private ReportNavigationInterface navigationInterface;
     private ReportDataInterface dataInterface;
 
+
+    private ProgressDialog progress;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -76,6 +79,7 @@ public class ReportConfirmFragment extends Fragment {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                displayDialog();
                 navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
             }
         });
@@ -83,6 +87,7 @@ public class ReportConfirmFragment extends Fragment {
         draftBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                displayDialog();
                 navigationInterface.finishReport(ReportDataInterface.DRAFT_ACTION);
             }
         });
@@ -118,6 +123,14 @@ public class ReportConfirmFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         navigationInterface = null;
+        if (progress != null) {
+            progress.dismiss();
+        }
+    }
+
+    private void displayDialog() {
+        progress = ProgressDialog.show(this.getActivity(), "กำลังทำงาน",
+                "กรุณารอสักครู่", true);
     }
 
 }
