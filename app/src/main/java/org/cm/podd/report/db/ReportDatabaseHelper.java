@@ -45,8 +45,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  submit INTEGER,"     // already submit to server
             + "  guid TEXT,"           // uuid that tells this report is added into submit queue list
             + "  parent_guid TEXT,"
-            + "  follow_date INTEGER,"
-            + "  follow_flag INTEGER,"
+            + "  follow_date INTEGER,"  // date when follow occur
+            + "  follow_flag INTEGER,"  // 1 -> follow case
             + "  follow_until INTEGER,"
             + "  test_report INTEGER"
             + ")";

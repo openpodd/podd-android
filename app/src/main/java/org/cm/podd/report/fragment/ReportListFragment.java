@@ -43,6 +43,7 @@ import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * A fragment representing a list of Items.
@@ -341,42 +342,77 @@ public class ReportListFragment extends ListFragment {
         }
 
         @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            Cursor cursor = (Cursor) getItem(position);
+            int followFlag = cursor.getInt(cursor.getColumnIndex("follow_flag"));
+            return followFlag;
+        }
+
+        @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            View retView = inflater.inflate(R.layout.report_list_item, parent, false);
+            View retView;
+            ViewHolder holder;
 
-            ViewHolder holder = new ViewHolder();
-            holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
-            holder.typeText = (TextView) retView.findViewById(R.id.report_type);
-            // update fontface
-            holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            int follow = cursor.getInt(cursor.getColumnIndex("follow_flag"));
+            if (follow == Report.FALSE) {
+                retView = inflater.inflate(R.layout.report_list_item, parent, false);
 
-            holder.dateText = (TextView) retView.findViewById(R.id.report_date);
-            // update fontface
-            holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+                holder = new ViewHolder();
+                holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
+                holder.typeText = (TextView) retView.findViewById(R.id.report_type);
+                // update fontface
+                holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-            holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
-            // update fontface
-            holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+                holder.dateText = (TextView) retView.findViewById(R.id.report_date);
+                // update fontface
+                holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-            holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
-            holder.followText = (TextView) retView.findViewById(R.id.report_follow);
-            holder.followText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+                holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
+                // update fontface
+                holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
-            // cache drawable
-            holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
-            holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
-            holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
-            holder.testReport = context.getResources().getDrawable(R.drawable.icon_flag_ignore);
+                holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
+                holder.followText = (TextView) retView.findViewById(R.id.report_follow);
+                holder.followText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+
+                // cache drawable
+                holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
+                holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
+                holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+                holder.testReport = context.getResources().getDrawable(R.drawable.icon_flag_ignore);
+            } else {
+                retView = inflater.inflate(R.layout.report_list_follow_item, parent, false);
+                holder = new ViewHolder();
+                holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
+                holder.typeText = (TextView) retView.findViewById(R.id.report_type);
+                // update fontface
+                holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+
+                holder.dateText = (TextView) retView.findViewById(R.id.report_date);
+                // update fontface
+                holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+
+                holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
+                // update fontface
+                holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
+
+                holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
+                // cache drawable
+                holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+            }
+
 
             CheckableLayout checkableView = new CheckableLayout(context);
             checkableView.setLayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             checkableView.addView(retView);
             checkableView.setTag(holder);
-
-            holder.separatorFull = retView.findViewById(R.id.separator_full);
-            holder.separatorSubTopic = retView.findViewById(R.id.separator_subtopic);
 
             return checkableView;
         }
@@ -389,62 +425,36 @@ public class ReportListFragment extends ListFragment {
             int negative = cursor.getInt(cursor.getColumnIndex("negative"));
             int follow = cursor.getInt(cursor.getColumnIndex("follow_flag"));
             int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
-
             String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
-            if (typeName == null) {
-                holder.typeText.setText(R.string.normal_case);
+            Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
+
+            if (follow == Report.TRUE) {
+                holder.typeText.setText("ติดตาม");
+                date = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
+                holder.statusImage.setImageDrawable(holder.follow);
+
             } else {
-                if (follow == Report.TRUE) {
-                    holder.typeText.setText("ติดตาม");
+                if (testReport == Report.TRUE) {
+                    holder.typeText.setText(getResources().getText(R.string.test_title) + typeName);
                 } else {
-                    if (testReport == Report.TRUE) {
-                        holder.typeText.setText(getResources().getText(R.string.test_title) + typeName);
+                    if (typeName == null) {
+                        holder.typeText.setText(R.string.normal_case);
                     } else {
                         holder.typeText.setText(typeName);
                     }
                 }
-            }
-            holder.draftText.setVisibility(
-                    draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
 
-            Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-            if (follow == Report.TRUE) {
-                date = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
-                holder.separatorSubTopic.setVisibility(View.VISIBLE);
-                holder.separatorFull.setVisibility(View.INVISIBLE);
-                holder.statusImage.setVisibility(View.VISIBLE);
-                holder.typeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-                holder.statusImage.setImageDrawable(holder.follow);
-
-            } else {
-                holder.separatorSubTopic.setVisibility(View.INVISIBLE);
-                holder.separatorFull.setVisibility(View.VISIBLE);
-                holder.statusImage.setVisibility(View.VISIBLE);
-                holder.typeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-
-                if (negative == Report.TRUE) {
-                    holder.statusImage.setImageDrawable(holder.negative);
+                if (testReport == Report.TRUE) {
+                    holder.statusImage.setImageDrawable(holder.testReport);
                 } else {
-                    holder.statusImage.setImageDrawable(holder.positive);
+                    if (negative == Report.TRUE) {
+                        holder.statusImage.setImageDrawable(holder.negative);
+                    } else {
+                        holder.statusImage.setImageDrawable(holder.positive);
+                    }
                 }
-            }
-            if (testReport == Report.TRUE) {
-                holder.statusImage.setImageDrawable(holder.testReport);
-            }
 
-            String dateStr = DateUtil.convertToThaiDate(date);
-            holder.dateText.setText(dateStr);
-
-
-
-            holder.followText.setVisibility(View.GONE);
-
-            if (submit == Report.FALSE && draft == Report.FALSE) {
-                holder.queueImage.setVisibility(View.VISIBLE);
-                // submit pending in queue
-                ((CheckableLayout) view).setBackgroundSubmitState(false);
-            } else {
+                holder.followText.setVisibility(View.GONE);
                 if (draft == Report.FALSE && follow != Report.TRUE && testReport != Report.TRUE) {
                     long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
                     Log.d(TAG, String.format("now = %d, until = %d", now, until));
@@ -461,11 +471,21 @@ public class ReportListFragment extends ListFragment {
                         });
                     }
                 }
+            }
+
+            holder.draftText.setVisibility(
+                    draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
+            String dateStr = DateUtil.convertToThaiDate(date);
+            holder.dateText.setText(dateStr);
+
+            if (submit == Report.FALSE && draft == Report.FALSE) {
+                holder.queueImage.setVisibility(View.VISIBLE);
+                // submit pending in queue
+                ((CheckableLayout) view).setBackgroundSubmitState(false);
+            } else {
                 holder.queueImage.setVisibility(View.GONE);
                 ((CheckableLayout) view).setBackgroundSubmitState(true);
             }
-
-
         }
 
         class ViewHolder {
@@ -479,8 +499,6 @@ public class ReportListFragment extends ListFragment {
             Drawable follow;
             Drawable testReport;
             TextView followText;
-            View separatorFull;
-            View separatorSubTopic;
         }
     }
 
