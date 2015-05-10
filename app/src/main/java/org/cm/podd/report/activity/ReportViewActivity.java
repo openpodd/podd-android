@@ -950,9 +950,7 @@ public class ReportViewActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

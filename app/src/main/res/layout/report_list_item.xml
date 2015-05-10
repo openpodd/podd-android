@@ -20,9 +20,10 @@
             />
 
         <View android:id="@+id/separator_subtopic"
-            android:background="#e4e4e4"
+            android:background="@drawable/dash_line_separater"
             android:layout_width = "fill_parent"
-            android:layout_height="1dip"
+            android:layout_height="10dp"
+            android:layerType="software"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentStart="true"
@@ -66,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sample Data"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:paddingRight="10dp" />
 
 
@@ -115,17 +116,18 @@
 
             <TextView android:id="@+id/report_follow"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/follow"
                 android:textSize="12sp"
                 android:background="@drawable/follow"
-                android:paddingLeft="5sp"
-                android:paddingRight="5sp"
+                android:paddingLeft="8sp"
+                android:paddingRight="8sp"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp" />
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                />
 
         </FrameLayout>
 

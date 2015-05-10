@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">PODD</string>
-    <string name="action_settings">ตั้งค่า</string>
+    <string name="action_settings">ตั้งค่าผู้ใช้งาน</string>
     <string name="title_activity_test_form">TestFormActivity</string>
     <string name="title_activity_home">PODD</string>
     <string name="title_section1">รายงาน</string>
@@ -27,7 +27,7 @@
     <string name="server_address">Server address</string>
     <string name="logout">ออกจากระบบ</string>
     <string name="btn_camera">กล้อง</string>
-    <string name="btn_next">ต่อไป</string>
+    <string name="btn_next">ต่อไป &gt;</string>
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
     <string name="button_confirm">ยืนยัน</string>
@@ -36,7 +36,7 @@
     <string name="button_back_to_report_list">กลับไปที่หน้ารายการ</string>
     <string name="done_submit_message">รายงานนี้ได้ถูกยืนยัน\nเป็นที่เรียบร้อยแล้ว</string>
     <string name="alert_no_network_connection">ไม่สามารถเชื่อมต่ออินเตอร์เน็ตได้</string>
-    <string name="btn_prev">กลับ</string>
+    <string name="btn_prev">&lt; กลับ</string>
     <string name="title_confirm_back_report_home">ยืนยันแจ้งออก</string>
     <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
     <string name="agree">ตกลง</string>
