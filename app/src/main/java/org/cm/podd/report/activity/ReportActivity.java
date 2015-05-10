@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -91,7 +92,7 @@ public class ReportActivity extends ActionBarActivity
     private Button nextBtn;
     private Button cameraBtn;
     private View disableMaskView;
-    private boolean testReport;
+    private boolean testReport = false;
 
     private String currentFragment;
     private ReportDataSource reportDataSource;
@@ -177,6 +178,7 @@ public class ReportActivity extends ActionBarActivity
             follow = savedInstanceState.getBoolean("follow");
             testReport = savedInstanceState.getBoolean("testReport");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
+            Log.d(TAG, "onCreate from savedInstance, testFlag = " + testReport);
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
             currentLongitude = savedInstanceState.getDouble("currentLongitude");
@@ -190,6 +192,7 @@ public class ReportActivity extends ActionBarActivity
             reportId = intent.getLongExtra("reportId", -99);
             follow = intent.getBooleanExtra("follow", false);
             testReport = intent.getBooleanExtra("test", false);
+            Log.d(TAG, "onCreate, testFlag = " + testReport);
 
             if (follow) {
                 reportId = reportDataSource.createFollowReport(reportId);
@@ -459,6 +462,14 @@ public class ReportActivity extends ActionBarActivity
         StyleUtil.setActionBarTitle(this, title);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        if (testReport) {
+            ColorDrawable color = new ColorDrawable();
+            color.setColor(0xffFEBB31);
+            actionBar.setBackgroundDrawable(color);
+        } else {
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.abc_ab_solid_light_holo));
+        }
 
         // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.report, menu);

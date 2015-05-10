@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -91,6 +93,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         testCheckbox = (CheckBox) findViewById(R.id.test_checkbox);
         testCheckbox.setTypeface(typeface);
 
+
         dataSource = new ReportTypeDataSource(this);
         reportDataSource = new ReportDataSource(this);
         reportQueueDataSource = new ReportQueueDataSource(this);
@@ -100,6 +103,12 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(this);
+        testCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         registerReceiver(mSyncReceiver, new IntentFilter(SyncReportTypeService.SYNC));
     }
@@ -159,9 +168,10 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
                 finish();
 
             } else {
+                Log.d(TAG, String.format("select report type = %d", item.getId(), testCheckbox.isChecked()));
                 Intent intent = new Intent(this, ReportActivity.class);
                 intent.putExtra("reportType", item.getId());
-                intent.putExtra("test", true);
+                intent.putExtra("test", testCheckbox.isChecked());
                 startActivity(intent);
             }
 
@@ -220,9 +230,16 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
             TextView textView = (TextView) view.findViewById(android.R.id.text1);
             textView.setTypeface(typeface);
-            textView.setText(getItem(position).getName());
 
-            int version = getItem(position).getVersion();
+            ReportType item = adapter.getItem(position);
+
+            if (testCheckbox.isChecked() && item.getId() != 0 && item.getId() != -99) {
+                textView.setText(getResources().getText(R.string.test_title) + item.getName());
+            } else {
+                textView.setText(item.getName());
+            }
+
+            int version = item.getVersion();
             if (version > 0) {
                 TextView versionView = (TextView) view.findViewById(android.R.id.text2);
                 versionView.setTypeface(typeface);

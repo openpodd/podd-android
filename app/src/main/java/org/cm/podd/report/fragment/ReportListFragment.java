@@ -397,7 +397,11 @@ public class ReportListFragment extends ListFragment {
                 if (follow == Report.TRUE) {
                     holder.typeText.setText("ติดตาม");
                 } else {
-                    holder.typeText.setText(typeName);
+                    if (testReport == Report.TRUE) {
+                        holder.typeText.setText(getResources().getText(R.string.test_title) + typeName);
+                    } else {
+                        holder.typeText.setText(typeName);
+                    }
                 }
             }
             holder.draftText.setVisibility(
@@ -434,7 +438,7 @@ public class ReportListFragment extends ListFragment {
 
 
 
-            holder.followText.setVisibility(View.INVISIBLE);
+            holder.followText.setVisibility(View.GONE);
 
             if (submit == Report.FALSE && draft == Report.FALSE) {
                 holder.queueImage.setVisibility(View.VISIBLE);
@@ -457,7 +461,7 @@ public class ReportListFragment extends ListFragment {
                         });
                     }
                 }
-                holder.queueImage.setVisibility(View.INVISIBLE);
+                holder.queueImage.setVisibility(View.GONE);
                 ((CheckableLayout) view).setBackgroundSubmitState(true);
             }
 
