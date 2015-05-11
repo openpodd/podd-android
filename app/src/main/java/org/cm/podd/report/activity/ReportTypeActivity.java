@@ -156,6 +156,14 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
                 progressBar.setVisibility(View.VISIBLE);
 
                 startSyncReportType();
+
+                // send event hit
+                Tracker tracker = ((PoddApplication) getApplication()).getTracker(
+                        PoddApplication.TrackerName.APP_TRACKER);
+                tracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("ReportType").setAction("syncReport")
+                        .build());
+
             }
         } else {
             if (item.getId() == 0) {
