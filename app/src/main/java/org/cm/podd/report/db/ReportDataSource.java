@@ -111,6 +111,8 @@ public class ReportDataSource {
         if (formCursor.moveToFirst()) {
             formData = formCursor.getString(formCursor.getColumnIndex("form_data"));
         }
+
+        int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
         formCursor.close();
 
         ContentValues values = new ContentValues();
@@ -125,6 +127,7 @@ public class ReportDataSource {
         values.put("start_date", startDate.getTime());
         values.put("region_id", regionId);
         values.put("parent_guid", guid);
+        values.put("test_report", testReport);
         long id = db.insert("report", null, values);
 
         db.close();

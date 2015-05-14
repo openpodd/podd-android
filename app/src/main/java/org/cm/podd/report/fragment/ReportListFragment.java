@@ -455,7 +455,7 @@ public class ReportListFragment extends ListFragment {
                 }
 
                 holder.followText.setVisibility(View.GONE);
-                if (draft == Report.FALSE && follow != Report.TRUE && testReport != Report.TRUE) {
+                if (draft == Report.FALSE && follow != Report.TRUE) {
                     long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
                     Log.d(TAG, String.format("now = %d, until = %d", now, until));
                     if (until > now) {
