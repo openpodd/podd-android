@@ -92,7 +92,8 @@ public class RegistrationActivity extends ActionBarActivity {
                     final String name = obj.getString("name");
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegistrationActivity.this);
-                    alertDialogBuilder.setMessage("หน่วยงานที่คุณต้องการลงทะเบียน: " + name);
+                    alertDialogBuilder.setTitle("พื้นที่ลงทะเบียน");
+                    alertDialogBuilder.setMessage("คุณต้องการลงทะเบียนในพื้นที่: " + name);
                     alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {

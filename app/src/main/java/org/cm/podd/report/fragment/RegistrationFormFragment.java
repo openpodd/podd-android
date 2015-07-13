@@ -1,6 +1,7 @@
 package org.cm.podd.report.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -116,6 +117,41 @@ public class RegistrationFormFragment extends Fragment {
         return view;
     }
 
+    private void showDialogConfirm() {
+        String firstName = firstNameEditText.getText().toString();
+        String lastName = lastNameEditText.getText().toString();
+        String serialNumber = serialNumberEditText.getText().toString();
+        String telephone = telephoneEditText.getText().toString();
+        String email = emailEditText.getText().toString().equalsIgnoreCase("")? "-": emailEditText.getText().toString();
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("กรุณาตรวจสอบข้อมูล");
+        alertDialogBuilder.setMessage("ชื่อ " + firstName + "\n\n" +
+                        "นามสกุล " + lastName + "\n\n" +
+                        "เลขบัตรประชาชน " + serialNumber + "\n\n" +
+                        "เบอร์โทร " + telephone + "\n\n" +
+                        "อีเมล " + email + "\n\n"
+
+        );
+        alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+                    new RegisterTask().execute((Void[]) null);
+                }
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("ไม่ใช่", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+
     private void submitRegister() {
         String firstName = firstNameEditText.getText().toString();
         String lastName = lastNameEditText.getText().toString();
@@ -130,9 +166,7 @@ public class RegistrationFormFragment extends Fragment {
         boolean emailValid = email.length() == 0 || Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
 
         if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
-            if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-                new RegisterTask().execute((Void[]) null);
-            }
+            showDialogConfirm();
         } else {
             Crouton.makeText(getActivity(), "Required invitation", Style.ALERT).show();
             return;
@@ -182,6 +216,8 @@ public class RegistrationFormFragment extends Fragment {
                     sharedPrefUtil.setUserName(username);
 
                     // get configuration
+                    Crouton.makeText(getActivity(), "ลงทะเบียนสำเร็จ", Style.INFO).show();
+                    
                     new ConfigTask().execute((Void[]) null);
 
                 }catch (JSONException ex) {
@@ -240,7 +276,10 @@ public class RegistrationFormFragment extends Fragment {
 
                 // goto report home
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
+                intent.putExtra("register", "success");
                 startActivity(intent);
+
+
 
             } catch (JSONException e) {
                 e.printStackTrace();

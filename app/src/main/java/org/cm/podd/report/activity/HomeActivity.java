@@ -73,6 +73,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -186,6 +189,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         selectItem(drawerPosition);
 
         onNewIntent(getIntent());
+
     }
 
     public void setNotificationCount() {
