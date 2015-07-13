@@ -141,6 +141,8 @@ public class AdministrationAreaFragment extends ListFragment {
                         }
                     });
 
+
+            datePickerDialog.getDatePicker().setCalendarViewShown(false);
             datePickerDialog.setCancelable(false);
             datePickerDialog.show();
         }
