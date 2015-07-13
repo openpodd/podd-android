@@ -154,5 +154,16 @@
     <string name="follow">ติดตาม</string>
     <string name="test_title">ทดสอบ</string>
     <string name="test_label">ทดสอบรายงาน</string>
+    <string name="registration">ลงทะเบียน</string>
+    <string name="forgot_password">ลืมรหัสผ่าน</string>
+    <string name="title_activity_registration">ลงทะเบียน</string>
+    <string name="first_name">ชื่อ</string>
+    <string name="last_name">นามสกุล</string>
+    <string name="serial_number">เลขประจำตัวประชาชน</string>
+    <string name="telephone">หมายเลขโทรศัพท์มือถือ</string>
+    <string name="email">อีเมล (ถ้ามี)</string>
+    <string name="invite_code">รหัสพื้นที่</string>
+    <string name="invite_code_title">กรอกรหัสพื้นที่</string>
+    <string name="authority">หน่วยงาน</string>
 
 </resources>

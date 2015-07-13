@@ -199,6 +199,11 @@
         <activity
             android:name=".activity.ReportCommentActivity"
             android:label="@string/title_activity_comment"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.RegistrationActivity"
+            android:label="@string/title_activity_registration"
             android:screenOrientation="portrait">
         </activity>
     </application>

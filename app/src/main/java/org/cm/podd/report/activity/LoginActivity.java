@@ -2,6 +2,7 @@ package org.cm.podd.report.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -68,7 +69,15 @@ public class LoginActivity extends ActionBarActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     authenticate();
                 }
-            return false;
+                return false;
+            }
+        });
+
+        findViewById(R.id.registration).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                startActivity(intent);
             }
         });
     }

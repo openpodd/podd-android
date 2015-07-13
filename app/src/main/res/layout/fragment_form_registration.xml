@@ -1,0 +1,99 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:layout_centerInParent="true"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/first_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/first_name"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp" />
+
+    <EditText
+        android:id="@+id/last_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/last_name"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp" />
+
+    <EditText
+        android:id="@+id/serial_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/serial_number"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp" />
+
+    <EditText
+        android:id="@+id/telephone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/telephone"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/email"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp" />
+
+    <EditText
+        android:id="@+id/invite_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionNext"
+        android:inputType="textVisiblePassword"
+        android:singleLine="true"
+        style="@style/EditTextFlat"
+        android:background="@drawable/ab_solid_white_podd"
+        android:padding="5dp"
+        android:layout_marginBottom="15dp"
+        android:enabled="false"/>
+
+    <Button
+        android:id="@+id/register_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/registration"
+        android:layout_marginBottom="15dp"
+        style="@style/NextButton" />
+
+</LinearLayout>
