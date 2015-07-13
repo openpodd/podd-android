@@ -106,18 +106,6 @@ public class AdministrationAreaFragment extends ListFragment {
 
                 @Override
                 public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    if (isOkayClicked) {
-                        Long administrationAreaId = area.getId();
-                        String name = area.getName();
-                        String parentName = area.getParentName();
-                        Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
-                        intent.putExtra("month", monthOfYear + 1);
-                        intent.putExtra("year", year);
-                        intent.putExtra("parentName", parentName);
-                        intent.putExtra("name", name);
-                        intent.putExtra("id", administrationAreaId);
-                        startActivity(intent);
-                    }
                 }
             });
 
@@ -127,8 +115,8 @@ public class AdministrationAreaFragment extends ListFragment {
                         public void onClick(DialogInterface dialog,
                                             int which) {
                             if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                dialog.cancel();
                                 isOkayClicked = false;
+                                dialog.cancel();
                             }
                         }
                     });
@@ -139,6 +127,16 @@ public class AdministrationAreaFragment extends ListFragment {
                                             int which) {
                             if (which == DialogInterface.BUTTON_POSITIVE) {
                                 isOkayClicked = true;
+                                Long administrationAreaId = area.getId();
+                                String name = area.getName();
+                                String parentName = area.getParentName();
+                                Intent intent = new Intent(getActivity(), VisualizationAreaActivity.class);
+                                intent.putExtra("month", datePickerDialog.getDatePicker().getMonth() + 1);
+                                intent.putExtra("year", datePickerDialog.getDatePicker().getYear());
+                                intent.putExtra("parentName", parentName);
+                                intent.putExtra("name", name);
+                                intent.putExtra("id", administrationAreaId);
+                                startActivity(intent);
                             }
                         }
                     });
@@ -339,24 +337,35 @@ public class AdministrationAreaFragment extends ListFragment {
 
             DatePicker datePicker = getDatePicker();
             try{
+                int dayContext = context.getResources().getIdentifier("android:id/day", null, null);
+                if(dayContext != 0){
+                    View dayPicker = getDatePicker().findViewById(dayContext);
+                    if(dayPicker != null){
+                        dayPicker.setVisibility(View.GONE);
+                    }
+                }
+
                 Field[] datePickerFields = getDatePicker().getClass().getDeclaredFields();
 
                 for (Field datePickerField : datePickerFields) {
                     Log.i(TAG, datePickerField.getName());
 
-                    if ( "mDayPicker".equals(datePickerField.getName()) || "mDaySpinner".equals(datePickerField.getName())) {
+                    if ( "mDayPicker".equals(datePickerField.getName()) || "mDaySpinner".equals(datePickerField.getName())
+                            || "MODE_CALENDAR".equals(datePickerField.getName())
+                    ) {
                         datePickerField.setAccessible(true);
                         Object dayPicker = new Object();
                         dayPicker = datePickerField.get(datePicker);
                         ((View) dayPicker).setVisibility(View.GONE);
                     }
                 }
+
                 Date minDate = null;
                 Date maxDate = null;
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 try {
                     minDate = format.parse(getString(R.string.min_date));
-                    maxDate = format.parse(year + "-" + (monthOfYear + 1) + "-01");
+                    maxDate = format.parse(year + "-" + (monthOfYear) + "-01");
                     datePicker.setMinDate(minDate.getTime());
                     datePicker.setMaxDate(maxDate.getTime());
                 } catch (ParseException e) {

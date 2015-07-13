@@ -102,7 +102,7 @@ public class RegistrationFormFragment extends Fragment {
         emailEditText = (EditText) view.findViewById(R.id.email);
 
         EditText textAuthorityName = (EditText) view.findViewById(R.id.invite_code);
-        textAuthorityName.setText(getString(R.string.authority) + ": " + authorityName);
+        textAuthorityName.setText(authorityName);
         textAuthorityName.setTypeface(face);
 
         view.findViewById(R.id.register_submit).setOnClickListener(new View.OnClickListener() {
@@ -217,7 +217,7 @@ public class RegistrationFormFragment extends Fragment {
 
                     // get configuration
                     Crouton.makeText(getActivity(), "ลงทะเบียนสำเร็จ", Style.INFO).show();
-                    
+
                     new ConfigTask().execute((Void[]) null);
 
                 }catch (JSONException ex) {

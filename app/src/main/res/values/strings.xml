@@ -164,6 +164,6 @@
     <string name="email">อีเมล (ถ้ามี)</string>
     <string name="invite_code">รหัสพื้นที่</string>
     <string name="invite_code_title">กรอกรหัสพื้นที่</string>
-    <string name="authority">หน่วยงาน</string>
+    <string name="authority">พื้นที่</string>
 
 </resources>
