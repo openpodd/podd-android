@@ -204,7 +204,11 @@
         <activity
             android:name=".activity.RegistrationActivity"
             android:label="@string/title_activity_registration"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ForgetPasswordActivity"
+            android:label="@string/title_activity_forget_password" >
         </activity>
     </application>
 

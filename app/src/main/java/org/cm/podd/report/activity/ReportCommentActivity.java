@@ -468,10 +468,13 @@ public class ReportCommentActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_comment));
+//        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeAsUpIndicator(0);
+//        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         return true;
     }

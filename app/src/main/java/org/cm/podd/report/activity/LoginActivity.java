@@ -80,6 +80,14 @@ public class LoginActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.forgot_password).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, ForgetPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void authenticate() {

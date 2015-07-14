@@ -1,0 +1,188 @@
+package org.cm.podd.report.activity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+
+import org.cm.podd.report.R;
+import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
+import org.cm.podd.report.fragment.RegistrationFormFragment;
+import org.cm.podd.report.util.FontUtil;
+import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
+public class ForgetPasswordActivity extends ActionBarActivity {
+
+    private Bundle bundle;
+
+    Fragment mCurrentFragment;
+    EditText serialNumberText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_forget_password);
+
+        serialNumberText = (EditText) findViewById(R.id.serial_number);
+        findViewById(R.id.serial_number_submit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitSerialNumber();
+            }
+        });
+
+        FontUtil.overrideFonts(this, this.findViewById(R.id.serial_number_content).getRootView());
+    }
+
+    private void submitSerialNumber() {
+        String serialNumber = serialNumberText.getText().toString();
+        if (serialNumber.length() > 0) {
+            if (RequestDataUtil.hasNetworkConnection(this)) {
+                new SerialNumberTask().execute((Void[]) null);
+            }
+        } else {
+            Crouton.makeText(this, "Required invitation", Style.ALERT).show();
+            return;
+        }
+    }
+
+    /**
+     * Post Invite code
+     */
+    public class SerialNumberTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
+            // authenticate and get access token
+            String reqData = null;
+            String serialNumber = serialNumberText.getText().toString();
+            try {
+                JSONObject json = new JSONObject();
+                json.put("serialNumber", serialNumberText.getText().toString());
+
+                reqData = json.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return RequestDataUtil.post("/users/forgot-password/", null, reqData, null);
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            Log.d("resp", resp.toString());
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
+                try {
+                    JSONObject obj = resp.getJsonObject();
+
+                    final String uid = obj.getString("uid");
+                    final String token = obj.getString("token");
+                    final String telephone = obj.getString("telephone");
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ForgetPasswordActivity.this);
+                    alertDialogBuilder.setTitle("ยืนยันตัวตน");
+                    alertDialogBuilder.setMessage("ระบบได้ส่งรหัสผ่านชั่วคราวผ่านทาง sms ไปยังหมายเลข: \n\n" + telephone +
+                                                "\n\nกรุณารอสักครู่"
+                    );
+                    alertDialogBuilder.setPositiveButton("กรอกรหัสผ่านชั่วคราว", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            setTitle("รหัสผ่านชั่วคราว");
+
+                            mCurrentFragment = new ForgetPasswordFormFragment();
+
+                            bundle = new Bundle();
+                            bundle.putString("uid", uid);
+                            bundle.putString("token", token);
+
+                            mCurrentFragment.setArguments(bundle);
+
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                                    .commit();
+
+                            findViewById(R.id.serial_number_content).setVisibility(View.GONE);
+                            findViewById(R.id.form_content).setVisibility(View.VISIBLE);
+
+                        }
+                    });
+//                    alertDialogBuilder.setNegativeButton("ยังไม่ได้รับ", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+////                          finish();
+//                        }
+//                    });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }catch (JSONException ex) {
+                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.serial_number_error), Style.ALERT).show();
+                }
+            } else {
+                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                    Crouton.makeText(ForgetPasswordActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                } else {
+                    Crouton.makeText(ForgetPasswordActivity.this, R.string.serial_number_error, Style.ALERT).show();
+                }
+
+            }
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home){
+            if (bundle != null && findViewById(R.id.form_content).getVisibility() == View.VISIBLE) {
+                findViewById(R.id.serial_number_content).setVisibility(View.VISIBLE);
+                findViewById(R.id.form_content).setVisibility(View.GONE);
+                StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
+            } else {
+                this.finish();
+                return true;
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}

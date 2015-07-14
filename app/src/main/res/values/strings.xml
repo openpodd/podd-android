@@ -166,5 +166,13 @@
     <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
     <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
+    <string name="title_activity_forget_password">ForgetPasswordActivity</string>
+    <string name="forget_password_title">กรุณากรอกเลขที่บัตรประชาชน</string>
+    <string name="serial_number_error">เลขที่บัตรประชาชนไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
+    <string name="register_submit_success">ลงทะเบียนสำเร็จ</string>
+    <string name="register_submit_error">คุณกรอกข้อมูลไม่ถูกต้อง</string>
+    <string name="forget_passsword_submit_error">รหัสผ่านไม่ถูกต้อง</string>
+    <string name="forget_passsword_submit_success">รหัสผ่านถูกต้อง</string>
+    <string name="code_title">กรอกรหัสผ่านชั่วคราว</string>
 
 </resources>

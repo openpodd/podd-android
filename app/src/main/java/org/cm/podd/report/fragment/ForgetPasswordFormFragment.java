@@ -1,7 +1,6 @@
 package org.cm.podd.report.fragment;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,41 +8,27 @@ import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
-import org.cm.podd.report.activity.LoginActivity;
-import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
-import org.cm.podd.report.model.AnimalType;
-import org.cm.podd.report.model.Report;
-import org.cm.podd.report.model.TimeRange;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,30 +40,17 @@ import static android.provider.Settings.Secure.ANDROID_ID;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class RegistrationFormFragment extends Fragment {
-    private String authorityInviteCode;
-    private String authorityName;
+public class ForgetPasswordFormFragment extends Fragment {
+    private String uid;
+    private String token;
 
-    private EditText firstNameEditText;
-    private EditText lastNameEditText;
-    private EditText serialNumberEditText;
-    private EditText telephoneEditText;
-    private EditText emailEditText;
-
-    private Pattern pattern;
-    private Matcher matcher;
+    private EditText codeEditText;
 
     SharedPrefUtil sharedPrefUtil;
     private boolean isUserLoggedIn;
 
-    private static final String SERIAL_NUMBER_PATTERN = "^[0-9]{13,}$";
 
-    private static final String TELEPHONE_PATTERN = "^[0-9]{10,}$";
-
-    private static final String EMAIL_PATTERN =
-            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-    public RegistrationFormFragment() {
+    public ForgetPasswordFormFragment() {
     }
 
     @Override
@@ -88,86 +60,34 @@ public class RegistrationFormFragment extends Fragment {
         sharedPrefUtil = new SharedPrefUtil(getActivity().getApplicationContext());
         isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
 
-        authorityInviteCode = getArguments().getString("AuthorityInviteCode");
-        authorityName = getArguments().getString("AuthorityName");
+        uid = getArguments().getString("uid");
+        token = getArguments().getString("token");
 
-        View view = inflater.inflate(R.layout.fragment_form_registration, container, false);
+        View view = inflater.inflate(R.layout.fragment_form_forget_password, container, false);
 
-        Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+        codeEditText = (EditText) view.findViewById(R.id.code);
 
-        firstNameEditText = (EditText) view.findViewById(R.id.first_name);
-        lastNameEditText = (EditText) view.findViewById(R.id.last_name);
-        serialNumberEditText = (EditText) view.findViewById(R.id.serial_number);
-        telephoneEditText = (EditText) view.findViewById(R.id.telephone);
-        emailEditText = (EditText) view.findViewById(R.id.email);
-
-        EditText textAuthorityName = (EditText) view.findViewById(R.id.invite_code);
-        textAuthorityName.setText(authorityName);
-        textAuthorityName.setTypeface(face);
-
-        view.findViewById(R.id.register_submit).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.code_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitRegister();
+                submitForgetPassword();
             }
         });
 
         isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
+
+        Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
         FontUtil.overrideFonts(getActivity(), view);
         return view;
     }
 
-    private void showDialogConfirm() {
-        String firstName = firstNameEditText.getText().toString();
-        String lastName = lastNameEditText.getText().toString();
-        String serialNumber = serialNumberEditText.getText().toString();
-        String telephone = telephoneEditText.getText().toString();
-        String email = emailEditText.getText().toString().equalsIgnoreCase("")? "-": emailEditText.getText().toString();
+    private void submitForgetPassword() {
+        String code = codeEditText.getText().toString();
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
-        alertDialogBuilder.setMessage("ข้อมูลการลงทะเบียนของคุณคือ" + "\n\n" +
-                        "ชื่อ " + firstName + "\n\n" +
-                        "นามสกุล " + lastName + "\n\n" +
-                        "เลขบัตรประชาชน " + serialNumber + "\n\n" +
-                        "เบอร์โทร " + telephone + "\n\n" +
-                        "อีเมล " + email + "\n\n"
-
-        );
-        alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-                    new RegisterTask().execute((Void[]) null);
-                }
+        if (code.length() > 0) {
+            if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+                new LoginCodeTask().execute((Void[]) null);
             }
-        });
-
-        alertDialogBuilder.setNegativeButton("ไม่ใช่", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-
-    }
-
-    private void submitRegister() {
-        String firstName = firstNameEditText.getText().toString();
-        String lastName = lastNameEditText.getText().toString();
-        String serialNumber = serialNumberEditText.getText().toString();
-        String telephone = telephoneEditText.getText().toString();
-        String email = emailEditText.getText().toString();
-
-        boolean firstNameValid = firstName.length() > 0;
-        boolean lastNameValid = lastName.length() > 0;
-        boolean serialNumberValid = Pattern.compile(SERIAL_NUMBER_PATTERN).matcher(serialNumber).matches();
-        boolean telephoneValid = Pattern.compile(TELEPHONE_PATTERN).matcher(telephone).matches();
-        boolean emailValid = email.length() == 0 || Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
-
-        if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
-            showDialogConfirm();
         } else {
             Crouton.makeText(getActivity(), "Required invitation", Style.ALERT).show();
             return;
@@ -177,7 +97,7 @@ public class RegistrationFormFragment extends Fragment {
     /**
      * Post Register code
      */
-    public class RegisterTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+    public class LoginCodeTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
 
         @Override
         protected void onPreExecute() {
@@ -189,24 +109,19 @@ public class RegistrationFormFragment extends Fragment {
             String reqData = null;
             try {
                 JSONObject json = new JSONObject();
-                json.put("firstName", firstNameEditText.getText().toString());
-                json.put("lastName", lastNameEditText.getText().toString());
-                json.put("serialNumber", serialNumberEditText.getText().toString());
-                json.put("telephone", telephoneEditText.getText().toString());
-                json.put("email", emailEditText.getText().toString());
-                json.put("authority", authorityInviteCode);
+                json.put("code", codeEditText.getText().toString());
                 reqData = json.toString();
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return RequestDataUtil.post("/users/register/", null, reqData, null);
+            return RequestDataUtil.post("/users/code-login/" + uid + "/" + token + "/", null, reqData, null);
         }
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
 
-            if (resp.getStatusCode() == HttpURLConnection.HTTP_CREATED) {
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
                     JSONObject obj = resp.getJsonObject();
 
@@ -217,18 +132,18 @@ public class RegistrationFormFragment extends Fragment {
                     sharedPrefUtil.setUserName(username);
 
                     // get configuration
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_success), Style.INFO).show();
+                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_success), Style.INFO).show();
 
                     new ConfigTask().execute((Void[]) null);
 
                 }catch (JSONException ex) {
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_error), Style.ALERT).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                     Crouton.makeText(getActivity(), "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(),getString(R.string.forget_passsword_submit_error), Style.ALERT).show();
                 }
 
             }

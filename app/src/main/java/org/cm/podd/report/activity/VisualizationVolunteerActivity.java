@@ -182,10 +182,13 @@ public class VisualizationVolunteerActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_visualization_volunteer));
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeAsUpIndicator(0);
+//        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         return true;
     }
 

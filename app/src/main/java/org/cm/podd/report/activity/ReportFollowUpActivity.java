@@ -150,11 +150,12 @@ public class ReportFollowUpActivity extends ActionBarActivity implements ReportA
         } else {
             StyleUtil.setActionBarTitle(this, getString(R.string.follow_up_reports));
         }
+//        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeAsUpIndicator(0);
+//        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
-
+        actionBar.setDisplayHomeAsUpEnabled(true);
         return true;
     }
 
