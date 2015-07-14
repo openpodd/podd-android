@@ -159,11 +159,12 @@
     <string name="title_activity_registration">ลงทะเบียน</string>
     <string name="first_name">ชื่อ</string>
     <string name="last_name">นามสกุล</string>
-    <string name="serial_number">เลขประจำตัวประชาชน</string>
-    <string name="telephone">หมายเลขโทรศัพท์มือถือ</string>
+    <string name="serial_number">เลขที่บัตรประจำตัวประชาชน</string>
+    <string name="telephone">เบอร์โทรศัพท์มือถือ</string>
     <string name="email">อีเมล (ถ้ามี)</string>
     <string name="invite_code">รหัสพื้นที่</string>
-    <string name="invite_code_title">กรอกรหัสพื้นที่</string>
+    <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
+    <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
 
 </resources>

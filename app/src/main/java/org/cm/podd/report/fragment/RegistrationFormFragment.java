@@ -125,8 +125,9 @@ public class RegistrationFormFragment extends Fragment {
         String email = emailEditText.getText().toString().equalsIgnoreCase("")? "-": emailEditText.getText().toString();
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("กรุณาตรวจสอบข้อมูล");
-        alertDialogBuilder.setMessage("ชื่อ " + firstName + "\n\n" +
+        alertDialogBuilder.setTitle("กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
+        alertDialogBuilder.setMessage("ข้อมูลการลงทะเบียนของคุณคือ" + "\n\n" +
+                        "ชื่อ " + firstName + "\n\n" +
                         "นามสกุล " + lastName + "\n\n" +
                         "เลขบัตรประชาชน " + serialNumber + "\n\n" +
                         "เบอร์โทร " + telephone + "\n\n" +

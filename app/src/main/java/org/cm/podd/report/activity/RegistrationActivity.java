@@ -93,7 +93,7 @@ public class RegistrationActivity extends ActionBarActivity {
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegistrationActivity.this);
                     alertDialogBuilder.setTitle("พื้นที่ลงทะเบียน");
-                    alertDialogBuilder.setMessage("คุณต้องการลงทะเบียนในพื้นที่: " + name);
+                    alertDialogBuilder.setMessage("พื้นที่ของคุณคือ: \"" + name + "\"");
                     alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
@@ -126,13 +126,13 @@ public class RegistrationActivity extends ActionBarActivity {
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                 }catch (JSONException ex) {
-                    Crouton.makeText(RegistrationActivity.this, "Invitation Code is incorrect!", Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, getString(R.string.invite_code_error), Style.ALERT).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                     Crouton.makeText(RegistrationActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(RegistrationActivity.this, "Invitation Code is incorrect!", Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, R.string.invite_code_error, Style.ALERT).show();
                 }
 
             }
@@ -143,10 +143,9 @@ public class RegistrationActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(0);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setLogo(R.drawable.arrow_left_with_pad);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
         return true;
     }
 
@@ -165,6 +164,7 @@ public class RegistrationActivity extends ActionBarActivity {
             if (bundle != null && findViewById(R.id.form_content).getVisibility() == View.VISIBLE) {
                 findViewById(R.id.invite_content).setVisibility(View.VISIBLE);
                 findViewById(R.id.form_content).setVisibility(View.GONE);
+                StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
             } else {
                 this.finish();
                 return true;
