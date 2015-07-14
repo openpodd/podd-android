@@ -18,11 +18,14 @@ import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
 import org.cm.podd.report.fragment.RegistrationFormFragment;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -33,6 +36,11 @@ public class ForgetPasswordActivity extends ActionBarActivity {
 
     Fragment mCurrentFragment;
     EditText serialNumberText;
+
+    private Pattern pattern;
+    private Matcher matcher;
+
+    private static final String SERIAL_NUMBER_PATTERN = "^[0-9]{13,}$";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +60,12 @@ public class ForgetPasswordActivity extends ActionBarActivity {
 
     private void submitSerialNumber() {
         String serialNumber = serialNumberText.getText().toString();
-        if (serialNumber.length() > 0) {
+        if (serialNumber.length() == 13 && Pattern.compile(SERIAL_NUMBER_PATTERN).matcher(serialNumber).matches()) {
             if (RequestDataUtil.hasNetworkConnection(this)) {
                 new SerialNumberTask().execute((Void[]) null);
             }
         } else {
-            Crouton.makeText(this, "Required invitation", Style.ALERT).show();
+            Crouton.makeText(this, "Required serial number", Style.ALERT).show();
             return;
         }
     }
@@ -108,34 +116,32 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                     alertDialogBuilder.setPositiveButton("กรอกรหัสผ่านชั่วคราว", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
-                            setTitle("รหัสผ่านชั่วคราว");
 
-                            mCurrentFragment = new ForgetPasswordFormFragment();
-
-                            bundle = new Bundle();
-                            bundle.putString("uid", uid);
-                            bundle.putString("token", token);
-
-                            mCurrentFragment.setArguments(bundle);
-
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                                    .commit();
-
-                            findViewById(R.id.serial_number_content).setVisibility(View.GONE);
-                            findViewById(R.id.form_content).setVisibility(View.VISIBLE);
 
                         }
                     });
-//                    alertDialogBuilder.setNegativeButton("ยังไม่ได้รับ", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-////                          finish();
-//                        }
-//                    });
+
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
+
+                    setTitle("รหัสผ่านชั่วคราว");
+
+                    mCurrentFragment = new ForgetPasswordFormFragment();
+
+                    bundle = new Bundle();
+                    bundle.putString("uid", uid);
+                    bundle.putString("token", token);
+
+                    mCurrentFragment.setArguments(bundle);
+
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                            .commit();
+
+                    findViewById(R.id.serial_number_content).setVisibility(View.GONE);
+                    findViewById(R.id.form_content).setVisibility(View.VISIBLE);
+
                 }catch (JSONException ex) {
                     Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.serial_number_error), Style.ALERT).show();
                 }
