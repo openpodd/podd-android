@@ -17,8 +17,10 @@
 
 package org.cm.podd.report.activity;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -374,6 +376,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             setNotificationCount();
             refreshDrawerAdapter();
             supportInvalidateOptionsMenu();
+
         }
     }
 
@@ -389,6 +392,39 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 displayWebViewContent(id, title, content);
             }
         }
+
+        if (intent != null) {
+            // Alert when register or login by code success
+            Boolean registerSuccess = intent.getStringExtra("register")!= null && intent.getStringExtra("register").equalsIgnoreCase("success");
+            Boolean forgetPasswordSuccess = intent.getStringExtra("forgetPassword")!=  null && intent.getStringExtra("forgetPassword").equalsIgnoreCase("success");
+
+            if (registerSuccess) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(getString(R.string.title_activity_registration));
+                alertDialogBuilder.setMessage(getString(R.string.register_success));
+                alertDialogBuilder.setPositiveButton(getString(R.string.start_app), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+
+                    }
+                });
+                alertDialogBuilder.show();
+            } else if (forgetPasswordSuccess) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(getString(R.string.login_title));
+                alertDialogBuilder.setMessage(getString(R.string.login_success));
+                alertDialogBuilder.setPositiveButton(getString(R.string.start_app), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+
+                    }
+                });
+                alertDialogBuilder.show();
+            }
+        }
+
     }
 
     private void displayWebViewContent(long id, String title, String content) {

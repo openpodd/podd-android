@@ -1,6 +1,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,8 @@ public class ForgetPasswordActivity extends ActionBarActivity {
         findViewById(R.id.serial_number_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitSerialNumber();
+                if (pd == null || !pd.isShowing())
+                    submitSerialNumber();
             }
         });
 
@@ -69,7 +71,22 @@ public class ForgetPasswordActivity extends ActionBarActivity {
             return;
         }
     }
+    ProgressDialog pd;
 
+    public void showProgressDialog() {
+        pd = new ProgressDialog(this);
+        pd.setTitle("กำลังส่งข้อมูล");
+        pd.setMessage("กรุณารอสักครู่");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    public void hideProgressDialog() {
+        if (pd != null && pd.isShowing()) {
+            pd.dismiss();
+        }
+    }
     /**
      * Post Invite code
      */
@@ -78,6 +95,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            showProgressDialog();
         }
 
         @Override
@@ -99,7 +117,9 @@ public class ForgetPasswordActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
-            Log.d("resp", resp.toString());
+//            Log.d("resp", resp.toString());
+            hideProgressDialog();
+
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
                     JSONObject obj = resp.getJsonObject();

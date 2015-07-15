@@ -132,7 +132,7 @@ public class ForgetPasswordFormFragment extends Fragment {
                     sharedPrefUtil.setUserName(username);
 
                     // get configuration
-                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_success), Style.INFO).show();
+//                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_success), Style.INFO).show();
 
                     new ConfigTask().execute((Void[]) null);
 
@@ -192,7 +192,12 @@ public class ForgetPasswordFormFragment extends Fragment {
 
                 // goto report home
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
-                intent.putExtra("register", "success");
+
+                Bundle bundle = new Bundle();
+                bundle.putString("forgetPassword", "success");
+
+                intent.putExtras(bundle);
+
                 startActivity(intent);
 
             } catch (JSONException e) {

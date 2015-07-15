@@ -56,8 +56,8 @@ import static android.provider.Settings.Secure.ANDROID_ID;
  * A placeholder fragment containing a simple view.
  */
 public class RegistrationFormFragment extends Fragment {
-    private String authorityInviteCode;
-    private String authorityName;
+    private String groupInviteCode;
+    private String groupName;
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -88,8 +88,8 @@ public class RegistrationFormFragment extends Fragment {
         sharedPrefUtil = new SharedPrefUtil(getActivity().getApplicationContext());
         isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
 
-        authorityInviteCode = getArguments().getString("AuthorityInviteCode");
-        authorityName = getArguments().getString("AuthorityName");
+        groupInviteCode = getArguments().getString("GroupInviteCode");
+        groupName = getArguments().getString("GroupName");
 
         View view = inflater.inflate(R.layout.fragment_form_registration, container, false);
 
@@ -102,7 +102,7 @@ public class RegistrationFormFragment extends Fragment {
         emailEditText = (EditText) view.findViewById(R.id.email);
 
         EditText textAuthorityName = (EditText) view.findViewById(R.id.invite_code);
-        textAuthorityName.setText(authorityName);
+        textAuthorityName.setText(groupName);
         textAuthorityName.setTypeface(face);
 
         view.findViewById(R.id.register_submit).setOnClickListener(new View.OnClickListener() {
@@ -194,13 +194,13 @@ public class RegistrationFormFragment extends Fragment {
                 json.put("serialNumber", serialNumberEditText.getText().toString());
                 json.put("telephone", telephoneEditText.getText().toString());
                 json.put("email", emailEditText.getText().toString());
-                json.put("authority", authorityInviteCode);
+                json.put("group", groupInviteCode);
                 reqData = json.toString();
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return RequestDataUtil.post("/users/register/", null, reqData, null);
+            return RequestDataUtil.post("/users/register/group/", null, reqData, null);
         }
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
@@ -217,7 +217,7 @@ public class RegistrationFormFragment extends Fragment {
                     sharedPrefUtil.setUserName(username);
 
                     // get configuration
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_success), Style.INFO).show();
+//                    Crouton.makeText(getActivity(), getString(R.string.register_submit_success), Style.INFO).show();
 
                     new ConfigTask().execute((Void[]) null);
 

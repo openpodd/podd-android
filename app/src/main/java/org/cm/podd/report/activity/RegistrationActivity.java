@@ -1,6 +1,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -43,7 +44,8 @@ public class RegistrationActivity extends ActionBarActivity {
         findViewById(R.id.invite_code_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitCode();
+                if (pd == null || ! pd.isShowing())
+                    submitCode();
             }
         });
 
@@ -62,6 +64,22 @@ public class RegistrationActivity extends ActionBarActivity {
         }
     }
 
+    ProgressDialog pd;
+
+    public void showProgressDialog() {
+        pd = new ProgressDialog(this);
+        pd.setTitle("กำลังส่งข้อมูล");
+        pd.setMessage("กรุณารอสักครู่");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    public void hideProgressDialog() {
+        if (pd != null && pd.isShowing()) {
+            pd.dismiss();
+        }
+    }
     /**
      * Post Invite code
      */
@@ -70,6 +88,7 @@ public class RegistrationActivity extends ActionBarActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            showProgressDialog();
         }
 
         @Override
@@ -77,13 +96,15 @@ public class RegistrationActivity extends ActionBarActivity {
             // authenticate and get access token
             String reqData = null;
             String inviteCode = inviteCodeText.getText().toString();
-            return RequestDataUtil.get("/users/register/authority/?invitationCode=" + inviteCode, reqData, null);
+            return RequestDataUtil.get("/users/register/group/code/?invitationCode=" + inviteCode, reqData, null);
         }
 
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
             super.onPostExecute(resp);
-            Log.d("resp", resp.toString());
+//            Log.d("resp", resp.toString());
+            hideProgressDialog();
+
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 try {
                     JSONObject obj = new JSONObject(resp.getRawData());
@@ -102,8 +123,8 @@ public class RegistrationActivity extends ActionBarActivity {
                             mCurrentFragment = new RegistrationFormFragment();
 
                             bundle = new Bundle();
-                            bundle.putString("AuthorityInviteCode", inviteCode);
-                            bundle.putString("AuthorityName", name);
+                            bundle.putString("GroupInviteCode", inviteCode);
+                            bundle.putString("GroupName", name);
 
                             mCurrentFragment.setArguments(bundle);
 
