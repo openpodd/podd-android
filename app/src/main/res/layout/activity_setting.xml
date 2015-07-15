@@ -14,93 +14,178 @@
 
         <ImageView
             android:id="@+id/profileImage"
+            android:src="@drawable/avatar"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"/>
 
         <LinearLayout
+            android:background="@color/report_row_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="ข้อมูลส่วนตัว"
+            android:layout_marginBottom="10dp" />
+
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/username_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/ReportTextLabel"
-                android:text="@string/username"
-                android:layout_marginBottom="15dp"
-                />
-            <EditText
-                android:id="@id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="mr.podd"
-                style="@style/EditTextFlat"
-                android:editable="false"
-                android:layout_marginBottom="25dp"
-                android:background="@drawable/ab_solid_white_podd"
-                />
-        </LinearLayout>
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="bottom"
+                android:layout_weight="1"
+                android:layout_gravity="bottom">
+
+                <TextView
+                    android:id="@+id/username_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/username"
+                    style="@style/ReportTextLabel"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@id/username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:text="mr.podd" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/name_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/ReportTextLabel"
+                    android:text="@string/first_name"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:text="1.0.20"/>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/password_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/ReportTextLabel"
+                    android:text="@string/password"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:text="*****"/>
+
+            </TableRow>
+
+        </TableLayout>
 
         <LinearLayout
+            android:background="@color/report_row_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="เกี่ยวกับ"
+            android:layout_marginBottom="10dp" />
+
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/app_version_code_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/ReportTextLabel"
-                android:text="@string/app_version_code"
-                android:layout_marginBottom="15dp"
-                />
-            <EditText
-                android:id="@+id/version_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="mr.podd"
-                style="@style/EditTextFlat"
-                android:editable="false"
-                android:layout_marginBottom="25dp"
-                android:background="@drawable/ab_solid_white_podd"
-                />
-        </LinearLayout>
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                <TextView
+                    android:id="@+id/app_version_code_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/ReportTextLabel"
+                    android:text="@string/app_version_code"
+                    android:layout_weight="1" />
 
-            <TextView
-                android:id="@+id/app_version_name_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/ReportTextLabel"
-                android:text="@string/app_version_name"
-                android:layout_marginBottom="15dp"
-                />
-            <EditText
-                android:id="@+id/version_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="mr.podd"
-                style="@style/EditTextFlat"
-                android:editable="false"
-                android:layout_marginBottom="25dp"
-                android:background="@drawable/ab_solid_white_podd"
-                />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/version_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:text="30" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/app_version_name_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/ReportTextLabel"
+                    android:text="@string/app_version_name"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/version_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:text="1.0.20"/>
+
+            </TableRow>
+
+
+        </TableLayout>
 
         <Button
             android:id="@+id/logout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:layout_gravity="right"
             android:text="@string/logout"
             style="@style/CameraButton" />

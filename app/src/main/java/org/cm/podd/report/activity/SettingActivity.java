@@ -75,19 +75,25 @@ public class SettingActivity extends ActionBarActivity {
 
         Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
 
-        final EditText userText = (EditText) findViewById(R.id.username);
-        userText.setText(sharedPrefUtil.getFullName());
+        final TextView userText = (TextView) findViewById(R.id.username);
+        userText.setText(sharedPrefUtil.getUserName());
         userText.setTypeface(face);
 
-        final EditText versionCodeText = (EditText) findViewById(R.id.version_code);
+        final TextView nameText = (TextView) findViewById(R.id.name);
+        nameText.setText(sharedPrefUtil.getFullName());
+        nameText.setTypeface(face);
+
+        final TextView versionCodeText = (TextView) findViewById(R.id.version_code);
         versionCodeText.setText(String.valueOf(BuildConfig.VERSION_CODE));
         versionCodeText.setTypeface(face);
 
-        final EditText versionNameText = (EditText) findViewById(R.id.version_name);
+        final TextView versionNameText = (TextView) findViewById(R.id.version_name);
         versionNameText.setText(BuildConfig.VERSION_NAME);
         versionNameText.setTypeface(face);
 
         ((TextView) findViewById(R.id.username_label)).setTypeface(face);
+        ((TextView) findViewById(R.id.name_label)).setTypeface(face);
+        ((TextView) findViewById(R.id.password_label)).setTypeface(face);
         ((TextView) findViewById(R.id.app_version_code_label)).setTypeface(face);
         ((TextView) findViewById(R.id.app_version_name_label)).setTypeface(face);
 
