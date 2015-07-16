@@ -30,7 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
-                    android:text="@string/first_name"
+                    android:text="@string/first_name_required"
                     />
 
                 <EditText
@@ -57,7 +57,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/last_name"
+                    android:text="@string/last_name_required"
                     android:textSize="20dp"
                     />
 
@@ -85,7 +85,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/serial_number"
+                    android:text="@string/serial_number_required"
                     android:textSize="20dp"
                     />
 
@@ -113,7 +113,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/telephone"
+                    android:text="@string/telephone_required"
                     android:textSize="20dp"
                     />
 

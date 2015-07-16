@@ -81,7 +81,8 @@ public class RequestDataUtil {
             statusCode = response.getStatusLine().getStatusCode();
             Log.v(TAG, "status code=" + statusCode);
 
-            if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
+            if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED
+                    || statusCode == HttpURLConnection.HTTP_BAD_REQUEST) {
                 InputStream in = entity.getContent();
                 String resp = FileUtil.convertInputStreamToString(in);
 

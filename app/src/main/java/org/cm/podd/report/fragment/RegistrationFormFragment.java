@@ -131,8 +131,8 @@ public class RegistrationFormFragment extends Fragment {
                         "นามสกุล " + lastName + "\n\n" +
                         "เลขบัตรประชาชน " + serialNumber + "\n\n" +
                         "เบอร์โทร " + telephone + "\n\n" +
-                        "อีเมล " + email + "\n\n"
-
+                        "อีเมล " + email + "\n\n" +
+                        "พื้นที่ " + groupName + "\n\n"
         );
         alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
             @Override
@@ -230,7 +230,20 @@ public class RegistrationFormFragment extends Fragment {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                     Crouton.makeText(getActivity(), "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                    try {
+                        JSONObject obj = resp.getJsonObject();
+                        String detail = obj.getString("detail");
+                        if (detail.contains("serialNumber")) {
+                            Crouton.makeText(getActivity(), getString(R.string.serial_number_same_error), Style.ALERT).show();
+                        } else if (detail.contains("telephone")) {
+                            Crouton.makeText(getActivity(), getString(R.string.telephone_same_error), Style.ALERT).show();
+                        } else {
+                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                        }
+                    }  catch (JSONException ex) {
+                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                    }
+
                 }
 
             }

@@ -162,6 +162,12 @@
     <string name="serial_number">เลขที่บัตรประจำตัวประชาชน</string>
     <string name="telephone">เบอร์โทรศัพท์มือถือ</string>
     <string name="email">อีเมล (ถ้ามี)</string>
+
+    <string name="first_name_required">ชื่อ *</string>
+    <string name="last_name_required">นามสกุล *</string>
+    <string name="serial_number_required">เลขที่บัตรประจำตัวประชาชน *</string>
+    <string name="telephone_required">เบอร์โทรศัพท์มือถือ *</string>
+
     <string name="invite_code">รหัสพื้นที่</string>
     <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
@@ -185,10 +191,12 @@
     <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
     <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
     <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
-    <string name="form_data_require_error">กรุณากรอกข้อมูลให้ครบถ้วน</string>
+    <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
     <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
     <string name="username_reqired">คุณยังไม่ได้กรอกชื่อบัญชีผู้ใช้</string>
     <string name="password_reqired">คุณยังไม่ได้กรอกรหัสผ่าน</string>
     <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+    <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
+    <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
 
 </resources>
