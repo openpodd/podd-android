@@ -127,9 +127,11 @@ public class ForgetPasswordFormFragment extends Fragment {
 
                     String token = obj.getString("token");
                     String username = obj.getString("username");
+                    String password = obj.getString("displayPassword");
 
                     sharedPrefUtil.setAccessToken(token);
                     sharedPrefUtil.setUserName(username);
+                    sharedPrefUtil.setDisplayPassword(password);
 
                     // get configuration
 //                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_success), Style.INFO).show();

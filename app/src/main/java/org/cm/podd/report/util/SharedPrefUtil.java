@@ -33,6 +33,7 @@ public class SharedPrefUtil {
     private static final String APP_SHARED_PREFS = "podd_preferences";
     public static final String ACCESS_TOKEN_KEY = "access_token";
     public static final String USERNAME = "username";
+    public static final String DISPLAY_PASSWORD = "display_password";
     public static final String FULLNAME = "full_name";
     public static final String AWS_SECRET_KEY = "aws_secret_key";
     public static final String AWS_ACCESS_KEY = "aws_access_key";
@@ -60,6 +61,9 @@ public class SharedPrefUtil {
 
     public String getUserName() {
         return sharedPrefs.getString(USERNAME, null);
+    }
+    public String getDisplayPassword() {
+        return sharedPrefs.getString(DISPLAY_PASSWORD, null);
     }
 
     public List<Region> getAllRegions() {
@@ -110,6 +114,12 @@ public class SharedPrefUtil {
     public void setUserName(String name) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(SharedPrefUtil.USERNAME, name);
+        editor.commit();
+    }
+
+    public void setDisplayPassword(String displayPassword) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(SharedPrefUtil.DISPLAY_PASSWORD, displayPassword);
         editor.commit();
     }
 

@@ -27,7 +27,7 @@
     android:inputType="textVisiblePassword"
 	android:singleLine="true"
     style="@style/EditTextFlat"
-    android:background="@drawable/ab_solid_white_podd"
+    android:background="@drawable/edit_text_box"
     android:padding="5dp"
 	android:layout_marginBottom="8dp" />
 
@@ -40,7 +40,7 @@
 	android:singleLine="true"
     android:inputType="textPassword"
     style="@style/EditTextFlat"
-    android:background="@drawable/ab_solid_white_podd"
+    android:background="@drawable/edit_text_box"
     android:padding="5dp"
 	android:layout_marginBottom="24dp" />
 

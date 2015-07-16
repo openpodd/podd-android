@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="horizontal"
     android:background="@color/white"
     android:layout_width="match_parent"
@@ -11,14 +12,13 @@
         android:id="@+id/invite_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/invite_code_title"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="12.5dp"
             android:textSize="20dp"
             android:id="@+id/textView" />
 
@@ -30,7 +30,7 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             style="@style/EditTextFlat"
-            android:background="@drawable/ab_solid_white_podd"
+            android:background="@drawable/edit_text_box"
             android:padding="5dp"
             android:layout_marginBottom="15dp"/>
 

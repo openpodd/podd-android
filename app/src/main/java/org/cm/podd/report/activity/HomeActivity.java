@@ -401,24 +401,26 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             if (registerSuccess) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
                 alertDialogBuilder.setTitle(getString(R.string.title_activity_registration));
-                alertDialogBuilder.setMessage(getString(R.string.register_success));
+                alertDialogBuilder.setMessage(getString(R.string.register_success) + "\n\n"
+                                + getString(R.string.username) + ": " + sharedPrefUtil.getUserName() + "\n"
+                                + getString(R.string.password) + ": " + sharedPrefUtil.getDisplayPassword() + "\n\n"
+                                + getString(R.string.register_warning_success) + "\n"
+                );
                 alertDialogBuilder.setPositiveButton(getString(R.string.start_app), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-
-
                     }
                 });
                 alertDialogBuilder.show();
             } else if (forgetPasswordSuccess) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
                 alertDialogBuilder.setTitle(getString(R.string.login_title));
-                alertDialogBuilder.setMessage(getString(R.string.login_success));
+                alertDialogBuilder.setMessage(getString(R.string.login_success) + "\n\n"
+                        + getString(R.string.username) + ": " + sharedPrefUtil.getUserName() + "\n"
+                        + getString(R.string.password) + ": " + sharedPrefUtil.getDisplayPassword() + "\n");
                 alertDialogBuilder.setPositiveButton(getString(R.string.start_app), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-
-
                     }
                 });
                 alertDialogBuilder.show();

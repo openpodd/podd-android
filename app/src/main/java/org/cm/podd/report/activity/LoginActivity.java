@@ -99,11 +99,11 @@ public class LoginActivity extends ActionBarActivity {
             }
         } else {
             if (username.length() == 0) {
-                Crouton.makeText(LoginActivity.this, "Required username", Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT).show();
                 return;
             }
             if (password.length() == 0) {
-                Crouton.makeText(LoginActivity.this, "Required password", Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT).show();
                 return;
             }
         }
@@ -192,7 +192,7 @@ public class LoginActivity extends ActionBarActivity {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
                     Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
                 } else {
-                    Crouton.makeText(LoginActivity.this, "Username or Password is incorrect!", Style.ALERT).show();
+                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT).show();
                 }
 
             }

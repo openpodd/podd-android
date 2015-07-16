@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -61,6 +62,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SettingActivity extends ActionBarActivity {
 
@@ -236,16 +240,37 @@ public class SettingActivity extends ActionBarActivity {
             switch (requestCode) {
                 case REQ_CODE_PICK_IMAGE:
                     if (imageReturnedIntent != null) {
-
                         Bundle extras = imageReturnedIntent.getExtras();
-                        // get the cropped bitmap
-                        Bitmap bmp = extras.getParcelable("data");
-                        profileImageView.setImageBitmap(bmp);
+                        Uri selectedImage = imageReturnedIntent.getData();
+                        if (extras != null) {
+                            // get the cropped bitmap
+                            Bitmap bmp = extras.getParcelable("data");
 
-                        mCurrentPhotoUri = null;
+                            profileImageView.setImageBitmap(bmp);
+                            mCurrentPhotoUri = null;
+                            // save output file and save path to share pref
+                            saveProfileImage(bmp);
+                        } else if (selectedImage != null) {
+                            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-                        // save output file and save path to share pref
-                        saveProfileImage(bmp);
+                            Cursor cursor = getContentResolver().query(
+                                    selectedImage, filePathColumn, null, null, null);
+                            cursor.moveToFirst();
+
+                            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                            String filePath = cursor.getString(columnIndex);
+                            cursor.close();
+
+
+                            Bitmap bmp = BitmapFactory.decodeFile(filePath);
+
+                            profileImageView.setImageBitmap(bmp);
+                            mCurrentPhotoUri = null;
+                            // save output file and save path to share pref
+                            saveProfileImage(bmp);
+                        } else {
+                            Crouton.makeText(this, getString(R.string.upload_image_error), Style.ALERT).show();
+                        }
                     }
                     break;
 
@@ -344,10 +369,6 @@ public class SettingActivity extends ActionBarActivity {
             case REQ_CODE_TAKE_IMAGE:
                 mCurrentPhotoUri = getImageUri();
                 Intent photoTakerIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Bundle bundle = new Bundle();
-                bundle.putInt(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
-                bundle.putInt(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                bundle.putInt(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);

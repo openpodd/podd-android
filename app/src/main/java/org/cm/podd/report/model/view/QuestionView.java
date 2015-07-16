@@ -110,7 +110,7 @@ public class QuestionView extends LinearLayout {
             }
         });
         editView.setTextAppearance(context, R.style.EditTextFlat);
-        editView.setBackgroundResource(R.drawable.ab_solid_white_podd);
+        editView.setBackgroundResource(R.drawable.edit_text_box);
         editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         if (readonly) {
             editView.setKeyListener(null);

@@ -212,9 +212,11 @@ public class RegistrationFormFragment extends Fragment {
 
                     String token = obj.getString("token");
                     String username = obj.getString("username");
+                    String password = obj.getString("displayPassword");
 
                     sharedPrefUtil.setAccessToken(token);
                     sharedPrefUtil.setUserName(username);
+                    sharedPrefUtil.setDisplayPassword(password);
 
                     // get configuration
 //                    Crouton.makeText(getActivity(), getString(R.string.register_submit_success), Style.INFO).show();
