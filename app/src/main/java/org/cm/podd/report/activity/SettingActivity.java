@@ -29,10 +29,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,7 +48,10 @@ import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.fragment.RegistrationFormFragment;
+import org.cm.podd.report.fragment.ResetPasswordFragment;
 import org.cm.podd.report.service.UploadProfileService;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -65,6 +71,9 @@ public class SettingActivity extends ActionBarActivity {
     SharedPrefUtil sharedPrefUtil;
     ImageView profileImageView;
     Uri mCurrentPhotoUri;
+
+    Fragment mCurrentFragment;
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +101,6 @@ public class SettingActivity extends ActionBarActivity {
         versionNameText.setTypeface(face);
 
         ((TextView) findViewById(R.id.username_label)).setTypeface(face);
-        ((TextView) findViewById(R.id.name_label)).setTypeface(face);
         ((TextView) findViewById(R.id.password_label)).setTypeface(face);
         ((TextView) findViewById(R.id.app_version_code_label)).setTypeface(face);
         ((TextView) findViewById(R.id.app_version_name_label)).setTypeface(face);
@@ -128,12 +136,12 @@ public class SettingActivity extends ActionBarActivity {
         Bitmap profileBitmap;
         if (profileImageFilePath == null) {
             // Use default profile image if not setup
-            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery_default);
+            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
         } else {
             profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
             // use default image, if user deleted an image somehow
             if (profileBitmap == null) {
-                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.gallery_default);
+                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
             }
         }
         profileImageView.setImageBitmap(profileBitmap);
@@ -144,6 +152,28 @@ public class SettingActivity extends ActionBarActivity {
                 fragment.show(getSupportFragmentManager(), "MediaChoiceDialog");
             }
         });
+
+        findViewById(R.id.reset_password).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentFragment = new ResetPasswordFragment();
+
+                bundle = new Bundle();
+                bundle.putString("reset", "true");
+                mCurrentFragment.setArguments(bundle);
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                        .commit();
+
+                findViewById(R.id.detail_content).setVisibility(View.GONE);
+                findViewById(R.id.form_content).setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        FontUtil.overrideFonts(this, profileImageView.getRootView());
 
         Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("Setting");
@@ -260,8 +290,36 @@ public class SettingActivity extends ActionBarActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 //        actionBar.setLogo(R.drawable.arrow_left_with_pad);
-
         return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home){
+            if (bundle != null && findViewById(R.id.form_content).getVisibility() == View.VISIBLE) {
+                findViewById(R.id.detail_content).setVisibility(View.VISIBLE);
+                findViewById(R.id.form_content).setVisibility(View.GONE);
+                StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_setting));
+                return true;
+
+            } else {
+                this.finish();
+                return true;
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void logout() {
@@ -286,6 +344,10 @@ public class SettingActivity extends ActionBarActivity {
             case REQ_CODE_TAKE_IMAGE:
                 mCurrentPhotoUri = getImageUri();
                 Intent photoTakerIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Bundle bundle = new Bundle();
+                bundle.putInt(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
+                bundle.putInt(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                bundle.putInt(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 photoTakerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);

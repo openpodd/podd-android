@@ -178,5 +178,11 @@
     <string name="login_success">คุณเข้าใช้ระบบสำเร็จแล้ว</string>
     <string name="start_app">เริ่มใช้งาน</string>
     <string name="register_success">คุณลงทะเบียนสำเร็จแล้ว</string>
+    <string name="reset_password_title">เปลี่ยนรหัสผ่าน</string>
+    <string name="new_password">รหัสผ่านใหม่</string>
+    <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
+    <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
+    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
+    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
 
 </resources>
