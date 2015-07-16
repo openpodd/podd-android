@@ -199,5 +199,7 @@
     <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
     <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
+    <string name="btn_ok">ตกลง</string>
+    <string name="sent">ส่งแล้ว</string>
 
 </resources>

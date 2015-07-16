@@ -13,6 +13,7 @@
     <color name="report_row_bg">#f9f9f9</color>
     <color name="report_row_selected_bg">#ffeedeff</color>
     <color name="report_row_draft">#ff4081</color>
+    <color name="report_row_success">#5cb85c</color>
     <color name="report_row_type">#999999</color>
     <color name="edit_text_report">#909090</color>
     <color name="text_label_report">#333333</color>
