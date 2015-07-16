@@ -374,7 +374,6 @@ public class ReportListFragment extends ListFragment {
                 holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
                 holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
-                holder.successText = (TextView) retView.findViewById(R.id.report_success);
                 // update fontface
                 holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
@@ -400,7 +399,6 @@ public class ReportListFragment extends ListFragment {
                 holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
                 holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
-                holder.successText = (TextView) retView.findViewById(R.id.report_success);
                 // update fontface
                 holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
@@ -476,11 +474,7 @@ public class ReportListFragment extends ListFragment {
             }
 
             holder.draftText.setVisibility(
-                    draft == Report.TRUE ? View.VISIBLE : View.GONE);
-
-            holder.successText.setVisibility(
-                    draft != Report.TRUE && submit == Report.TRUE ? View.VISIBLE : View.GONE);
-
+                    draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
             String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 
@@ -499,7 +493,6 @@ public class ReportListFragment extends ListFragment {
             TextView typeText;
             TextView dateText;
             TextView draftText;
-            TextView successText;
             ImageView queueImage;
             Drawable positive;
             Drawable negative;

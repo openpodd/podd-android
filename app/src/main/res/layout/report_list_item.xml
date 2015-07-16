@@ -74,17 +74,6 @@
                     android:textSize="15sp"
                     android:textColor="@color/report_row_type" />
 
-                <TextView android:id="@+id/report_success"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sent"
-                    android:textSize="10sp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@color/report_row_success"
-                    android:textColor="@color/white" />
-
                 <TextView android:id="@+id/report_draft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,9 +90,12 @@
 
         </LinearLayout>
 
-        <FrameLayout
+        <LinearLayout
+            android:layout_weight="0"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
+            android:layout_gravity="right"
             android:paddingRight="20dp">
 
             <ImageView android:id="@+id/report_queue"
@@ -112,6 +104,7 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/icon_waiting"
                 android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
                 />
 
             <TextView android:id="@+id/report_follow"
@@ -123,13 +116,13 @@
                 android:paddingLeft="8sp"
                 android:paddingRight="8sp"
                 android:textColor="@color/white"
-                android:layout_gravity="center"
+                android:layout_gravity="right"
                 android:gravity="center"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 />
 
-        </FrameLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
