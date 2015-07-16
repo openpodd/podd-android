@@ -59,7 +59,7 @@ public class RegistrationActivity extends ActionBarActivity {
                 new InviteCodeTask().execute((Void[]) null);
             }
         } else {
-            Crouton.makeText(this, "Required invitation", Style.ALERT).show();
+            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
         }
     }

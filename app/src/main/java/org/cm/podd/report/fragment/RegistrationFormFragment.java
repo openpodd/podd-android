@@ -169,7 +169,7 @@ public class RegistrationFormFragment extends Fragment {
         if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
             showDialogConfirm();
         } else {
-            Crouton.makeText(getActivity(), "Required invitation", Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
         }
     }

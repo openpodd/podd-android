@@ -67,7 +67,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                 new SerialNumberTask().execute((Void[]) null);
             }
         } else {
-            Crouton.makeText(this, "Required serial number", Style.ALERT).show();
+            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
         }
     }
