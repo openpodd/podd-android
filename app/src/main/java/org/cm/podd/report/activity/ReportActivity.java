@@ -91,6 +91,7 @@ public class ReportActivity extends ActionBarActivity
     private Button prevBtn;
     private Button nextBtn;
     private Button cameraBtn;
+    private TextView cameraHint;
     private View disableMaskView;
     private boolean testReport = false;
 
@@ -164,7 +165,11 @@ public class ReportActivity extends ActionBarActivity
                 }
             }
         });
+
         cameraBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        cameraHint = (TextView) findViewById(R.id.cameraHint);
+        cameraHint.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+
         disableMaskView = findViewById(R.id.disableMask);
 
         reportDataSource = new ReportDataSource(this);
@@ -547,8 +552,11 @@ public class ReportActivity extends ActionBarActivity
     public void setCameraBtnVisible(boolean flag) {
         if (flag) {
             cameraBtn.setVisibility(View.VISIBLE);
+            cameraHint.setVisibility(View.VISIBLE);
+
         } else {
             cameraBtn.setVisibility(View.GONE);
+            cameraHint.setVisibility(View.GONE);
         }
     }
 

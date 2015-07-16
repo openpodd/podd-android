@@ -21,6 +21,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
@@ -89,6 +90,8 @@ public class LoginActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        FontUtil.overrideFonts(this, usernameText.getRootView());
     }
 
     private void authenticate() {

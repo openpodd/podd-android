@@ -198,5 +198,6 @@
     <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
     <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
+    <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
 
 </resources>

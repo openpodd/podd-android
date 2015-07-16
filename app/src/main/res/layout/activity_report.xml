@@ -6,16 +6,31 @@
     tools:context="org.cm.podd.report.activity.ReportActivity"
     tools:ignore="MergeRootFrame">
 
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/image_hint"
+        android:id="@+id/cameraHint"
+        android:textSize="12dp"
+        android:layout_gravity="left|top" />
+
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/controlBar" >
+        android:layout_above="@+id/controlBar"
+        android:layout_below="@+id/cameraHint">
+
         <FrameLayout
             android:id="@+id/container"
             android:padding="@dimen/page_padding"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-             />
+             >
+        </FrameLayout>
+
         <View
             android:id="@+id/disableMask"
             android:visibility="invisible"
