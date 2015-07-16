@@ -391,7 +391,7 @@ public class ReportActivity extends ActionBarActivity
                         if (validateResults.size() > 0) {
                             StringBuffer buff = new StringBuffer();
                             for (ValidationResult vr : validateResults) {
-                                buff.append(vr.getMessage()).append("\n");
+                                buff.append(vr.getMessage()).append("");
                             }
                             final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
                             crouton.setConfiguration(new Configuration.Builder().setDuration(1000).build());

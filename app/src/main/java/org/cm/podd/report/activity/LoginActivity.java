@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 
+import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -99,11 +100,13 @@ public class LoginActivity extends ActionBarActivity {
             }
         } else {
             if (username.length() == 0) {
-                Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT)
+                        .setConfiguration(new Configuration.Builder().setDuration(1000).build()).show();
                 return;
             }
             if (password.length() == 0) {
-                Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT)
+                        .setConfiguration(new Configuration.Builder().setDuration(1000).build()).show();
                 return;
             }
         }
@@ -190,9 +193,11 @@ public class LoginActivity extends ActionBarActivity {
                 hideProgressDialog();
 
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT)
+                            .setConfiguration(new Configuration.Builder().setDuration(1000).build()).show();
                 } else {
-                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT).show();
+                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT)
+                            .setConfiguration(new Configuration.Builder().setDuration(1000).build()).show();
                 }
 
             }
