@@ -474,7 +474,7 @@ public class ReportListFragment extends ListFragment {
             }
 
             holder.draftText.setVisibility(
-                    draft == Report.TRUE ? View.VISIBLE : View.INVISIBLE);
+                    draft == Report.TRUE ? View.VISIBLE : View.GONE);
             String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 
