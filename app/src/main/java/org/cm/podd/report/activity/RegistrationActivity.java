@@ -74,7 +74,7 @@ public class RegistrationActivity extends ActionBarActivity {
             if (RequestDataUtil.hasNetworkConnection(this)) {
                 new InviteCodeTask().execute((Void[]) null);
             } else {
-                Crouton.makeText(this, getString(R.string.alert_no_network_connection), Style.ALERT).show();
+                 /* alert when hasNetworkConnection */
             }
         } else {
             Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();

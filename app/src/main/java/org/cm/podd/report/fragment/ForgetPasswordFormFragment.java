@@ -88,7 +88,7 @@ public class ForgetPasswordFormFragment extends Fragment {
             if (RequestDataUtil.hasNetworkConnection(getActivity())) {
                 new LoginCodeTask().execute((Void[]) null);
             } else {
-                Crouton.makeText(getActivity(), getString(R.string.alert_no_network_connection), Style.ALERT).show();
+                /* alert when hasNetworkConnection */
             }
         } else {
             Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();

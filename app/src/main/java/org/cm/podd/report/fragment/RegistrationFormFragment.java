@@ -140,7 +140,7 @@ public class RegistrationFormFragment extends Fragment {
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
                     new RegisterTask().execute((Void[]) null);
                 } else {
-                    Crouton.makeText(getActivity(), getString(R.string.alert_no_network_connection), Style.ALERT).show();
+                     /* alert when hasNetworkConnection */
                 }
             }
         });
