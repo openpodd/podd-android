@@ -19,6 +19,7 @@ package org.cm.podd.report.model.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
@@ -45,6 +46,7 @@ import java.util.TimerTask;
 public class QuestionView extends LinearLayout {
 
     private final Question question;
+    private EditText editView = null;
 
     public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
@@ -61,7 +63,7 @@ public class QuestionView extends LinearLayout {
 
         ViewGroup.LayoutParams itemParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        final EditText editView = new EditText(context);
+        editView = new EditText(context);
 
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
@@ -118,18 +120,22 @@ public class QuestionView extends LinearLayout {
         }
         int type = 0;
         if (question.getDataType() == DataType.INTEGER) {
-            type = type | InputType.TYPE_CLASS_NUMBER;
+            type = InputType.TYPE_CLASS_NUMBER;
         }
         if (question.getDataType() == DataType.DOUBLE) {
-            type = type | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+            type = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
         }
         if (question.getDataType() == DataType.STRING) {
-            type = type | InputType.TYPE_CLASS_TEXT;
+            type = InputType.TYPE_CLASS_TEXT;
         }
         editView.setInputType(type);
         Object value = question.getValue();
         if (value != null) {
-            editView.setText(value.toString());
+            if (question.getDataType() == DataType.DOUBLE) {
+                editView.setText(String.format( "%.2f", value ));
+            } else {
+                editView.setText(value.toString());
+            }
         }
         addView(editView);
 
@@ -184,4 +190,14 @@ public class QuestionView extends LinearLayout {
         public boolean onSoftKeyAction(TextView view, int actionId, KeyEvent event);
     }
 
+    public void askForFocus() {
+        if (editView.getText().toString().trim().length() == 0) {
+            (new Handler()).postDelayed(new Runnable() {
+                public void run() {
+                    editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                    editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
+                }
+            }, 100);
+        }
+    }
 }

@@ -62,16 +62,25 @@ public class FormIterator implements Serializable{
         return form.getTransitionsForPage(currentPage.getId()).size() == 0;
     }
 
-    /**
-     *
-     * @return true if operation can be done.
-     */
-    public boolean nextPage() {
+    public boolean validatePage() {
         if (this.currentPage.validate().size() > 0) {
             Log.d("FormIterator", "can't go to next coz of validation fail.");
             for (ValidationResult vr: currentPage.validate()) {
                 Log.d("FormIterator", vr.getMessage());
             }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @return true if operation can be done.
+     */
+    public boolean nextPage() {
+
+        boolean validatePass = validatePage();
+        if (!validatePass) {
             return false;
         }
 

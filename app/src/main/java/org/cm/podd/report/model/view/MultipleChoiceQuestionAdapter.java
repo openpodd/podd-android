@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
 
+import org.cm.podd.report.R;
 import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.MultipleChoiceSelection;
@@ -76,9 +77,14 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
         }
         MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
         ctv.setText(item.getText().replaceAll("\\\\n", "\n"));
-        ctv.setPadding(0, 0, 0, 24);
+        ctv.setPadding(0, 12, 0, 12);
         ctv.setTextAppearance(this.context, org.cm.podd.report.R.style.ReportTextLabel);
         ctv.setTypeface(StyleUtil.getDefaultTypeface(this.context.getAssets(), Typeface.NORMAL));
+        if (i % 2 == 0) {
+            ctv.setBackgroundResource(R.color.list_item_separator);
+        } else {
+            ctv.setBackgroundResource(R.color.white);
+        }
 
         return ctv;
     }

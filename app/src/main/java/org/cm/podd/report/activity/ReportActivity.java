@@ -237,6 +237,10 @@ public class ReportActivity extends ActionBarActivity
             }
         });
 
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+        tracker.setScreenName("Report-" + reportType);
+        tracker.send(new HitBuilders.AppViewBuilder().build());
+
         startTime = System.currentTimeMillis();
     }
 
@@ -333,6 +337,25 @@ public class ReportActivity extends ActionBarActivity
         Log.d(TAG, "back to fragment = " + currentFragment);
     }
 
+    private void notifyValidationErrors() {
+        List<ValidationResult> validateResults = formIterator.getCurrentPage().validate();
+        if (validateResults.size() > 0) {
+            StringBuffer buff = new StringBuffer();
+            for (ValidationResult vr : validateResults) {
+                buff.append(vr.getMessage()).append("\n");
+            }
+            final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
+            crouton.setConfiguration(new Configuration.Builder().setDuration(1000).build());
+            crouton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Crouton.hide(crouton);
+                }
+            });
+            crouton.show();
+        }
+    }
+
     private void nextScreen() {
         Fragment fragment = null;
         boolean isDynamicForm = false;
@@ -384,36 +407,25 @@ public class ReportActivity extends ActionBarActivity
                     showHideDisableMask(false); // delegate readonly function to dynamic form
 
                 } else if (formIterator.isAtLastPage()) {
-                    fragment = ReportLocationFragment.newInstance(reportId);
-                    isDynamicForm = false;
-                    showHideDisableMask(reportSubmit == 1);
+
+                    boolean validatePass = formIterator.validatePage();
+                    if (validatePass) {
+                        fragment = ReportLocationFragment.newInstance(reportId);
+                        isDynamicForm = false;
+                        showHideDisableMask(reportSubmit == 1);
+                    } else {
+                        notifyValidationErrors();
+                    }
 
                 } else {
                     if (! formIterator.nextPage()) {
-
-                        // validation case
-                        List<ValidationResult> validateResults = formIterator.getCurrentPage().validate();
-                        if (validateResults.size() > 0) {
-                            StringBuffer buff = new StringBuffer();
-                            for (ValidationResult vr : validateResults) {
-                                buff.append(vr.getMessage()).append("");
-                            }
-                            final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
-                            crouton.setConfiguration(new Configuration.Builder().setDuration(1000).build());
-                            crouton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Crouton.hide(crouton);
-                                }
-                            });
-                            crouton.show();
-
-                        } else {
-                            // end if no valid transition and no validation results
-                            fragment = ReportLocationFragment.newInstance(reportId);
-                            isDynamicForm = false;
-                            showHideDisableMask(isDoneSubmit());
-                        }
+                        notifyValidationErrors();
+//                        } else {
+//                            // end if no valid transition and no validation results
+//                            fragment = ReportLocationFragment.newInstance(reportId);
+//                            isDynamicForm = false;
+//                            showHideDisableMask(isDoneSubmit());
+//                        }
                     } else {
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
@@ -469,9 +481,7 @@ public class ReportActivity extends ActionBarActivity
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         if (testReport) {
-            ColorDrawable color = new ColorDrawable();
-            color.setColor(0xffFEBB31);
-            actionBar.setBackgroundDrawable(color);
+            actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.report_test_indicator));
         } else {
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.abc_ab_solid_light_holo));
         }
@@ -686,6 +696,7 @@ public class ReportActivity extends ActionBarActivity
             boolean isSubmit = arguments.getBoolean("isSubmit");
             PageView pageView = new PageView(getActivity(), page, isSubmit);
             pageView.setQuestionActionListener((QuestionView.SoftKeyActionHandler) getActivity());
+            pageView.askForFocus();
             return pageView;
         }
     }
