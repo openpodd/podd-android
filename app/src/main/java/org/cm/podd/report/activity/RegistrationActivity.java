@@ -35,37 +35,7 @@ public class RegistrationActivity extends ActionBarActivity {
     Fragment mCurrentFragment;
     EditText inviteCodeText;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
-
-        inviteCodeText = (EditText) findViewById(R.id.invite_code);
-        findViewById(R.id.invite_code_submit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pd == null || ! pd.isShowing())
-                    submitCode();
-            }
-        });
-
-        FontUtil.overrideFonts(this, this.findViewById(R.id.invite_content).getRootView());
-    }
-
-    private void submitCode() {
-        String inviteCode = inviteCodeText.getText().toString();
-        if (inviteCode.length() > 0) {
-            if (RequestDataUtil.hasNetworkConnection(this)) {
-                new InviteCodeTask().execute((Void[]) null);
-            }
-        } else {
-            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
-            return;
-        }
-    }
-
     ProgressDialog pd;
-
     public void showProgressDialog() {
         pd = new ProgressDialog(this);
         pd.setTitle("กำลังส่งข้อมูล");
@@ -80,6 +50,38 @@ public class RegistrationActivity extends ActionBarActivity {
             pd.dismiss();
         }
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_registration);
+
+        inviteCodeText = (EditText) findViewById(R.id.invite_code);
+        findViewById(R.id.invite_code_submit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pd == null || !pd.isShowing())
+                    submitCode();
+            }
+        });
+
+        FontUtil.overrideFonts(this, this.findViewById(R.id.invite_content).getRootView());
+    }
+
+    private void submitCode() {
+        String inviteCode = inviteCodeText.getText().toString();
+        if (inviteCode.length() > 0) {
+            if (RequestDataUtil.hasNetworkConnection(this)) {
+                new InviteCodeTask().execute((Void[]) null);
+            } else {
+                Crouton.makeText(this, getString(R.string.alert_no_network_connection), Style.ALERT).show();
+            }
+        } else {
+            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
+            return;
+        }
+    }
+
     /**
      * Post Invite code
      */

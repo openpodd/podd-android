@@ -88,6 +88,8 @@ public class ResetPasswordFragment extends Fragment {
                 newPassword.equalsIgnoreCase(reNewPassword)) {
             if (RequestDataUtil.hasNetworkConnection(getActivity())) {
                 new ResetPasswordTask().execute((Void[]) null);
+            } else {
+                Crouton.makeText(getActivity(), getString(R.string.alert_no_network_connection), Style.ALERT).show();
             }
         } else {
             Crouton.makeText(getActivity(), getString(R.string.password_not_match), Style.ALERT).show();

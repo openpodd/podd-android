@@ -43,6 +43,22 @@ public class ForgetPasswordActivity extends ActionBarActivity {
 
     private static final String SERIAL_NUMBER_PATTERN = "^[0-9]{13,}$";
 
+    ProgressDialog pd;
+    public void showProgressDialog() {
+        pd = new ProgressDialog(this);
+        pd.setTitle("กำลังส่งข้อมูล");
+        pd.setMessage("กรุณารอสักครู่");
+        pd.setCancelable(false);
+        pd.setIndeterminate(true);
+        pd.show();
+    }
+
+    public void hideProgressDialog() {
+        if (pd != null && pd.isShowing()) {
+            pd.dismiss();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,28 +81,15 @@ public class ForgetPasswordActivity extends ActionBarActivity {
         if (serialNumber.length() == 13 && Pattern.compile(SERIAL_NUMBER_PATTERN).matcher(serialNumber).matches()) {
             if (RequestDataUtil.hasNetworkConnection(this)) {
                 new SerialNumberTask().execute((Void[]) null);
+            } else {
+                Crouton.makeText(this, getString(R.string.alert_no_network_connection), Style.ALERT).show();
             }
         } else {
             Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
         }
     }
-    ProgressDialog pd;
 
-    public void showProgressDialog() {
-        pd = new ProgressDialog(this);
-        pd.setTitle("กำลังส่งข้อมูล");
-        pd.setMessage("กรุณารอสักครู่");
-        pd.setCancelable(false);
-        pd.setIndeterminate(true);
-        pd.show();
-    }
-
-    public void hideProgressDialog() {
-        if (pd != null && pd.isShowing()) {
-            pd.dismiss();
-        }
-    }
     /**
      * Post Invite code
      */
