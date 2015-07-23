@@ -35,6 +35,7 @@ import java.util.List;
 public class PageView extends ScrollView {
 
     private final Page page;
+    private QuestionView firstView = null;
 
     public PageView(Context context, Page page, boolean readonly) {
         super(context);
@@ -53,6 +54,7 @@ public class PageView extends ScrollView {
         ViewGroup.LayoutParams wrapContent = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         List<Question> questions = page.getQuestions();
+        int cnt = 0;
         for (Question q : questions) {
             View qView;
             if (q instanceof MultipleChoiceQuestion) {
@@ -62,6 +64,18 @@ public class PageView extends ScrollView {
             }
             qView.setLayoutParams(wrapContent);
             scrollViewContent.addView(qView);
+            if (cnt == 0) {
+                if (qView instanceof QuestionView) {
+                    firstView = (QuestionView) qView;
+                }
+            }
+            cnt++;
+        }
+    }
+
+    public void askForFocus() {
+        if (firstView != null) {
+            firstView.askForFocus();
         }
     }
 

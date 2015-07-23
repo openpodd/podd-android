@@ -182,7 +182,7 @@ public class Report {
             if (target.has(targetName)) {
                 // merge case
                 String oldValue = target.getString(targetName);
-                String newValue = src.getString(key);
+                String newValue = src.getString(key).replaceAll("\\\\n", "");
                 if (newValue != null && newValue.length() > 0) {
                     target.put(targetName, oldValue + "," + newValue);
                 }
@@ -192,7 +192,7 @@ public class Report {
                 if (newValue instanceof String) {
                     String stringValue = (String) newValue;
                     if (stringValue != null && stringValue.length() > 0) {
-                        target.put(targetName, newValue);
+                        target.put(targetName, ((String) newValue).replaceAll("\\\\n", ""));
                     }
                 } else {
                     target.put(targetName, newValue);

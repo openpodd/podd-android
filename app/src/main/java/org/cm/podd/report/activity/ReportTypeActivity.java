@@ -106,7 +106,11 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
         testCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                adapter.notifyDataSetChanged();
+                if (b) {
+                    compoundButton.setBackgroundResource(R.color.report_test_indicator);
+                } else {
+                    compoundButton.setBackgroundResource(R.color.white);
+                }
             }
         });
 
@@ -243,18 +247,19 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             textView.setTypeface(typeface);
 
             ReportType item = adapter.getItem(position);
-
-            if (testCheckbox.isChecked() && item.getId() != 0 && item.getId() != -99) {
-                textView.setText(getResources().getText(R.string.test_title) + item.getName());
-            } else {
-                textView.setText(item.getName());
-            }
+            textView.setText(item.getName());
 
             int version = item.getVersion();
             if (version > 0) {
                 TextView versionView = (TextView) view.findViewById(android.R.id.text2);
                 versionView.setTypeface(typeface);
                 versionView.setText("v" + version);
+            }
+
+            if (position % 2 == 1) {
+                view.setBackgroundResource(R.color.list_item_separator);
+            } else {
+                view.setBackgroundResource(R.color.white);
             }
             return view;
         }
