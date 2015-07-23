@@ -61,7 +61,7 @@
                             android:textSize="16sp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/wallet_dim_foreground_disabled_holo_dark"
+                            android:textColor="#666"
                             android:text="@string/dummy_report_timeago" />
                     </LinearLayout>
 
