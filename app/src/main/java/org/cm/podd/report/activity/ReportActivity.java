@@ -337,7 +337,7 @@ public class ReportActivity extends ActionBarActivity
         Log.d(TAG, "back to fragment = " + currentFragment);
     }
 
-    private void notifyValidationErrors() {
+    private boolean notifyValidationErrors() {
         List<ValidationResult> validateResults = formIterator.getCurrentPage().validate();
         if (validateResults.size() > 0) {
             StringBuffer buff = new StringBuffer();
@@ -353,7 +353,9 @@ public class ReportActivity extends ActionBarActivity
                 }
             });
             crouton.show();
+            return true;
         }
+        return false;
     }
 
     private void nextScreen() {
@@ -418,14 +420,15 @@ public class ReportActivity extends ActionBarActivity
                     }
 
                 } else {
-                    if (! formIterator.nextPage()) {
-                        notifyValidationErrors();
-//                        } else {
-//                            // end if no valid transition and no validation results
-//                            fragment = ReportLocationFragment.newInstance(reportId);
-//                            isDynamicForm = false;
-//                            showHideDisableMask(isDoneSubmit());
-//                        }
+                    if (! formIterator.nextPage()) { // can't jump to next page
+
+                        if (! notifyValidationErrors()) {
+                            // no error and no page to go
+                            fragment = ReportLocationFragment.newInstance(reportId);
+                            isDynamicForm = false;
+                            showHideDisableMask(isDoneSubmit());
+                        }
+
                     } else {
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
