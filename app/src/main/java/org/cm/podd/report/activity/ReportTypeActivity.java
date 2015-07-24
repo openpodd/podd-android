@@ -36,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -62,6 +63,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
     private static final String TAG = "ReportTypeActivity";
     private ArrayAdapter<ReportType> adapter;
     private ListView listView;
+    private LinearLayout testLayout;
     private CheckBox testCheckbox;
     private ProgressBar progressBar;
     private ReportTypeDataSource dataSource;
@@ -89,6 +91,7 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
 
         setContentView(R.layout.activity_report_type);
         listView = (ListView) findViewById(R.id.report_type_list_view);
+        testLayout = (LinearLayout) findViewById(R.id.test_section);
         progressBar = (ProgressBar) findViewById(R.id.report_type_progress_bar);
         testCheckbox = (CheckBox) findViewById(R.id.test_checkbox);
         testCheckbox.setTypeface(typeface);
@@ -107,8 +110,10 @@ public class ReportTypeActivity extends ActionBarActivity implements AdapterView
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    testLayout.setBackgroundResource(R.color.report_test_indicator);
                     compoundButton.setBackgroundResource(R.color.report_test_indicator);
                 } else {
+                    testLayout.setBackgroundResource(R.color.white);
                     compoundButton.setBackgroundResource(R.color.white);
                 }
             }
