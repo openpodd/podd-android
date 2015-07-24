@@ -208,7 +208,8 @@
         </activity>
         <activity
             android:name=".activity.ForgetPasswordActivity"
-            android:label="@string/title_activity_forget_password" >
+            android:label="@string/title_activity_forget_password"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

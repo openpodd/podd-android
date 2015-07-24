@@ -182,7 +182,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
+        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_forget_password));
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 //        actionBar.setLogo(R.drawable.arrow_left_with_pad);
@@ -204,7 +204,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
             if (bundle != null && findViewById(R.id.form_content).getVisibility() == View.VISIBLE) {
                 findViewById(R.id.serial_number_content).setVisibility(View.VISIBLE);
                 findViewById(R.id.form_content).setVisibility(View.GONE);
-                StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
+                StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_forget_password));
             } else {
                 this.finish();
                 return true;

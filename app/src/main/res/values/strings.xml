@@ -157,6 +157,7 @@
     <string name="registration">ลงทะเบียน</string>
     <string name="forgot_password">ลืมรหัสผ่าน</string>
     <string name="title_activity_registration">ลงทะเบียน</string>
+    <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
     <string name="first_name">ชื่อ</string>
     <string name="last_name">นามสกุล</string>
     <string name="serial_number">เลขที่บัตรประจำตัวประชาชน</string>
@@ -172,7 +173,6 @@
     <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
     <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
-    <string name="title_activity_forget_password">ForgetPasswordActivity</string>
     <string name="forget_password_title">กรุณากรอกเลขที่บัตรประชาชน</string>
     <string name="serial_number_error">เลขที่บัตรประชาชนไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
     <string name="register_submit_success">ลงทะเบียนสำเร็จ</string>
