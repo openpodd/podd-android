@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/image_hint"
         android:id="@+id/cameraHint"
-        android:textSize="16dp"
+        android:textSize="20dp"
         android:layout_gravity="left|top" />
 
 
