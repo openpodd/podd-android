@@ -455,7 +455,7 @@ public class ReportListFragment extends ListFragment {
                 }
 
                 holder.followText.setVisibility(View.GONE);
-                if (draft == Report.FALSE && follow != Report.TRUE) {
+                if ((draft == Report.FALSE || submit == Report.TRUE ) && follow != Report.TRUE) {
                     long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
                     Log.d(TAG, String.format("now = %d, until = %d", now, until));
                     if (until > now) {
@@ -474,7 +474,7 @@ public class ReportListFragment extends ListFragment {
             }
 
             holder.draftText.setVisibility(
-                    draft == Report.TRUE ? View.VISIBLE : View.GONE);
+                    draft == Report.TRUE && submit == Report.FALSE ? View.VISIBLE : View.GONE);
             String dateStr = DateUtil.convertToThaiDate(date);
             holder.dateText.setText(dateStr);
 

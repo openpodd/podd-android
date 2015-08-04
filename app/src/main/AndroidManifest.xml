@@ -209,8 +209,19 @@
         <activity
             android:name=".activity.ForgetPasswordActivity"
             android:label="@string/title_activity_forget_password"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
+
+        <service
+            android:name=".service.FollowAlertService"
+            android:exported="false" >
+        </service>
+
+        <receiver
+            android:name=".service.FollowAlertReceiver"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
     </application>
 
 </manifest>

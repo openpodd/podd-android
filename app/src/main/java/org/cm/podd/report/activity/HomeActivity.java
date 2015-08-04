@@ -68,6 +68,8 @@ import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.service.FollowAlertReceiver;
+import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -181,6 +183,10 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
+
+//        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
+//                new FollowAlertReceiver(),
+//                new IntentFilter(FollowAlertService.TAG));
 
         /* return to last position after recreate activity */
         if (savedInstanceState != null) {

@@ -17,19 +17,24 @@
 
 package org.cm.podd.report.activity;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -45,12 +50,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -69,16 +76,22 @@ import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.service.FollowAlertReceiver;
+import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.service.LocationBackgroundService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
+import java.util.TimeZone;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -99,6 +112,8 @@ public class ReportActivity extends ActionBarActivity
     private ReportDataSource reportDataSource;
     private ReportTypeDataSource reportTypeDataSource;
     private ReportQueueDataSource reportQueueDataSource;
+
+    private FollowAlertDataSource followAlertDataSource;
 
     private long reportId;
     private long reportType;
@@ -129,12 +144,16 @@ public class ReportActivity extends ActionBarActivity
         }
     };
 
+    protected FollowAlertReceiver mAlertReceiver = new FollowAlertReceiver();
     private CameraInteractionListener cameraInteractionListener;
     private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mAlertReceiver,
+                new IntentFilter(FollowAlertService.TAG));
 
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
@@ -175,6 +194,8 @@ public class ReportActivity extends ActionBarActivity
         reportDataSource = new ReportDataSource(this);
         reportTypeDataSource = new ReportTypeDataSource(this);
         reportQueueDataSource = new ReportQueueDataSource(this);
+
+        followAlertDataSource = new FollowAlertDataSource(this);
 
         if (savedInstanceState != null) {
             currentFragment = savedInstanceState.getString("currentFragment");
@@ -586,7 +607,15 @@ public class ReportActivity extends ActionBarActivity
                     reportQueueDataSource.addDataQueue(reportId);
                     reportQueueDataSource.addImageQueue(reportId);
 
+
                     broadcastReportSubmission();
+
+                    if (report.getTestReport() == Report.FALSE && report.getParentGuid() == null) {
+                        scheduleFollowAlert(report);
+                    }
+
+                    // Cancel when follow report -- find parent
+                    CancelScheduleFollowAlert(report.getId(), 5);
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
                     // save as draft
@@ -610,9 +639,11 @@ public class ReportActivity extends ActionBarActivity
         super.onDestroy();
         stopLocationService();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mAlertReceiver);
         reportDataSource.close();
         reportQueueDataSource.close();
         reportTypeDataSource.close();
+        followAlertDataSource.close();
 
         if (! isDoneSubmit()) {
             // send timing hit
@@ -764,4 +795,82 @@ public class ReportActivity extends ActionBarActivity
         Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
+
+    private int setFollowAlert(long date, String message) {
+
+
+        int requestCode = (new Random()).nextInt();
+
+        Intent intent = new Intent(this, FollowAlertReceiver.class);
+        intent.putExtra("message", message);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
+
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.set(AlarmManager.RTC_WAKEUP, date, pendingIntent);
+
+        return requestCode;
+    }
+
+    private void cancelFollowAlert(int requestCode) {
+        try{
+            Intent intent = new Intent(this, FollowAlertReceiver.class);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
+            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pendingIntent);
+
+        }catch (Exception e){
+            Log.e(TAG, "error" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void scheduleFollowAlert(Report report) {
+
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int minute = Calendar.getInstance().get(Calendar.MINUTE);
+        int second = 00;
+
+        Log.i("WakefulReceiver", "Completed time :" + hour + ":" + minute);
+
+        String pattern = getString(R.string.trigger_pattern_test);
+
+        for (int i = 0; i < pattern.length(); i++ ) {
+            char ch = pattern.charAt(i);
+
+            if (ch == '1') {
+
+                Calendar cal = Calendar.getInstance();
+
+                cal.set(Calendar.DATE, 04);
+                cal.set(Calendar.MONTH, Calendar.AUGUST);
+                cal.set(Calendar.YEAR, 2015);
+
+                cal.set(Calendar.HOUR_OF_DAY, hour);
+                cal.set(Calendar.MINUTE, minute + (i +1));
+                cal.set(Calendar.SECOND, second);
+
+                long reportId = report.getId();
+                int triggerNo = (i + 1);
+                String message = (i + 1) + ") " + getString(R.string.follow_up_report_alert);
+                long date = cal.getTimeInMillis();
+                int requestCode = setFollowAlert(date, message);
+
+                followAlertDataSource.createFollowAlert(reportId, triggerNo, message, requestCode, date);
+            }
+        }
+
+    }
+
+    private void CancelScheduleFollowAlert(long reportId, int triggerNo){
+        List<Integer> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
+        for (int i = 0; i < requestCodes.size(); i++ ) {
+            cancelFollowAlert(requestCodes.get(i));
+        }
+        followAlertDataSource.updateStatusDone(reportId, triggerNo);
+        Log.i("WakefulReceiver", "Completed cancel code :" + requestCodes.size());
+    }
+
+
 }
