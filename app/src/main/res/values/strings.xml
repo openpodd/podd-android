@@ -200,9 +200,10 @@
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
     <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
     <string name="btn_ok">ตกลง</string>
-    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามด้วยจ้า</string>
+    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
 
-    <string name="alert_time">10:00:00</string>
-    <string name="trigger_pattern_test">1000100001</string>
+    <string name="trigger_pattern_test">101</string>
+    <string name="start_alert_hour">10</string>
+    <string name="frequency_alert_hour">4</string>
 
 </resources>

@@ -14,6 +14,9 @@ import android.util.Log;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
+import org.cm.podd.report.activity.ReportActivity;
+import org.cm.podd.report.activity.ReportTypeActivity;
+import org.cm.podd.report.model.ReportType;
 
 
 public class FollowAlertService extends IntentService {
@@ -30,20 +33,29 @@ public class FollowAlertService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String message = intent.getStringExtra("message");
-        if (message != null)
-            sendFollowAlert(message);
+        long reportId = intent.getLongExtra("reportId", -1);
+        long reportType = intent.getLongExtra("reportType", -1);
+        int pageNumber = intent.getIntExtra("pageNumber", -1);
+
+        if (message != null && reportId != -1 && reportType != -1)
+            sendFollowAlert(message, reportId, reportType, pageNumber);
 
         Log.i("WakefulReceiver", "Completed service :" + intent.getStringExtra("message") + " @" + System.currentTimeMillis());
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendFollowAlert(String message) {
+    private void sendFollowAlert(String message, long reportId, long reportType, int pageNumber) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, ReportActivity.class);
         intent.setAction("org.cm.podd.report.GCM_NOTIFICATION");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        intent.putExtra("reportType", reportType);
+        intent.putExtra("reportId", reportId);
+        intent.putExtra("follow", true);
+        intent.putExtra("pageNumber", pageNumber);
 
         Bundle bundle = new Bundle();
         bundle.putString("message", message);

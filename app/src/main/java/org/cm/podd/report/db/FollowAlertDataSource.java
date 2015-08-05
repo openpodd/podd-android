@@ -4,8 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -49,6 +51,22 @@ public class FollowAlertDataSource {
         return db.rawQuery("SELECT * FROM follow_alert order by _id desc", null);
     }
 
+    public int getTriggerNoByNow(long reportId) {
+        int triggerNo = -1;
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+
+        Calendar cal = Calendar.getInstance();
+        Cursor cursor = db.rawQuery("select min(trigger_no) trigger_no from follow_alert where report_id=? and date > ?",
+                new String[] {Long.toString(reportId), cal.getTimeInMillis() +""});
+
+        while (cursor.moveToNext()) {
+            triggerNo = cursor.getInt(cursor.getColumnIndex("trigger_no"));
+        }
+        cursor.close();
+        db.close();
+        return triggerNo;
+    }
+
     public List<Integer> getRequestCodes(long reportId, int triggerNo) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
         ArrayList<Integer> requestCodes = new ArrayList<Integer>();
@@ -64,6 +82,7 @@ public class FollowAlertDataSource {
         db.close();
         return requestCodes;
     }
+
 
     public void updateStatusDone(long reportId, int triggerNo) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
