@@ -17,6 +17,8 @@
 
 package org.cm.podd.report.model.parser;
 
+import android.util.Log;
+
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.MultipleChoiceItem;
@@ -25,6 +27,7 @@ import org.cm.podd.report.model.MultipleChoiceSelection;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.Transition;
+import org.cm.podd.report.model.Trigger;
 import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
@@ -32,6 +35,8 @@ import org.cm.podd.report.model.validation.RequireValidation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.jar.JarException;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -77,6 +82,14 @@ public class FormParser {
         for (int i = 0; i < transitions.length(); i++) {
             JSONObject transition = transitions.getJSONObject(i);
             parseTransition(transition);
+        }
+
+        try {
+            JSONObject trigger = doc.getJSONObject("trigger");
+            parseTrigger(trigger);
+            Log.i("WakefulReceiver", "Pattern:" + trigger.getString("pattern"));
+        } catch (JSONException ex) {
+
         }
 
     }
@@ -261,6 +274,13 @@ public class FormParser {
         }
 
         form.addQuestion(question);
+    }
+
+    public void parseTrigger(JSONObject item) throws JSONException {
+        if (item != null) {
+            Trigger trigger = new Trigger(item.getString("pattern"), item.getInt("pageId"), item.getString("notificationText"));
+            form.setTrigger(trigger);
+        }
     }
 
     public Form getForm() {

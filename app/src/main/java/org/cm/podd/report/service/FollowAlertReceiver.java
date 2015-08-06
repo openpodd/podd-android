@@ -27,7 +27,6 @@ public class FollowAlertReceiver extends WakefulBroadcastReceiver {
         startWakefulService(context, (intent.setComponent(comp)));
         setResultCode(Activity.RESULT_OK);
 
-        Log.i("WakefulReceiver", "Completed receive :" + intent.getStringExtra("message") + " @" + System.currentTimeMillis());
     }
 
 }

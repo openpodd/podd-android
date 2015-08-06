@@ -51,13 +51,13 @@ public class FollowAlertDataSource {
         return db.rawQuery("SELECT * FROM follow_alert order by _id desc", null);
     }
 
-    public int getTriggerNoByNow(long reportId) {
+    public int getTriggerNoByNow1Day(long reportId, long nextDay) {
         int triggerNo = -1;
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
 
         Calendar cal = Calendar.getInstance();
-        Cursor cursor = db.rawQuery("select min(trigger_no) trigger_no from follow_alert where report_id=? and date > ?",
-                new String[] {Long.toString(reportId), cal.getTimeInMillis() +""});
+        Cursor cursor = db.rawQuery("select min(trigger_no) trigger_no from follow_alert where report_id=? and date >= ? and date < ?",
+                new String[] {Long.toString(reportId), cal.getTimeInMillis() +"", Long.toString(nextDay)});
 
         while (cursor.moveToNext()) {
             triggerNo = cursor.getInt(cursor.getColumnIndex("trigger_no"));

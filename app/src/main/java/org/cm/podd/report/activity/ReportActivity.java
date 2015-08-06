@@ -72,6 +72,7 @@ import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.model.Trigger;
 import org.cm.podd.report.model.validation.ValidationResult;
 import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
@@ -119,6 +120,8 @@ public class ReportActivity extends ActionBarActivity
     private long reportType;
     private boolean follow;
     private FormIterator formIterator;
+    private Trigger trigger;
+    private int startPageId;
 
     private double currentLatitude = 0.00;
     private double currentLongitude = 0.00;
@@ -148,6 +151,7 @@ public class ReportActivity extends ActionBarActivity
     private CameraInteractionListener cameraInteractionListener;
     private long startTime;
     private String pattern;
+    private String notificationText;
 
     private long parentReportId = -1;
 
@@ -207,6 +211,7 @@ public class ReportActivity extends ActionBarActivity
             follow = savedInstanceState.getBoolean("follow");
             testReport = savedInstanceState.getBoolean("testReport");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
+            trigger = formIterator.getForm().getTrigger();
             Log.d(TAG, "onCreate from savedInstance, testFlag = " + testReport);
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
@@ -221,6 +226,7 @@ public class ReportActivity extends ActionBarActivity
             reportId = intent.getLongExtra("reportId", -99);
             follow = intent.getBooleanExtra("follow", false);
             testReport = intent.getBooleanExtra("test", false);
+            startPageId = intent.getIntExtra("startPageId", -1);
             Log.d(TAG, "onCreate, testFlag = " + testReport);
 
             if (follow) {
@@ -228,7 +234,10 @@ public class ReportActivity extends ActionBarActivity
                 reportId = reportDataSource.createFollowReport(reportId);
             }
 
-            formIterator = new FormIterator(reportTypeDataSource.getForm(reportType));
+            Form form = reportTypeDataSource.getForm(reportType);
+
+            formIterator = new FormIterator(form);
+            trigger = formIterator.getForm().getTrigger();
 
             if (reportId == -99) {
                 reportId = reportDataSource.createDraftReport(reportType, testReport);
@@ -382,6 +391,9 @@ public class ReportActivity extends ActionBarActivity
     }
 
     private void nextScreen() {
+
+        Log.i("WakefulReceiver", "page :" + formIterator.getCurrentPage().getId());
+
         Fragment fragment = null;
         boolean isDynamicForm = false;
 
@@ -455,6 +467,7 @@ public class ReportActivity extends ActionBarActivity
 
                         fragment = getPageFragment(formIterator.getCurrentPage());
                         showHideDisableMask(false);
+
                     }
                 }
 
@@ -479,6 +492,10 @@ public class ReportActivity extends ActionBarActivity
                 currentFragment = "dynamicForm";
             } else {
                 currentFragment = fragment.getClass().getName();
+            }
+
+            if (startPageId != -1 && startPageId != formIterator.getCurrentPage().getId()) {
+                nextScreen();
             }
 
         }
@@ -614,7 +631,7 @@ public class ReportActivity extends ActionBarActivity
 
                     broadcastReportSubmission();
 
-                    if (report.getTestReport() == Report.FALSE && !follow) {
+                    if (report.getTestReport() == Report.FALSE && !follow && trigger != null) {
                         scheduleFollowAlert(report);
                     }
 
@@ -801,7 +818,7 @@ public class ReportActivity extends ActionBarActivity
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 
-    private int setFollowAlert(long date, Long reportId, Long reportType, int pageNumber, String message) {
+    private int setFollowAlert(long date, Long reportId, Long reportType, int startPageId, String message) {
 
 
         int requestCode = (new Random()).nextInt();
@@ -810,6 +827,7 @@ public class ReportActivity extends ActionBarActivity
         intent.putExtra("reportId", reportId);
         intent.putExtra("reportType", reportType);
         intent.putExtra("message", message);
+        intent.putExtra("startPageId", startPageId);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
 
@@ -834,9 +852,10 @@ public class ReportActivity extends ActionBarActivity
     }
 
     private void scheduleFollowAlert(Report report) {
-
         Log.i("WakefulReceiver", "scheduleFollowAlert");
-        pattern = getString(R.string.trigger_pattern_test);
+
+        pattern = trigger.getPattern();
+        notificationText = trigger.getNotificationText();
 
         for (int i = 0; i < pattern.length(); i++ ) {
             char ch = pattern.charAt(i);
@@ -863,15 +882,15 @@ public class ReportActivity extends ActionBarActivity
 
                     long reportId = report.getId();
                     long reportType = report.getType();
-                    int pageNumber = 0;
+                    int startPageId = trigger.getPageId();
                     int triggerNo = (i + 1);
 
-                    String message = getString(R.string.follow_up_report_alert) + " #" +report.getId();
+                    String message = notificationText;
 
                     long date = cal.getTimeInMillis();
-                    int requestCode = setFollowAlert(date, reportId, reportType, pageNumber, message);
+                    int requestCode = setFollowAlert(date, reportId, reportType, startPageId, message);
 
-                    Log.i("WakefulReceiver", "Time service :" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.HOUR_OF_DAY));
+                    Log.i("WakefulReceiver", "Time service :" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.HOUR_OF_DAY) + " @" + startPageId);
 
                     followAlertDataSource.createFollowAlert(reportId, triggerNo, message, requestCode, date);
 
@@ -884,7 +903,15 @@ public class ReportActivity extends ActionBarActivity
     }
 
     private void CancelScheduleFollowAlert(long reportId){
-        int triggerNo = followAlertDataSource.getTriggerNoByNow(reportId);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+
+        int hour = Integer.parseInt(getString(R.string.start_alert_hour));
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.SECOND, 00);
+
+        int triggerNo = followAlertDataSource.getTriggerNoByNow1Day(reportId, cal.getTimeInMillis());
 
         List<Integer> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
         for (int i = 0; i < requestCodes.size(); i++ ) {

@@ -35,16 +35,15 @@ public class FollowAlertService extends IntentService {
         String message = intent.getStringExtra("message");
         long reportId = intent.getLongExtra("reportId", -1);
         long reportType = intent.getLongExtra("reportType", -1);
-        int pageNumber = intent.getIntExtra("pageNumber", -1);
+        int startPageId = intent.getIntExtra("startPageId", 0);
 
         if (message != null && reportId != -1 && reportType != -1)
-            sendFollowAlert(message, reportId, reportType, pageNumber);
+            sendFollowAlert(message, reportId, reportType, startPageId);
 
-        Log.i("WakefulReceiver", "Completed service :" + intent.getStringExtra("message") + " @" + System.currentTimeMillis());
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendFollowAlert(String message, long reportId, long reportType, int pageNumber) {
+    private void sendFollowAlert(String message, long reportId, long reportType, int startPageId) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -55,7 +54,7 @@ public class FollowAlertService extends IntentService {
         intent.putExtra("reportType", reportType);
         intent.putExtra("reportId", reportId);
         intent.putExtra("follow", true);
-        intent.putExtra("pageNumber", pageNumber);
+        intent.putExtra("startPageId", startPageId);
 
         Bundle bundle = new Bundle();
         bundle.putString("message", message);
