@@ -204,6 +204,6 @@
 
     <string name="trigger_pattern_test">101</string>
     <string name="start_alert_hour">10</string>
-    <string name="frequency_alert_hour">4</string>
+    <string name="frequency_alert_hour">2</string>
 
 </resources>

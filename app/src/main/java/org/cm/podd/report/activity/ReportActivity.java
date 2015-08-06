@@ -78,6 +78,7 @@ import org.cm.podd.report.model.view.PageView;
 import org.cm.podd.report.model.view.QuestionView;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertReceiver;
+import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.service.LocationBackgroundService;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -392,8 +393,6 @@ public class ReportActivity extends ActionBarActivity
 
     private void nextScreen() {
 
-        Log.i("WakefulReceiver", "page :" + formIterator.getCurrentPage().getId());
-
         Fragment fragment = null;
         boolean isDynamicForm = false;
 
@@ -632,11 +631,17 @@ public class ReportActivity extends ActionBarActivity
                     broadcastReportSubmission();
 
                     if (report.getTestReport() == Report.FALSE && !follow && trigger != null) {
-                        scheduleFollowAlert(report);
+                        pattern = trigger.getPattern();
+                        notificationText = trigger.getNotificationText();
+                        startPageId = trigger.getPageId();
+
+                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this, pattern, notificationText,
+                                report.getId(), report.getType(), startPageId
+                        ).execute((Void[]) null);
                     }
 
                     if (follow && parentReportId != -1) {
-                        CancelScheduleFollowAlert(parentReportId);
+                        new FollowAlertScheduleService.CancelFollowAlertScheduleTask(this, parentReportId).execute((Void[]) null);
                     }
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
@@ -817,111 +822,5 @@ public class ReportActivity extends ActionBarActivity
         Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
-
-    private int setFollowAlert(long date, Long reportId, Long reportType, int startPageId, String message) {
-
-
-        int requestCode = (new Random()).nextInt();
-
-        Intent intent = new Intent(this, FollowAlertReceiver.class);
-        intent.putExtra("reportId", reportId);
-        intent.putExtra("reportType", reportType);
-        intent.putExtra("message", message);
-        intent.putExtra("startPageId", startPageId);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
-
-        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarm.set(AlarmManager.RTC_WAKEUP, date, pendingIntent);
-
-        return requestCode;
-    }
-
-    private void cancelFollowAlert(int requestCode) {
-        try{
-            Intent intent = new Intent(this, FollowAlertReceiver.class);
-
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
-            AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            alarm.cancel(pendingIntent);
-
-        }catch (Exception e){
-            Log.e(TAG, "error" + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void scheduleFollowAlert(Report report) {
-        Log.i("WakefulReceiver", "scheduleFollowAlert");
-
-        pattern = trigger.getPattern();
-        notificationText = trigger.getNotificationText();
-
-        for (int i = 0; i < pattern.length(); i++ ) {
-            char ch = pattern.charAt(i);
-
-            if (ch == '1') {
-
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, (i + 1));
-
-                int hour = Integer.parseInt(getString(R.string.start_alert_hour));
-                int frequency = Integer.parseInt(getString(R.string.frequency_alert_hour));
-                int end = (int) (24 / frequency);
-
-                for (int j = 0; j < end; j++) {
-
-                    if (hour >= 24) {
-                        cal.add(Calendar.DATE, 1);
-                        hour = hour % 24;
-                    }
-
-                    cal.set(Calendar.HOUR_OF_DAY, hour);
-                    cal.set(Calendar.MINUTE, 00);
-                    cal.set(Calendar.SECOND, 00);
-
-                    long reportId = report.getId();
-                    long reportType = report.getType();
-                    int startPageId = trigger.getPageId();
-                    int triggerNo = (i + 1);
-
-                    String message = notificationText;
-
-                    long date = cal.getTimeInMillis();
-                    int requestCode = setFollowAlert(date, reportId, reportType, startPageId, message);
-
-                    Log.i("WakefulReceiver", "Time service :" + cal.get(Calendar.DATE) + "-" + cal.get(Calendar.HOUR_OF_DAY) + " @" + startPageId);
-
-                    followAlertDataSource.createFollowAlert(reportId, triggerNo, message, requestCode, date);
-
-                    hour = hour + ( frequency );
-
-                }
-            }
-        }
-
-    }
-
-    private void CancelScheduleFollowAlert(long reportId){
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
-
-        int hour = Integer.parseInt(getString(R.string.start_alert_hour));
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, 00);
-        cal.set(Calendar.SECOND, 00);
-
-        int triggerNo = followAlertDataSource.getTriggerNoByNow1Day(reportId, cal.getTimeInMillis());
-
-        List<Integer> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
-        for (int i = 0; i < requestCodes.size(); i++ ) {
-            cancelFollowAlert(requestCodes.get(i));
-        }
-
-        Log.i("WakefulReceiver", "Completed cancel alert:" + requestCodes.size());
-        if (requestCodes.size() > 1)
-            followAlertDataSource.updateStatusDone(reportId, triggerNo);
-    }
-
 
 }

@@ -87,7 +87,7 @@ public class FormParser {
         try {
             JSONObject trigger = doc.getJSONObject("trigger");
             parseTrigger(trigger);
-            Log.i("WakefulReceiver", "Pattern:" + trigger.getString("pattern"));
+
         } catch (JSONException ex) {
 
         }
