@@ -261,14 +261,14 @@ public class ReportActivity extends ActionBarActivity
                 int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
                 int limitHeightPx = (int) (getResources().getDisplayMetrics().density * 100);
                 Log.d(TAG, String.format("diff height=%d, limit height=%d", heightDiff, limitHeightPx));
-
-                if (heightDiff > limitHeightPx) {
-                    // if more than limitHeightPx, its probably a keyboard...
-                    // then hide a control bar (prev/next)
-                    controlBar.setVisibility(View.GONE);
-                } else {
-                    controlBar.setVisibility(View.VISIBLE);
-                }
+//
+//                if (heightDiff > limitHeightPx) {
+//                    // if more than limitHeightPx, its probably a keyboard...
+//                    // then hide a control bar (prev/next)
+//                    controlBar.setVisibility(View.GONE);
+//                } else {
+//                    controlBar.setVisibility(View.VISIBLE);
+//                }
             }
         });
 
