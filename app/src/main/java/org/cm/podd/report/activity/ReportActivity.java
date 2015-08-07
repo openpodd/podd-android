@@ -49,6 +49,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -106,7 +107,9 @@ public class ReportActivity extends ActionBarActivity
     private Button prevBtn;
     private Button nextBtn;
     private Button cameraBtn;
+    private Button galleryBtn;
     private TextView cameraHint;
+    private LinearLayout cameraController;
     private View disableMaskView;
     private boolean testReport = false;
 
@@ -183,6 +186,8 @@ public class ReportActivity extends ActionBarActivity
         });
         prevBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
 
+        cameraController = (LinearLayout) findViewById(R.id.controlCameraBar);
+
         cameraBtn = (Button) findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,10 +197,22 @@ public class ReportActivity extends ActionBarActivity
                 }
             }
         });
-
         cameraBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        cameraHint = (TextView) findViewById(R.id.cameraHint);
-        cameraHint.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+
+        galleryBtn = (Button) findViewById(R.id.galleryBtn);
+        galleryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cameraInteractionListener != null) {
+                    cameraInteractionListener.doGetImage();
+                }
+            }
+        });
+        galleryBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+
+//        cameraHint = (TextView) findViewById(R.id.cameraHint);
+//        cameraHint.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+//        cameraHint.setVisibility(View.GONE);
 
         disableMaskView = findViewById(R.id.disableMask);
 
@@ -593,21 +610,21 @@ public class ReportActivity extends ActionBarActivity
 
     @Override
     public void setPrevVisible(boolean flag) {
-        if (flag) {
-            prevBtn.setVisibility(View.VISIBLE);
-        } else {
-            prevBtn.setVisibility(View.GONE);
-        }
+//        if (flag) {
+//            prevBtn.setVisibility(View.VISIBLE);
+//        } else {
+//            prevBtn.setVisibility(View.GONE);
+//        }
     }
 
     public void setCameraBtnVisible(boolean flag) {
         if (flag) {
-            cameraBtn.setVisibility(View.VISIBLE);
-            cameraHint.setVisibility(View.VISIBLE);
+            cameraController.setVisibility(View.VISIBLE);
+            cameraController.setVisibility(View.VISIBLE);
 
         } else {
-            cameraBtn.setVisibility(View.GONE);
-            cameraHint.setVisibility(View.GONE);
+            cameraController.setVisibility(View.GONE);
+            cameraController.setVisibility(View.GONE);
         }
     }
 
