@@ -69,14 +69,16 @@ public class SharedPrefUtil {
     public List<Region> getAllRegions() {
         List<Region> regions = new ArrayList<Region>();
         String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
-        try {
-            JSONArray jsonArr = new JSONArray(jsonStr);
-            for (int i = 0; i < jsonArr.length(); i++) {
-                JSONObject jsonObj = jsonArr.getJSONObject(i);
-                regions.add(new Region(jsonObj.getLong("id"), jsonObj.getString("name")));
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonArr = new JSONArray(jsonStr);
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    regions.add(new Region(jsonObj.getLong("id"), jsonObj.getString("name")));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         return regions;
     }

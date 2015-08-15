@@ -664,7 +664,7 @@ public class ReportActivity extends ActionBarActivity
         Map<String, Object> data = formIterator.getData(false);
         JSONObject jsonData = new JSONObject(data);
 
-        if (trigger.isMerge()) {
+        if (trigger != null && trigger.isMerge()) {
             Report report = reportDataSource.getById(reportId);
             String formDataStr = report.getFormData();
             if (formDataStr != null) {
