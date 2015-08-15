@@ -25,6 +25,7 @@ import org.cm.podd.report.model.MultipleChoiceSelection;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.Transition;
+import org.cm.podd.report.model.Trigger;
 import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
@@ -77,6 +78,10 @@ public class FormParser {
         for (int i = 0; i < transitions.length(); i++) {
             JSONObject transition = transitions.getJSONObject(i);
             parseTransition(transition);
+        }
+
+        if (doc.has("trigger")) {
+            parseTrigger(doc.getJSONObject("trigger"));
         }
 
     }
@@ -261,6 +266,14 @@ public class FormParser {
         }
 
         form.addQuestion(question);
+    }
+
+    public void parseTrigger(JSONObject item) throws JSONException {
+        if (item != null) {
+            boolean merge = item.optBoolean("merge", false);
+            Trigger trigger = new Trigger(item.getString("pattern"), item.getInt("pageId"), item.getString("notificationText"), merge);
+            form.setTrigger(trigger);
+        }
     }
 
     public Form getForm() {

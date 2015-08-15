@@ -1,30 +1,72 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="org.cm.podd.report.fragment.ReportImageFragment">
 
-    <GridView
-        android:id="@+id/image_place_holder"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:numColumns="2"
-        android:verticalSpacing="5dp"
-        android:horizontalSpacing="5dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        />
 
-    <org.cm.podd.report.view.TouchyGridView
-        android:id="@+id/image_grid_view"
+    <LinearLayout
+        android:id="@+id/controlCameraBar"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:numColumns="2"
-        android:verticalSpacing="5dp"
-        android:horizontalSpacing="5dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        />
+        style="@style/CameraController"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal" >
 
-</FrameLayout>
+        <Button
+            android:id="@+id/cameraBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            style="@style/CameraButton"
+            android:drawableTop="@drawable/camera"
+            android:drawablePadding="4dp"
+            android:text="@string/btn_camera" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/action_bar_bg" />
+
+        <Button
+            android:id="@+id/galleryBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            style="@style/CameraButton"
+            android:drawableTop="@drawable/picture"
+            android:drawablePadding="4dp"
+            android:text="@string/btn_gallery" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <GridView
+            android:id="@+id/image_place_holder"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:numColumns="2"
+            android:verticalSpacing="5dp"
+            android:horizontalSpacing="5dp"
+            android:stretchMode="columnWidth"
+            android:gravity="center"
+            />
+
+        <org.cm.podd.report.view.TouchyGridView
+            android:id="@+id/image_grid_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="2"
+            android:verticalSpacing="5dp"
+            android:horizontalSpacing="5dp"
+            android:stretchMode="columnWidth"
+            android:gravity="center"
+            />
+
+    </FrameLayout>
+
+</LinearLayout>

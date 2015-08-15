@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,29 +7,30 @@
     tools:context="org.cm.podd.report.activity.ReportActivity"
     tools:ignore="MergeRootFrame">
 
-    <TextView
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/image_hint"
-        android:id="@+id/cameraHint"
-        android:textSize="20dp"
-        android:layout_gravity="left|top" />
-
+    <!--<TextView-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/image_hint"-->
+        <!--android:id="@+id/cameraHint"-->
+        <!--android:textSize="20dp"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_gravity="left|top" />-->
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/controlBar"
-        android:layout_below="@+id/cameraHint">
+        android:layout_below="@+id/controlCameraBar">
 
         <FrameLayout
             android:id="@+id/container"
-            android:padding="@dimen/page_padding"
+            android:paddingLeft="@dimen/page_padding"
+            android:paddingRight="@dimen/page_padding"
+            android:paddingBottom="@dimen/page_padding"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-             >
+            android:layout_height="match_parent">
         </FrameLayout>
 
         <View
@@ -61,16 +63,16 @@
             style="@style/PrevButton"
             android:text="@string/btn_prev" />
 
-        <Button
-            android:id="@+id/cameraBtn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            style="@style/CameraButton"
-            android:layout_marginRight="10dp"
-            android:drawableLeft="@drawable/icon_camera"
-            android:drawablePadding="0dp"
-            android:text="@string/btn_camera" />
+        <!--<Button-->
+            <!--android:id="@+id/cameraBtn"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--style="@style/CameraButton"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:drawableLeft="@drawable/icon_camera"-->
+            <!--android:drawablePadding="0dp"-->
+            <!--android:text="@string/btn_camera" />-->
 
         <Button
             android:id="@+id/nextBtn"
@@ -83,3 +85,5 @@
     </LinearLayout>
 
 </RelativeLayout>
+
+

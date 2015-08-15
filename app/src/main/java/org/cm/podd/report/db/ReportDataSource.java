@@ -395,6 +395,7 @@ public class ReportDataSource {
         db.delete("comment", null, null);
         db.delete("visualization_area", null, null);
         db.delete("visualization_volunteer", null, null);
+        db.delete("follow_alert", null, null);
         db.close();
     }
 

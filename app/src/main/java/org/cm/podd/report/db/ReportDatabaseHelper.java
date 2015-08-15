@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 12;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -154,16 +154,17 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  year INTEGER"
             + ")";
 
-    private static final String DROP_TABLE = "drop table report";
-    private static final String DROP_TABLE_IMAGE = "drop table report_image";
-    private static final String DROP_TABLE_QUEUE = "drop table report_queue";
-    private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
-    private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
-    private static final String DROP_TABLE_ADMINISTRATION_AREA = "drop table administration_area";
-    private static final String DROP_TABLE_FEED_ITEM = "drop table feed_item";
-    private static final String DROP_TABLE_COMMENT = "drop table comment";
-    private static final String DROP_TABLE_VISUALIZATION_AREA = "drop table visualization_area";
-    private static final String DROP_TABLE_VISUALIZATION_VOLUNTEER = "drop table visualization_volunteer";
+    private static final String CREATE_TABLE_FOLLOW_ALERT = "create table if not exists follow_alert"
+            + "("
+            + "  _id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + "  report_id INTEGER,"
+            + "  trigger_no INTEGER,"
+            + "  message INTEGER,"
+            + "  status INTEGER,"
+            + "  request_code INTEGER,"
+            + "  report_type INTEGER,"
+            + "  date INTEGER"
+            + ")";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -181,6 +182,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_COMMENT);
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
+        sqLiteDatabase.execSQL(CREATE_TABLE_FOLLOW_ALERT);
         Log.i("DB", "on create");
     }
 
@@ -208,7 +210,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 Log.i("DB", ">> upgrade from version 4");
             case 5:
                 Log.i("DB", ">> upgrade from version 5");
-                db.execSQL(DROP_TABLE_FEED_ITEM);
+                db.execSQL("drop table feed_item");
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
             case 6:
                 Log.i("DB", ">> upgrade from version 6");
@@ -228,6 +230,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 10:
                 Log.i("DB", ">> upgrade from version 10");
                 db.execSQL("ALTER TABLE report ADD COLUMN test_report INTEGER");
+            case 11:
+                Log.i("DB", ">> upgrade from version 11");
+                db.execSQL(CREATE_TABLE_FOLLOW_ALERT);
 
         }
     }

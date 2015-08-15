@@ -36,6 +36,7 @@ public class Form implements Serializable {
     private Map<Integer, Page> pageMap = new HashMap<Integer, Page>();
     private Map<String, Question> questionMapByName = new HashMap<String, Question>();
 
+    private Trigger trigger;
     private int startPageId;
 
     public void addQuestion(Question question) {
@@ -81,4 +82,17 @@ public class Form implements Serializable {
         return results;
     }
 
+    public Trigger getTrigger() {
+        return trigger;
+    }
+
+    public void setTrigger(Trigger trigger) {
+        this.trigger = trigger;
+    }
+
+    public void setStartWithTrigger(boolean flag) {
+        if (flag) {
+            startPageId = getTrigger().getPageId();
+        }
+    }
 }

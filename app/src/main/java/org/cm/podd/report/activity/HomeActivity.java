@@ -75,8 +75,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
 
@@ -181,6 +179,10 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
+
+//        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
+//                new FollowAlertReceiver(),
+//                new IntentFilter(FollowAlertService.TAG));
 
         /* return to last position after recreate activity */
         if (savedInstanceState != null) {

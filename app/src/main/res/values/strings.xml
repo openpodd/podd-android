@@ -26,7 +26,7 @@
     <string name="title_activity_setting">ตั้งค่า</string>
     <string name="server_address">Server address</string>
     <string name="logout">ออกจากระบบ</string>
-    <string name="btn_camera">กล้อง</string>
+    <string name="btn_camera">ถ่ายภาพใหม่</string>
     <string name="btn_next">ต่อไป &gt;</string>
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
@@ -200,5 +200,11 @@
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
     <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
     <string name="btn_ok">ตกลง</string>
+    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
+
+    <string name="trigger_pattern_test">101</string>
+    <string name="start_alert_hour">10</string>
+    <string name="frequency_alert_hour">2</string>
+    <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
 
 </resources>
