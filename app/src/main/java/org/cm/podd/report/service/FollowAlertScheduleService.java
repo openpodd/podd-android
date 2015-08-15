@@ -36,81 +36,80 @@ public class FollowAlertScheduleService {
         private String notificationText;
         private long reportId;
         private long reportType;
-        private int startPageId;
+        private boolean test;
 
-        public SetFollowAlertScheduleTask (Context context, String pattern, String notificationText, long reportId, long reportType, int startPageId){
+        public SetFollowAlertScheduleTask (Context context, String pattern, String notificationText, long reportId, long reportType, boolean test){
             this.context = context;
             this.pattern = pattern;
             this.notificationText = notificationText;
             this.reportId = reportId;
             this.reportType = reportType;
-            this.startPageId = startPageId;
+            this.test = test;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
 
             FollowAlertDataSource followAlertDataSource = new FollowAlertDataSource(context);
+            Log.d(TAG, String.format("start doInBackground, test = %s, pattern = %s", test, pattern));
 
-            if (pattern == null)
+            if (pattern == null) {
                 return null;
+            }
 
-            for (int i = 0; i < pattern.length(); i++ ) {
-                char ch = pattern.charAt(i);
 
-                if (ch == '1') {
+            if (test) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MINUTE, 2);
+                Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
+                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
 
-                    Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.DATE, (i + 1));
+            } else {
+                for (int i = 0; i < pattern.length(); i++ ) {
+                    char ch = pattern.charAt(i);
 
-                    int hour = Integer.parseInt(context.getString(R.string.start_alert_hour));
-                    int frequency = Integer.parseInt(context.getString(R.string.frequency_alert_hour));
-                    int end = (int) (24 / frequency);
+                    if (ch == '1') {
 
-                    for (int j = 0; j < end; j++) {
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.DATE, (i + 1));
 
-                        if (hour >= 24) {
-                            cal.add(Calendar.DATE, 1);
-                            hour = hour % 24;
+                        int hour = Integer.parseInt(context.getString(R.string.start_alert_hour));
+                        int frequency = Integer.parseInt(context.getString(R.string.frequency_alert_hour));
+                        int end = 5;
+
+                        for (int j = 0; j < end; j++) {
+
+                            if (hour >= 24) {
+                                cal.add(Calendar.DATE, 1);
+                                hour = hour % 24;
+                            }
+
+                            cal.set(Calendar.HOUR_OF_DAY, hour);
+                            cal.set(Calendar.MINUTE, 00);
+                            cal.set(Calendar.SECOND, 00);
+
+                            int triggerNo = (i + 1);
+
+                            long date = cal.getTimeInMillis();
+                            int requestCode = setFollowAlert(date, reportId, reportType, notificationText);
+
+                            Log.i(TAG, "alert @" + cal.get(Calendar.DATE) + "-" + hour);
+
+                            followAlertDataSource.createFollowAlert(reportId, triggerNo, notificationText, requestCode, date, reportType);
+                            hour = hour + ( frequency );
                         }
-
-                        cal.set(Calendar.HOUR_OF_DAY, hour);
-                        cal.set(Calendar.MINUTE, 00);
-                        cal.set(Calendar.SECOND, 00);
-
-                        int triggerNo = (i + 1);
-
-                        String message = notificationText;
-
-                        long date = cal.getTimeInMillis();
-                        int requestCode = setFollowAlert(date, reportId, reportType, startPageId, message);
-
-                        Log.i(TAG, "alert @" + cal.get(Calendar.DATE) + "-" + hour);
-
-                        followAlertDataSource.createFollowAlert(reportId, triggerNo, message, requestCode, date);
-                        hour = hour + ( frequency );
                     }
                 }
             }
 
+
             return null;
         }
 
-        private int setFollowAlert(long date, Long reportId, Long reportType, int startPageId, String message) {
-
+        private int setFollowAlert(long date, Long reportId, Long reportType, String message) {
             int requestCode = (new Random()).nextInt();
-
-            Intent intent = new Intent(context, FollowAlertReceiver.class);
-            intent.putExtra("reportId", reportId);
-            intent.putExtra("reportType", reportType);
-            intent.putExtra("message", message);
-            intent.putExtra("startPageId", startPageId);
-
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
-
-            AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            alarm.set(AlarmManager.RTC_WAKEUP, date, pendingIntent);
-
+            Log.d(TAG, String.format("setFollowAlert at %d, iwth requestCode = %d", date, requestCode));
+            FollowAlertReceiver.scheduleNotificationAlert(context, date, reportId, reportType, message, requestCode);
             return requestCode;
         }
 

@@ -162,20 +162,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  message INTEGER,"
             + "  status INTEGER,"
             + "  request_code INTEGER,"
+            + "  report_type INTEGER,"
             + "  date INTEGER"
             + ")";
-
-    private static final String DROP_TABLE = "drop table report";
-    private static final String DROP_TABLE_IMAGE = "drop table report_image";
-    private static final String DROP_TABLE_QUEUE = "drop table report_queue";
-    private static final String DROP_TABLE_REPORT_TYPE = "drop table report_type";
-    private static final String DROP_TABLE_NOTIFICATION = "drop table notification";
-    private static final String DROP_TABLE_ADMINISTRATION_AREA = "drop table administration_area";
-    private static final String DROP_TABLE_FEED_ITEM = "drop table feed_item";
-    private static final String DROP_TABLE_COMMENT = "drop table comment";
-    private static final String DROP_TABLE_VISUALIZATION_AREA = "drop table visualization_area";
-    private static final String DROP_TABLE_VISUALIZATION_VOLUNTEER = "drop table visualization_volunteer";
-    private static final String DROP_TABLE_FOLLOW_ALERT = "drop table follow_alert";
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -221,7 +210,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 Log.i("DB", ">> upgrade from version 4");
             case 5:
                 Log.i("DB", ">> upgrade from version 5");
-                db.execSQL(DROP_TABLE_FEED_ITEM);
+                db.execSQL("drop table feed_item");
                 db.execSQL(CREATE_TABLE_FEED_ITEM);
             case 6:
                 Log.i("DB", ">> upgrade from version 6");

@@ -41,6 +41,8 @@ public class PageView extends ScrollView {
         super(context);
         this.page = page;
 
+        setPadding(0, 15, 0, 0);
+
         ViewGroup.LayoutParams matchParent = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(matchParent);
 

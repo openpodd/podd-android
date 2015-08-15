@@ -30,7 +30,7 @@ public class FollowAlertDataSource {
     }
 
 
-    public long createFollowAlert(long reportId, int triggerNo, String message, int requestCode, long date) {
+    public long createFollowAlert(long reportId, int triggerNo, String message, int requestCode, long date, long reportTypeId) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -40,6 +40,7 @@ public class FollowAlertDataSource {
         values.put("status", STATUS_ALERT);
         values.put("request_code", requestCode);
         values.put("date", date);
+        values.put("report_type", reportTypeId);
 
         long id = db.insert("follow_alert", null, values);
         db.close();
@@ -57,7 +58,7 @@ public class FollowAlertDataSource {
 
         Calendar cal = Calendar.getInstance();
         Cursor cursor = db.rawQuery("select min(trigger_no) trigger_no from follow_alert where report_id=? and date >= ? and date < ?",
-                new String[] {Long.toString(reportId), cal.getTimeInMillis() +"", Long.toString(nextDay)});
+                new String[]{Long.toString(reportId), cal.getTimeInMillis() + "", Long.toString(nextDay)});
 
         while (cursor.moveToNext()) {
             triggerNo = cursor.getInt(cursor.getColumnIndex("trigger_no"));
@@ -72,7 +73,7 @@ public class FollowAlertDataSource {
         ArrayList<Integer> requestCodes = new ArrayList<Integer>();
 
         Cursor cursor = db.rawQuery("select * from follow_alert where report_id= ?"
-                + " and trigger_no=? order by _id asc", new String[] {Long.toString(reportId),Integer.toString(triggerNo)});
+                + " and trigger_no=? order by _id asc", new String[]{Long.toString(reportId), Integer.toString(triggerNo)});
 
         while (cursor.moveToNext()) {
             int request_code = cursor.getInt(cursor.getColumnIndex("request_code"));
@@ -94,7 +95,7 @@ public class FollowAlertDataSource {
 
     public void deleteFollowAlert(long _id) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
-        db.delete("follow_alert", "_id = ?", new String[] { Long.toString(_id) });
+        db.delete("follow_alert", "_id = ?", new String[]{Long.toString(_id)});
         db.close();
     }
 

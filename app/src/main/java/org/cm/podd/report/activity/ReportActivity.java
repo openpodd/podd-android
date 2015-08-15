@@ -17,24 +17,18 @@
 
 package org.cm.podd.report.activity;
 
-import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -49,9 +43,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -87,14 +79,10 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
-import java.util.TimeZone;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -106,10 +94,6 @@ public class ReportActivity extends ActionBarActivity
     private static final String TAG = "ReportActivity";
     private Button prevBtn;
     private Button nextBtn;
-    private Button cameraBtn;
-    private Button galleryBtn;
-    private TextView cameraHint;
-    private LinearLayout cameraController;
     private View disableMaskView;
     private boolean testReport = false;
 
@@ -136,6 +120,8 @@ public class ReportActivity extends ActionBarActivity
     private String remark;
     private int reportSubmit;
 
+    private View containerView;
+
     private SharedPrefUtil sharedPrefUtil;
 
     protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -154,8 +140,6 @@ public class ReportActivity extends ActionBarActivity
     protected FollowAlertReceiver mAlertReceiver = new FollowAlertReceiver();
     private CameraInteractionListener cameraInteractionListener;
     private long startTime;
-    private String pattern;
-    private String notificationText;
 
     private long parentReportId = -1;
 
@@ -186,34 +170,6 @@ public class ReportActivity extends ActionBarActivity
         });
         prevBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
 
-        cameraController = (LinearLayout) findViewById(R.id.controlCameraBar);
-
-        cameraBtn = (Button) findViewById(R.id.cameraBtn);
-        cameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cameraInteractionListener != null) {
-                    cameraInteractionListener.doGetImage();
-                }
-            }
-        });
-        cameraBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-
-        galleryBtn = (Button) findViewById(R.id.galleryBtn);
-        galleryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (cameraInteractionListener != null) {
-                    cameraInteractionListener.doGetImage();
-                }
-            }
-        });
-        galleryBtn.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-
-//        cameraHint = (TextView) findViewById(R.id.cameraHint);
-//        cameraHint.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-//        cameraHint.setVisibility(View.GONE);
-
         disableMaskView = findViewById(R.id.disableMask);
 
         reportDataSource = new ReportDataSource(this);
@@ -240,9 +196,9 @@ public class ReportActivity extends ActionBarActivity
 
         } else {
             Intent intent = getIntent();
-            reportType = intent.getLongExtra("reportType", 0);
-            reportId = intent.getLongExtra("reportId", -99);
-            follow = intent.getBooleanExtra("follow", false);
+            reportType = intent.getLongExtra("reportType", 0);          // mandatory
+            reportId = intent.getLongExtra("reportId", -99);            // optional
+            follow = intent.getBooleanExtra("follow", false);           // optional
             testReport = intent.getBooleanExtra("test", false);
             startPageId = intent.getIntExtra("startPageId", -1);
             Log.d(TAG, "onCreate, testFlag = " + testReport);
@@ -253,9 +209,15 @@ public class ReportActivity extends ActionBarActivity
             }
 
             Form form = reportTypeDataSource.getForm(reportType);
+            trigger = form.getTrigger();
+            if (trigger != null) {
+                Log.d(TAG, String.format("This report type contain a trigger with pattern:%s, pageId:%d, notificationText:%s", trigger.getPattern(), trigger.getPageId(), trigger.getNotificationText()));
+            }
+            if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_GCM_NOTIFICATION)) {
+                form.setStartWithTrigger(true);
+            }
 
             formIterator = new FormIterator(form);
-            trigger = formIterator.getForm().getTrigger();
 
             if (reportId == -99) {
                 reportId = reportDataSource.createDraftReport(reportType, testReport);
@@ -270,6 +232,7 @@ public class ReportActivity extends ActionBarActivity
         /* check softkeyboard visibility */
         final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
         final View controlBar = findViewById(R.id.controlBar);
+        containerView = findViewById(R.id.container);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -364,8 +327,6 @@ public class ReportActivity extends ActionBarActivity
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
 
-        setCameraBtnVisible(false);
-
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 currentFragment = "dynamicForm";
@@ -382,7 +343,6 @@ public class ReportActivity extends ActionBarActivity
                 if (! formIterator.previousPage()) {
                     currentFragment = ReportImageFragment.class.getName();
                     showHideDisableMask(false);
-                    setCameraBtnVisible(true);
                 }
             }
         }
@@ -414,7 +374,6 @@ public class ReportActivity extends ActionBarActivity
         boolean isDynamicForm = false;
 
         hideKeyboard();
-        setCameraBtnVisible(false);
 
         Fragment oldFragment = getVisibleFragment();
         if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
@@ -425,7 +384,6 @@ public class ReportActivity extends ActionBarActivity
             Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
             showHideDisableMask(false);
-            setCameraBtnVisible(true);
         } else {
 
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
@@ -617,16 +575,6 @@ public class ReportActivity extends ActionBarActivity
 //        }
     }
 
-    public void setCameraBtnVisible(boolean flag) {
-        if (flag) {
-            cameraController.setVisibility(View.VISIBLE);
-            cameraController.setVisibility(View.VISIBLE);
-
-        } else {
-            cameraController.setVisibility(View.GONE);
-            cameraController.setVisibility(View.GONE);
-        }
-    }
 
     @Override
     public void finishReport(int action) {
@@ -648,17 +596,23 @@ public class ReportActivity extends ActionBarActivity
                     broadcastReportSubmission();
 
                     if (report.getTestReport() == Report.FALSE && !follow && trigger != null) {
-                        pattern = trigger.getPattern();
-                        notificationText = trigger.getNotificationText();
-                        startPageId = trigger.getPageId();
 
-                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this, pattern, notificationText,
-                                report.getId(), report.getType(), startPageId
+                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this, trigger.getPattern(), trigger.getNotificationText(),
+                                report.getId(), report.getType(), false
                         ).execute((Void[]) null);
                     }
 
                     if (follow && parentReportId != -1) {
                         new FollowAlertScheduleService.CancelFollowAlertScheduleTask(this, parentReportId).execute((Void[]) null);
+                    }
+
+                    if (report.getTestReport() == Report.TRUE && !follow && trigger != null) {
+                        Log.d(TAG, "schedule test notification");
+                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this,
+                                trigger.getPattern(), trigger.getNotificationText(),
+                                report.getId(), report.getType(),
+                                true
+                        ).execute((Void[]) null);
                     }
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
@@ -705,9 +659,30 @@ public class ReportActivity extends ActionBarActivity
 
     private void saveForm(int draft) {
         Map<String, Object> data = formIterator.getData(false);
-        String jsonData = new JSONObject(data).toString();
-        Log.d(TAG, jsonData);
-        reportDataSource.updateData(reportId, jsonData, draft);
+        JSONObject jsonData = new JSONObject(data);
+
+        if (trigger.isMerge()) {
+            Report report = reportDataSource.getById(reportId);
+            String formDataStr = report.getFormData();
+            if (formDataStr != null) {
+                try {
+                    JSONObject originData = new JSONObject(formDataStr);
+                    Iterator<String> keys = jsonData.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        originData.put(key, jsonData.get(key));
+                    }
+
+                    jsonData = originData;
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "error parsing form_data", e);
+                }
+            }
+
+        }
+        Log.d(TAG, jsonData.toString());
+        reportDataSource.updateData(reportId, jsonData.toString(), draft);
     }
 
     public void startLocationService() {

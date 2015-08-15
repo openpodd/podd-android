@@ -17,8 +17,6 @@
 
 package org.cm.podd.report.model.parser;
 
-import android.util.Log;
-
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.MultipleChoiceItem;
@@ -35,8 +33,6 @@ import org.cm.podd.report.model.validation.RequireValidation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.jar.JarException;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -84,12 +80,8 @@ public class FormParser {
             parseTransition(transition);
         }
 
-        try {
-            JSONObject trigger = doc.getJSONObject("trigger");
-            parseTrigger(trigger);
-
-        } catch (JSONException ex) {
-
+        if (doc.has("trigger")) {
+            parseTrigger(doc.getJSONObject("trigger"));
         }
 
     }
@@ -278,7 +270,8 @@ public class FormParser {
 
     public void parseTrigger(JSONObject item) throws JSONException {
         if (item != null) {
-            Trigger trigger = new Trigger(item.getString("pattern"), item.getInt("pageId"), item.getString("notificationText"));
+            boolean merge = item.optBoolean("merge", false);
+            Trigger trigger = new Trigger(item.getString("pattern"), item.getInt("pageId"), item.getString("notificationText"), merge);
             form.setTrigger(trigger);
         }
     }

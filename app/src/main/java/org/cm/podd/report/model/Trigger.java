@@ -1,18 +1,27 @@
 package org.cm.podd.report.model;
 
+import java.io.Serializable;
+
 /**
  * Created by sudarat on 8/6/15 AD.
  */
 
-public class Trigger {
+public class Trigger implements Serializable {
     private String pattern;
     private int pageId;
+    private boolean merge = false;
+
     private String notificationText;
 
     public Trigger(String pattern, int pageId, String notificationText) {
+        this(pattern, pageId, notificationText, false);
+    }
+
+    public Trigger(String pattern, int pageId, String notificationText, boolean merge) {
         this.pattern = pattern;
         this.pageId = pageId;
         this.notificationText = notificationText;
+        this.merge = merge;
     }
 
     public String getPattern() {
@@ -39,4 +48,11 @@ public class Trigger {
         this.notificationText = notificationText;
     }
 
+    public boolean isMerge() {
+        return merge;
+    }
+
+    public void setMerge(boolean merge) {
+        this.merge = merge;
+    }
 }

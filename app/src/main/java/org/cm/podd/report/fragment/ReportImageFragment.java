@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -224,7 +225,7 @@ public class ReportImageFragment extends Fragment {
 
                     if (checked != null) {
                         boolean hasCheckedElement = false;
-                        for (int i = 0 ; i < checked.size() && ! hasCheckedElement ; i++) {
+                        for (int i = 0; i < checked.size() && !hasCheckedElement; i++) {
                             hasCheckedElement = checked.valueAt(i);
                         }
 
@@ -243,7 +244,7 @@ public class ReportImageFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // use ActionMode.Callback for compatibility with pre Honeycomb
                 if (mMode == null) {
-                    mMode = ((ActionBarActivity)getActivity()).startSupportActionMode(
+                    mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
                             new ActionModeCallback(getActivity()));
                 }
                 return false;
@@ -257,6 +258,22 @@ public class ReportImageFragment extends Fragment {
                         popUpChooseImage();
                     }
                 }
+            }
+        });
+
+        Button cameraBtn = (Button) view.findViewById(R.id.cameraBtn);
+        cameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onMediaChoiceRequest(CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+            }
+        });
+
+        Button galleryBtn = (Button) view.findViewById(R.id.galleryBtn);
+        galleryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onMediaChoiceRequest(CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
             }
         });
 

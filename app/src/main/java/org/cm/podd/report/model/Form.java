@@ -89,4 +89,10 @@ public class Form implements Serializable {
     public void setTrigger(Trigger trigger) {
         this.trigger = trigger;
     }
+
+    public void setStartWithTrigger(boolean flag) {
+        if (flag) {
+            startPageId = getTrigger().getPageId();
+        }
+    }
 }

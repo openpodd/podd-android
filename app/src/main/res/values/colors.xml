@@ -2,12 +2,14 @@
 <resources>
     <color name="black">#000000</color>
     <color name="sky_blue">#2196f3</color>
+    <color name="sky_blue_press">#2080a0</color>
     <color name="white">#ffffff</color>
     <color name="drawer_bg">#fefefe</color>
     <color name="drawer_text_color">#333333</color>
     <color name="drawer_text_color_active">#ffffff</color>
     <color name="action_bar_bg">#dddddd</color>
     <color name="bright_pink">#ff4081</color>
+    <color name="bright_pink_press">#ea2051</color>
     <color name="selected_image_mask">#50000000</color>
     <color name="report_row_divider">#d4d4d4</color>
     <color name="report_row_bg">#f9f9f9</color>
@@ -19,6 +21,8 @@
     <color name="text_label_report">#333333</color>
     <color name="list_item_header_bg">#EBEBEB</color>
     <color name="list_item_separator">#88ededed</color>
+    <color name="camera_button_bg">#88ededed</color>
+    <color name="camera_button_bg_press">#88adadad</color>
     <color name="circle_bg">#C5C5C5</color>
     <color name="list_item_header_text_color">#F0F0F0</color>
     <color name="graph_animal_sick">#A47FB9</color>

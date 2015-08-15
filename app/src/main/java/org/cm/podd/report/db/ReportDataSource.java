@@ -207,52 +207,6 @@ public class ReportDataSource {
         return report;
     }
 
-//    public Report getParentByGUID(String guid) {
-//        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-//        Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r.guid = ?", new String[]{guid});
-//        cursor.moveToFirst();
-//
-//        long type = cursor.getLong(cursor.getColumnIndex("type"));
-//        Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-//        int negative = cursor.getInt(cursor.getColumnIndex("negative"));
-//        int draft = cursor.getInt(cursor.getColumnIndex("draft"));
-//        int submit = cursor.getInt(cursor.getColumnIndex("submit"));
-//        double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
-//        double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
-//        Date startDate = null;
-//        if (cursor.getInt(cursor.getColumnIndex("start_date")) != 0) {
-//            long t = cursor.getLong(cursor.getColumnIndex("start_date"));
-//            startDate = new Date(t);
-//        }
-//        long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
-//        String remark = cursor.getString(cursor.getColumnIndex("remark"));
-//        String guid = cursor.getString(cursor.getColumnIndex("guid"));
-//        int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
-//
-//        int followFlag = cursor.getInt(cursor.getColumnIndex("follow_flag"));
-//        Date followDate = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
-//        String parentGuid = cursor.getString(cursor.getColumnIndex("parent_guid"));
-//
-//
-//        Report report = new Report(id, type, date, negative, draft, submit);
-//        report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
-//        report.setLatitude(latitude);
-//        report.setLongitude(longitude);
-//        report.setStartDate(startDate);
-//        report.setRegionId(regionId);
-//        report.setRemark(remark);
-//        report.setGuid(guid);
-//        report.setFollowDate(followDate);
-//        report.setFollowFlag(followFlag);
-//        report.setParentGuid(parentGuid);
-//        report.setTestReport(testReport);
-//
-//        report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
-//        cursor.close();
-//        db.close();
-//        return report;
-//    }
-
     public void updateData(long reportId, String jsonStr, int draftFlag) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();

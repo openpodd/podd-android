@@ -107,7 +107,11 @@ public class DataSubmitService extends IntentService {
                     Report report = reportDataSource.getById(reportId);
 
                     if (report != null) {
-                        success = submitReport(report);
+                        if (BuildConfig.REAL_SUBMIT) {
+                            success = submitReport(report);
+                        } else {
+                            success = true;
+                        }
                         if (success) {
                             // mark report as done submitting to server
                             reportDataSource.updateSubmit(reportId);
