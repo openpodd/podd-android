@@ -52,6 +52,11 @@ public class FollowAlertDataSource {
         return db.rawQuery("SELECT * FROM follow_alert order by _id desc", null);
     }
 
+    public Cursor getUnDone() {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM follow_alert where status = 0 order by _id desc", null);
+    }
+
     public int getTriggerNoByNow1Day(long reportId, long nextDay) {
         int triggerNo = -1;
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();

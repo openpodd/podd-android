@@ -91,7 +91,7 @@ public class Form implements Serializable {
     }
 
     public void setStartWithTrigger(boolean flag) {
-        if (flag) {
+        if (flag && trigger != null) {
             startPageId = getTrigger().getPageId();
         }
     }

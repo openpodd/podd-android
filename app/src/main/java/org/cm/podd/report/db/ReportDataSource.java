@@ -89,49 +89,53 @@ public class ReportDataSource {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
 
         Cursor cursor = db.rawQuery("SELECT r.* FROM report r where r._id = ?", new String[]{Long.toString(sourceId)});
-        cursor.moveToFirst();
+        if (cursor.moveToFirst()) {
 
-        long type = cursor.getLong(cursor.getColumnIndex("type"));
-        Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
-        Date startDate = null;
-        if (cursor.getInt(cursor.getColumnIndex("start_date")) != 0) {
-            long t = cursor.getLong(cursor.getColumnIndex("start_date"));
-            startDate = new Date(t);
+            long type = cursor.getLong(cursor.getColumnIndex("type"));
+            Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
+            Date startDate = null;
+            if (cursor.getInt(cursor.getColumnIndex("start_date")) != 0) {
+                long t = cursor.getLong(cursor.getColumnIndex("start_date"));
+                startDate = new Date(t);
+            }
+            long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
+            String formData = cursor.getString(cursor.getColumnIndex("form_data"));
+            String guid = cursor.getString(cursor.getColumnIndex("guid"));
+
+            int follow_date = cursor.getInt(cursor.getColumnIndex("follow_date"));
+            if (follow_date == 0) {
+                db.execSQL("update report set follow_date = ? where _id = ?", new Object[] {Long.MAX_VALUE, sourceId });
+            }
+
+            Cursor formCursor = db.rawQuery("select form_data from report where parent_guid = ? order by _id desc limit 1", new String[]{guid});
+            if (formCursor.moveToFirst()) {
+                formData = formCursor.getString(formCursor.getColumnIndex("form_data"));
+            }
+
+            int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
+            formCursor.close();
+
+            ContentValues values = new ContentValues();
+            values.put("date", date.getTime());
+            values.put("type", type);
+            values.put("draft", 1);
+            values.put("negative", 1);
+            values.put("submit", 0);
+            values.put("follow_flag", 1);
+            values.put("follow_date", new Date().getTime());
+            values.put("form_data", formData);
+            values.put("start_date", startDate.getTime());
+            values.put("region_id", regionId);
+            values.put("parent_guid", guid);
+            values.put("test_report", testReport);
+            long id = db.insert("report", null, values);
+
+            db.close();
+            return id;
+        } else { // parent report had been removed. (maybe from user logout scenario)
+            return -99;
         }
-        long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
-        String formData = cursor.getString(cursor.getColumnIndex("form_data"));
-        String guid = cursor.getString(cursor.getColumnIndex("guid"));
 
-        int follow_date = cursor.getInt(cursor.getColumnIndex("follow_date"));
-        if (follow_date == 0) {
-            db.execSQL("update report set follow_date = ? where _id = ?", new Object[] {Long.MAX_VALUE, sourceId });
-        }
-
-        Cursor formCursor = db.rawQuery("select form_data from report where parent_guid = ? order by _id desc limit 1", new String[]{guid});
-        if (formCursor.moveToFirst()) {
-            formData = formCursor.getString(formCursor.getColumnIndex("form_data"));
-        }
-
-        int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
-        formCursor.close();
-
-        ContentValues values = new ContentValues();
-        values.put("date", date.getTime());
-        values.put("type", type);
-        values.put("draft", 1);
-        values.put("negative", 1);
-        values.put("submit", 0);
-        values.put("follow_flag", 1);
-        values.put("follow_date", new Date().getTime());
-        values.put("form_data", formData);
-        values.put("start_date", startDate.getTime());
-        values.put("region_id", regionId);
-        values.put("parent_guid", guid);
-        values.put("test_report", testReport);
-        long id = db.insert("report", null, values);
-
-        db.close();
-        return id;
     }
 
     /*

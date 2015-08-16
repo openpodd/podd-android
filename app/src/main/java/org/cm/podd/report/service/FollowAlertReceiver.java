@@ -24,21 +24,11 @@ public class FollowAlertReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d(TAG, "onReceive with intent = " + intent.getAction());
         if (action != null && action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
-            FollowAlertDataSource followAlertDataSource = new FollowAlertDataSource(context);
-            ReportDataSource reportDataSource = new ReportDataSource(context);
-            Cursor triggers = followAlertDataSource.getAll();
-            while (triggers.moveToNext()) {
-                long date = triggers.getLong(triggers.getColumnIndex("date"));
-                long reportId = triggers.getLong(triggers.getColumnIndex("report_id"));
-                String message = triggers.getString(triggers.getColumnIndex("message"));
-                long reportType = triggers.getLong(triggers.getColumnIndex("report_type"));
-                int requestCode = triggers.getInt(triggers.getColumnIndex("request_code"));
-
-                scheduleNotificationAlert(context, date, reportId, reportType, message, requestCode);
-            }
-
-
+            Log.d(TAG, "ACTION_BOOT_COMPLETED");
+            Intent rescheduleIntent = new Intent(context, FollowAlertRescheduleService.class);
+            startWakefulService(context, rescheduleIntent);
         } else {
             ComponentName comp = new ComponentName(context.getPackageName(),
                     FollowAlertService.class.getName());
@@ -46,7 +36,6 @@ public class FollowAlertReceiver extends WakefulBroadcastReceiver {
             startWakefulService(context, (intent.setComponent(comp)));
             setResultCode(Activity.RESULT_OK);
         }
-
     }
 
     public static void scheduleNotificationAlert(Context context, long date, Long reportId, Long reportType, String message, int requestCode) {
