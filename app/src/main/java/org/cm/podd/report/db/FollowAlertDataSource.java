@@ -42,6 +42,7 @@ public class FollowAlertDataSource {
         values.put("date", date);
         values.put("report_type", reportTypeId);
 
+        Log.d(TAG, String.format("create follow_alert with report_id = %d, trigger_no = %d, request_code = %d", reportId, triggerNo, requestCode));
         long id = db.insert("follow_alert", null, values);
         db.close();
         return id;

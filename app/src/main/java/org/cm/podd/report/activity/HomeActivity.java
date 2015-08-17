@@ -68,6 +68,7 @@ import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -426,6 +427,12 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                     }
                 });
                 alertDialogBuilder.show();
+            } else if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_GCM_NOTIFICATION)) {
+                Intent reportIntent = new Intent(this, ReportActivity.class);
+                reportIntent.putExtra("reportType", intent.getLongExtra("reportType", 0));
+                reportIntent.putExtra("reportId", intent.getLongExtra("reportId", -99));
+                reportIntent.putExtra("follow", intent.getBooleanExtra("follow", true));
+                startActivity(reportIntent);
             }
         }
 

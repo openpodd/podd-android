@@ -206,6 +206,7 @@ public class ReportActivity extends ActionBarActivity
             if (follow) {
                 parentReportId = reportId;
                 reportId = reportDataSource.createFollowReport(reportId);
+                Log.d(TAG, String.format("create follow report with reportId = %d", reportId));
             }
 
             Form form = reportTypeDataSource.getForm(reportType);

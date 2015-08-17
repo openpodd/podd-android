@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.activity.ReportActivity;
 
 
@@ -41,7 +42,7 @@ public class FollowAlertService extends IntentService {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent intent = new Intent(this, ReportActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.setAction(ORG_CM_PODD_REPORT_GCM_NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 

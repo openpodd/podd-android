@@ -63,6 +63,17 @@ public class FollowAlertScheduleService {
                 cal.add(Calendar.MINUTE, 2);
                 Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
                 setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 1, cal.getTimeInMillis(), reportType);
+
+                cal.add(Calendar.MINUTE, 4);
+                Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
+                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 2, cal.getTimeInMillis(), reportType);
+
+                cal.add(Calendar.MINUTE, 6);
+                Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
+                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 3, cal.getTimeInMillis(), reportType);
 
             } else {
                 for (int i = 0; i < pattern.length(); i++ ) {
