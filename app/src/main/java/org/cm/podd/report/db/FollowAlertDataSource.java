@@ -8,7 +8,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sudarat on 8/4/15 AD.
@@ -74,16 +77,23 @@ public class FollowAlertDataSource {
         return triggerNo;
     }
 
-    public List<Integer> getRequestCodes(long reportId, int triggerNo) {
+    public List<Map> getRequestCodes(long reportId, int triggerNo) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-        ArrayList<Integer> requestCodes = new ArrayList<Integer>();
+        ArrayList<Map> requestCodes = new ArrayList<Map>();
 
         Cursor cursor = db.rawQuery("select * from follow_alert where report_id= ?"
                 + " and trigger_no=? order by _id asc", new String[]{Long.toString(reportId), Integer.toString(triggerNo)});
 
         while (cursor.moveToNext()) {
-            int request_code = cursor.getInt(cursor.getColumnIndex("request_code"));
-            requestCodes.add(request_code);
+            int requestCode = cursor.getInt(cursor.getColumnIndex("request_code"));
+            long reportType = cursor.getLong(cursor.getColumnIndex("report_type"));
+            String message = cursor.getString(cursor.getColumnIndex("message"));
+
+            Hashtable tmp = new Hashtable();
+            tmp.put("requestCode", requestCode);
+            tmp.put("reportType", reportType);
+            tmp.put("message", message);
+            requestCodes.add(tmp);
         }
         cursor.close();
         db.close();
@@ -96,6 +106,7 @@ public class FollowAlertDataSource {
         ContentValues values = new ContentValues();
         values.put("status", STATUS_DONE);
         db.update("follow_alert", values, "report_id = ? and trigger_no = ?", new String[]{Long.toString(reportId), Integer.toString(triggerNo)});
+        Log.d(TAG, String.format("update follow_alert set status = done where report_id = %d and trigger_no = %d", reportId, triggerNo));
         db.close();
     }
 

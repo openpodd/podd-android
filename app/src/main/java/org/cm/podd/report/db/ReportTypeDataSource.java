@@ -66,6 +66,7 @@ public class ReportTypeDataSource {
             JSONArray jsonArr = new JSONArray(reportTypes);
             for (int i = 0; i < jsonArr.length(); i++) {
                 JSONObject jsonObj = jsonArr.getJSONObject(i);
+                Log.d(TAG, String.format("insert report type with id = %d, name = %s", jsonObj.getLong("id"), jsonObj.getString("name")));
                 ReportType reportType = new ReportType(
                         jsonObj.getLong("id"),
                         jsonObj.getString("name")

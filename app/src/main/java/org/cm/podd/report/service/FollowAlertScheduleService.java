@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -62,18 +63,18 @@ public class FollowAlertScheduleService {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MINUTE, 2);
                 Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
-                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
-                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 1, cal.getTimeInMillis(), reportType);
+                int requestCode = setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, requestCode, cal.getTimeInMillis(), reportType);
 
                 cal.add(Calendar.MINUTE, 4);
                 Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
-                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
-                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 2, cal.getTimeInMillis(), reportType);
+                requestCode = setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, requestCode, cal.getTimeInMillis(), reportType);
 
                 cal.add(Calendar.MINUTE, 6);
                 Log.d(TAG, String.format("call setFollowAlert at %d", cal.getTimeInMillis()));
-                setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
-                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, 3, cal.getTimeInMillis(), reportType);
+                requestCode = setFollowAlert(cal.getTimeInMillis(), reportId, reportType, notificationText);
+                followAlertDataSource.createFollowAlert(reportId, 1, notificationText, requestCode, cal.getTimeInMillis(), reportType);
 
             } else {
                 for (int i = 0; i < pattern.length(); i++ ) {
@@ -151,12 +152,15 @@ public class FollowAlertScheduleService {
             cal.set(Calendar.SECOND, 00);
 
             int triggerNo = followAlertDataSource.getTriggerNoByNow1Day(reportId, cal.getTimeInMillis());
+            Log.d(TAG, String.format("triggerNo = %d", triggerNo));
 
-            List<Integer> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
-            for (int i = 0; i < requestCodes.size(); i++ ) {
-                cancelFollowAlert(requestCodes.get(i));
+            List<Map> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
+            for (Map tmp : requestCodes) {
+                cancelFollowAlert((Integer) tmp.get("requestCode"),
+                        (Long) tmp.get("reportType"),
+                        (String) tmp.get("message")
+                );
             }
-
             Log.i(TAG, "cancel alert:" + requestCodes.size());
 
             if (requestCodes.size() > 1)
@@ -164,11 +168,15 @@ public class FollowAlertScheduleService {
             return null;
         }
 
-        private void cancelFollowAlert(int requestCode) {
+        private void cancelFollowAlert(int requestCode, long reportType, String message) {
             try{
                 Intent intent = new Intent(context, FollowAlertReceiver.class);
+                intent.putExtra("reportId", reportId);
+                intent.putExtra("reportType", reportType);
+                intent.putExtra("message", message);
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+                Log.d(TAG, String.format("Remove requestcode %d, reportType %d, message %s  from AlarmManager", requestCode, reportType, message));
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 alarm.cancel(pendingIntent);
 
