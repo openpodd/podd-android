@@ -12,13 +12,12 @@ import android.support.v4.app.NotificationCompat;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
-import org.cm.podd.report.activity.ReportActivity;
 
 
 public class FollowAlertService extends IntentService {
     public static final int NOTIFICATION_ID = 2;
     public static final String TAG = "FollowAlertService";
-    public static final String ORG_CM_PODD_REPORT_GCM_NOTIFICATION = "org.cm.podd.report.GCM_NOTIFICATION";
+    public static final String ORG_CM_PODD_REPORT_FOLLOW = "org.cm.podd.report.REPORT_FOLLOW";
 
     private NotificationManager mNotificationManager;
 
@@ -43,7 +42,7 @@ public class FollowAlertService extends IntentService {
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(this, HomeActivity.class);
-        intent.setAction(ORG_CM_PODD_REPORT_GCM_NOTIFICATION);
+        intent.setAction(ORG_CM_PODD_REPORT_FOLLOW);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         intent.putExtra("reportId", reportId);

@@ -214,7 +214,7 @@ public class ReportActivity extends ActionBarActivity
             if (trigger != null) {
                 Log.d(TAG, String.format("This report type contain a trigger with pattern:%s, pageId:%d, notificationText:%s", trigger.getPattern(), trigger.getPageId(), trigger.getNotificationText()));
             }
-            if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_GCM_NOTIFICATION)) {
+            if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW)) {
                 form.setStartWithTrigger(true);
             }
 
