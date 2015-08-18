@@ -156,7 +156,8 @@ public class FollowAlertScheduleService {
 
             List<Map> requestCodes = followAlertDataSource.getRequestCodes(reportId, triggerNo);
             for (Map tmp : requestCodes) {
-                cancelFollowAlert((Integer) tmp.get("requestCode"),
+                cancelFollowAlert(context, reportId,
+                        (Integer) tmp.get("requestCode"),
                         (Long) tmp.get("reportType"),
                         (String) tmp.get("message")
                 );
@@ -168,24 +169,25 @@ public class FollowAlertScheduleService {
             return null;
         }
 
-        private void cancelFollowAlert(int requestCode, long reportType, String message) {
-            try{
-                Intent intent = new Intent(context, FollowAlertReceiver.class);
-                intent.putExtra("reportId", reportId);
-                intent.putExtra("reportType", reportType);
-                intent.putExtra("message", message);
-
-                Log.d(TAG, String.format("Remove requestcode %d, reportType %d, message %s  from AlarmManager", requestCode, reportType, message));
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                alarm.cancel(pendingIntent);
-
-            }catch (Exception e){
-                Log.e(TAG, "error" + e.getMessage());
-                e.printStackTrace();
-            }
-        }
     }
 
+
+    public static void cancelFollowAlert(Context context, long reportId, int requestCode, long reportType, String message) {
+        try{
+            Intent intent = new Intent(context, FollowAlertReceiver.class);
+            intent.putExtra("reportId", reportId);
+            intent.putExtra("reportType", reportType);
+            intent.putExtra("message", message);
+
+            Log.d(TAG, String.format("Remove requestcode %d, reportType %d, message %s  from AlarmManager", requestCode, reportType, message));
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarm.cancel(pendingIntent);
+
+        }catch (Exception e){
+            Log.e(TAG, "error" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
 

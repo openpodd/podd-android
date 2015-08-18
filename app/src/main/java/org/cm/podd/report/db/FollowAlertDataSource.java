@@ -116,4 +116,28 @@ public class FollowAlertDataSource {
         db.close();
     }
 
+    public List<Map> getUnDoneRequest() {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        ArrayList<Map> requestCodes = new ArrayList<Map>();
+
+        Cursor cursor = db.rawQuery("select * from follow_alert where status = ?"
+                + " order by _id asc", new String[]{Integer.toString(STATUS_ALERT)});
+
+        while (cursor.moveToNext()) {
+            long reportId = cursor.getLong(cursor.getColumnIndex("report_id"));
+            int requestCode = cursor.getInt(cursor.getColumnIndex("request_code"));
+            long reportType = cursor.getLong(cursor.getColumnIndex("report_type"));
+            String message = cursor.getString(cursor.getColumnIndex("message"));
+
+            Hashtable tmp = new Hashtable();
+            tmp.put("reportId", reportId);
+            tmp.put("requestCode", requestCode);
+            tmp.put("reportType", reportType);
+            tmp.put("message", message);
+            requestCodes.add(tmp);
+        }
+        cursor.close();
+        db.close();
+        return requestCodes;
+    }
 }

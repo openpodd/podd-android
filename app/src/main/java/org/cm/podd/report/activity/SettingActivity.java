@@ -48,9 +48,11 @@ import com.google.android.gms.analytics.Tracker;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.RegistrationFormFragment;
 import org.cm.podd.report.fragment.ResetPasswordFragment;
+import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.UploadProfileService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -62,6 +64,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -351,12 +355,27 @@ public class SettingActivity extends ActionBarActivity {
         // clear access token
         sharedPrefUtil.clearAllData();
 
+        clearAllPendingAlert();
+
         // clear all report data
         ReportDataSource db = new ReportDataSource(this);
         db.clearAllData();
 
         // Back to home, then redirect to login
         finish();
+    }
+
+    private void clearAllPendingAlert() {
+        FollowAlertDataSource followAlertDataSource = new FollowAlertDataSource(getApplicationContext());
+        List<Map> requestCodes = followAlertDataSource.getUnDoneRequest();
+        for (Map tmp : requestCodes) {
+            FollowAlertScheduleService.cancelFollowAlert(getApplicationContext(),
+                    (Long) tmp.get("reportId"),
+                    (Integer) tmp.get("requestCode"),
+                    (Long) tmp.get("reportType"),
+                    (String) tmp.get("message")
+            );
+        }
     }
 
     private void onMediaChoiceRequest(int requestCode) {
