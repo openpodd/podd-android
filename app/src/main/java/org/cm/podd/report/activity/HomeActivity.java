@@ -427,7 +427,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                     }
                 });
                 alertDialogBuilder.show();
-            } else if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_GCM_NOTIFICATION)) {
+            } else if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW)) {
                 Intent reportIntent = new Intent(this, ReportActivity.class);
                 reportIntent.putExtra("reportType", intent.getLongExtra("reportType", 0));
                 reportIntent.putExtra("reportId", intent.getLongExtra("reportId", -99));
