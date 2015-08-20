@@ -89,6 +89,28 @@ public class GcmIntentService extends IntentService {
                         // refresh notification list and drawer/actionbar counter
                         sendBroadcast(new Intent(HomeActivity.RECEIVE_MESSAGE_ACTION));
 
+                    } else if (payloadType.equals("followup")) {
+
+                        // format => reportId@reportType@title@content
+                        String[] arr = payload.split("@");
+                        if (arr.length == 4) {
+                            try {
+
+                                long reportId = Long.parseLong(arr[0]);
+                                long reportType = Long.parseLong(arr[1]);
+                                String title = arr[2];
+                                String message = arr[3];
+                                FollowAlertService.notifyMessage(this, title, message, reportId, reportType);
+
+                            } catch (NumberFormatException e) {
+                                Log.e(TAG, String.format("Can't parse reportId or reporType [%s, %s]", arr[0], arr[1]));
+                            }
+
+                        } else {
+                            Log.e(TAG, String.format("Argument mismatch: require 4 get %d", arr.length));
+                        }
+
+
                     } else if (payloadType.equals("updated_report_type")) {
                         ReportQueueDataSource dataSource = new ReportQueueDataSource(getApplicationContext());
                         dataSource.addUpdateTypeQueue();
@@ -97,6 +119,8 @@ public class GcmIntentService extends IntentService {
                         // Broadcasts the Intent to network receiver
                         Intent updateIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(updateIntent);
+                    } else {
+                        Log.e(TAG, String.format("Unhandle gcm message: type = %s, message = %s", payloadType, payload));
                     }
                 }
 

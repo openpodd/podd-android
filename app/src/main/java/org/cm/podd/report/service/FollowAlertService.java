@@ -3,8 +3,8 @@ package org.cm.podd.report.service;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,8 +19,6 @@ public class FollowAlertService extends IntentService {
     public static final String TAG = "FollowAlertService";
     public static final String ORG_CM_PODD_REPORT_FOLLOW = "org.cm.podd.report.REPORT_FOLLOW";
 
-    private NotificationManager mNotificationManager;
-
     public FollowAlertService() {
         super(FollowAlertService.class.getSimpleName());
     }
@@ -32,16 +30,16 @@ public class FollowAlertService extends IntentService {
         long reportType = intent.getLongExtra("reportType", -1);
 
         if (message != null && reportId != -1 && reportType != -1)
-            notifyMessage(message, reportId, reportType);
+            notifyMessage(this, "ติดตามรายงาน", message, reportId, reportType);
 
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void notifyMessage(String message, long reportId, long reportType) {
-        mNotificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
+    public static void notifyMessage(Context context, String title, String message, long reportId, long reportType) {
+        NotificationManager mNotificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(context, HomeActivity.class);
         intent.setAction(ORG_CM_PODD_REPORT_FOLLOW);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -53,15 +51,15 @@ public class FollowAlertService extends IntentService {
         bundle.putString("message", message);
         intent.putExtras(bundle);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("PODD Notification")
+                        .setContentTitle(title)
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(message))
                         .setContentText(message)
