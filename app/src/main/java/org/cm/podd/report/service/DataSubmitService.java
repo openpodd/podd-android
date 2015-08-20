@@ -18,6 +18,7 @@ package org.cm.podd.report.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -42,6 +43,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -73,6 +75,8 @@ public class DataSubmitService extends IntentService {
     public static final String ACTION_REPORT_SUBMIT = "podd.report_submit";
 
     SharedPrefUtil sharedPrefUtil;
+    private static SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
+
 
     public DataSubmitService() {
         super(DataSubmitService.class.getSimpleName());
@@ -199,7 +203,10 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = new URI(BuildConfig.SERVER_URL + "/reports/");
+
+            String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+            URI http = new URI(serverUrl + "/reports/");
             Log.i(TAG, "submit report url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);
@@ -283,7 +290,10 @@ public class DataSubmitService extends IntentService {
         boolean success = false;
 
         try {
-            URI http = new URI(BuildConfig.SERVER_URL + "/reportImages/");
+
+            String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+            URI http = new URI(serverUrl + "/reportImages/");
             Log.i(TAG, "submit report image url=" + http.toURL());
 
             HttpPost post = new HttpPost(http);

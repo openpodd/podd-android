@@ -17,8 +17,12 @@
 package org.cm.podd.report.util;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.IBinder;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -35,6 +39,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,15 +53,21 @@ import java.nio.charset.Charset;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class RequestDataUtil {
+public class RequestDataUtil extends Service {
 
     private static final String TAG = "RequestDataUtil";
     private static Charset utf8Charset = Charset.forName("UTF-8");
 
+    private static SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
+
     public static ResponseObject post(String path, String query, String json, String token) {
         JSONObject jsonObj = null;
         int statusCode = 0;
-        String reqUrl = String.format("%s%s%s", BuildConfig.SERVER_URL, path,
+
+        //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
+        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+        String reqUrl = String.format("%s%s%s", serverUrl, path,
                 query == null ? "" : "?"+query);
         Log.i(TAG, "submit url=" + reqUrl);
         Log.i(TAG, "post data=" + json);
@@ -106,9 +117,14 @@ public class RequestDataUtil {
         JSONObject jsonObj = null;
         String rawData = null;
         int statusCode = 0;
-        String reqUrl = String.format("%s%s%s", BuildConfig.SERVER_URL, path,
+
+        //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
+        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+        String reqUrl = String.format("%s%s%s", serverUrl, path,
                 query == null ? "" : "?"+query);
         Log.i(TAG, "submit url=" + reqUrl);
+
 
         HttpParams params = new BasicHttpParams();
         params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
@@ -146,6 +162,11 @@ public class RequestDataUtil {
         ResponseObject respObj = new ResponseObject(statusCode, jsonObj);
         respObj.setRawData(rawData);
         return respObj;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
 
@@ -199,7 +220,11 @@ public class RequestDataUtil {
     public static ResponseObject registerDeviceId(String deviceId, String token) {
         JSONObject jsonObj = null;
         int statusCode = 0;
-        String reqUrl = BuildConfig.SERVER_URL + "/gcm/";
+
+        //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
+        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+        String reqUrl = serverUrl + "/gcm/";
         Log.i(TAG, "submit url=" + reqUrl);
 
         HttpParams params = new BasicHttpParams();

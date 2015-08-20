@@ -18,18 +18,21 @@ package org.cm.podd.report.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.io.ByteArrayOutputStream;
 
 public class UploadProfileService extends IntentService {
     private static final String TAG = "UploadProfileService";
+    private static SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
 
     public UploadProfileService() {
         super(UploadProfileService.class.getSimpleName());
@@ -45,7 +48,10 @@ public class UploadProfileService extends IntentService {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 0, baos);
 
-        String url = String.format("%s%s", BuildConfig.SERVER_URL, "/users/profile/upload/");
+        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+
+
+        String url = String.format("%s%s", serverUrl, "/users/profile/upload/");
 
         try {
             MultipartHttpClient client = new MultipartHttpClient(url, sharedPrefUtil.getAccessToken());

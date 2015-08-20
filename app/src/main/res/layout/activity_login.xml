@@ -12,6 +12,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/wrap_logo"
         android:layout_above="@+id/form"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -81,7 +82,7 @@
 
     <LinearLayout
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -94,6 +95,28 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:background="@color/white" />
+
+        <LinearLayout
+            android:id="@+id/server_url_form"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/server_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="API End Point URL"
+                android:layout_marginBottom="10dp"/>
+            <Button
+                android:id="@+id/server_url_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:layout_gravity="center_horizontal"
+                style="@style/RegistrationButton"/>
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

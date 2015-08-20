@@ -17,6 +17,7 @@
 package org.cm.podd.report;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -30,6 +31,7 @@ public class PoddApplication extends Application {
 
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-57082327-1";
+    private static Context context;
 
     public enum TrackerName {
         APP_TRACKER
@@ -62,5 +64,14 @@ public class PoddApplication extends Application {
 
         }
         return mTrackers.get(trackerId);
+    }
+
+    public void onCreate(){
+        super.onCreate();
+        PoddApplication.context = getApplicationContext();
+    }
+
+    public static Context getAppContext() {
+        return PoddApplication.context;
     }
 }

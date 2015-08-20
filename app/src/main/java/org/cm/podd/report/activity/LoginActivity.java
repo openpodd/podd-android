@@ -11,13 +11,16 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -39,10 +42,15 @@ import static android.provider.Settings.Secure.ANDROID_ID;
 public class LoginActivity extends ActionBarActivity {
 
     private boolean isUserLoggedIn;
+    private int numOfValidServerUrl;
+    private boolean prevValidServerUrlIsLongClick;
     SharedPrefUtil sharedPrefUtil;
 
     EditText usernameText;
     EditText passwordText;
+    EditText serverUrlText;
+
+    SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +62,14 @@ public class LoginActivity extends ActionBarActivity {
 
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
         isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
+        numOfValidServerUrl = 0;
+        prevValidServerUrlIsLongClick = false;
 
         usernameText = (EditText) findViewById(R.id.username);
         passwordText = (EditText) findViewById(R.id.password);
+        serverUrlText = (EditText) findViewById(R.id.server_url);
+
+        settings = getSharedPreferences("PoddPrefsFile", 0);
 
         findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +105,67 @@ public class LoginActivity extends ActionBarActivity {
         });
 
         FontUtil.overrideFonts(this, usernameText.getRootView());
+
+        // Config api end point on the fly
+
+        ImageView logo = (ImageView) findViewById(R.id.logo);
+        logo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                checkAndShowServerUrlForm(true);
+                return true;
+            }
+
+        });
+
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAndShowServerUrlForm(false);
+            }
+        });
+
+        findViewById(R.id.server_url_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveServerUrl();
+            }
+        });
+    }
+
+    private void checkAndShowServerUrlForm(boolean isLongClick) {
+        if ((prevValidServerUrlIsLongClick && !isLongClick) || (!prevValidServerUrlIsLongClick && isLongClick)) {
+            numOfValidServerUrl++;
+        }
+        else {
+            numOfValidServerUrl = 0;
+        }
+
+        if (numOfValidServerUrl >= 6) {
+            findViewById(R.id.server_url_form).setVisibility(View.VISIBLE);
+
+            numOfValidServerUrl = 0;
+        }
+
+        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+        if (serverUrl == "") {
+            serverUrl = BuildConfig.SERVER_URL;
+        }
+        serverUrlText.setText(serverUrl);
+
+        prevValidServerUrlIsLongClick = isLongClick;
+    }
+
+    private void saveServerUrl() {
+        String serverUrl = serverUrlText.getText().toString();
+
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("serverUrl", serverUrl);
+        editor.commit();
+
+        findViewById(R.id.server_url_form).setVisibility(View.GONE);
+
+
     }
 
     private void authenticate() {
