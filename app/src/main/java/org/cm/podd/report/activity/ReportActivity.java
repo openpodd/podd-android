@@ -18,7 +18,6 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -105,9 +104,13 @@ public class ReportActivity extends ActionBarActivity
         implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = "ReportActivity";
+    public static final int REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG = 200;
     private Button prevBtn;
     private Button nextBtn;
     private View disableMaskView;
+    private View formView;
+    private View locationView;
+    private TextView textProgressLocationView;
     private boolean testReport = false;
 
     private String currentFragment;
@@ -150,6 +153,13 @@ public class ReportActivity extends ActionBarActivity
         sharedPrefUtil = new SharedPrefUtil(this);
 
         setContentView(R.layout.activity_report);
+
+        formView = findViewById(R.id.form);
+        locationView = findViewById(R.id.location);
+
+        textProgressLocationView = (TextView) findViewById(R.id.progress_location_text);
+        textProgressLocationView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -229,6 +239,8 @@ public class ReportActivity extends ActionBarActivity
         // 2. Edit a draft report which don't have any location attach.
         if ((reportSubmit == 0) && (currentLatitude == 0.00)) {
             buildGoogleApiClient();
+            locationView.setVisibility(View.VISIBLE);
+            formView.setVisibility(View.INVISIBLE);
         }
 
 
@@ -483,6 +495,11 @@ public class ReportActivity extends ActionBarActivity
         Log.d("----", "current fragment = " + currentFragment);
     }
 
+    private void switchToFormMode() {
+        locationView.setVisibility(View.INVISIBLE);
+        formView.setVisibility(View.VISIBLE);
+    }
+
     private Fragment getPageFragment(Page page) {
         FormPageFragment fragment = new FormPageFragment();
         Bundle bundle = new Bundle();
@@ -637,6 +654,7 @@ public class ReportActivity extends ActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
         if (mGoogleApiClient != null) {
+            stopLocationUpdates();
             mGoogleApiClient.disconnect();
         }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mAlertReceiver);
@@ -662,11 +680,16 @@ public class ReportActivity extends ActionBarActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 200) {
+        if (requestCode == REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG) {
             LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
         }
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 
     private void saveForm(int draft) {
@@ -732,6 +755,8 @@ public class ReportActivity extends ActionBarActivity
 
             Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
             reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+
+            switchToFormMode();
         } else {
             Log.d(TAG, "mLastLocation is null");
             LocationRequest locationRequest = new LocationRequest();
@@ -761,7 +786,7 @@ public class ReportActivity extends ActionBarActivity
                                 // and check the result in onActivityResult().
                                 status.startResolutionForResult(
                                         ReportActivity.this,
-                                        200);
+                                        REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the error.
                             }
@@ -796,6 +821,9 @@ public class ReportActivity extends ActionBarActivity
 
         Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
         reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+
+        stopLocationUpdates();
+        switchToFormMode();
     }
 
     /**

@@ -208,5 +208,6 @@
     <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
     <string name="gps_not_found_title">ตำแหน่ง</string>
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
+    <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
 
 </resources>
