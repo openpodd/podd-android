@@ -26,6 +26,7 @@ import android.content.IntentSender;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -110,6 +111,7 @@ public class ReportActivity extends ActionBarActivity
     private View disableMaskView;
     private View formView;
     private View locationView;
+    private TextView countdownTextView;
     private TextView textProgressLocationView;
     private boolean testReport = false;
 
@@ -159,6 +161,8 @@ public class ReportActivity extends ActionBarActivity
 
         textProgressLocationView = (TextView) findViewById(R.id.progress_location_text);
         textProgressLocationView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        countdownTextView = (TextView) findViewById(R.id.countdownTextView);
+        countdownTextView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
 
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
@@ -239,14 +243,12 @@ public class ReportActivity extends ActionBarActivity
         // 2. Edit a draft report which don't have any location attach.
         if ((reportSubmit == 0) && (currentLatitude == 0.00)) {
             buildGoogleApiClient();
-            locationView.setVisibility(View.VISIBLE);
-            formView.setVisibility(View.INVISIBLE);
+            switchToProgressLocationMode();
         }
 
 
         /* check softkeyboard visibility */
         final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
-        final View controlBar = findViewById(R.id.controlBar);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -495,7 +497,27 @@ public class ReportActivity extends ActionBarActivity
         Log.d("----", "current fragment = " + currentFragment);
     }
 
+    CountDownTimer ct;
+    private void switchToProgressLocationMode() {
+        locationView.setVisibility(View.VISIBLE);
+        formView.setVisibility(View.INVISIBLE);
+        countdownTextView.setText("30");
+
+        ct = new CountDownTimer(30000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                countdownTextView.setText(Long.toString(millisUntilFinished / 1000));
+            }
+
+            public void onFinish() {
+                switchToFormMode();
+            }
+        }.start();
+    }
+
     private void switchToFormMode() {
+        if (ct != null) {
+            ct.cancel();
+        }
         locationView.setVisibility(View.INVISIBLE);
         formView.setVisibility(View.VISIBLE);
     }
