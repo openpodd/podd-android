@@ -44,9 +44,4 @@ public interface ReportDataInterface {
 
     public boolean isDoneSubmit();
 
-    public void setCameraInteractionListener(CameraInteractionListener listener);
-
-    public interface CameraInteractionListener {
-        public void doGetImage();
-    }
 }

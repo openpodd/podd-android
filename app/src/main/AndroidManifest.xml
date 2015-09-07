@@ -91,11 +91,6 @@
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
 
-        <service
-            android:name=".service.LocationBackgroundService"
-            android:enabled="true"
-            android:exported="false" />
-
         <activity
             android:name=".activity.ImageActivity"
             android:label="@string/title_activity_image"
