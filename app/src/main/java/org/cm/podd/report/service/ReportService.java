@@ -38,6 +38,8 @@ public class ReportService extends IntentService {
     public static final String ACTION_FETCH_DONE = "podd.report.fetch.done";
     public static final String ACTION_FLAG_SET_DONE = "podd.report.flag.set.done";
 
+    public static final String ACTION_STATE_SET_DONE = "podd.report.state.set.done";
+
     public static final String PARAM_REPORT_ID = "id";
 
     private SharedPrefUtil sharedPrefUtil;
@@ -219,6 +221,27 @@ public class ReportService extends IntentService {
             }
 
             return RequestDataUtil.post(ENDPOINT, "", data.toString(), accessToken);
+        }
+    }
+
+    public static class StateAsyncTask extends ReportAsyncTask {
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            String reportId = params[0];
+            String stateId = params[1];
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("stateId", stateId);
+            } catch (JSONException e) {
+                // Do nothing.
+            }
+
+            return RequestDataUtil.post("/reports/" + reportId + "/state/", "", data.toString(), accessToken);
         }
     }
 

@@ -179,6 +179,23 @@ public class ReportStateDataSource {
         return results;
     }
 
+    public Long getIdByReportTypeAndCode(int reportType, String code) {
+        long _id = 0;
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, null, "report_type = ? AND code = ? ",
+                new String[]{Long.toString(reportType), code}, null, null, null);
+
+        while (cursor.moveToNext()) {
+            _id = cursor.getLong(cursor.getColumnIndex("_id"));
+        }
+
+        cursor.close();
+        db.close();
+
+        return _id;
+    }
+
     public void update(ReportState reportState) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();

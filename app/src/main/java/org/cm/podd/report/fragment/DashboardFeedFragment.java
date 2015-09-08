@@ -21,6 +21,7 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedAdapter;
+import org.cm.podd.report.model.State;
 import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
@@ -79,19 +80,35 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         }
     };
 
-    private BroadcastReceiver mStateReceiver = new BroadcastReceiver() {
+
+    private BroadcastReceiver mStateSetReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Long reportId = intent.getLongExtra("reportId", 0);
+            String stateCode = intent.getStringExtra("stateCode");
 
+            FeedAdapter.ViewHolder viewHolder = mAdapter.getViewHolderHashMap().get(reportId);
+            if (viewHolder != null) {
+
+                int stateImage = R.drawable.blank;
+                State[] stateColors = FeedAdapter.stateColors;
+                for (int i = 0; i < stateColors.length; i++ ){
+                    if (stateColors[i].getCode().equals(stateCode)) {
+                        stateImage = stateColors[i].getColor();
+                        break;
+                    }
+                }
+                viewHolder.getFlagView().setImageResource(stateImage);
+            }
         }
     };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         feedItemDataSource = new FeedItemDataSource(getActivity().getApplicationContext());
-        getActivity().registerReceiver(mStateReceiver, new IntentFilter(SyncReportStateService.SYNC));
         getActivity().registerReceiver(mReceiver, new IntentFilter(FilterService.ACTION_QUERY_DONE));
         getActivity().registerReceiver(mFlagSetReceiver, new IntentFilter(ReportService.ACTION_FLAG_SET_DONE));
+        getActivity().registerReceiver(mStateSetReceiver, new IntentFilter(ReportService.ACTION_STATE_SET_DONE));
     }
 
     @Override

@@ -153,9 +153,11 @@ public class ReportViewActivity extends ActionBarActivity {
     // quick fix.
     private Long selectedCaseId;
     private List<ReportState> reportStates;
-
+    private int reportTypeId = 0;
 
     public Map<String, State> states = new HashMap<String, State>();
+
+    ReportStateDataSource reportStateDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -393,8 +395,10 @@ public class ReportViewActivity extends ActionBarActivity {
             flagView.setText(getResources().getStringArray(
                     R.array.flags_optional)[currentFlag.intValue()]);
 
-            ReportStateDataSource reportStateDataSource = new ReportStateDataSource(this);
-            reportStates = reportStateDataSource.getByReportType(report.getInt("reportTypeId"));
+            reportTypeId = report.getInt("reportTypeId");
+
+            reportStateDataSource = new ReportStateDataSource(this);
+            reportStates = reportStateDataSource.getByReportType(reportTypeId);
 
             String [] states_with_hint = new String[reportStates.size() + 1];
             int statePosition = reportStates.size();
@@ -436,7 +440,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
             flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
                     final String state = mFlagAdapter.getItem(position);
                     if (position != mFlagAdapter.getCount() && !oldStateCode.equals(state)) {
                         // Show prompt dialog.
@@ -446,7 +450,7 @@ public class ReportViewActivity extends ActionBarActivity {
                             .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int whichButton) {
-//                                    updateFlag(Long.parseLong(Integer.toString(flag)));
+                                    updateState(state, position);
                                 }
                             }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
@@ -608,6 +612,37 @@ public class ReportViewActivity extends ActionBarActivity {
 
         task.setContext(getApplicationContext());
         task.execute(Long.toString(id), Long.toString(flag));
+    }
+
+    private void updateState(final String stateCode, final int position) {
+        Long state = reportStateDataSource.getIdByReportTypeAndCode(reportTypeId, stateCode);
+        ReportService.StateAsyncTask task = new ReportService.StateAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                if (resp.getStatusCode() == 200) {
+                    oldStateCode = stateCode;
+                    oldStateCodePosition = position;
+                    // notify report data.
+                    Intent intent = new Intent(ReportService.ACTION_STATE_SET_DONE);
+                    intent.putExtra("reportId", id);
+                    intent.putExtra("stateCode", stateCode);
+                    sendBroadcast(intent);
+
+                    ReportService.doFetch(context, id);
+                } else {
+                    reverseState();
+
+                    if (resp.getStatusCode() == 403) {
+                        Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_forbidden), Style.ALERT).show();
+                    } else {
+                        Crouton.makeText(ReportViewActivity.this, getString(R.string.set_flag_error), Style.ALERT).show();
+                    }
+                }
+            }
+        };
+
+        task.setContext(getApplicationContext());
+        task.execute(Long.toString(id), Long.toString(state));
     }
 
     private void reverseFlag() {
