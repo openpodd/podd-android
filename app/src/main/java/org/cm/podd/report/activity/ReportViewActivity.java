@@ -103,6 +103,7 @@ public class ReportViewActivity extends ActionBarActivity {
     private Long oldFlag;
 
     private String oldStateCode;
+    private int oldStateCodePosition;
 
     private ScrollView scrollView;
     private ProgressBar progressBar;
@@ -414,6 +415,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
                 if (stateCode.equals(reportStates.get(i).getCode())) {
                     statePosition = i;
+                    oldStateCodePosition = statePosition;
                 }
             }
 
@@ -449,12 +451,12 @@ public class ReportViewActivity extends ActionBarActivity {
                             }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int whichButton) {
-//                                    reverseFlag();
+                                    reverseState();
                                 }
                             }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                                 @Override
                                 public void onCancel(DialogInterface dialog) {
-//                                    reverseFlag();
+                                    reverseState();
                                 }
                             }).create().show();
                     } else {
@@ -615,6 +617,10 @@ public class ReportViewActivity extends ActionBarActivity {
         } else {
             flagSpinnerView.setSelection(currentFlag.intValue() - 1);
         }
+    }
+
+    private void reverseState() {
+        flagSpinnerView.setSelection(oldStateCodePosition);
     }
 
     public class HintAdapter extends ArrayAdapter<String> {

@@ -77,15 +77,15 @@ public class SyncReportStateService extends IntentService {
 
                     if (rs != null) {
 
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/reportStates/" + rs.getId(), null, accessToken);
-
-                        JSONObject result = new JSONObject(resp2.getRawData());
-                        rs.setReportType(result.optInt("reportType"));
-                        rs.setName(result.optString("name"));
-                        rs.setCode(result.optString("code"));
-                        rs.setDescription(result.optString("description"));
-                        rs.setCanEdit(result.optInt("canEdit"));
+//                        RequestDataUtil.ResponseObject resp2 =
+//                                RequestDataUtil.get("/reportStates/" + rs.getId(), null, accessToken);
+//
+//                        JSONObject result = new JSONObject(resp2.getRawData());
+                        rs.setReportType(updateReportState.optInt("reportType"));
+                        rs.setName(updateReportState.optString("name"));
+                        rs.setCode(updateReportState.optString("code"));
+                        rs.setDescription(updateReportState.optString("description"));
+                        rs.setCanEdit(updateReportState.optInt("canEdit"));
 
                         dbSource.update(rs);
 
@@ -97,17 +97,12 @@ public class SyncReportStateService extends IntentService {
                         String description = updateReportState.optString("description");
                         int canEdit = updateReportState.optInt("canEdit");
 
-                        RequestDataUtil.ResponseObject resp2 =
-                                RequestDataUtil.get("/reportStates/" + id, null, accessToken);
-
-                        JSONObject result = new JSONObject(resp2.getRawData());
+//                        RequestDataUtil.ResponseObject resp2 =
+//                                RequestDataUtil.get("/reportStates/" + id, null, accessToken);
+//
+//                        JSONObject result = new JSONObject(resp2.getRawData());
 
                         rs = new ReportState(id, reportType, name, code, description, canEdit);
-                        rs.setReportType(result.optInt("reportType"));
-                        rs.setName(result.optString("name"));
-                        rs.setCode(result.optString("code"));
-                        rs.setDescription(result.optString("description"));
-                        rs.setCanEdit(result.optInt("canEdit"));
                         dbSource.insert(rs);
                     }
                 }
