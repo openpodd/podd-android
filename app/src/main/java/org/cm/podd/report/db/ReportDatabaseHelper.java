@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 13;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -108,6 +108,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  detail TEXT,"
             + "  explanation TEXT,"
             + "  flag TEXT,"
+            + "  state INTEGER,"
             + "  follow TEXT,"
             + "  created_at INTEGER,"
             + "  updated_at INTEGER"
@@ -166,6 +167,15 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  date INTEGER"
             + ")";
 
+    private static final String CREATE_REPORT_STATE = "create table if not exists report_state"
+            + "("
+            + "  _id INTEGER"
+            + "  report_type INTEGER,"
+            + "  name TEXT,"
+            + "  code INTEGER,"
+            + "  description TEXT,"
+            + "  canEdit INTEGER"
+            + ")";
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -183,6 +193,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_AREA);
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         sqLiteDatabase.execSQL(CREATE_TABLE_FOLLOW_ALERT);
+        sqLiteDatabase.execSQL(CREATE_REPORT_STATE);
         Log.i("DB", "on create");
     }
 
@@ -233,7 +244,10 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 11:
                 Log.i("DB", ">> upgrade from version 11");
                 db.execSQL(CREATE_TABLE_FOLLOW_ALERT);
-
+            case 12:
+                Log.i("DB", ">> upgrade from version 12");
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN state INTEGER");
+                db.execSQL(CREATE_REPORT_STATE);
         }
     }
 
