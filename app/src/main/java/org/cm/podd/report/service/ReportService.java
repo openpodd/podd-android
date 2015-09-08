@@ -73,6 +73,7 @@ public class ReportService extends IntentService {
                     String detail = resp.getRawData();
                     String explanation = obj.optString("formDataExplanation");
                     String flag = obj.optString("flag");
+                    String stateCode = obj.optString("stateCode");
 
                     Log.d(TAG, "Found update feed item id= " + itemId);
 
@@ -80,6 +81,7 @@ public class ReportService extends IntentService {
                     feedItem.setItemId(itemId);
                     feedItem.setDetail(detail);
                     feedItem.setFlag(flag);
+                    feedItem.setStateCode(stateCode);
 
                     FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getApplicationContext());
                     feedItemDataSource.saveItemDetail(feedItem);

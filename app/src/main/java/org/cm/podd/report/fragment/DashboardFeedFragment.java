@@ -21,8 +21,10 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedAdapter;
+import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.service.SyncReportStateService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -72,15 +74,22 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
 
             FeedAdapter.ViewHolder viewHolder = mAdapter.getViewHolderHashMap().get(reportId);
             if (viewHolder != null) {
-                viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
+//                viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
             }
         }
     };
 
+    private BroadcastReceiver mStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    };
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         feedItemDataSource = new FeedItemDataSource(getActivity().getApplicationContext());
+        getActivity().registerReceiver(mStateReceiver, new IntentFilter(SyncReportStateService.SYNC));
         getActivity().registerReceiver(mReceiver, new IntentFilter(FilterService.ACTION_QUERY_DONE));
         getActivity().registerReceiver(mFlagSetReceiver, new IntentFilter(ReportService.ACTION_FLAG_SET_DONE));
     }
@@ -112,9 +121,11 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                 Log.d(TAG, "onRefresh");
 
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
+                    startSyncReportStateService();
+
                     feedItemDataSource.clear();
                     setRefreshing(true);
-                    FilterService.doQuery(container.getContext(), "negative:true AND date:last 14 days", null);
+                    FilterService.doQuery(container.getContext(), "negative:true AND testFlag: false AND date:last 15 days ", null);
                 } else {
                     refreshAdapter();
                     onRefreshComplete();
@@ -231,4 +242,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         }
     }
 
+    private void startSyncReportStateService() {
+        Intent intent = new Intent(getActivity(), SyncReportStateService.class);
+        getActivity().startService(intent);
+    }
 }

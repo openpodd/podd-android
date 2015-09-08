@@ -48,9 +48,13 @@ import com.squareup.picasso.Picasso;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
+import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
+import org.cm.podd.report.db.ReportStateDataSource;
 import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.FeedItem;
+import org.cm.podd.report.model.ReportState;
+import org.cm.podd.report.model.State;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
@@ -65,7 +69,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -77,15 +83,20 @@ public class ReportViewActivity extends ActionBarActivity {
 
     private static final String TAG = "ReportViewActivity";
 
-    private static final int[] flagColors = new int[]{
-            R.drawable.flag_ignore,
-            R.drawable.flag_ok,
-            R.drawable.flag_contact,
-            R.drawable.flag_follow,
-            R.drawable.flag_case,
-            R.drawable.blank,
-
+    public static final State[] stateColors = new State[]{
+            new State("report", R.drawable.blank),
+            new State("false-report", R.drawable.flag_ignore),
+            new State("no-outbreak-identified", R.drawable.flag_ignore),
+            new State("case", R.drawable.flag_contact),
+            new State("3", R.drawable.flag_contact),
+            new State("follow", R.drawable.flag_follow),
+            new State("4", R.drawable.flag_follow),
+            new State("suspect-outbreak", R.drawable.flag_case),
+            new State("outbreak", R.drawable.flag_case),
+            new State("5", R.drawable.flag_case),
+            new State("finish", R.drawable.flag_ok),
     };
+
 
     private Long id;
     private Long currentFlag;
@@ -138,6 +149,10 @@ public class ReportViewActivity extends ActionBarActivity {
 
     // quick fix.
     private Long selectedCaseId;
+    private List<ReportState> reportStates;
+
+
+    public Map<String, State> states = new HashMap<String, State>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -360,139 +375,182 @@ public class ReportViewActivity extends ActionBarActivity {
 
                 flagSpinnerView.setVisibility(View.GONE);
             }
-            flagImageView.setImageResource(FeedAdapter.flagColors[currentFlag.intValue()]);
+
+            String stateCode = report.getString("stateCode");
+
+            int stateImage = R.drawable.blank;
+            for (int i = 0; i < stateColors.length; i++ ){
+                if (stateColors[i].getCode().equals(stateCode)) {
+                    stateImage = stateColors[i].getColor();
+                    break;
+                }
+            }
+            flagImageView.setImageResource(stateImage);
+
             flagView.setText(getResources().getStringArray(
                     R.array.flags_optional)[currentFlag.intValue()]);
 
-            mFlagAdapter = new HintAdapter(getApplicationContext(),
-                    getResources().getStringArray(R.array.flags_with_hint));
-            flagSpinnerView.setAdapter(mFlagAdapter);
-            if (reportFlag > 0) {
-                flagSpinnerView.setSelection(reportFlag.intValue() - 1);
-            } else {
-                flagSpinnerView.setSelection(mFlagAdapter.getCount());
+            ReportStateDataSource reportStateDataSource = new ReportStateDataSource(this);
+            reportStates = reportStateDataSource.getByReportType(report.getInt("reportTypeId"));
+
+            String [] states_with_hint = new String[reportStates.size() + 1];
+            int statePosition = reportStates.size();
+            for (int i = 0; i < reportStates.size(); i++){
+                states_with_hint[i] = reportStates.get(i).getCode();
+
+                int color = R.drawable.blank;
+                for (int j = 0; j < stateColors.length; j++){
+                    if (reportStates.get(i).getCode().equals(stateColors[j].getCode())) {
+                        color = stateColors[j].getColor();
+                        break;
+                    }
+                }
+
+                State state = new State(reportStates.get(i).getCode(), color);
+                state.setName(reportStates.get(i).getName());
+                states.put(reportStates.get(i).getCode(), state);
+
+                if (stateCode.equals(reportStates.get(i).getCode())) {
+                    statePosition = i;
+                }
             }
+
+            states_with_hint[reportStates.size()] = getString(R.string.set_report_state);
+
+            mFlagAdapter = new HintAdapter(getApplicationContext(), states_with_hint);
+
+            flagSpinnerView.setAdapter(mFlagAdapter);
+            flagSpinnerView.setSelection(statePosition);
+
+//            if (!stateCode.equals("")) {
+//                flagSpinnerView.setSelection(reportFlag.intValue() - 1);
+//            } else {
+//                flagSpinnerView.setSelection(mFlagAdapter.getCount());
+//            }
+
+
+
             flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    final int flag = position + 1;
-                    if (position != mFlagAdapter.getCount() && oldFlag.intValue() != flag) {
-                        // Show case list dialog when flag = 4 (follow).
-                        if (flag == 4) {
-                            caseRadioGroup.removeAllViews();
-                            caseDialog.setVisibility(View.VISIBLE);
-
-                            try {
-                                String query = "administrationArea:" + Long.toString(report.getLong("administrationAreaId")) +
-                                        " AND date:last 70 days" +
-                                        " AND flag:case";
-
-                                final Long parentId = id;
-                                final Button okButton = (Button) findViewById(R.id.ok_button);
-                                if (selectedCaseId == null) {
-                                    okButton.setEnabled(false);
-                                }
-                                okButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        caseDialog.setVisibility(View.GONE);
-                                        follow(Long.parseLong(Integer.toString(flag)), selectedCaseId);
-                                    }
-                                });
-                                Button cancelButton = (Button) findViewById(R.id.cancel_button);
-                                cancelButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        caseDialog.setVisibility(View.GONE);
-                                        reverseFlag();
-                                        selectedCaseId = null;
-                                    }
-                                });
-
-                                FilterService.FilterAsyncTask task = new FilterService.FilterAsyncTask() {
-                                    @Override
-                                    protected void onPostExecute(RequestDataUtil.ResponseObject responseObject) {
-                                        caseDialogProgressBar.setVisibility(View.GONE);
-
-                                        try {
-                                            JSONObject result = new JSONObject(responseObject.getRawData());
-                                            JSONArray items = result.getJSONArray("results");
-
-                                            RadioButton radioChoiceTemplate = (RadioButton) findViewById(R.id.case_choice_template);
-
-                                            for (int i = 0; i != items.length(); i++) {
-                                                JSONObject item = items.getJSONObject(i);
-                                                final Long caseId = item.getLong("id");
-
-                                                if (caseId == parentId) {
-                                                    continue;
-                                                }
-
-                                                RadioButton radioButton = new RadioButton(getApplicationContext());
-                                                radioButton.setText(
-                                                        getString(R.string.follow_up_report_item_template)
-                                                                .replace(":id", Long.toString(item.getLong("id"))));
-                                                radioButton.setLayoutParams(radioChoiceTemplate.getLayoutParams());
-                                                radioButton.setTextColor(radioChoiceTemplate.getTextColors());
-                                                radioButton.setTextSize(radioChoiceTemplate.getTextSize());
-                                                radioButton.setBackgroundColor(radioChoiceTemplate.getDrawingCacheBackgroundColor());
-                                                radioButton.setVisibility(View.VISIBLE);
-
-                                                radioButton.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        selectedCaseId = caseId;
-                                                        okButton.setEnabled(true);
-                                                    }
-                                                });
-
-                                                caseRadioGroup.addView(radioButton);
-                                            }
-
-                                            if (items.length() == 0) {
-                                                caseDialogTitle.setText(getString(R.string.no_case_to_follow));
-                                            } else {
-                                                caseDialogTitle.setText(getString(R.string.choose_case));
-                                            }
-                                        } catch (JSONException e) {
-                                            // do nothing.
-                                            Log.e(TAG, "Error parsing JSON data", e);
-                                        }
-                                    }
-                                };
-                                task.setContext(getApplicationContext());
-                                task.execute(query, null);
-                            } catch (JSONException e) {
-                                // TODO: reverse choice.
-                                Log.e(TAG, "Error parsing JSON data", e);
-                            }
-                        } else if (flag == 5) {
-                            // Show prompt dialog.
-                            new AlertDialog.Builder(ReportViewActivity.this)
-                                    .setTitle(R.string.flag_confirm_case_title)
-                                    .setMessage(R.string.flag_confirm_case_message)
-                                    .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            updateFlag(Long.parseLong(Integer.toString(flag)));
-                                        }
-                                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            reverseFlag();
-                                        }
-                                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                        @Override
-                                        public void onCancel(DialogInterface dialog) {
-                                            reverseFlag();
-                                        }
-                                    }).create().show();
-                        } else {
-                            updateFlag(Long.parseLong(Integer.toString(flag)));
-                        }
-                    } else {
-                        // do nothings.
-                    }
+//                    final int flag = position + 1;
+//                    if (position != mFlagAdapter.getCount() && oldFlag.intValue() != flag) {
+//                        // Show case list dialog when flag = 4 (follow).
+//                        if (flag == 4) {
+//                            caseRadioGroup.removeAllViews();
+//                            caseDialog.setVisibility(View.VISIBLE);
+//
+//                            try {
+//                                String query = "administrationArea:" + Long.toString(report.getLong("administrationAreaId")) +
+//                                        " AND date:last 70 days" +
+//                                        " AND flag:case";
+//
+//                                final Long parentId = id;
+//                                final Button okButton = (Button) findViewById(R.id.ok_button);
+//                                if (selectedCaseId == null) {
+//                                    okButton.setEnabled(false);
+//                                }
+//                                okButton.setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        caseDialog.setVisibility(View.GONE);
+//                                        follow(Long.parseLong(Integer.toString(flag)), selectedCaseId);
+//                                    }
+//                                });
+//                                Button cancelButton = (Button) findViewById(R.id.cancel_button);
+//                                cancelButton.setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        caseDialog.setVisibility(View.GONE);
+//                                        reverseFlag();
+//                                        selectedCaseId = null;
+//                                    }
+//                                });
+//
+//                                FilterService.FilterAsyncTask task = new FilterService.FilterAsyncTask() {
+//                                    @Override
+//                                    protected void onPostExecute(RequestDataUtil.ResponseObject responseObject) {
+//                                        caseDialogProgressBar.setVisibility(View.GONE);
+//
+//                                        try {
+//                                            JSONObject result = new JSONObject(responseObject.getRawData());
+//                                            JSONArray items = result.getJSONArray("results");
+//
+//                                            RadioButton radioChoiceTemplate = (RadioButton) findViewById(R.id.case_choice_template);
+//
+//                                            for (int i = 0; i != items.length(); i++) {
+//                                                JSONObject item = items.getJSONObject(i);
+//                                                final Long caseId = item.getLong("id");
+//
+//                                                if (caseId == parentId) {
+//                                                    continue;
+//                                                }
+//
+//                                                RadioButton radioButton = new RadioButton(getApplicationContext());
+//                                                radioButton.setText(
+//                                                        getString(R.string.follow_up_report_item_template)
+//                                                                .replace(":id", Long.toString(item.getLong("id"))));
+//                                                radioButton.setLayoutParams(radioChoiceTemplate.getLayoutParams());
+//                                                radioButton.setTextColor(radioChoiceTemplate.getTextColors());
+//                                                radioButton.setTextSize(radioChoiceTemplate.getTextSize());
+//                                                radioButton.setBackgroundColor(radioChoiceTemplate.getDrawingCacheBackgroundColor());
+//                                                radioButton.setVisibility(View.VISIBLE);
+//
+//                                                radioButton.setOnClickListener(new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View v) {
+//                                                        selectedCaseId = caseId;
+//                                                        okButton.setEnabled(true);
+//                                                    }
+//                                                });
+//
+//                                                caseRadioGroup.addView(radioButton);
+//                                            }
+//
+//                                            if (items.length() == 0) {
+//                                                caseDialogTitle.setText(getString(R.string.no_case_to_follow));
+//                                            } else {
+//                                                caseDialogTitle.setText(getString(R.string.choose_case));
+//                                            }
+//                                        } catch (JSONException e) {
+//                                            // do nothing.
+//                                            Log.e(TAG, "Error parsing JSON data", e);
+//                                        }
+//                                    }
+//                                };
+//                                task.setContext(getApplicationContext());
+//                                task.execute(query, null);
+//                            } catch (JSONException e) {
+//                                // TODO: reverse choice.
+//                                Log.e(TAG, "Error parsing JSON data", e);
+//                            }
+//                        } else if (flag == 5) {
+//                            // Show prompt dialog.
+//                            new AlertDialog.Builder(ReportViewActivity.this)
+//                                    .setTitle(R.string.flag_confirm_case_title)
+//                                    .setMessage(R.string.flag_confirm_case_message)
+//                                    .setPositiveButton(R.string.button_confirm, new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int whichButton) {
+//                                            updateFlag(Long.parseLong(Integer.toString(flag)));
+//                                        }
+//                                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int whichButton) {
+//                                            reverseFlag();
+//                                        }
+//                                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                                        @Override
+//                                        public void onCancel(DialogInterface dialog) {
+//                                            reverseFlag();
+//                                        }
+//                                    }).create().show();
+//                        } else {
+//                            updateFlag(Long.parseLong(Integer.toString(flag)));
+//                        }
+//                    } else {
+//                        // do nothings.
+//                    }
                 }
 
                 @Override
@@ -682,11 +740,12 @@ public class ReportViewActivity extends ActionBarActivity {
                 view = inflater.inflate(R.layout.flag_spinner_item, parent, false);
             }
 
+            State state = states.get(getItem(position));
             ImageView iconView = (ImageView) view.findViewById(R.id.flag_icon);
-            iconView.setImageResource(flagColors[position]);
+            iconView.setImageResource(state.getColor());
 
             TextView textView = (TextView) view.findViewById(R.id.flag_name);
-            textView.setText(getItem(position));
+            textView.setText(state.getName());
             FontUtil.overrideFonts(getContext(), textView);
 
             return view;

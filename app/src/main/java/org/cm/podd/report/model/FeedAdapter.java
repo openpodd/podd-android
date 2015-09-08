@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.json.JSONException;
@@ -23,6 +24,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Created by siriwat on 2/17/15.
@@ -35,16 +38,30 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
     private HashMap<Long, ViewHolder> viewHolderHashMap = new HashMap<Long, ViewHolder>();
 
-    public static final int[] flagColors = new int[]{
-        R.drawable.blank,
-        R.drawable.flag_ignore,
-        R.drawable.flag_ok,
-        R.drawable.flag_contact,
-        R.drawable.flag_follow,
-        R.drawable.flag_case
+//    public static final int[] flagColors = new int[]{
+//        R.drawable.blank,
+//        R.drawable.flag_ignore,
+//        R.drawable.flag_ok,
+//        R.drawable.flag_contact,
+//        R.drawable.flag_follow,
+//        R.drawable.flag_case,
+//        R.drawable.flag_case
+//    };
 
+    public static final State[] stateColors = new State[]{
+        new State("report", R.drawable.blank),
+        new State("false-report", R.drawable.flag_ignore),
+        new State("no-outbreak-identified", R.drawable.flag_ignore),
+        new State("case", R.drawable.flag_contact),
+        new State("3", R.drawable.flag_contact),
+        new State("follow", R.drawable.flag_follow),
+        new State("4", R.drawable.flag_follow),
+        new State("suspect-outbreak", R.drawable.flag_case),
+        new State("outbreak", R.drawable.flag_case),
+        new State("5", R.drawable.flag_case),
+        new State("finish", R.drawable.flag_ok),
     };
-    
+
     public FeedAdapter(OnItemClickListener listener) {
         mListener = listener;
     }
@@ -143,10 +160,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         JSONObject report = feedItem.getJSONObject();
 
         try {
-            // flag
-            String flagString = report.getString("flag");
-            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
-            viewHolder.getFlagView().setImageResource(flagColors[flag]);
+
+//            String flagString = report.getString("flag");
+//            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
+//            viewHolder.getFlagView().setImageResource(flagColors[flag]);
+
+            // state
+            String stateCode = report.getString("stateCode");
+
+            int stateImage = R.drawable.blank;
+            for (int i = 0; i < stateColors.length; i++ ){
+                if (stateColors[i].getCode().equals(stateCode)) {
+                    stateImage = stateColors[i].getColor();
+                    break;
+                }
+            }
+            viewHolder.getFlagView().setImageResource(stateImage);
+
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago

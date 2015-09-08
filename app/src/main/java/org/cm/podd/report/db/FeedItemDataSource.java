@@ -33,6 +33,8 @@ public class FeedItemDataSource {
     private static int COLUMN_FOLLOW      = 7;
     private static int COLUMN_CREATED_AT  = 8;
     private static int COLUMN_UPDATED_AT  = 9;
+    private static int COLUMN_STATE       = 10;
+    private static int COLUMN_STATE_CODE  = 11;
 
     public FeedItemDataSource(Context context) {
         reportDatabaseHelper = new ReportDatabaseHelper(context);
@@ -53,6 +55,8 @@ public class FeedItemDataSource {
         values.put("type", feedItem.getType());
         values.put("explanation", feedItem.getExplanation());
         values.put("date", feedItem.getDate().getTime());
+        values.put("state", feedItem.getState());
+        values.put("state_code", feedItem.getStateCode());
 
         Date now = new Date();
 
@@ -87,6 +91,9 @@ public class FeedItemDataSource {
         ContentValues values = new ContentValues();
         values.put("detail", feedItem.getDetail());
         values.put("flag", feedItem.getFlag());
+        values.put("state", feedItem.getState());
+        values.put("state_code", feedItem.getStateCode());
+
         values.put("updated_at", now.getTime());
 
         if (existingRow != null && existingRow.moveToNext())
@@ -203,6 +210,8 @@ public class FeedItemDataSource {
             feedItem.setFollow(cursor.getString(COLUMN_FOLLOW));
             feedItem.setCreatedAt(new Date(cursor.getLong(COLUMN_CREATED_AT)));
             feedItem.setUpdatedAt(new Date(cursor.getLong(COLUMN_UPDATED_AT)));
+            feedItem.setState(cursor.getInt(COLUMN_STATE));
+            feedItem.setStateCode(cursor.getString(COLUMN_STATE_CODE));
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON string", e);
             return null;

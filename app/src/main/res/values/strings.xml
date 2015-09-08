@@ -206,5 +206,6 @@
     <string name="start_alert_hour">10</string>
     <string name="frequency_alert_hour">2</string>
     <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
+    <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
 
 </resources>

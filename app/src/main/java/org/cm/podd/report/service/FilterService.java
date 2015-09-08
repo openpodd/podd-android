@@ -102,6 +102,8 @@ public class FilterService extends IntentService {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
                                 Locale.getDefault());
                         feedItem.setDate(formatter.parse(item.getString("date")));
+                        feedItem.setState(item.getInt("state"));
+                        feedItem.setStateCode(item.getString("stateCode"));
                         feedItem.setExplanation(item.toString());
 
                         feedItemDataSource.saveFeedItem(feedItem);
@@ -152,11 +154,11 @@ public class FilterService extends IntentService {
         List<NameValuePair> params = new LinkedList<NameValuePair>();
         String queryString = null;
 
-        // Limit only last 2 weeks.
+        // Limit only last 4 weeks.
         if (query == null) {
             query = "";
         }
-        query += " date:last 14 days ";
+        query += " date:last 15 days ";
 
         // Prepare query parameters
         if (!query.isEmpty() || !timezone.isEmpty()) {

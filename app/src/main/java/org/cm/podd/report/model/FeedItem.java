@@ -22,6 +22,8 @@ public class FeedItem {
     private Date date;
     private Date createdAt;
     private Date updatedAt;
+    private int state;
+    private String stateCode;
 
     public void setId(long id) {
         this.id = id;
@@ -101,6 +103,22 @@ public class FeedItem {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
+    }
+
+    public String getStateCode() {
+        return stateCode;
     }
 
     public JSONObject getJSONObject() {

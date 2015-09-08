@@ -108,10 +108,11 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  detail TEXT,"
             + "  explanation TEXT,"
             + "  flag TEXT,"
-            + "  state INTEGER,"
             + "  follow TEXT,"
             + "  created_at INTEGER,"
-            + "  updated_at INTEGER"
+            + "  updated_at INTEGER,"
+            + "  state INTEGER,"
+            + "  state_code TEXT"
             + ")";
 
     private static final String CREATE_TABLE_COMMENT = "create table if not exists comment"
@@ -169,12 +170,13 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_REPORT_STATE = "create table if not exists report_state"
             + "("
-            + "  _id INTEGER"
+            + "  _id INTEGER,"
             + "  report_type INTEGER,"
             + "  name TEXT,"
-            + "  code INTEGER,"
+            + "  code TEXT,"
             + "  description TEXT,"
-            + "  canEdit INTEGER"
+            + "  color TEXT,"
+            + "  can_edit INTEGER"
             + ")";
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -247,6 +249,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 12:
                 Log.i("DB", ">> upgrade from version 12");
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN state INTEGER");
+                db.execSQL("ALTER TABLE feed_item ADD COLUMN state_code TEXT");
                 db.execSQL(CREATE_REPORT_STATE);
         }
     }
