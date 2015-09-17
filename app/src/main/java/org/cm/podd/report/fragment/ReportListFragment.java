@@ -37,6 +37,9 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
+import org.cm.podd.report.db.ReportTypeDataSource;
+import org.cm.podd.report.model.FollowAction;
+import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.DateUtil;
@@ -61,6 +64,7 @@ public class ReportListFragment extends ListFragment {
     private ActionMode mMode;
 
     ReportDataSource reportDataSource;
+    ReportTypeDataSource reportTypeDataSource;
     ReportQueueDataSource reportQueueDataSource;
     private ReportCursorAdapter adapter;
 
@@ -87,6 +91,7 @@ public class ReportListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         reportDataSource = new ReportDataSource(this.getActivity());
+        reportTypeDataSource = new ReportTypeDataSource(this.getActivity());
         reportQueueDataSource = new ReportQueueDataSource(this.getActivity());
         getActivity().registerReceiver(mReceiver, new IntentFilter(DataSubmitService.ACTION_REPORT_STATUS_CHANGE));
     }
@@ -203,11 +208,21 @@ public class ReportListFragment extends ListFragment {
             Report report = reportDataSource.getById(reportId);
             Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
             if (report.getNegative() == report.TRUE) {
+
                 Intent intent = new Intent(getActivity(), ReportActivity.class);
                 intent.putExtra("reportType", report.getType());
                 intent.putExtra("reportId", reportId);
                 intent.putExtra("test", report.isTestReport());
+
+                if (report.getFollowFlag() == Report.TRUE) {
+                    Form form = reportTypeDataSource.getForm(report.getType());
+                    FollowAction action = form.getFollowActionByName(report.getActionName());
+                    if (action != null) {
+                        intent.putExtra("startPageId", action.getStartPageId());
+                    }
+                }
                 startActivityForResult(intent, REQUEST_FOR_EDIT);
+
             } else {
                 // do nothing
             }
@@ -309,26 +324,47 @@ public class ReportListFragment extends ListFragment {
     }
 
     private void follow(final long reportId, final long reportType) {
-        new AlertDialog.Builder(getActivity()).setTitle("ยืนยัน")
-                .setMessage("คุณต้องการรายงาน การติดตาม ไช่หรือไม่")
-                .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, String.format("follow report %d, report type %d", reportId, reportType));
-                        Intent intent = new Intent(getActivity(), ReportActivity.class);
-                        intent.putExtra("reportType", reportType);
-                        intent.putExtra("reportId", reportId);
-                        intent.putExtra("follow", true);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .create().show();
+        final Form form = reportTypeDataSource.getForm(reportType);
+        if (form.hasFollowActions()) {
+            final String[] names = form.getFollowActionNames();
+            new AlertDialog.Builder(getActivity()).setTitle("กรุณาเลือกประเภท")
+                    .setItems(names, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            FollowAction action = form.getFollowAction(i);
+                            Log.d(TAG, String.format("%s report %d, report type %d", action.getName(), reportId, reportType));
+                            Intent intent = new Intent(getActivity(), ReportActivity.class);
+                            intent.putExtra("reportType", reportType);
+                            intent.putExtra("reportId", reportId);
+                            intent.putExtra("follow", true);
+                            intent.putExtra("followActionName", action.getName());
+                            intent.putExtra("startPageId", action.getStartPageId());
+                            startActivity(intent);
+                        }
+                    }).create().show();
+        } else {
+            new AlertDialog.Builder(getActivity()).setTitle("ยืนยัน")
+                    .setMessage("คุณต้องการรายงาน การติดตาม ไช่หรือไม่")
+                    .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, String.format("follow report %d, report type %d", reportId, reportType));
+                            Intent intent = new Intent(getActivity(), ReportActivity.class);
+                            intent.putExtra("reportType", reportType);
+                            intent.putExtra("reportId", reportId);
+                            intent.putExtra("follow", true);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .create().show();
+        }
     }
 
 
@@ -426,10 +462,15 @@ public class ReportListFragment extends ListFragment {
             int follow = cursor.getInt(cursor.getColumnIndex("follow_flag"));
             int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
             String typeName = cursor.getString(cursor.getColumnIndex("type_name"));
+            String actionName = cursor.getString(cursor.getColumnIndex("action_name"));
             Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
 
             if (follow == Report.TRUE) {
-                holder.typeText.setText("ติดตาม");
+                if (actionName == null) {
+                    holder.typeText.setText("ติดตาม");
+                } else {
+                    holder.typeText.setText(actionName);
+                }
                 date = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
                 holder.statusImage.setImageDrawable(holder.follow);
 

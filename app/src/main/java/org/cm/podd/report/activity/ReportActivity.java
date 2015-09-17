@@ -127,7 +127,7 @@ public class ReportActivity extends ActionBarActivity
     private boolean follow;
     private FormIterator formIterator;
     private Trigger trigger;
-    private int startPageId;
+
 
     private double currentLatitude = 0.00;
     private double currentLongitude = 0.00;
@@ -144,6 +144,7 @@ public class ReportActivity extends ActionBarActivity
 
     private long parentReportId = -1;
     private GoogleApiClient mGoogleApiClient;
+    private String followActionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +199,7 @@ public class ReportActivity extends ActionBarActivity
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
             trigger = formIterator.getForm().getTrigger();
             reportSubmit = savedInstanceState.getInt("reportSubmit");
+            followActionName = savedInstanceState.getString("followActionName");
             Log.d(TAG, "onCreate from savedInstance, testFlag = " + testReport);
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
@@ -209,11 +211,15 @@ public class ReportActivity extends ActionBarActivity
             reportId = intent.getLongExtra("reportId", -99);            // optional
             follow = intent.getBooleanExtra("follow", false);           // optional
             testReport = intent.getBooleanExtra("test", false);
-            startPageId = intent.getIntExtra("startPageId", -1);
+            int startPageId = intent.getIntExtra("startPageId", -1);
             Log.d(TAG, "onCreate, testFlag = " + testReport);
 
             if (follow) {
                 parentReportId = reportId;
+                followActionName = intent.getStringExtra("followActionName");
+                if (followActionName == null) {
+                    followActionName = "follow";
+                }
                 reportId = reportDataSource.createFollowReport(reportId);
                 Log.d(TAG, String.format("create follow report with reportId = %d", reportId));
             }
@@ -225,6 +231,10 @@ public class ReportActivity extends ActionBarActivity
             }
             if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW)) {
                 form.setStartWithTrigger(true);
+            }
+
+            if (startPageId != -1) {
+                form.setStartPageId(startPageId);
             }
 
             formIterator = new FormIterator(form);
@@ -244,8 +254,8 @@ public class ReportActivity extends ActionBarActivity
         if ((reportSubmit == 0) && (currentLatitude == 0.00)) {
             buildGoogleApiClient();
             if (formIterator.getForm().isForceLocation()) {
-            switchToProgressLocationMode();
-        }
+                switchToProgressLocationMode();
+            }
         }
 
 
@@ -290,6 +300,7 @@ public class ReportActivity extends ActionBarActivity
         outState.putDouble("currentLongitude", currentLongitude);
         outState.putBoolean("testReport", testReport);
         outState.putInt("reportSubmit", reportSubmit);
+        outState.putString("followActionName", followActionName);
         super.onSaveInstanceState(outState);
     }
 
@@ -489,11 +500,6 @@ public class ReportActivity extends ActionBarActivity
             } else {
                 currentFragment = fragment.getClass().getName();
             }
-
-            if (startPageId != -1 && startPageId != formIterator.getCurrentPage().getId()) {
-                nextScreen();
-            }
-
         }
 
         Log.d("----", "current fragment = " + currentFragment);
@@ -525,9 +531,9 @@ public class ReportActivity extends ActionBarActivity
         }
 
         if (locationView.getVisibility() != View.INVISIBLE) {
-        locationView.setVisibility(View.INVISIBLE);
-        formView.setVisibility(View.VISIBLE);
-    }
+            locationView.setVisibility(View.INVISIBLE);
+            formView.setVisibility(View.VISIBLE);
+        }
     }
 
     private Fragment getPageFragment(Page page) {
@@ -638,7 +644,7 @@ public class ReportActivity extends ActionBarActivity
         if (action != ReportDataInterface.CANCEL_ACTION) {
             if (reportSubmit == 0) {
 
-                reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark);
+                reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark, followActionName);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
                     saveForm(0);
@@ -719,9 +725,9 @@ public class ReportActivity extends ActionBarActivity
 
     protected void stopLocationUpdates() {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
-    }
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
     }
 
     private void saveForm(int draft) {

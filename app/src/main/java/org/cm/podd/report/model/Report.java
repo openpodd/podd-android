@@ -54,6 +54,8 @@ public class Report {
     private java.util.Date followDate;
     private String parentGuid;
 
+    private String actionName;
+
     public Report(long id, long type, Date date, int negative, int draft, int submit) {
         this.id = id;
         this.type = type;
@@ -246,5 +248,13 @@ public class Report {
 
     public boolean isTestReport() {
         return this.testReport == TRUE;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
+
+    public void setActionName(String actionName) {
+        this.actionName = actionName;
     }
 }

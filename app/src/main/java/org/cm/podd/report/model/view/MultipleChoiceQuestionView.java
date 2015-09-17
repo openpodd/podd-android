@@ -42,28 +42,13 @@ import java.util.List;
 /**
  * Created by pphetra on 10/3/14 AD.
  */
-public class MultipleChoiceQuestionView extends LinearLayout {
+public class MultipleChoiceQuestionView extends MultipleChoiceQuestionBaseView {
 
     private static final String TAG = "MultipleChoiceQuestionView";
-    private MultipleChoiceQuestion question;
     private EditText editText;
 
     public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question, final boolean readonly) {
-        super(context);
-        this.question = question;
-
-        setOrientation(VERTICAL);
-
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 24);
-        setLayoutParams(params);
-
-        TextView titleView = new TextView(context);
-        titleView.setText(question.getTitle());
-        titleView.setLayoutParams(params);
-        titleView.setTextAppearance(context, R.style.ReportTextLabel);
-        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
-        addView(titleView);
+        super(context, question);
 
         ListView listView = new ListView(context);
         switch (question.getSelectionType()) {
@@ -82,7 +67,7 @@ public class MultipleChoiceQuestionView extends LinearLayout {
             }
         };
         listView.setAdapter(adapter);
-        listView.setLayoutParams(params);
+        listView.setLayoutParams(layoutParams);
         listView.setDividerHeight(0);
 
         List<MultipleChoiceItem> items = question.getItems();
@@ -93,7 +78,7 @@ public class MultipleChoiceQuestionView extends LinearLayout {
 
         if (question.isFreeTextChoiceEnable()) {
             editText = new EditText(context);
-            editText.setLayoutParams(params);
+            editText.setLayoutParams(layoutParams);
             editText.setText(question.getFreeTextValue());
             editText.setTextAppearance(context, R.style.EditTextFlat);
             editText.setBackgroundResource(R.drawable.edit_text_box);

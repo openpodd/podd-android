@@ -17,6 +17,10 @@
 
 package org.cm.podd.report.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by pphetra on 9/29/14 AD.
  */
@@ -26,6 +30,14 @@ public enum DataType {
         @Override
         public Object parseFromString(String value) {
             return value;
+        }
+
+        @Override
+        public String toString(Object value) {
+            if (value == null) {
+                return null;
+            }
+            return value.toString();
         }
     },
 
@@ -37,6 +49,39 @@ public enum DataType {
             }
             return Integer.parseInt(value);
         }
+
+        @Override
+        public String toString(Object value) {
+            if (value == null) {
+                return null;
+            }
+            return value.toString();
+        }
+    },
+
+    DATE() {
+        @Override
+        public Object parseFromString(String value) {
+            // support format yyyy-mm-dd
+            if (value.equals("")) {
+                return null;
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                return sdf.parse(value);
+            } catch (ParseException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public String toString(Object value) {
+            if (value == null || value.equals("")) {
+                return "";
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.format((Date) value);
+        }
     },
 
     DOUBLE() {
@@ -47,8 +92,17 @@ public enum DataType {
             }
             return Double.parseDouble(value);
         }
+
+        @Override
+        public String toString(Object value) {
+            if (value == null) {
+                return null;
+            }
+            return value.toString();
+        }
     };
 
     public abstract Object parseFromString(String value);
+    public abstract String toString(Object value);
 
 }

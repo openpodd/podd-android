@@ -32,6 +32,8 @@ public class Form implements Serializable {
     private List<Page> pages = new ArrayList<Page>();;
     private List<Transition> transitions = new ArrayList<Transition>();
 
+    private List<FollowAction> followActions = new ArrayList<FollowAction>();
+
     private Map<Integer, Question> questionMap = new HashMap<Integer, Question>();
     private Map<Integer, Page> pageMap = new HashMap<Integer, Page>();
     private Map<String, Question> questionMapByName = new HashMap<String, Question>();
@@ -103,5 +105,34 @@ public class Form implements Serializable {
 
     public void setForceLocation(boolean forceLocation) {
         this.forceLocation = forceLocation;
+    }
+
+    public void addFollowActions(FollowAction action) {
+        followActions.add(action);
+    }
+
+    public boolean hasFollowActions() {
+        return followActions.size() > 0;
+    }
+
+    public String[] getFollowActionNames() {
+        ArrayList<String> results = new ArrayList<String>(followActions.size());
+        for (FollowAction action : followActions) {
+            results.add(action.getName());
+        }
+        return results.toArray(new String[]{});
+    }
+
+    public FollowAction getFollowAction(int seq) {
+        return followActions.get(seq);
+    }
+
+    public FollowAction getFollowActionByName(String name) {
+        for (FollowAction action : followActions) {
+            if (action.getName().equals(name)) {
+                return action;
+            }
+        }
+        return null;
     }
 }

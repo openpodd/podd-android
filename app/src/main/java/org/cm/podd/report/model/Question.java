@@ -134,7 +134,7 @@ public class Question<T> implements Serializable {
             key = getKey();
         }
         Object value = getValue();
-        data.put(key, value);
+        data.put(key, dataType.toString(value));
     }
 
     public String getKey() {

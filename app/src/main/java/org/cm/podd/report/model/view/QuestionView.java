@@ -28,6 +28,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +39,8 @@ import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.util.StyleUtil;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,6 +51,7 @@ public class QuestionView extends LinearLayout {
 
     private final Question question;
     private EditText editView = null;
+    private DatePicker calendarView = null;
 
     public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
@@ -62,8 +67,6 @@ public class QuestionView extends LinearLayout {
         setId(q.getId());
 
         ViewGroup.LayoutParams itemParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        editView = new EditText(context);
 
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
@@ -88,94 +91,123 @@ public class QuestionView extends LinearLayout {
         });
         addView(titleView);
 
-        editView.setLayoutParams(params);
-        editView.setPadding(0, 0, 0, 0);
-        editView.setClickable(true);
-        editView.setHint(hintText);
-        editView.setOnTouchListener(new OnTouchListener() {
+        if (question.getDataType() == DataType.DATE) {
+            calendarView = new DatePicker(context);
+            calendarView.setCalendarViewShown(true);
+            calendarView.setSpinnersShown(false);
+            calendarView.setLayoutParams(itemParams);
+            calendarView.setPadding(0, 0, 0, 0);
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                editView.setHint("");
-                return false;
+            Date value = (Date) question.getValue();
+            if (value == null) {
+                value = new Date();
             }
 
-        });
-
-        editView.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    editView.setHint(hintText);
-                }
-            }
-        });
-        editView.setTextAppearance(context, R.style.EditTextFlat);
-        editView.setBackgroundResource(R.drawable.edit_text_box);
-        editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
-        if (readonly) {
-            editView.setKeyListener(null);
-            editView.setEnabled(false);
-        }
-        int type = 0;
-        if (question.getDataType() == DataType.INTEGER) {
-            type = InputType.TYPE_CLASS_NUMBER;
-        }
-        if (question.getDataType() == DataType.DOUBLE) {
-            type = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
-        }
-        if (question.getDataType() == DataType.STRING) {
-            type = InputType.TYPE_CLASS_TEXT;
-        }
-        editView.setInputType(type);
-        Object value = question.getValue();
-        if (value != null) {
-            if (question.getDataType() == DataType.DOUBLE) {
-                editView.setText(String.format( "%.2f", value ));
-            } else {
-                editView.setText(value.toString());
-            }
-        }
-        addView(editView);
-
-        if (! readonly) {
-            editView.addTextChangedListener(new TextWatcher() {
+            Calendar c = Calendar.getInstance();
+            c.setTime(value);
+            calendarView.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), new DatePicker.OnDateChangedListener() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
+                public void onDateChanged(DatePicker datePicker, int year, int month, int day) {
+                    Calendar c = Calendar.getInstance();
+                    c.set(year, month, day, 0, 0, 0);
+                    question.setData(c.getTime());
                 }
+            });
+
+            addView(calendarView);
+
+        } else {
+            editView = new EditText(context);
+            editView.setLayoutParams(itemParams);
+            editView.setPadding(0, 0, 0, 0);
+            editView.setClickable(true);
+            editView.setHint(hintText);
+            editView.setOnTouchListener(new OnTouchListener() {
 
                 @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
+                public boolean onTouch(View v, MotionEvent event) {
+                    editView.setHint("");
+                    return false;
                 }
 
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    question.setData(question.getDataType().parseFromString(editable.toString()));
-                }
             });
 
             editView.setOnFocusChangeListener(new OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean hasFocus) {
-                    if (! hasFocus) {
-                        question.setData(question.getDataType().parseFromString(editView.getText().toString()));
-                    }
-                }
-            });
 
-            editView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (listener != null) {
-                        return listener.onSoftKeyAction(v, actionId, event);
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        editView.setHint(hintText);
                     }
-                    return false;
                 }
             });
+            editView.setTextAppearance(context, R.style.EditTextFlat);
+            editView.setBackgroundResource(R.drawable.edit_text_box);
+            editView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+            if (readonly) {
+                editView.setKeyListener(null);
+                editView.setEnabled(false);
+            }
+            int type = 0;
+            if (question.getDataType() == DataType.INTEGER) {
+                type = InputType.TYPE_CLASS_NUMBER;
+            }
+            if (question.getDataType() == DataType.DOUBLE) {
+                type = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+            }
+            if (question.getDataType() == DataType.STRING) {
+                type = InputType.TYPE_CLASS_TEXT;
+            }
+            editView.setInputType(type);
+            Object value = question.getValue();
+            if (value != null) {
+                if (question.getDataType() == DataType.DOUBLE) {
+                    editView.setText(String.format( "%.2f", value ));
+                } else {
+                    editView.setText(value.toString());
+                }
+            }
+            addView(editView);
+
+            if (! readonly) {
+                editView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        question.setData(question.getDataType().parseFromString(editable.toString()));
+                    }
+                });
+
+                editView.setOnFocusChangeListener(new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean hasFocus) {
+                        if (! hasFocus) {
+                            question.setData(question.getDataType().parseFromString(editView.getText().toString()));
+                        }
+                    }
+                });
+
+                editView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (listener != null) {
+                            return listener.onSoftKeyAction(v, actionId, event);
+                        }
+                        return false;
+                    }
+                });
+            }
         }
+
 
     }
 
@@ -191,7 +223,7 @@ public class QuestionView extends LinearLayout {
     }
 
     public void askForFocus() {
-        if (editView.getText().toString().trim().length() == 0) {
+        if (editView != null && editView.getText().toString().trim().length() == 0) {
             (new Handler()).postDelayed(new Runnable() {
                 public void run() {
                     editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));

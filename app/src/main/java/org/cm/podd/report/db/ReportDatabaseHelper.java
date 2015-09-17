@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 14;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -48,7 +48,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  follow_date INTEGER,"  // date when follow occur
             + "  follow_flag INTEGER,"  // 1 -> follow case
             + "  follow_until INTEGER,"
-            + "  test_report INTEGER"
+            + "  test_report INTEGER,"
+            + "  action_name TEXT"
             + ")";
 
     private static final String CREATE_TABLE_IMAGE = "create table report_image"
@@ -251,6 +252,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN state INTEGER");
                 db.execSQL("ALTER TABLE feed_item ADD COLUMN state_code TEXT");
                 db.execSQL(CREATE_REPORT_STATE);
+            case 13:
+                Log.i("DB", ">> upgrade from version 13");
+                db.execSQL("ALTER TABLE report ADD COLUMN action_name TEXT");
         }
     }
 

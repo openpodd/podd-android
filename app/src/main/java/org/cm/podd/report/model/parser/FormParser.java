@@ -18,6 +18,7 @@
 package org.cm.podd.report.model.parser;
 
 import org.cm.podd.report.model.DataType;
+import org.cm.podd.report.model.FollowAction;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.MultipleChoiceItem;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
@@ -33,6 +34,8 @@ import org.cm.podd.report.model.validation.RequireValidation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -59,6 +62,7 @@ public class FormParser {
             JSONObject q = questions.getJSONObject(i);
             String type = q.getString("type");
             if (type.equals("integer") ||
+                    type.equals("date") ||
                     type.equals("double") ||
                     type.equals("text")) {
                 parseQuestion(q);
@@ -86,6 +90,10 @@ public class FormParser {
 
         if (doc.has("forceLocation")) {
             form.setForceLocation(doc.getBoolean("forceLocation"));
+        }
+
+        if (doc.has("followActions")) {
+            parseFollowActions(doc.getJSONArray("followActions"));
         }
 
     }
@@ -144,6 +152,9 @@ public class FormParser {
         } else if (type.equals("double")) {
             question = new Question<Double>();
             question.setDataType(DataType.DOUBLE);
+        } else if (type.equals("date")) {
+            question = new Question<Date>();
+            question.setDataType(DataType.DATE);
         } else {
             question = new Question<String>();
             question.setDataType(DataType.STRING);
@@ -277,6 +288,32 @@ public class FormParser {
             boolean merge = item.optBoolean("merge", false);
             Trigger trigger = new Trigger(item.getString("pattern"), item.getInt("pageId"), item.getString("notificationText"), merge);
             form.setTrigger(trigger);
+        }
+    }
+
+    /**
+     * "followActions": [
+     *   {
+     *     "name": "Lab Test",
+     *     "startPageId": 404
+     *   },
+     *   {
+     *     "name": "Case Mangment",
+     *     "startPageId": 362
+     *   }
+     * ],
+     * @param followActions
+     * @throws JSONException
+     */
+    public void parseFollowActions(JSONArray followActions) throws JSONException {
+        if (followActions !=  null) {
+            for (int i = 0; i < followActions.length(); i++) {
+                JSONObject item = followActions.getJSONObject(i);
+                String name = item.getString("name");
+                int startPageId = item.getInt("startPageId");
+
+                form.addFollowActions(new FollowAction(name, startPageId));
+            }
         }
     }
 

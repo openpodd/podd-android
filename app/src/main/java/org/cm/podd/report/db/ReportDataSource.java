@@ -161,7 +161,7 @@ public class ReportDataSource {
     public Cursor getAllWithTypeName() {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         return db.rawQuery(
-                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name, r.follow_flag, r.follow_date, r.follow_until, r.test_report FROM report r "
+                "SELECT r._id, r.type, r.date, r.negative, r.draft, r.submit, rt.name as type_name, r.follow_flag, r.follow_date, r.follow_until, r.test_report, r.action_name FROM report r "
                 + "left join report_type rt on r.type = rt._id order by r.date desc, r.follow_date desc", null);
     }
 
@@ -191,6 +191,8 @@ public class ReportDataSource {
         Date followDate = new Date(cursor.getLong(cursor.getColumnIndex("follow_date")));
         String parentGuid = cursor.getString(cursor.getColumnIndex("parent_guid"));
 
+        String actionName = cursor.getString(cursor.getColumnIndex("action_name"));
+
 
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
@@ -204,6 +206,7 @@ public class ReportDataSource {
         report.setFollowFlag(followFlag);
         report.setParentGuid(parentGuid);
         report.setTestReport(testReport);
+        report.setActionName(actionName);
 
         report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
         cursor.close();
@@ -341,7 +344,7 @@ public class ReportDataSource {
         return image;
     }
 
-    public void updateReport(long reportId, Date reportDate, long regionId, String remark) {
+    public void updateReport(long reportId, Date reportDate, long regionId, String remark, String followActionName) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("region_id", regionId);
@@ -349,6 +352,7 @@ public class ReportDataSource {
             values.put("start_date", reportDate.getTime());
         }
         values.put("remark", remark);
+        values.put("action_name", followActionName);
         db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
         db.close();
     }
