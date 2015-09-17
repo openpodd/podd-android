@@ -73,7 +73,7 @@ public class ReportDataSource {
             if (followable == Report.TRUE) {
                 int followDays = typeCursor.getInt(typeCursor.getColumnIndex("follow_days"));
                 Date today = new Date();
-                long until = today.getTime() + (followDays * 24 * 60 * 60 * 1000);
+                long until = today.getTime() + (followDays * 24 * 60 * 60 * 1000L);
                 Log.d(TAG, String.format("follow case value, followDays = %d until %d", followDays, until));
                 values.put("follow_until", until);
             }
