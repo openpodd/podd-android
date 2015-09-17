@@ -50,14 +50,6 @@ public class MultipleChoiceQuestion extends Question<String> {
     public MultipleChoiceQuestion(MultipleChoiceSelection selectionType) {
         this.selectionType = selectionType;
         this.setDataType(DataType.STRING);
-        switch(selectionType) {
-            case SINGLE:
-                addValidation(new SingleChoiceValidation("Value must be present in the giving list."));
-                break;
-            case MULTIPLE:
-                addValidation(new MultipleChoiceValidation("Value must be present in the giving list."));
-                break;
-        }
     }
 
     public MultipleChoiceItem addItem(String id, String text) {
