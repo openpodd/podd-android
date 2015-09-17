@@ -65,8 +65,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.cm.podd.report.fragment.ReportDataInterface.CameraInteractionListener;
-
 /**
  * Use the {@link ReportImageFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -377,12 +375,6 @@ public class ReportImageFragment extends Fragment {
         navigationInterface = (ReportNavigationInterface) activity;
 
         dataInterface = (ReportDataInterface) activity;
-        dataInterface.setCameraInteractionListener(new CameraInteractionListener() {
-            @Override
-            public void doGetImage() {
-                popUpChooseImage();
-            }
-        });
     }
 
     public void popUpChooseImage() {

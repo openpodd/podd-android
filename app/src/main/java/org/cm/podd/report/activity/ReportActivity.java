@@ -18,13 +18,15 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -47,6 +49,18 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
@@ -73,7 +87,6 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertReceiver;
 import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.FollowAlertService;
-import org.cm.podd.report.service.LocationBackgroundService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
@@ -89,12 +102,17 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ReportActivity extends ActionBarActivity
-        implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler {
+        implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = "ReportActivity";
+    public static final int REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG = 200;
     private Button prevBtn;
     private Button nextBtn;
     private View disableMaskView;
+    private View formView;
+    private View locationView;
+    private TextView countdownTextView;
+    private TextView textProgressLocationView;
     private boolean testReport = false;
 
     private String currentFragment;
@@ -113,35 +131,19 @@ public class ReportActivity extends ActionBarActivity
 
     private double currentLatitude = 0.00;
     private double currentLongitude = 0.00;
-    private String currentLocationProvider;
 
     private Date reportDate;
     private long reportRegionId;
     private String remark;
-    private int reportSubmit;
-
-    private View containerView;
+    private int reportSubmit = 0;
 
     private SharedPrefUtil sharedPrefUtil;
 
-    protected BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            currentLatitude = intent.getDoubleExtra("Latitude", 0.00);
-            currentLongitude = intent.getDoubleExtra("Longitude", 0.00);
-            currentLocationProvider = intent.getStringExtra("Provider");
-
-            Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
-            reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
-            stopLocationService();
-        }
-    };
-
     protected FollowAlertReceiver mAlertReceiver = new FollowAlertReceiver();
-    private CameraInteractionListener cameraInteractionListener;
     private long startTime;
 
     private long parentReportId = -1;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,9 +152,18 @@ public class ReportActivity extends ActionBarActivity
         LocalBroadcastManager.getInstance(this).registerReceiver(mAlertReceiver,
                 new IntentFilter(FollowAlertService.TAG));
 
-        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+        sharedPrefUtil = new SharedPrefUtil(this);
 
         setContentView(R.layout.activity_report);
+
+        formView = findViewById(R.id.form);
+        locationView = findViewById(R.id.location);
+
+        textProgressLocationView = (TextView) findViewById(R.id.progress_location_text);
+        textProgressLocationView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        countdownTextView = (TextView) findViewById(R.id.countdownTextView);
+        countdownTextView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -186,13 +197,11 @@ public class ReportActivity extends ActionBarActivity
             testReport = savedInstanceState.getBoolean("testReport");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
             trigger = formIterator.getForm().getTrigger();
+            reportSubmit = savedInstanceState.getInt("reportSubmit");
             Log.d(TAG, "onCreate from savedInstance, testFlag = " + testReport);
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
             currentLongitude = savedInstanceState.getDouble("currentLongitude");
-            if (currentLongitude == 0.00 && currentLatitude == 0.00) {
-                startLocationService();
-            }
 
         } else {
             Intent intent = getIntent();
@@ -222,7 +231,6 @@ public class ReportActivity extends ActionBarActivity
 
             if (reportId == -99) {
                 reportId = reportDataSource.createDraftReport(reportType, testReport);
-                startLocationService();
             } else {
                 loadFormData();
             }
@@ -230,10 +238,19 @@ public class ReportActivity extends ActionBarActivity
             nextScreen();
         }
 
+        // open location service only when
+        // 1. Create a New report
+        // 2. Edit a draft report which don't have any location attach.
+        if ((reportSubmit == 0) && (currentLatitude == 0.00)) {
+            buildGoogleApiClient();
+            if (formIterator.getForm().isForceLocation()) {
+            switchToProgressLocationMode();
+        }
+        }
+
+
         /* check softkeyboard visibility */
         final View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
-        final View controlBar = findViewById(R.id.controlBar);
-        containerView = findViewById(R.id.container);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -242,14 +259,6 @@ public class ReportActivity extends ActionBarActivity
                 int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
                 int limitHeightPx = (int) (getResources().getDisplayMetrics().density * 100);
                 Log.d(TAG, String.format("diff height=%d, limit height=%d", heightDiff, limitHeightPx));
-//
-//                if (heightDiff > limitHeightPx) {
-//                    // if more than limitHeightPx, its probably a keyboard...
-//                    // then hide a control bar (prev/next)
-//                    controlBar.setVisibility(View.GONE);
-//                } else {
-//                    controlBar.setVisibility(View.VISIBLE);
-//                }
             }
         });
 
@@ -258,6 +267,16 @@ public class ReportActivity extends ActionBarActivity
         tracker.send(new HitBuilders.AppViewBuilder().build());
 
         startTime = System.currentTimeMillis();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -270,6 +289,7 @@ public class ReportActivity extends ActionBarActivity
         outState.putDouble("currentLatitude", currentLatitude);
         outState.putDouble("currentLongitude", currentLongitude);
         outState.putBoolean("testReport", testReport);
+        outState.putInt("reportSubmit", reportSubmit);
         super.onSaveInstanceState(outState);
     }
 
@@ -282,6 +302,8 @@ public class ReportActivity extends ActionBarActivity
         reportRegionId = report.getRegionId();
         remark = report.getRemark();
         reportSubmit = report.getSubmit();
+        currentLatitude = report.getLatitude();
+        currentLongitude = report.getLongitude();
 
         String formDataStr = report.getFormData();
         Log.d(TAG, "form data = " + formDataStr);
@@ -309,10 +331,6 @@ public class ReportActivity extends ActionBarActivity
             } catch (JSONException e) {
                 Log.e(TAG, "error parsing form_data", e);
             }
-        }
-
-        if (report.getLatitude() == 0.00 && report.getLongitude() == 0.00) {
-            startLocationService();
         }
 
     }
@@ -481,6 +499,37 @@ public class ReportActivity extends ActionBarActivity
         Log.d("----", "current fragment = " + currentFragment);
     }
 
+    CountDownTimer ct;
+    private void switchToProgressLocationMode() {
+        locationView.setVisibility(View.VISIBLE);
+        formView.setVisibility(View.INVISIBLE);
+        countdownTextView.setText("30");
+
+        ct = new CountDownTimer(30000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                countdownTextView.setText(Long.toString(millisUntilFinished / 1000));
+                if (millisUntilFinished < 15000) {
+                    textProgressLocationView.setText("ไม่สามารถค้นหา\nสัญญาณระบุตำแหน่งได้\nกรุณาเคลื่อนย้ายโทรศัพท์\nไปอยู่ในบริเวณพื้นที่กลางแจ้ง");
+                }
+            }
+
+            public void onFinish() {
+                switchToFormMode();
+            }
+        }.start();
+    }
+
+    private void switchToFormMode() {
+        if (ct != null) {
+            ct.cancel();
+        }
+
+        if (locationView.getVisibility() != View.INVISIBLE) {
+        locationView.setVisibility(View.INVISIBLE);
+        formView.setVisibility(View.VISIBLE);
+    }
+    }
+
     private Fragment getPageFragment(Page page) {
         FormPageFragment fragment = new FormPageFragment();
         Bundle bundle = new Bundle();
@@ -632,15 +681,12 @@ public class ReportActivity extends ActionBarActivity
     }
 
     @Override
-    public void setCameraInteractionListener(CameraInteractionListener listener) {
-        this.cameraInteractionListener = listener;
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopLocationService();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        if (mGoogleApiClient != null) {
+            stopLocationUpdates();
+            mGoogleApiClient.disconnect();
+        }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mAlertReceiver);
         reportDataSource.close();
         reportQueueDataSource.close();
@@ -659,6 +705,23 @@ public class ReportActivity extends ActionBarActivity
                     .setVariable("Overall").setLabel(sharedPrefUtil.getUserName())
                     .build());
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG) {
+            LocationRequest locationRequest = new LocationRequest();
+            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
     }
 
     private void saveForm(int draft) {
@@ -689,18 +752,6 @@ public class ReportActivity extends ActionBarActivity
         reportDataSource.updateData(reportId, jsonData.toString(), draft);
     }
 
-    public void startLocationService() {
-        Log.i(TAG, "startLocationService");
-        startService(new Intent(this, LocationBackgroundService.class));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter(LocationBackgroundService.BROADCAST_ACTION));
-    }
-
-    public void stopLocationService() {
-        Log.i(TAG, "stopLocationService");
-        stopService(new Intent(this, LocationBackgroundService.class));
-    }
-
     /*
      * Handle action from softkeyboard input (DONE) button
      */
@@ -724,6 +775,87 @@ public class ReportActivity extends ActionBarActivity
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            currentLatitude = mLastLocation.getLatitude();
+            currentLongitude = mLastLocation.getLongitude();
+
+            Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
+            reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+
+            switchToFormMode();
+        } else {
+            Log.d(TAG, "mLastLocation is null");
+            LocationRequest locationRequest = new LocationRequest();
+            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+            builder.setAlwaysShow(true);
+            builder.addLocationRequest(locationRequest);
+            PendingResult<LocationSettingsResult> result =
+                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                @Override
+                public void onResult(LocationSettingsResult result) {
+                    final Status status = result.getStatus();
+                    final LocationSettingsStates states = result.getLocationSettingsStates();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            // All location settings are satisfied. The client can initialize location
+                            // requests here.
+
+                            break;
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            // Location settings are not satisfied. But could be fixed by showing the user
+                            // a dialog.
+                            try {
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                status.startResolutionForResult(
+                                        ReportActivity.this,
+                                        REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG);
+                            } catch (IntentSender.SendIntentException e) {
+                                // Ignore the error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            // Location settings are not satisfied. However, we have no way to fix the
+                            // settings so we won't show the dialog.
+                            break;
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e(TAG, "can't connect to google play error:" + connectionResult.getErrorCode());
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
+
+        Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
+        reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+
+        stopLocationUpdates();
+        switchToFormMode();
     }
 
     /**
