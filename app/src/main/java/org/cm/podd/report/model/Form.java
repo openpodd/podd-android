@@ -38,6 +38,7 @@ public class Form implements Serializable {
 
     private Trigger trigger;
     private int startPageId;
+    private boolean forceLocation = false;
 
     public void addQuestion(Question question) {
         questions.add(question);
@@ -94,5 +95,13 @@ public class Form implements Serializable {
         if (flag && trigger != null) {
             startPageId = getTrigger().getPageId();
         }
+    }
+
+    public boolean isForceLocation() {
+        return forceLocation;
+    }
+
+    public void setForceLocation(boolean forceLocation) {
+        this.forceLocation = forceLocation;
     }
 }

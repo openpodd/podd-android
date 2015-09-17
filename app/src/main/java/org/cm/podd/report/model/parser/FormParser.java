@@ -84,6 +84,10 @@ public class FormParser {
             parseTrigger(doc.getJSONObject("trigger"));
         }
 
+        if (doc.has("forceLocation")) {
+            form.setForceLocation(doc.getBoolean("forceLocation"));
+        }
+
     }
 
     /**

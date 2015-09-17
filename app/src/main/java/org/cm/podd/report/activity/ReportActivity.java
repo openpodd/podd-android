@@ -243,7 +243,9 @@ public class ReportActivity extends ActionBarActivity
         // 2. Edit a draft report which don't have any location attach.
         if ((reportSubmit == 0) && (currentLatitude == 0.00)) {
             buildGoogleApiClient();
+            if (formIterator.getForm().isForceLocation()) {
             switchToProgressLocationMode();
+        }
         }
 
 
@@ -506,6 +508,9 @@ public class ReportActivity extends ActionBarActivity
         ct = new CountDownTimer(30000, 1000) {
             public void onTick(long millisUntilFinished) {
                 countdownTextView.setText(Long.toString(millisUntilFinished / 1000));
+                if (millisUntilFinished < 15000) {
+                    textProgressLocationView.setText("ไม่สามารถค้นหา\nสัญญาณระบุตำแหน่งได้\nกรุณาเคลื่อนย้ายโทรศัพท์\nไปอยู่ในบริเวณพื้นที่กลางแจ้ง");
+                }
             }
 
             public void onFinish() {
@@ -518,8 +523,11 @@ public class ReportActivity extends ActionBarActivity
         if (ct != null) {
             ct.cancel();
         }
+
+        if (locationView.getVisibility() != View.INVISIBLE) {
         locationView.setVisibility(View.INVISIBLE);
         formView.setVisibility(View.VISIBLE);
+    }
     }
 
     private Fragment getPageFragment(Page page) {
@@ -710,8 +718,10 @@ public class ReportActivity extends ActionBarActivity
     }
 
     protected void stopLocationUpdates() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
+    }
     }
 
     private void saveForm(int draft) {
@@ -782,7 +792,7 @@ public class ReportActivity extends ActionBarActivity
         } else {
             Log.d(TAG, "mLastLocation is null");
             LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
             builder.setAlwaysShow(true);
             builder.addLocationRequest(locationRequest);
