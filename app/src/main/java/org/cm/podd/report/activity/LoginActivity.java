@@ -36,14 +36,16 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-import static android.content.SharedPreferences.Editor;
 import static android.provider.Settings.Secure.ANDROID_ID;
 
 public class LoginActivity extends ActionBarActivity {
 
+    private static String TAG = "LoginActivity";
+
     private boolean isUserLoggedIn;
     private int numOfValidServerUrl;
     private boolean prevValidServerUrlIsLongClick;
+    private int numOfLongClick4QRCode = 0;
     SharedPrefUtil sharedPrefUtil;
 
     EditText usernameText;
@@ -128,12 +130,47 @@ public class LoginActivity extends ActionBarActivity {
         findViewById(R.id.server_url_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveServerUrl();
+                saveServerUrl(serverUrlText.getText().toString());
             }
         });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 700 && resultCode == 0) {
+            String result = data.getStringExtra("result");
+
+            try {
+                JSONObject obj = new JSONObject(result);
+                if (obj.has("server")) {
+                    String server = obj.getString("server");
+                    saveServerUrl(server);
+                    Crouton.makeText(LoginActivity.this, "Changing Server to " + server, Style.CONFIRM)
+                            .setConfiguration(new Configuration.Builder().setDuration(5000).build()).show();
+                }
+
+            } catch (JSONException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+
+        }
+
+
     }
 
     private void checkAndShowServerUrlForm(boolean isLongClick) {
+
+        if (isLongClick && numOfValidServerUrl == 0) {
+            numOfLongClick4QRCode = 1;
+        } else if (isLongClick && numOfLongClick4QRCode == 1) {
+            numOfLongClick4QRCode = 2;
+        } else {
+            numOfLongClick4QRCode = 0;
+        }
+
         if ((prevValidServerUrlIsLongClick && !isLongClick) || (!prevValidServerUrlIsLongClick && isLongClick)) {
             numOfValidServerUrl++;
         }
@@ -142,22 +179,27 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         if (numOfValidServerUrl >= 6) {
+            String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+            if (serverUrl == "") {
+                serverUrl = BuildConfig.SERVER_URL;
+            }
+            serverUrlText.setText(serverUrl);
+
             findViewById(R.id.server_url_form).setVisibility(View.VISIBLE);
 
             numOfValidServerUrl = 0;
         }
 
-        String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
-        if (serverUrl == "") {
-            serverUrl = BuildConfig.SERVER_URL;
+
+        if (numOfLongClick4QRCode == 2) {
+            Intent intent = new Intent(getApplicationContext(), QRConfigActivity.class);
+            startActivityForResult(intent, 700);
         }
-        serverUrlText.setText(serverUrl);
 
         prevValidServerUrlIsLongClick = isLongClick;
     }
 
-    private void saveServerUrl() {
-        String serverUrl = serverUrlText.getText().toString();
+    private void saveServerUrl(String serverUrl) {
 
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("serverUrl", serverUrl);

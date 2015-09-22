@@ -8,8 +8,8 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 11
         targetSdkVersion 20
-        versionCode 31
-        versionName "1.0.31"
+        versionCode 32
+        versionName "1.0.32"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
@@ -74,6 +74,7 @@ dependencies {
     compile files('libs/aws-android-sdk-2.1.5-core.jar')
     compile files('libs/aws-android-sdk-2.1.5-s3.jar')
     compile files('libs/mpandroidchartlibrary-1-7-4.jar')
+    compile 'me.dm7.barcodescanner:zxing:1.8.2'
 }
 
 task askForPasswords << {

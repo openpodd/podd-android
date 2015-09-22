@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
@@ -90,7 +90,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
-
         <activity
             android:name=".activity.ImageActivity"
             android:label="@string/title_activity_image"
@@ -212,8 +211,7 @@
             android:name=".service.FollowAlertService"
             android:exported="false" >
         </service>
-
-        <service android:name=".service.FollowAlertRescheduleService">
+        <service android:name=".service.FollowAlertRescheduleService" >
         </service>
 
         <receiver
@@ -221,7 +219,7 @@
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -229,6 +227,10 @@
             android:name=".service.SyncReportStateService"
             android:exported="false" />
 
+        <activity
+            android:name=".activity.QRConfigActivity"
+            android:label="@string/title_activity_qrconfig" >
+        </activity>
     </application>
 
 </manifest>
