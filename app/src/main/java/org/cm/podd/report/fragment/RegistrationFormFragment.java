@@ -70,6 +70,7 @@ public class RegistrationFormFragment extends Fragment {
 
     SharedPrefUtil sharedPrefUtil;
     private boolean isUserLoggedIn;
+    private boolean isSubmit = false;
 
     private static final String SERIAL_NUMBER_PATTERN = "^[0-9]{13,}$";
 
@@ -138,7 +139,10 @@ public class RegistrationFormFragment extends Fragment {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-                    new RegisterTask().execute((Void[]) null);
+                    if (!isSubmit) {
+                        new RegisterTask().execute((Void[]) null);
+                        isSubmit = true;
+                    }
                 } else {
                      /* alert when hasNetworkConnection */
                 }
@@ -245,10 +249,9 @@ public class RegistrationFormFragment extends Fragment {
                     }  catch (JSONException ex) {
                             Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
                     }
-
                 }
-
             }
+            isSubmit = false;
         }
     }
 
