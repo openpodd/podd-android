@@ -70,6 +70,7 @@ public class RegistrationFormFragment extends Fragment {
 
     SharedPrefUtil sharedPrefUtil;
     private boolean isUserLoggedIn;
+    private boolean isSubmit = false;
 
     private static final String SERIAL_NUMBER_PATTERN = "^[0-9]{13,}$";
 
@@ -138,7 +139,10 @@ public class RegistrationFormFragment extends Fragment {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-                    new RegisterTask().execute((Void[]) null);
+                    if (!isSubmit) {
+                        new RegisterTask().execute((Void[]) null);
+                        isSubmit = true;
+                    }
                 } else {
                      /* alert when hasNetworkConnection */
                 }
@@ -170,6 +174,21 @@ public class RegistrationFormFragment extends Fragment {
 
         if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
             showDialogConfirm();
+        } else if (!firstNameValid) {
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            return;
+        } else if (!lastNameValid) {
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            return;
+        } else if (!serialNumberValid) {
+            Crouton.makeText(getActivity(), getString(R.string.serial_number_error), Style.ALERT).show();
+            return;
+        } else if (!telephoneValid){
+            Crouton.makeText(getActivity(), getString(R.string.telephone_error), Style.ALERT).show();
+            return;
+        } else if (!emailValid){
+            Crouton.makeText(getActivity(), getString(R.string.email_error), Style.ALERT).show();
+            return;
         } else {
             Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
@@ -245,10 +264,9 @@ public class RegistrationFormFragment extends Fragment {
                     }  catch (JSONException ex) {
                             Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
                     }
-
                 }
-
             }
+            isSubmit = false;
         }
     }
 

@@ -211,5 +211,8 @@
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
     <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
     <string name="title_activity_qrconfig">Custom QR Code</string>
+    <string name="telephone_error">หมายเลขโทรศัพท์ไม่ถูกต้อง</string>
+    <string name="email_error">อีเมล์ไม่ถูกต้อง</string>
+    <string name="name_error">กรุณากรอกชือ นามสกุล</string>
 
 </resources>

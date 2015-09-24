@@ -234,12 +234,6 @@ public class ReportViewActivity extends ActionBarActivity {
         tracker.setScreenName("ReportView");
         tracker.send(new HitBuilders.AppViewBuilder().build());
 
-//        alertComment.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                alertComment.setVisibility(View.INVISIBLE);
-//            }
-//        });
     }
 
     private void refreshViewRefresh(){
@@ -525,6 +519,15 @@ public class ReportViewActivity extends ActionBarActivity {
 
             final Long reportId = Long.parseLong(report.getString("id"));
             moveToCommentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ReportViewActivity.this, ReportCommentActivity.class);
+                    intent.putExtra("reportId", reportId);
+                    startActivity(intent);
+                }
+            });
+
+            alertComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(ReportViewActivity.this, ReportCommentActivity.class);
