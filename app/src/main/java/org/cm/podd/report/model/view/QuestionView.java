@@ -221,7 +221,7 @@ public class QuestionView extends LinearLayout {
     }
 
     public void askForFocus() {
-        if (editView != null && editView.getText().toString().trim().length() == 0) {
+        if (editView != null) {
             (new Handler()).postDelayed(new Runnable() {
                 public void run() {
                     editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
