@@ -332,7 +332,7 @@ public class ReportActivity extends ActionBarActivity
                     if (question != null) {
                         String value = jsonObject.getString(key);
                         if (value != null && !value.equals("null")) {
-                            question.setData(name, question.getDataType().parseFromString(value));
+                            question.setData(name, question.getDataType().fromJson(value));
                         }
                     } else {
                         Log.d(TAG, "Question not found. key= " + key);
@@ -387,7 +387,7 @@ public class ReportActivity extends ActionBarActivity
                 buff.append(vr.getMessage()).append("\n");
             }
             final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
-            crouton.setConfiguration(new Configuration.Builder().setDuration(5000).build());
+            crouton.setConfiguration(new Configuration.Builder().setDuration(2500).build());
             crouton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

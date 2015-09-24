@@ -33,11 +33,16 @@ public enum DataType {
         }
 
         @Override
-        public String toString(Object value) {
+        public Object toJson(Object value) {
             if (value == null) {
                 return null;
             }
             return value.toString();
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return value;
         }
     },
 
@@ -51,11 +56,16 @@ public enum DataType {
         }
 
         @Override
-        public String toString(Object value) {
+        public Object toJson(Object value) {
             if (value == null) {
                 return null;
             }
-            return value.toString();
+            return value;
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return value;
         }
     },
 
@@ -75,12 +85,17 @@ public enum DataType {
         }
 
         @Override
-        public String toString(Object value) {
+        public Object toJson(Object value) {
             if (value == null || value.equals("")) {
                 return "";
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             return sdf.format((Date) value);
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return parseFromString(value.toString());
         }
     },
 
@@ -94,15 +109,21 @@ public enum DataType {
         }
 
         @Override
-        public String toString(Object value) {
+        public Object toJson(Object value) {
             if (value == null) {
                 return null;
             }
-            return value.toString();
+            return value;
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return value;
         }
     };
 
     public abstract Object parseFromString(String value);
-    public abstract String toString(Object value);
+    public abstract Object toJson(Object value);
+    public abstract Object fromJson(Object value);
 
 }
