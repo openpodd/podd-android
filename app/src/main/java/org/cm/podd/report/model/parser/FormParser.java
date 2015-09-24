@@ -31,6 +31,7 @@ import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
 import org.cm.podd.report.model.validation.RequireValidation;
+import org.cm.podd.report.model.validation.ScriptValidation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,7 +165,7 @@ public class FormParser {
         question.setTitle(q.getString("title"));
         question.setName(q.getString("name"));
 
-        if (!q.isNull("validations")) {
+        if (! q.isNull("validations")) {
             JSONArray validations = q.getJSONArray("validations");
             for (int i = 0; i < validations.length(); i++) {
                 JSONObject validation = validations.getJSONObject(i);
@@ -198,6 +199,10 @@ public class FormParser {
                     v.getString("message"));
         } else if (type.equals("require")) {
             iv = RequireValidation.newInstance(question.getDataType(),
+                    v.getString("message"));
+        } else if (type.equals("script")) {
+            iv = ScriptValidation.newInstance(question.getDataType(),
+                    v.getString("expression"),
                     v.getString("message"));
         }
         if (iv != null) {

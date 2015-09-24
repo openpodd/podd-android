@@ -22,37 +22,36 @@ import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.ScriptEngineInterface;
 
 /**
- * Created by pphetra on 9/25/14 AD.
+ * Created by pphetra on 9/24/15 AD.
  */
-public class MaxValidation<T> implements IValidation<T> {
+public class ScriptValidation<T> implements IValidation<T> {
 
-    private T maxValue;
-    private String message;
 
-    public MaxValidation(T maxValue, String message) {
-        this.maxValue = maxValue;
+    private final String expression;
+    private final String message;
+
+    public ScriptValidation(String expression, String message) {
+        this.expression = expression;
         this.message = message;
     }
 
     @Override
     public ValidationResult validate(T value, Question<T> question, ScriptEngineInterface engineInterface) {
-        if (value instanceof Comparable) {
-            if (((Comparable) value).compareTo(maxValue) < 0) {
-                return SUCCESS;
-            }
+        if (engineInterface.evaluateExpression(expression)) {
+            return new ValidationResult(false, message);
         }
-
-        return new ValidationResult(false, message);
+        return SUCCESS;
     }
 
-    public static MaxValidation newInstance(DataType dataType, String value, String message) {
+
+    public static ScriptValidation newInstance(DataType dataType, String expression, String message) {
         switch (dataType) {
             case STRING:
-                return new MaxValidation<String>(value, message);
+                return new ScriptValidation<String>(expression, message);
             case INTEGER:
-                return new MaxValidation<Integer>(Integer.parseInt(value), message);
+                return new ScriptValidation<Integer>(expression, message);
             case DOUBLE:
-                return new MaxValidation<Double>(Double.parseDouble(value), message);
+                return new ScriptValidation<Double>(expression, message);
         }
         return null;
     }

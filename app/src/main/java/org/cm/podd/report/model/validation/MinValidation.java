@@ -19,6 +19,7 @@ package org.cm.podd.report.model.validation;
 
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.ScriptEngineInterface;
 
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class MinValidation<T> implements IValidation<T> {
     }
 
     @Override
-    public ValidationResult validate(T value, Question<T> question) {
+    public ValidationResult validate(T value, Question<T> question, ScriptEngineInterface engineInterface) {
         if (value instanceof Comparable) {
             if (((Comparable) value).compareTo(minValue) >= 0) {
                 return SUCCESS;

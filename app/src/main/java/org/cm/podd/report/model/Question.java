@@ -84,12 +84,12 @@ public class Question<T> implements Serializable {
         }
     }
 
-    public List<ValidationResult> validate() {
+    public List<ValidationResult> validate(ScriptEngineInterface engineInterface) {
         ArrayList<ValidationResult> results = new ArrayList<ValidationResult>();
 
         try {
             for (IValidation<T> v : validations) {
-                ValidationResult result = v.validate(data, this);
+                ValidationResult result = v.validate(data, this, engineInterface);
                 if (! result.isSuccess()) {
                     results.add(result);
                 }

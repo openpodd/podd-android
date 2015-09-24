@@ -31,7 +31,7 @@ import java.util.Stack;
 /**
  * Created by pphetra on 9/29/14 AD.
  */
-public class FormIterator implements Serializable{
+public class FormIterator implements Serializable, ScriptEngineInterface {
 
     private static final String TAG = "FormIterator";
     private final Form form;
@@ -63,14 +63,26 @@ public class FormIterator implements Serializable{
     }
 
     public boolean validatePage() {
-        if (this.currentPage.validate().size() > 0) {
+        List<ValidationResult> results = this.currentPage.validate(this);
+        if (results.size() > 0) {
             Log.d("FormIterator", "can't go to next coz of validation fail.");
-            for (ValidationResult vr: currentPage.validate()) {
+            for (ValidationResult vr: results) {
                 Log.d("FormIterator", vr.getMessage());
             }
             return false;
         }
         return true;
+    }
+
+    public List<ValidationResult> validatePageAndGetResult() {
+        List<ValidationResult> results = this.currentPage.validate(this);
+        if (results.size() > 0) {
+            Log.d("FormIterator", "can't go to next coz of validation fail.");
+            for (ValidationResult vr: results) {
+                Log.d("FormIterator", vr.getMessage());
+            }
+        }
+        return results;
     }
 
     /**
@@ -79,12 +91,13 @@ public class FormIterator implements Serializable{
      */
     public boolean nextPage() {
 
+        setPageDataToExpressionEngine(currentPage);
+
         boolean validatePass = validatePage();
         if (!validatePass) {
             return false;
         }
 
-        setPageDataToExpressionEngine(currentPage);
 
         int currentPageId = currentPage.getId();
         List<Transition> transitionList = form.getTransitionsForPage(currentPageId);
@@ -170,4 +183,8 @@ public class FormIterator implements Serializable{
         return expressionEngine;
     }
 
+    @Override
+    public boolean evaluateExpression(String expression) {
+        return getExpressionEngine().evaluateBooleanExpression(expression);
+    }
 }

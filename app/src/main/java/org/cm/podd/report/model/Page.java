@@ -53,10 +53,10 @@ public class Page implements Serializable {
         questions.add(question);
     }
 
-    public List<ValidationResult> validate() {
+    public List<ValidationResult> validate(ScriptEngineInterface engineInterface) {
         List<ValidationResult> results = new ArrayList<ValidationResult>();
         for (Question q : questions) {
-            results.addAll(q.validate());
+            results.addAll(q.validate(engineInterface));
         }
         return results;
     }

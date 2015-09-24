@@ -127,11 +127,11 @@ public class MultipleChoiceQuestion extends Question<String> {
     }
 
     @Override
-    public List<ValidationResult> validate() {
+    public List<ValidationResult> validate(ScriptEngineInterface engineInterface) {
         ArrayList<ValidationResult> results = new ArrayList<ValidationResult>();
 
         for (IValidation v : getValidations()) {
-            ValidationResult result = v.validate(getValue(), this);
+            ValidationResult result = v.validate(getValue(), this, engineInterface);
             if (! result.isSuccess()) {
                 results.add(result);
             }

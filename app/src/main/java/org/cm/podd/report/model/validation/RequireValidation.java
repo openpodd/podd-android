@@ -2,6 +2,7 @@ package org.cm.podd.report.model.validation;
 
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.ScriptEngineInterface;
 
 /**
  * Created by pphetra on 9/25/14 AD.
@@ -19,7 +20,7 @@ public class RequireValidation<T> implements IValidation<T> {
     }
 
     @Override
-    public ValidationResult validate(T value, Question<T> question) {
+    public ValidationResult validate(T value, Question<T> question, ScriptEngineInterface engineInterface) {
         if (value == null || value.toString().trim().equals("")) {
             return new ValidationResult(false, message);
         }
