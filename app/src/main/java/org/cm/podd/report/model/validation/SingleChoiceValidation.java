@@ -21,6 +21,7 @@ import android.util.Log;
 
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.ScriptEngineInterface;
 
 /**
  * Created by pphetra on 9/29/14 AD.
@@ -34,7 +35,7 @@ public class SingleChoiceValidation<T extends String> implements IValidation<T> 
     }
 
     @Override
-    public ValidationResult validate(T value, Question<T> question) {
+    public ValidationResult validate(T value, Question<T> question, ScriptEngineInterface engineInterface) {
         MultipleChoiceQuestion mQuestion = (MultipleChoiceQuestion) question;
         if (value != null && ! value.equals("")) {
             if (! mQuestion.containKey(value)) {

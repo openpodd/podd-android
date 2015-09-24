@@ -15,20 +15,13 @@
  * limitations under the License.
  */
 
-package org.cm.podd.report.model.validation;
-
-import org.cm.podd.report.model.Question;
-import org.cm.podd.report.model.ScriptEngineInterface;
-
-import java.io.Serializable;
+package org.cm.podd.report.model;
 
 /**
- * Created by pphetra on 9/25/14 AD.
+ * Created by pphetra on 9/24/15 AD.
  */
-public interface IValidation<T> extends Serializable {
+public interface ScriptEngineInterface {
 
-    public static ValidationResult SUCCESS = new ValidationResult(true, null);
-
-    public ValidationResult validate(T value, Question<T> question, ScriptEngineInterface engineInterface);
+    boolean evaluateExpression(String expression);
 
 }

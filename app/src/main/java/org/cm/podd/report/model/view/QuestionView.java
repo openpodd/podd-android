@@ -28,7 +28,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -66,11 +65,10 @@ public class QuestionView extends LinearLayout {
         setTag(q.getName());
         setId(q.getId());
 
-        ViewGroup.LayoutParams itemParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         TextView titleView = new TextView(context);
         titleView.setText(question.getTitle());
-        titleView.setLayoutParams(itemParams);
+        titleView.setLayoutParams(params);
         titleView.setTextAppearance(context, R.style.ReportTextLabel);
         titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         titleView.setOnClickListener(new OnClickListener() {
@@ -95,7 +93,7 @@ public class QuestionView extends LinearLayout {
             calendarView = new DatePicker(context);
             calendarView.setCalendarViewShown(true);
             calendarView.setSpinnersShown(false);
-            calendarView.setLayoutParams(itemParams);
+            calendarView.setLayoutParams(params);
             calendarView.setPadding(0, 0, 0, 0);
 
             Date value = (Date) question.getValue();
@@ -118,7 +116,7 @@ public class QuestionView extends LinearLayout {
 
         } else {
             editView = new EditText(context);
-            editView.setLayoutParams(itemParams);
+            editView.setLayoutParams(params);
             editView.setPadding(0, 0, 0, 0);
             editView.setClickable(true);
             editView.setHint(hintText);

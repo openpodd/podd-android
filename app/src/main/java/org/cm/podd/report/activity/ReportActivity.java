@@ -380,14 +380,14 @@ public class ReportActivity extends ActionBarActivity
     }
 
     private boolean notifyValidationErrors() {
-        List<ValidationResult> validateResults = formIterator.getCurrentPage().validate();
+        List<ValidationResult> validateResults = formIterator.validatePageAndGetResult();
         if (validateResults.size() > 0) {
             StringBuffer buff = new StringBuffer();
             for (ValidationResult vr : validateResults) {
                 buff.append(vr.getMessage()).append("\n");
             }
             final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
-            crouton.setConfiguration(new Configuration.Builder().setDuration(1000).build());
+            crouton.setConfiguration(new Configuration.Builder().setDuration(5000).build());
             crouton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

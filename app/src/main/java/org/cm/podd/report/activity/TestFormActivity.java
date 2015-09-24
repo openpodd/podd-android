@@ -74,7 +74,7 @@ public class TestFormActivity extends ActionBarActivity {
                 } else {
                     if (! formIterator.isAtLastPage()) {
                         // validation case
-                        List<ValidationResult> validateResults = currentPage.validate();
+                        List<ValidationResult> validateResults = currentPage.validate(formIterator);
                         StringBuffer buff = new StringBuffer();
                         for (ValidationResult vr : validateResults) {
                             buff.append(vr.getMessage()).append("\n");
