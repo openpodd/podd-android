@@ -174,6 +174,21 @@ public class RegistrationFormFragment extends Fragment {
 
         if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
             showDialogConfirm();
+        } else if (!firstNameValid) {
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            return;
+        } else if (!lastNameValid) {
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            return;
+        } else if (!serialNumberValid) {
+            Crouton.makeText(getActivity(), getString(R.string.serial_number_error), Style.ALERT).show();
+            return;
+        } else if (!telephoneValid){
+            Crouton.makeText(getActivity(), getString(R.string.telephone_error), Style.ALERT).show();
+            return;
+        } else if (!emailValid){
+            Crouton.makeText(getActivity(), getString(R.string.email_error), Style.ALERT).show();
+            return;
         } else {
             Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();
             return;
