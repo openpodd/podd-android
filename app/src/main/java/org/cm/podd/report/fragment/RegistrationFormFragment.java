@@ -126,16 +126,12 @@ public class RegistrationFormFragment extends Fragment {
         String email = emailEditText.getText().toString().equalsIgnoreCase("")? "-": emailEditText.getText().toString();
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("กรุณาตรวจสอบข้อมูลให้ถูกต้อง");
-        alertDialogBuilder.setMessage("ข้อมูลการลงทะเบียนของคุณคือ" + "\n\n" +
-                        "ชื่อ " + firstName + "\n\n" +
-                        "นามสกุล " + lastName + "\n\n" +
-                        "เลขบัตรประชาชน " + serialNumber + "\n\n" +
-                        "เบอร์โทร " + telephone + "\n\n" +
-                        "อีเมล " + email + "\n\n" +
-                        "พื้นที่ " + groupName + "\n\n"
+        alertDialogBuilder.setTitle(R.string.confirm_data_title);
+        alertDialogBuilder.setMessage(getString(
+                R.string.registration_data_detail, firstName, lastName, serialNumber,
+                telephone, email, groupName)
         );
-        alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setPositiveButton(R.string.yes_choice, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
@@ -149,7 +145,7 @@ public class RegistrationFormFragment extends Fragment {
             }
         });
 
-        alertDialogBuilder.setNegativeButton("ไม่ใช่", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setNegativeButton(R.string.no_choice, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
@@ -249,7 +245,7 @@ public class RegistrationFormFragment extends Fragment {
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(getActivity(), "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
                 } else {
                     try {
                         JSONObject obj = resp.getJsonObject();
@@ -318,7 +314,7 @@ public class RegistrationFormFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
 
-                Crouton.makeText(getActivity(), "Error on Server, please contact administration", Style.ALERT).show();
+                Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
             }
         }
     }

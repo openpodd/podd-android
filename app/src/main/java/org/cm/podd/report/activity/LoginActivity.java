@@ -148,7 +148,7 @@ public class LoginActivity extends ActionBarActivity {
                 if (obj.has("server")) {
                     String server = obj.getString("server");
                     saveServerUrl(server);
-                    Crouton.makeText(LoginActivity.this, "Changing Server to " + server, Style.CONFIRM)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.change_server_message) + server, Style.CONFIRM)
                             .setConfiguration(new Configuration.Builder().setDuration(5000).build()).show();
                 }
 
@@ -243,8 +243,8 @@ public class LoginActivity extends ActionBarActivity {
 
     public void showProgressDialog() {
         pd = new ProgressDialog(this);
-        pd.setTitle("กำลังส่งข้อมูล");
-        pd.setMessage("กรุณารอสักครู่");
+        pd.setTitle(R.string.request_fetching_data);
+        pd.setMessage(getString(R.string.request_please_wait));
         pd.setCancelable(false);
         pd.setIndeterminate(true);
         pd.show();
@@ -312,7 +312,7 @@ public class LoginActivity extends ActionBarActivity {
                 hideProgressDialog();
 
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT)
                             .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 } else {
                     Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT)
@@ -367,7 +367,7 @@ public class LoginActivity extends ActionBarActivity {
                 e.printStackTrace();
                 hideProgressDialog();
 
-                Crouton.makeText(LoginActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
             }
         }
     }

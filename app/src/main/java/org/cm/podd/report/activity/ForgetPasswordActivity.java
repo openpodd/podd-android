@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +15,8 @@ import android.widget.EditText;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
-import org.cm.podd.report.fragment.RegistrationFormFragment;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,8 +43,8 @@ public class ForgetPasswordActivity extends ActionBarActivity {
     ProgressDialog pd;
     public void showProgressDialog() {
         pd = new ProgressDialog(this);
-        pd.setTitle("กำลังส่งข้อมูล");
-        pd.setMessage("กรุณารอสักครู่");
+        pd.setTitle(R.string.request_fetching_data);
+        pd.setMessage(getString(R.string.request_please_wait));
         pd.setCancelable(false);
         pd.setIndeterminate(true);
         pd.show();
@@ -132,11 +129,9 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                     final String telephone = obj.getString("telephone");
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ForgetPasswordActivity.this);
-                    alertDialogBuilder.setTitle("ยืนยันตัวตน");
-                    alertDialogBuilder.setMessage("ระบบได้ส่งรหัสผ่านชั่วคราวผ่านทาง sms ไปยังหมายเลข: \n\n" + telephone +
-                                                "\n\nกรุณารอสักครู่"
-                    );
-                    alertDialogBuilder.setPositiveButton("กรอกรหัสผ่านชั่วคราว", new DialogInterface.OnClickListener() {
+                    alertDialogBuilder.setTitle(R.string.prove_identity_dlg_title);
+                    alertDialogBuilder.setMessage(getString(R.string.password_sent_via_sms_text, telephone));
+                    alertDialogBuilder.setPositiveButton(getString(R.string.fill_temp_password_btn), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
 
@@ -147,7 +142,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
 
-                    setTitle("รหัสผ่านชั่วคราว");
+                    setTitle(R.string.temp_password_title);
 
                     mCurrentFragment = new ForgetPasswordFormFragment();
 
@@ -170,7 +165,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(ForgetPasswordActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
                 } else {
                     Crouton.makeText(ForgetPasswordActivity.this, R.string.serial_number_error, Style.ALERT).show();
                 }

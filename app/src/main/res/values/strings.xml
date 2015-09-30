@@ -19,15 +19,35 @@
     <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
     <string name="save">บันทึก</string>
     <string name="cancel">ยกเลิก</string>
-    <string name="title_activity_login">Login</string>
+
+    <!-- login | server config -->
+    <string name="title_activity_login">เข้าใช้ระบบ</string>
     <string name="username">ชื่อบัญชีผู้ใช้</string>
     <string name="password">รหัสผ่าน</string>
     <string name="login">เข้าสู่ระบบ</string>
+    <string name="registration">ลงทะเบียน</string>
+    <string name="forgot_password">ลืมรหัสผ่าน</string>
+    <string name="change_server_message">เปลี่ยนเซิฟเวอร์เป็น</string>
+    <string name="username_reqired">คุณยังไม่ได้กรอกชื่อบัญชีผู้ใช้</string>
+    <string name="password_reqired">คุณยังไม่ได้กรอกรหัสผ่าน</string>
+    <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+
+    <!-- common -->
+    <string name="request_fetching_data">กำลังส่งข้อมูล</string>
+    <string name="request_please_wait">กรุณารอสักครู่</string>
+    <string name="http_server_error">มีข้อผิดพลาดบนเซิฟเวอร์ กรุณาติดต่อผู้ดูแลระบบ</string>
+    <string name="server_error">Error on Server, please contact administration</string>
+    <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
+    <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
+    <string name="btn_next">ต่อไป &gt;</string>
+    <string name="yes_choice">ใช่</string>
+    <string name="no_choice">ไม่ใช่</string>
+
     <string name="title_activity_setting">ตั้งค่า</string>
     <string name="server_address">Server address</string>
     <string name="logout">ออกจากระบบ</string>
     <string name="btn_camera">ถ่ายภาพใหม่</string>
-    <string name="btn_next">ต่อไป &gt;</string>
+
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
     <string name="button_confirm">ยืนยัน</string>
@@ -149,15 +169,63 @@
 
     <string name="comment_mention_regex">"@([\\w-]+)"</string>
     <string name="comment_mention_render">"@[$1]"</string>
-    <string name="server_error">Error on Server, please contact administration</string>
-    <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
+
     <string name="follow">ติดตาม</string>
     <string name="test_title">ทดสอบ</string>
     <string name="test_label">ทดสอบรายงาน</string>
-    <string name="registration">ลงทะเบียน</string>
-    <string name="forgot_password">ลืมรหัสผ่าน</string>
-    <string name="title_activity_registration">ลงทะเบียน</string>
+
+
+
+
+
+    <!-- forgot password -->
     <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
+    <string name="prove_identity_dlg_title">ยืนยันตัวตน</string>
+    <string name="password_sent_via_sms_text">
+        ระบบได้ส่งรหัสผ่านชั่วคราวผ่านทาง sms ไปยังหมายเลข:\n\n %1$s\n\n กรุณารอสักครู่
+    </string>
+    <string name="fill_temp_password_btn">กรอกรหัสผ่านชั่วคราว</string>
+    <string name="temp_password_title">รหัสผ่านชั่วคราว</string>
+    <string name="forget_password_title">กรุณากรอกเลขที่บัตรประชาชน</string>
+    <string name="serial_number_error">เลขที่บัตรประชาชนไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
+    <string name="forget_passsword_submit_error">รหัสผ่านไม่ถูกต้อง</string>
+    <string name="forget_passsword_submit_success">รหัสผ่านถูกต้อง</string>
+    <string name="code_title">กรอกรหัสผ่านชั่วคราว</string>
+    <string name="reset_password_title">เปลี่ยนรหัสผ่าน</string>
+    <string name="new_password">รหัสผ่านใหม่</string>
+    <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
+    <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
+    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
+    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
+
+    <!-- registration -->
+    <string name="title_activity_registration">ลงทะเบียน</string>
+    <string name="register_submit_success">ลงทะเบียนสำเร็จ</string>
+    <string name="register_submit_error">คุณกรอกข้อมูลไม่ถูกต้อง</string>
+    <string name="login_title">การเข้าใช้ระบบ</string>
+    <string name="login_success">คุณเข้าใช้ระบบสำเร็จแล้ว</string>
+    <string name="start_app">เริ่มใช้งาน</string>
+    <string name="register_success">คุณลงทะเบียนสำเร็จแล้ว</string>
+    <string name="register_warning_success">** ข้อมูลนี้เป็นข้อมูลสำคัญในการใช้เข้าระบบ **</string>
+    <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
+    <string name="register_area_title">พื้นที่ลงทะเบียน</string>
+    <string name="your_area_text">พื้นที่ของคุณคือ: \"%1$s\"</string>
+    <string name="registration_form">แบบฟอร์มลงทะเบียน</string>
+    <string name="confirm_data_title">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</string>
+    <string name="registration_data_detail">
+        ข้อมูลการลงทะเบียนของคุณคือ\n\n
+        ชื่อ %1$s \n\n
+        นามสกุล %2$s \n\n
+        เลขบัตรประชาชน %3$s \n\n
+        เบอร์โทร %4$s \n\n
+        อีเมล %4$s \n\n
+        พื้นที่ %5$s \n\n
+    </string>
+    <string name="telephone_error">หมายเลขโทรศัพท์ไม่ถูกต้อง</string>
+    <string name="email_error">อีเมล์ไม่ถูกต้อง</string>
+    <string name="name_error">กรุณากรอกชือ นามสกุล</string>
+
+    <!-- registration form -->
     <string name="first_name">ชื่อ</string>
     <string name="last_name">นามสกุล</string>
     <string name="serial_number">เลขที่บัตรประจำตัวประชาชน</string>
@@ -172,30 +240,8 @@
     <string name="invite_code">รหัสพื้นที่</string>
     <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
-    <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
-    <string name="forget_password_title">กรุณากรอกเลขที่บัตรประชาชน</string>
-    <string name="serial_number_error">เลขที่บัตรประชาชนไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
-    <string name="register_submit_success">ลงทะเบียนสำเร็จ</string>
-    <string name="register_submit_error">คุณกรอกข้อมูลไม่ถูกต้อง</string>
-    <string name="forget_passsword_submit_error">รหัสผ่านไม่ถูกต้อง</string>
-    <string name="forget_passsword_submit_success">รหัสผ่านถูกต้อง</string>
-    <string name="code_title">กรอกรหัสผ่านชั่วคราว</string>
-    <string name="login_title">การเข้าใช้ระบบ</string>
-    <string name="login_success">คุณเข้าใช้ระบบสำเร็จแล้ว</string>
-    <string name="start_app">เริ่มใช้งาน</string>
-    <string name="register_success">คุณลงทะเบียนสำเร็จแล้ว</string>
-    <string name="register_warning_success">** ข้อมูลนี้เป็นข้อมูลสำคัญในการใช้เข้าระบบ **</string>
-    <string name="reset_password_title">เปลี่ยนรหัสผ่าน</string>
-    <string name="new_password">รหัสผ่านใหม่</string>
-    <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
-    <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
-    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
-    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
-    <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
+
     <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
-    <string name="username_reqired">คุณยังไม่ได้กรอกชื่อบัญชีผู้ใช้</string>
-    <string name="password_reqired">คุณยังไม่ได้กรอกรหัสผ่าน</string>
-    <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
     <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
     <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
@@ -211,8 +257,5 @@
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
     <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
     <string name="title_activity_qrconfig">Custom QR Code</string>
-    <string name="telephone_error">หมายเลขโทรศัพท์ไม่ถูกต้อง</string>
-    <string name="email_error">อีเมล์ไม่ถูกต้อง</string>
-    <string name="name_error">กรุณากรอกชือ นามสกุล</string>
 
 </resources>

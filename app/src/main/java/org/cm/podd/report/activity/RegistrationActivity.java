@@ -38,8 +38,8 @@ public class RegistrationActivity extends ActionBarActivity {
     ProgressDialog pd;
     public void showProgressDialog() {
         pd = new ProgressDialog(this);
-        pd.setTitle("กำลังส่งข้อมูล");
-        pd.setMessage("กรุณารอสักครู่");
+        pd.setTitle(R.string.request_fetching_data);
+        pd.setMessage(getString(R.string.request_please_wait));
         pd.setCancelable(false);
         pd.setIndeterminate(true);
         pd.show();
@@ -115,12 +115,12 @@ public class RegistrationActivity extends ActionBarActivity {
                     final String name = obj.getString("name");
 
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RegistrationActivity.this);
-                    alertDialogBuilder.setTitle("พื้นที่ลงทะเบียน");
-                    alertDialogBuilder.setMessage("พื้นที่ของคุณคือ: \"" + name + "\"");
-                    alertDialogBuilder.setPositiveButton("ใช่", new DialogInterface.OnClickListener() {
+                    alertDialogBuilder.setTitle(R.string.register_area_title);
+                    alertDialogBuilder.setMessage(getString(R.string.your_area_text, name));
+                    alertDialogBuilder.setPositiveButton(R.string.yes_choice, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
-                            setTitle("แบบฟอร์มลงทะเบียน");
+                            setTitle(R.string.registration_form);
 
                             mCurrentFragment = new RegistrationFormFragment();
 
@@ -140,7 +140,7 @@ public class RegistrationActivity extends ActionBarActivity {
 
                         }
                     });
-                    alertDialogBuilder.setNegativeButton("ไม่ใช่", new DialogInterface.OnClickListener() {
+                    alertDialogBuilder.setNegativeButton(R.string.no_choice, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 //                          finish();
@@ -153,7 +153,7 @@ public class RegistrationActivity extends ActionBarActivity {
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(RegistrationActivity.this, "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
                 } else {
                     Crouton.makeText(RegistrationActivity.this, R.string.invite_code_error, Style.ALERT).show();
                 }
