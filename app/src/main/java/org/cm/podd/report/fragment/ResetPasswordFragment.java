@@ -136,7 +136,7 @@ public class ResetPasswordFragment extends Fragment {
 
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(getActivity(), "Error on Server, please contact administration", Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
                 } else {
                     Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_error), Style.ALERT).show();
                 }

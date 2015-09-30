@@ -17,8 +17,6 @@
     <string name="title_image_edit_action">จัดการรูปภาพ</string>
     <string name="enter_image_note">ใส่คำบรรยายภาพ</string>
     <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
-    <string name="save">บันทึก</string>
-    <string name="cancel">ยกเลิก</string>
 
     <!-- login | server config -->
     <string name="title_activity_login">เข้าใช้ระบบ</string>
@@ -33,6 +31,8 @@
     <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
 
     <!-- common -->
+    <string name="save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
     <string name="request_fetching_data">กำลังส่งข้อมูล</string>
     <string name="request_please_wait">กรุณารอสักครู่</string>
     <string name="http_server_error">มีข้อผิดพลาดบนเซิฟเวอร์ กรุณาติดต่อผู้ดูแลระบบ</string>
@@ -40,12 +40,24 @@
     <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
     <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
     <string name="btn_next">ต่อไป &gt;</string>
+    <string name="edit_btn">แก้ไข</string>
     <string name="yes_choice">ใช่</string>
     <string name="no_choice">ไม่ใช่</string>
+    <string name="btn_ok">ตกลง</string>
+    <string name="btn_not_ok">ยกเลิก</string>
 
+    <!-- setting -->
     <string name="title_activity_setting">ตั้งค่า</string>
+    <string name="personal_detail">ข้อมูลส่วนตัว</string>
+    <string name="about">เกี่ยวกับ</string>
     <string name="server_address">Server address</string>
     <string name="logout">ออกจากระบบ</string>
+    <string name="confirm_logout_title">ยืนยันการออกจากระบบ</string>
+    <string name="confirm_logout_text">ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง \n\n คุณต้องการออกจากระบบหรือไม่</string>
+    <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
+    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
+    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
+
     <string name="btn_camera">ถ่ายภาพใหม่</string>
 
     <string name="action_delete">ลบ</string>
@@ -195,8 +207,7 @@
     <string name="new_password">รหัสผ่านใหม่</string>
     <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
     <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
-    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
-    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
+
 
     <!-- registration -->
     <string name="title_activity_registration">ลงทะเบียน</string>
@@ -218,12 +229,15 @@
         นามสกุล %2$s \n\n
         เลขบัตรประชาชน %3$s \n\n
         เบอร์โทร %4$s \n\n
-        อีเมล %4$s \n\n
-        พื้นที่ %5$s \n\n
+        อีเมล %5$s \n\n
+        พื้นที่ %6$s \n\n
     </string>
     <string name="telephone_error">หมายเลขโทรศัพท์ไม่ถูกต้อง</string>
     <string name="email_error">อีเมล์ไม่ถูกต้อง</string>
     <string name="name_error">กรุณากรอกชือ นามสกุล</string>
+    <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
+    <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
+
 
     <!-- registration form -->
     <string name="first_name">ชื่อ</string>
@@ -241,11 +255,9 @@
     <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
     <string name="authority">พื้นที่</string>
 
-    <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
-    <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
-    <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
+
     <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
-    <string name="btn_ok">ตกลง</string>
+
     <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
 
     <string name="trigger_pattern_test">101</string>
@@ -257,5 +269,6 @@
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
     <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
     <string name="title_activity_qrconfig">Custom QR Code</string>
+
 
 </resources>

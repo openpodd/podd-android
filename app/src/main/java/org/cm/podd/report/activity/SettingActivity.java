@@ -119,16 +119,15 @@ public class SettingActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(me)
-                        .setTitle("ยืนยันการออกจากระบบ")
-                        .setMessage("ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง\n\n"
-                                + "คุณต้องการออกจากระบบหรือไม่")
-                        .setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+                        .setTitle(R.string.confirm_logout_title)
+                        .setMessage(getString(R.string.confirm_logout_text))
+                        .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 logout();
                             }
                         })
-                        .setNegativeButton("ยกเลิก", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.btn_not_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
@@ -180,6 +179,7 @@ public class SettingActivity extends ActionBarActivity {
 
             }
         });
+
 
         FontUtil.overrideFonts(this, profileImageView.getRootView());
 

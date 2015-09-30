@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:text="ข้อมูลส่วนตัว"
+                android:text="@string/personal_detail"
                 android:layout_marginBottom="10dp" />
 
             <TableLayout
@@ -110,7 +110,7 @@
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
-                        android:text="แก้ไข"
+                        android:text="@string/edit_btn"
                         android:id="@+id/reset_password"
                         android:layout_column="8"
                         android:singleLine="true" />
@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:text="เกี่ยวกับ"
+                android:text="@string/about"
                 android:layout_marginBottom="10dp" />
 
             <TableLayout
