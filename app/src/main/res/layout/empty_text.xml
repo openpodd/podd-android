@@ -5,6 +5,6 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:textSize="25dp"
 android:gravity="center"
-android:text="ไม่พบข้อมูล">
+android:text="@string/data_not_found">
 
 </TextView>

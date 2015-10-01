@@ -153,7 +153,7 @@ public class ReportListFragment extends ListFragment {
         TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyText.setText("ยังไม่มีการรายงาน\nกดปุ่ม + เพื่อเริ่มรายงาน ");
+        emptyText.setText(R.string.no_report_found_msg);
         listView.setEmptyView(emptyText);
 
         emptyText.setVisibility(View.GONE);
@@ -327,7 +327,7 @@ public class ReportListFragment extends ListFragment {
         final Form form = reportTypeDataSource.getForm(reportType);
         if (form.hasFollowActions()) {
             final String[] names = form.getFollowActionNames();
-            new AlertDialog.Builder(getActivity()).setTitle("กรุณาเลือกประเภท")
+            new AlertDialog.Builder(getActivity()).setTitle(R.string.choose_report_type_title)
                     .setItems(names, new DialogInterface.OnClickListener() {
 
                         @Override
@@ -344,8 +344,8 @@ public class ReportListFragment extends ListFragment {
                         }
                     }).create().show();
         } else {
-            new AlertDialog.Builder(getActivity()).setTitle("ยืนยัน")
-                    .setMessage("คุณต้องการรายงาน การติดตาม ไช่หรือไม่")
+            new AlertDialog.Builder(getActivity()).setTitle(R.string.confirm_title)
+                    .setMessage(getString(R.string.follow_report_confirm_msg))
                     .setPositiveButton(R.string.agree, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -467,7 +467,7 @@ public class ReportListFragment extends ListFragment {
 
             if (follow == Report.TRUE) {
                 if (actionName == null) {
-                    holder.typeText.setText("ติดตาม");
+                    holder.typeText.setText(R.string.follow);
                 } else {
                     holder.typeText.setText(actionName);
                 }

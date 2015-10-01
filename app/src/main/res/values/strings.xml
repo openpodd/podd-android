@@ -44,6 +44,10 @@
     <string name="no_choice">ไม่ใช่</string>
     <string name="btn_ok">ตกลง</string>
     <string name="btn_not_ok">ยกเลิก</string>
+    <string name="app_version_code">เวอร์ชั่น</string>
+    <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
+    <string name="drawer_open">แสดงเมนู</string>
+    <string name="drawer_close">ปิดเมนู</string>
 
     <!-- setting -->
     <string name="title_activity_setting">ตั้งค่า</string>
@@ -88,21 +92,22 @@
     <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
     <string name="agree">ตกลง</string>
 
-
+    <!-- report (follow) list -->
+    <string name="data_not_found">ไม่พบข้อมูล</string>
     <string name="title_report_item_selected">เลือกรายงาน %d รายการ</string>
     <string name="title_delete_report">ยืนยันการลบ</string>
     <string name="message_confirm_delete_report">
         ต้องการลบรายงานที่เลือกไว้หรือไม่\n
         เฉพาะรายงานที่เป็นแบบร่างกับที่กำลังอัพโหลดอยู่เท่านั้น
     </string>
-    <string name="app_version_code">เวอร์ชั่น</string>
-    <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
-    <string name="drawer_open">แสดงเมนู</string>
-    <string name="drawer_close">ปิดเมนู</string>
-
+    <string name="no_report_found_msg">ยังไม่มีการรายงาน\n กดปุ่ม + เพื่อเริ่มรายงาน</string>
+    <string name="choose_report_type_title">กรุณาเลือกประเภท</string>
+    <string name="confirm_title">ยืนยัน</string>
+    <string name="follow_report_confirm_msg">คุณต้องการรายงาน การติดตาม ไช่หรือไม่</string>
+    <string name="follow">ติดตาม</string>
     <string name="draft">แบบร่าง</string>
-    <string name="unseen">ใหม่</string>
-    <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
+
+
     <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
     <string name="title_activity_visualization">สรุปผลการประเมิน</string>
     <string name="search">ค้นหา</string>
@@ -110,7 +115,7 @@
     <string name="total_report">จำนวนรายงานทั้งหมด</string>
     <string name="type_report">ประเภทรายงาน</string>
     <string name="animal_report">จำนวนสัตว์ป่วย/ ตาย</string>
-    <string name="empty_report">ไม่พบรายงาน</string>
+
     <string name="empty_animal_report">ไม่พบรายงานสัตว์ป่วย/ ตาย</string>
     <string name="time_range_report">ช่วงเวลาการรายงานบ่อยสุด</string>
     <string name="negative_report">เหตุผิดปกติ</string>
@@ -122,6 +127,17 @@
     <string name="animal_death">สัตว์ตาย</string>
     <string name="title_picker_choose_month">เลือกเดือนเพื่อดูผลประเมิน</string>
     <string name="hello_world">Hello world!</string>
+
+    <!-- dashboard card -->
+    <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
+    <string name="empty_report">ไม่พบรายงาน</string>
+    <string name="try_again">ลองใหม่</string>
+
+    <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>
+    <string name="dummy_report_timeago">23 ก.พ. 2558</string>
+    <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
+    <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
+    <string name="thumbnail_description">Thumbnail image</string>
 
     <!-- for report view -->
     <string name="report_date">วันที่รายงาน</string>
@@ -135,7 +151,9 @@
     <string name="report_summary">ข้อมูลรายงาน</string>
     <string name="data_explanation">ข้อมูลแบบสอบถาม</string>
     <string name="form_data_explanation">คำอธิบายรายงาน</string>
-
+    <string name="flag_confirm_case_title">ยืนยันการเปลี่ยนค่า</string>
+    <string name="flag_confirm_case_message">คุณต้องการยืนยันการเปลี่ยนค่านี้หรือไม่?</string>
+    <string name="no_case_to_follow">ยังไม่มี Case ให้ติดตาม</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="follow_up_reports">รายงานที่เกี่ยวข้อง</string>
     <string name="comment_reports">ความคิดเห็น</string>
@@ -144,6 +162,7 @@
     <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
     <string name="report_activity_title_template">รายงาน:type</string>
     <string name="report_select_flag">ติดตามรายงาน :</string>
+    <string name="report_not_found">ไม่พบรายงาน</string>
     <string-array name="flags_optional">
         <item>- เลือก -</item>
         <item>Ignore</item>
@@ -169,14 +188,9 @@
     </string-array>
     <string name="title_activity_visualization_volunteer">อาสา</string>
     <string name="comment_date">โพสต์เมื่อ</string>
-    <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>
-    <string name="dummy_report_timeago">23 ก.พ. 2558</string>
-    <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
-    <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
-    <string name="thumbnail_description">Thumbnail image</string>
     <string name="title_activity_comment">ความคิดเห็น</string>
     <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
-
+    <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
     <string name="ok">ตกลง</string>
     <string name="choose">เลือก</string>
     <string name="choose_case">เลือก Case ที่ต้องการติดตาม</string>
@@ -184,12 +198,8 @@
     <string name="comment_error">ขออภัย คุณไม่สามารถแสดงความคิดเห็นได้</string>
     <string name="set_flag_error">เกิดความผิดพลาด กรุณาลองใหม่</string>
     <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
-    <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
-    <string name="try_again">ลองใหม่</string>
-    <string name="flag_confirm_case_title">ยืนยันการเปลี่ยนค่า</string>
-    <string name="flag_confirm_case_message">คุณต้องการยืนยันการเปลี่ยนค่านี้หรือไม่?</string>
-    <string name="no_case_to_follow">ยังไม่มี Case ให้ติดตาม</string>
 
+    <!-- -->
     <string name="summary_detail">ข้อมูลการประเมิน</string>
     <string name="visual_month">ประจำเดือน : </string>
     <string name="mention_regex">"@\\[([\\w-]+)]"</string>
@@ -198,7 +208,6 @@
     <string name="comment_mention_regex">"@([\\w-]+)"</string>
     <string name="comment_mention_render">"@[$1]"</string>
 
-    <string name="follow">ติดตาม</string>
 
     <!-- forgot password -->
     <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
@@ -264,19 +273,20 @@
     <string name="authority">พื้นที่</string>
 
 
-    <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
-
-    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
-
-    <string name="trigger_pattern_test">101</string>
     <string name="start_alert_hour">10</string>
-    <string name="frequency_alert_hour">2</string>
 
-    <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
-    <string name="gps_not_found_title">ตำแหน่ง</string>
-    <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
 
     <string name="title_activity_qrconfig">Custom QR Code</string>
+
+    <!-- unused, wait to be removed -->
+    <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
+    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
+    <string name="trigger_pattern_test">101</string>
+    <string name="frequency_alert_hour">2</string>
+    <string name="gps_not_found_title">ตำแหน่ง</string>
+    <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
+    <string name="unseen">ใหม่</string>
+    <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
 
 
 

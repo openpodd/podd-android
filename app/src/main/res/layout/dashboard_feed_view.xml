@@ -631,7 +631,7 @@
         android:textSize="25dp"
         android:visibility="gone"
         android:gravity="center"
-        android:text="ไม่พบรายงาน">
+        android:text="@string/report_not_found">
     </TextView>
 
 </RelativeLayout>
