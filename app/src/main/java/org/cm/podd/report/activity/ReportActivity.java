@@ -515,7 +515,7 @@ public class ReportActivity extends ActionBarActivity
             public void onTick(long millisUntilFinished) {
                 countdownTextView.setText(Long.toString(millisUntilFinished / 1000));
                 if (millisUntilFinished < 15000) {
-                    textProgressLocationView.setText("ไม่สามารถค้นหา\nสัญญาณระบุตำแหน่งได้\nกรุณาเคลื่อนย้ายโทรศัพท์\nไปอยู่ในบริเวณพื้นที่กลางแจ้ง");
+                    textProgressLocationView.setText(R.string.unavailable_location_signal_text);
                 }
             }
 

@@ -129,8 +129,9 @@ public class ReportConfirmFragment extends Fragment {
     }
 
     private void displayDialog() {
-        progress = ProgressDialog.show(this.getActivity(), "กำลังทำงาน",
-                "กรุณารอสักครู่", true);
+        progress = ProgressDialog.show(this.getActivity(),
+                getString(R.string.request_fetching_data),
+                getString(R.string.request_please_wait), true);
     }
 
 }

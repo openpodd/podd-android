@@ -8,15 +8,13 @@
     <string name="title_section1">รายงาน</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-    <string name="title_activity_report">รายงาน</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_report_type">เลือกประเภทการรายงาน</string>
+
     <string name="title_activity_image">Image</string>
     <string name="title_activity_web_content">รายละเอียดข่าวสาร</string>
-    <string name="title_pick_media_options">เลือกรูปภาพ</string>
-    <string name="title_image_edit_action">จัดการรูปภาพ</string>
-    <string name="enter_image_note">ใส่คำบรรยายภาพ</string>
-    <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
+
+
 
     <!-- login | server config -->
     <string name="title_activity_login">เข้าใช้ระบบ</string>
@@ -40,6 +38,7 @@
     <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
     <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
     <string name="btn_next">ต่อไป &gt;</string>
+    <string name="btn_prev">&lt; กลับ</string>
     <string name="edit_btn">แก้ไข</string>
     <string name="yes_choice">ใช่</string>
     <string name="no_choice">ไม่ใช่</string>
@@ -58,20 +57,38 @@
     <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
     <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
 
-    <string name="btn_camera">ถ่ายภาพใหม่</string>
+    <!-- report type list -->
+    <string name="title_activity_report_type">เลือกประเภทการรายงาน</string>
+    <string name="test_label">ทดสอบรายงาน</string>
+    <string name="normal_case">ไม่พบเหตุผิดปกติ</string>
+    <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
 
+    <!-- report image -->
+    <string name="btn_camera">ถ่ายภาพใหม่</string>
+    <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
+    <string name="title_pick_media_options">เลือกรูปภาพ</string>
+    <string name="title_image_edit_action">จัดการรูปภาพ</string>
+    <string name="enter_image_note">ใส่คำบรรยายภาพ</string>
+    <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
     <string name="action_delete">ลบ</string>
     <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
+
+    <!-- report survey form -->
+    <string name="title_activity_report">รายงาน</string>
+    <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
+    <string name="unavailable_location_signal_text">ไม่สามารถค้นหา\nสัญญาณระบุตำแหน่งได้\nกรุณาเคลื่อนย้ายโทรศัพท์\nไปอยู่ในบริเวณพื้นที่กลางแจ้ง</string>
+    <string name="test_title">ทดสอบ</string>
     <string name="button_confirm">ยืนยัน</string>
     <string name="button_save_draft">บันทึกร่างรายงาน</string>
     <string name="message_confirm_submit">คุณต้องการยืนยัน\nการรายงานนี้ใช่หรือไม่ ?</string>
     <string name="button_back_to_report_list">กลับไปที่หน้ารายการ</string>
     <string name="done_submit_message">รายงานนี้ได้ถูกยืนยัน\nเป็นที่เรียบร้อยแล้ว</string>
     <string name="alert_no_network_connection">ไม่สามารถเชื่อมต่ออินเตอร์เน็ตได้</string>
-    <string name="btn_prev">&lt; กลับ</string>
     <string name="title_confirm_back_report_home">ยืนยันแจ้งออก</string>
     <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
     <string name="agree">ตกลง</string>
+
+
     <string name="title_report_item_selected">เลือกรายงาน %d รายการ</string>
     <string name="title_delete_report">ยืนยันการลบ</string>
     <string name="message_confirm_delete_report">
@@ -82,8 +99,7 @@
     <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
     <string name="drawer_open">แสดงเมนู</string>
     <string name="drawer_close">ปิดเมนู</string>
-    <string name="normal_case">ไม่พบเหตุผิดปกติ</string>
-    <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
+
     <string name="draft">แบบร่าง</string>
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
@@ -183,12 +199,6 @@
     <string name="comment_mention_render">"@[$1]"</string>
 
     <string name="follow">ติดตาม</string>
-    <string name="test_title">ทดสอบ</string>
-    <string name="test_label">ทดสอบรายงาน</string>
-
-
-
-
 
     <!-- forgot password -->
     <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
@@ -207,7 +217,6 @@
     <string name="new_password">รหัสผ่านใหม่</string>
     <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
     <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
-
 
     <!-- registration -->
     <string name="title_activity_registration">ลงทะเบียน</string>
@@ -238,7 +247,6 @@
     <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
     <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
 
-
     <!-- registration form -->
     <string name="first_name">ชื่อ</string>
     <string name="last_name">นามสกุล</string>
@@ -263,12 +271,13 @@
     <string name="trigger_pattern_test">101</string>
     <string name="start_alert_hour">10</string>
     <string name="frequency_alert_hour">2</string>
-    <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
+
     <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
     <string name="gps_not_found_title">ตำแหน่ง</string>
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
-    <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
+
     <string name="title_activity_qrconfig">Custom QR Code</string>
+
 
 
 </resources>
