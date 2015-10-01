@@ -113,7 +113,7 @@ public class NotificationListFragment extends ListFragment {
         TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่มีรายการข่าวสาร");
+        emptyText.setText(R.string.no_news_update_text);
         listView.setEmptyView(emptyText);
 
         emptyText.setVisibility(View.GONE);

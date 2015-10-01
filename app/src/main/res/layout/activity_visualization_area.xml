@@ -16,7 +16,7 @@
             android:textSize="25dp"
             android:gravity="center"
             android:visibility="gone"
-            android:text="ไม่พบข้อมูล">
+            android:text="@string/no_data">
         </TextView>
 
         <android.support.v4.app.FragmentTabHost

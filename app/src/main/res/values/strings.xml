@@ -8,13 +8,9 @@
     <string name="title_section1">รายงาน</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="title_activity_image">Image</string>
     <string name="title_activity_web_content">รายละเอียดข่าวสาร</string>
-
-
 
     <!-- login | server config -->
     <string name="title_activity_login">เข้าใช้ระบบ</string>
@@ -107,7 +103,9 @@
     <string name="follow">ติดตาม</string>
     <string name="draft">แบบร่าง</string>
 
-
+    <!-- administration -->
+    <string name="title_activity_visualization_volunteer">อาสา</string>
+    <string name="no_authority_area">ไม่พบพื้นที่</string>
     <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
     <string name="title_activity_visualization">สรุปผลการประเมิน</string>
     <string name="search">ค้นหา</string>
@@ -115,7 +113,6 @@
     <string name="total_report">จำนวนรายงานทั้งหมด</string>
     <string name="type_report">ประเภทรายงาน</string>
     <string name="animal_report">จำนวนสัตว์ป่วย/ ตาย</string>
-
     <string name="empty_animal_report">ไม่พบรายงานสัตว์ป่วย/ ตาย</string>
     <string name="time_range_report">ช่วงเวลาการรายงานบ่อยสุด</string>
     <string name="negative_report">เหตุผิดปกติ</string>
@@ -126,7 +123,13 @@
     <string name="animal_sick">สัตว์ป่วย</string>
     <string name="animal_death">สัตว์ตาย</string>
     <string name="title_picker_choose_month">เลือกเดือนเพื่อดูผลประเมิน</string>
+    <string name="min_date">2014-12-01</string>
     <string name="hello_world">Hello world!</string>
+    <string name="no_data">ไม่พบข้อมูล</string>
+    <string name="summary_detail">ข้อมูลการประเมิน</string>
+    <string name="visual_month">ประจำเดือน : </string>
+    <string name="volunteer">อาสา</string>
+    <string name="no_volunteer">ไม่พบอาสา</string>
 
     <!-- dashboard card -->
     <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
@@ -186,28 +189,30 @@
         <item>Case</item>
         <item>- ตั้งค่ารายงาน -</item>
     </string-array>
-    <string name="title_activity_visualization_volunteer">อาสา</string>
-    <string name="comment_date">โพสต์เมื่อ</string>
-    <string name="title_activity_comment">ความคิดเห็น</string>
-    <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
     <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
     <string name="ok">ตกลง</string>
     <string name="choose">เลือก</string>
     <string name="choose_case">เลือก Case ที่ต้องการติดตาม</string>
-    <string name="min_date">2014-12-01</string>
-    <string name="comment_error">ขออภัย คุณไม่สามารถแสดงความคิดเห็นได้</string>
     <string name="set_flag_error">เกิดความผิดพลาด กรุณาลองใหม่</string>
     <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
 
-    <!-- -->
-    <string name="summary_detail">ข้อมูลการประเมิน</string>
-    <string name="visual_month">ประจำเดือน : </string>
+    <!-- comment -->
+    <string name="no_comment">ไม่พบความคิดเห็น</string>
+    <string name="no_user">ไม่พบผู้ใช้</string>
+    <string name="enter_comment">แสดงความคิดเห็น</string>
+
+    <string name="comment_date">โพสต์เมื่อ</string>
+    <string name="title_activity_comment">ความคิดเห็น</string>
+    <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
+    <string name="comment_error">ขออภัย คุณไม่สามารถแสดงความคิดเห็นได้</string>
     <string name="mention_regex">"@\\[([\\w-]+)]"</string>
     <string name="mention_render"><![CDATA[<font color=\'#0099FF\'>@$1</font>]]></string>
 
     <string name="comment_mention_regex">"@([\\w-]+)"</string>
     <string name="comment_mention_render">"@[$1]"</string>
 
+    <!-- notification -->
+    <string name="no_news_update_text">ไม่มีรายการข่าวสาร</string>
 
     <!-- forgot password -->
     <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
@@ -287,7 +292,6 @@
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
-
 
 
 </resources>

@@ -37,7 +37,7 @@
         android:visibility="invisible"
         android:textSize="25dp"
         android:gravity="center"
-        android:text="ไม่พบพื้นที่">
+        android:text="@string/no_authority_area">
     </TextView>
 
     <ProgressBar android:id="@+id/loading_spinner"

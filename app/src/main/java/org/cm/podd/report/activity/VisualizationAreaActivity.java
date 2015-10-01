@@ -71,7 +71,7 @@ public class VisualizationAreaActivity extends ActionBarActivity {
 
             String error = intent.getStringExtra("error");
             if (error != null && item == null) {
-                Crouton.makeText(VisualizationAreaActivity.this, getString(R.string.server_error), Style.ALERT).show();
+                Crouton.makeText(VisualizationAreaActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
                 hideProgressDialog();
             } else {
                 refreshData(item);
@@ -127,8 +127,8 @@ public class VisualizationAreaActivity extends ActionBarActivity {
 
     public void showProgressDialog() {
         pd = new ProgressDialog(this);
-        pd.setTitle("กำลังดึงข้อมูล");
-        pd.setMessage("กรุณารอสักครู่");
+        pd.setTitle(R.string.request_fetching_data);
+        pd.setMessage(getString(R.string.request_please_wait));
         pd.setCancelable(false);
         pd.setIndeterminate(true);
         pd.show();
@@ -169,10 +169,10 @@ public class VisualizationAreaActivity extends ActionBarActivity {
             mTabHost.clearAllTabs();
 
             mTabHost.addTab(
-                    mTabHost.newTabSpec("area").setIndicator("พื้นที่", null),
+                    mTabHost.newTabSpec("area").setIndicator(getString(R.string.authority), null),
                     VisualizationFragment.class, bundle);
             mTabHost.addTab(
-                    mTabHost.newTabSpec("volunteer").setIndicator("อาสา", null),
+                    mTabHost.newTabSpec("volunteer").setIndicator(getString(R.string.volunteer), null),
                     VisualizationListVolunteer.class, bundle);
 
             Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);

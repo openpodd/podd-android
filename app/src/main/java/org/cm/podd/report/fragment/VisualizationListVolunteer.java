@@ -97,7 +97,7 @@ public class VisualizationListVolunteer extends ListFragment {
         TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
-        emptyText.setText("ไม่พบอาสา");
+        emptyText.setText(R.string.no_volunteer);
         emptyText.setVisibility(View.GONE);
 
         listView.setEmptyView(emptyText);

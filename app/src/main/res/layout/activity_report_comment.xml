@@ -24,7 +24,7 @@
             android:visibility="gone"
             android:textSize="25dp"
             android:gravity="center"
-            android:text="ไม่พบความคิดเห็น">
+            android:text="@string/no_comment">
         </TextView>
 
         <ListView
@@ -47,7 +47,7 @@
                 android:visibility="gone"
                 android:textSize="25dp"
                 android:gravity="center"
-                android:text="ไม่พบผู้ใช้">
+                android:text="@string/no_user">
             </TextView>
         </RelativeLayout>
 
@@ -89,7 +89,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:hint="แสดงความคิดเห็น"
+                android:hint="@string/enter_comment"
                 android:focusable="false"
                 android:id="@+id/editText" />
 
