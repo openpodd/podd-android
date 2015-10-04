@@ -39,6 +39,8 @@ public class PageTest extends TestCase {
     private String maxValidationMessage;
     private String ageIsRequiredMessage;
 
+    private ScriptEngineInterface engineInterface;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -66,24 +68,31 @@ public class PageTest extends TestCase {
         question2.setName("name");
         question2.setDataType(DataType.STRING);
         page.addQuestion(question2);
+
+        engineInterface = new ScriptEngineInterface() {
+            @Override
+            public boolean evaluateExpression(String expression) {
+                return true;
+            }
+        };
     }
 
     public void testValidateNoSetAtAll() {
-        List<ValidationResult> validates = page.validate();
+        List<ValidationResult> validates = page.validate(engineInterface);
         assertTrue(validates.size() > 0);
         assertEquals(3, validates.size());
     }
 
     public void testValidateSetOnly1() {
         question1.setData(20);
-        List<ValidationResult> validates = page.validate();
+        List<ValidationResult> validates = page.validate(engineInterface);
         assertEquals(0, validates.size());
     }
 
     public void testValidateSetBoth() {
         question1.setData(20);
         question2.setData("pphetra");
-        List<ValidationResult> validates = page.validate();
+        List<ValidationResult> validates = page.validate(engineInterface);
         assertEquals(0, validates.size());
     }
 
@@ -91,7 +100,7 @@ public class PageTest extends TestCase {
         question1.setData(20);
         question2.addValidation(new RequireValidation<String>("name is required"));
 
-        List<ValidationResult> validates = page.validate();
+        List<ValidationResult> validates = page.validate(engineInterface);
         assertEquals(1, validates.size());
     }
 

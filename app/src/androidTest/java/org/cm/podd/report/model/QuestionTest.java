@@ -24,9 +24,7 @@ import org.cm.podd.report.model.validation.MinValidation;
 import org.cm.podd.report.model.validation.RequireValidation;
 import org.cm.podd.report.model.validation.ValidationResult;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pphetra on 9/25/14 AD.
@@ -39,6 +37,8 @@ public class QuestionTest extends TestCase {
     private String minValidationMessage;
     private String maxValidationMessage;
     private String ageIsRequiredMessage;
+
+    private ScriptEngineInterface engineInterface;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,16 +61,23 @@ public class QuestionTest extends TestCase {
         question2.setTitle("How old are you");
         ageIsRequiredMessage = "Age is Required";
         question2.addValidation(new RequireValidation<Integer>(ageIsRequiredMessage));
+
+        engineInterface = new ScriptEngineInterface() {
+            @Override
+            public boolean evaluateExpression(String expression) {
+                return true;
+            }
+        };
     }
 
     public void testValidAge() {
         question1.setData(20);
-        List<ValidationResult> results = question1.validate();
+        List<ValidationResult> results = question1.validate(engineInterface);
         assertEquals(0, results.size());
     }
 
     public void testAgeIsNotSet() {
-        List<ValidationResult> results = question2.validate();
+        List<ValidationResult> results = question2.validate(engineInterface);
         assertEquals(1, results.size());
 
         ValidationResult result = results.get(0);
@@ -79,7 +86,7 @@ public class QuestionTest extends TestCase {
 
     public void testAgeIsNotLesserThan1() {
         question1.setData(0);
-        List<ValidationResult> results = question1.validate();
+        List<ValidationResult> results = question1.validate(engineInterface);
         assertEquals(1, results.size());
 
         ValidationResult result = results.get(0);
@@ -88,7 +95,7 @@ public class QuestionTest extends TestCase {
 
     public void testAgeIsGreaterThan130() {
         question1.setData(131);
-        List<ValidationResult> results = question1.validate();
+        List<ValidationResult> results = question1.validate(engineInterface);
         assertEquals(1, results.size());
 
         ValidationResult result = results.get(0);

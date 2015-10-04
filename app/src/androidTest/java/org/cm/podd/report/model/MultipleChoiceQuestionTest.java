@@ -26,6 +26,19 @@ import org.cm.podd.report.model.validation.RequireValidation;
  */
 public class MultipleChoiceQuestionTest extends TestCase {
 
+    private ScriptEngineInterface engineInterface;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        engineInterface = new ScriptEngineInterface() {
+            @Override
+            public boolean evaluateExpression(String expression) {
+                return true;
+            }
+        };
+    }
+
     public void testSingleSelection() {
         MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(MultipleChoiceSelection.SINGLE);
 
@@ -35,7 +48,8 @@ public class MultipleChoiceQuestionTest extends TestCase {
 
         q1.setData("2");
 
-        assertEquals(0, q1.validate().size());
+
+        assertEquals(0, q1.validate(engineInterface).size());
     }
 
     public void testMultipleSelection() {
@@ -45,13 +59,13 @@ public class MultipleChoiceQuestionTest extends TestCase {
         q1.addItem("3", "item 3");
 
         q1.setData("2");
-        assertEquals(0, q1.validate().size());
+        assertEquals(0, q1.validate(engineInterface).size());
 
         q1.setData("1,2");
-        assertEquals(0, q1.validate().size());
+        assertEquals(0, q1.validate(engineInterface).size());
 
         q1.setData("2,1,3");
-        assertEquals(0, q1.validate().size());
+        assertEquals(0, q1.validate(engineInterface).size());
     }
 
     public void testCombineWithRequireValidation() {
@@ -60,12 +74,12 @@ public class MultipleChoiceQuestionTest extends TestCase {
         q1.addItem("2", "item 2");
         q1.addItem("3", "item 3");
 
-        assertEquals(0, q1.validate().size());
+        assertEquals(0, q1.validate(engineInterface).size());
         q1.addValidation(new RequireValidation());
-        assertEquals(1, q1.validate().size());
+        assertEquals(1, q1.validate(engineInterface).size());
 
 
         q1.setData("2");
-        assertEquals(0, q1.validate().size());
+        assertEquals(0, q1.validate(engineInterface).size());
     }
 }
