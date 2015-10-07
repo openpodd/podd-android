@@ -17,19 +17,33 @@
 package org.cm.podd.report.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
+
+import java.util.Locale;
 
 public class StyleUtil {
 
+    public static String TH_LANG = new Locale("th").getLanguage();
+
     public static Typeface getDefaultTypeface(AssetManager assets, int type) {
-        return Typeface.createFromAsset(assets, type == Typeface.BOLD ? "CSPraJad-bold.otf" : "CSPraJad.otf");
+        String lang = Resources.getSystem().getConfiguration().locale.getLanguage();
+        // Use Thai font for Thai locale, other locales use English font
+        // If using Thai font for all other locales, English texts get very big on a screen
+        if (lang.equals(TH_LANG)) {
+            return Typeface.createFromAsset(assets, type == Typeface.BOLD ? "CSPraJad-bold.otf" : "CSPraJad.otf");
+        } else {
+            return getSecondTypeface(assets, type);
+        }
     }
 
     public static void setActionBarTitle(Activity activity, String title) {

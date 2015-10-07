@@ -13,9 +13,9 @@
     <string name="title_activity_web_content">News detail</string>
     <string-array name="menu_titles">
         <item>Reports</item>
-        <item>News Update</item>
-        <item>Local Incidents</item>
-        <item>Reporting Summary</item>
+        <item>News</item>
+        <item>Incidents</item>
+        <item>Summary</item>
     </string-array>
 
     <!-- login | server config -->
@@ -120,8 +120,8 @@
     <!-- administration -->
     <string name="title_activity_visualization_volunteer">Volunteer</string>
     <string name="no_authority_area">No authority found</string>
-    <string name="title_activity_visualization_area">Assessment summary</string>
-    <string name="title_activity_visualization">Assessment summary</string>
+    <string name="title_activity_visualization_area">Assessment</string>
+    <string name="title_activity_visualization">Assessment</string>
     <string name="search">Search</string>
     <string name="grade">Reporting performance</string>
     <string name="total_report">Total report</string>
