@@ -16,7 +16,8 @@
  */
 package org.cm.podd.report.util;
 
-import org.json.JSONException;
+import org.cm.podd.report.PoddApplication;
+import org.cm.podd.report.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,11 +26,22 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateUtil {
+    public final static Locale TH_LOCALE = new Locale("th", "TH");
 
     final static String[] THAI_MONTH = {
             "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
             "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
     };
+
+    public static String formatLocaleDate(Date date) {
+        Locale defaultLocale = Locale.getDefault();
+
+        if (defaultLocale.getLanguage().equals(TH_LOCALE.getLanguage())) {
+            return convertToThaiDate(date);
+        } else {
+            return new SimpleDateFormat("dd MMM yyyy", defaultLocale).format(date);
+        }
+    }
 
     public static String convertToThaiDate(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -41,14 +53,20 @@ public class DateUtil {
         return String.format("%d %s %d", dateNum, thaiMonth, year);
     }
 
-    public static String convertToThaiDateTime(Date date) {
-        String thaiDate = convertToThaiDate(date);
+    public static String formatLocaleDateTime(Date date) {
+        String thaiDate = formatLocaleDate(date);
         String time = formatTime(date);
-        return String.format("%s เวลา %s", thaiDate, time);
+        String at = PoddApplication.getAppContext().getString(R.string.time_at);
+        return String.format("%s %s %s", thaiDate, at, time);
     }
 
     private static String formatTime(Date date) {
-        return new SimpleDateFormat("HH:mm").format(date);
+        Locale defaultLocale = Locale.getDefault();
+        if (defaultLocale.getLanguage().equals(TH_LOCALE.getLanguage())) {
+            return new SimpleDateFormat("HH:mm").format(date);
+        } else {
+            return new SimpleDateFormat("hh:mm a").format(date);
+        }
     }
 
     public static Date fromJsonDateString(String dateStr) {

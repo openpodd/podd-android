@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.json.JSONException;
@@ -24,8 +23,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * Created by siriwat on 2/17/15.
@@ -181,7 +178,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
             Date date = DateUtil.fromJsonDateString(report.getString("date"));
-            String dateStr = DateUtil.convertToThaiDate(date);
+            String dateStr = DateUtil.formatLocaleDate(date);
             viewHolder.getTimeagoView().setText(dateStr);
             // form data explanation
             viewHolder.getDescriptionView().setText(

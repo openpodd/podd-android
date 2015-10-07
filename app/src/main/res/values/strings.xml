@@ -50,6 +50,7 @@
     <string name="app_version_name">Version codename</string>
     <string name="drawer_open">Open menu</string>
     <string name="drawer_close">Close menu</string>
+    <string name="time_at">at</string>
 
     <!-- setting -->
     <string name="title_activity_setting">Setting</string>

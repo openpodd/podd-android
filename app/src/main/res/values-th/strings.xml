@@ -50,6 +50,7 @@
     <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
     <string name="drawer_open">แสดงเมนู</string>
     <string name="drawer_close">ปิดเมนู</string>
+    <string name="time_at">เวลา</string>
 
     <!-- setting -->
     <string name="title_activity_setting">ตั้งค่า</string>
