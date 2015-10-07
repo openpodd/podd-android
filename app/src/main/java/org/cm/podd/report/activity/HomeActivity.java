@@ -151,14 +151,14 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        mDrawerTitle = APP_TITLE;
+        mDrawerTitle = getAppTitle();
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                setTitle(drawerPosition == 0 ? APP_TITLE : mMenuTitles[drawerPosition]);
+                setTitle(drawerPosition == 0 ? getAppTitle(): mMenuTitles[drawerPosition]);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -234,12 +234,16 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private String getAppTitle() {
+        return getString(R.string.app_name);
+    }
+
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         drawerPosition = position;
         if (position == 0) {
             mCurrentFragment = new ReportListFragment();
-            setTitle(APP_TITLE);
+            setTitle(getAppTitle());
 
         } else if (position == 1) {
             mCurrentFragment = new NotificationListFragment();

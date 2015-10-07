@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ผ่อดีดี</string>
+    <string name="action_settings">ตั้งค่าผู้ใช้งาน</string>
+    <string name="title_activity_test_form">TestFormActivity</string>
+    <string name="title_activity_home">PODD</string>
+    <string name="title_section1">รายงาน</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_image">Image</string>
+    <string name="title_activity_web_content">รายละเอียดข่าวสาร</string>
+    <string-array name="menu_titles">
+        <item>รายงาน</item>
+        <item>ข่าวสาร</item>
+        <item>เหตุการณ์ในพื้นที่</item>
+        <item>สรุปผลการรายงาน</item>
+    </string-array>
+
+    <!-- login | server config -->
+    <string name="title_activity_login">เข้าใช้ระบบ</string>
+    <string name="username">ชื่อบัญชีผู้ใช้</string>
+    <string name="password">รหัสผ่าน</string>
+    <string name="login">เข้าสู่ระบบ</string>
+    <string name="registration">ลงทะเบียน</string>
+    <string name="forgot_password">ลืมรหัสผ่าน</string>
+    <string name="change_server_message">เปลี่ยนเซิฟเวอร์เป็น</string>
+    <string name="username_reqired">คุณยังไม่ได้กรอกชื่อบัญชีผู้ใช้</string>
+    <string name="password_reqired">คุณยังไม่ได้กรอกรหัสผ่าน</string>
+    <string name="login_error">ไม่สามารถเข้าสู่ระบบได้ ชื่อบัญชีผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</string>
+
+    <!-- common -->
+    <string name="save">บันทึก</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="request_fetching_data">กำลังส่งข้อมูล</string>
+    <string name="request_please_wait">กรุณารอสักครู่</string>
+    <string name="http_server_error">มีข้อผิดพลาดบนเซิฟเวอร์ กรุณาติดต่อผู้ดูแลระบบ</string>
+    <string name="server_error">Error on Server, please contact administration</string>
+    <string name="form_data_require_error">กรุณากรอกข้อมูลให้ถูกต้องและครบถ้วน</string>
+    <string name="edittext_hint">กดเพื่อใส่ข้อมูล</string>
+    <string name="btn_next">ต่อไป &gt;</string>
+    <string name="btn_prev">&lt; กลับ</string>
+    <string name="edit_btn">แก้ไข</string>
+    <string name="yes_choice">ใช่</string>
+    <string name="no_choice">ไม่ใช่</string>
+    <string name="btn_ok">ตกลง</string>
+    <string name="btn_not_ok">ยกเลิก</string>
+    <string name="app_version_code">เวอร์ชั่น</string>
+    <string name="app_version_name">รหัสชื่อเวอร์ชั่น</string>
+    <string name="drawer_open">แสดงเมนู</string>
+    <string name="drawer_close">ปิดเมนู</string>
+
+    <!-- setting -->
+    <string name="title_activity_setting">ตั้งค่า</string>
+    <string name="personal_detail">ข้อมูลส่วนตัว</string>
+    <string name="about">เกี่ยวกับ</string>
+    <string name="server_address">Server address</string>
+    <string name="logout">ออกจากระบบ</string>
+    <string name="confirm_logout_title">ยืนยันการออกจากระบบ</string>
+    <string name="confirm_logout_text">ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง \n\n คุณต้องการออกจากระบบหรือไม่</string>
+    <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
+    <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
+    <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
+    <string-array name="pick_media_selection">
+        <item>ถ่ายภาพใหม่</item>
+        <item>ภาพจากคลังรูปภาพ</item>
+    </string-array>
+
+    <!-- report type list -->
+    <string name="title_activity_report_type">เลือกประเภทการรายงาน</string>
+    <string name="test_label">ทดสอบรายงาน</string>
+    <string name="normal_case">ไม่พบเหตุผิดปกติ</string>
+    <string name="update_report_type">ดึงแบบฟอร์มใหม่</string>
+
+    <!-- report image -->
+    <string name="btn_camera">ถ่ายภาพใหม่</string>
+    <string name="btn_gallery">เลือกจากอัลบั้มภาพ</string>
+    <string name="title_pick_media_options">เลือกรูปภาพ</string>
+    <string name="title_image_edit_action">จัดการรูปภาพ</string>
+    <string name="enter_image_note">ใส่คำบรรยายภาพ</string>
+    <string name="title_image_note_edit">แก้ไขคำบรรยายภาพ</string>
+    <string name="action_delete">ลบ</string>
+    <string name="title_image_item_selected">เลือกรูป %d รายการ</string>
+    <string-array name="image_edit_action_selection">
+        <item>ลบรูปออก</item>
+        <item>แก้ไขคำบรรยายรูป</item>
+    </string-array>
+
+    <!-- report survey form -->
+    <string name="title_activity_report">รายงาน</string>
+    <string name="progress_location_text">กำลังหาพิกัดตำแหน่ง\nกรุณารอสักครู่</string>
+    <string name="unavailable_location_signal_text">ไม่สามารถค้นหา\nสัญญาณระบุตำแหน่งได้\nกรุณาเคลื่อนย้ายโทรศัพท์\nไปอยู่ในบริเวณพื้นที่กลางแจ้ง</string>
+    <string name="test_title">ทดสอบ</string>
+    <string name="button_confirm">ยืนยัน</string>
+    <string name="button_save_draft">บันทึกร่างรายงาน</string>
+    <string name="message_confirm_submit">คุณต้องการยืนยัน\nการรายงานนี้ใช่หรือไม่ ?</string>
+    <string name="button_back_to_report_list">กลับไปที่หน้ารายการ</string>
+    <string name="done_submit_message">รายงานนี้ได้ถูกยืนยัน\nเป็นที่เรียบร้อยแล้ว</string>
+    <string name="alert_no_network_connection">ไม่สามารถเชื่อมต่ออินเตอร์เน็ตได้</string>
+    <string name="title_confirm_back_report_home">ยืนยันแจ้งออก</string>
+    <string name="message_confirm_back_report_home">คุณต้องการออกจากรายงานนี้ \nและกลับไปที่หน้ารายการหรือไม่?</string>
+    <string name="agree">ตกลง</string>
+
+    <!-- report (follow) list -->
+    <string name="data_not_found">ไม่พบข้อมูล</string>
+    <string name="title_report_item_selected">เลือกรายงาน %d รายการ</string>
+    <string name="title_delete_report">ยืนยันการลบ</string>
+    <string name="message_confirm_delete_report">
+        ต้องการลบรายงานที่เลือกไว้หรือไม่\n
+        เฉพาะรายงานที่เป็นแบบร่างกับที่กำลังอัพโหลดอยู่เท่านั้น
+    </string>
+    <string name="no_report_found_msg">ยังไม่มีการรายงาน\n กดปุ่ม + เพื่อเริ่มรายงาน</string>
+    <string name="choose_report_type_title">กรุณาเลือกประเภท</string>
+    <string name="confirm_title">ยืนยัน</string>
+    <string name="follow_report_confirm_msg">คุณต้องการรายงาน การติดตาม ไช่หรือไม่</string>
+    <string name="follow">ติดตาม</string>
+    <string name="draft">แบบร่าง</string>
+
+    <!-- administration -->
+    <string name="title_activity_visualization_volunteer">อาสา</string>
+    <string name="no_authority_area">ไม่พบพื้นที่</string>
+    <string name="title_activity_visualization_area">สรุปผลการประเมิน</string>
+    <string name="title_activity_visualization">สรุปผลการประเมิน</string>
+    <string name="search">ค้นหา</string>
+    <string name="grade">ประสิทธิภาพการรายงาน</string>
+    <string name="total_report">จำนวนรายงานทั้งหมด</string>
+    <string name="type_report">ประเภทรายงาน</string>
+    <string name="animal_report">จำนวนสัตว์ป่วย/ ตาย</string>
+    <string name="empty_animal_report">ไม่พบรายงานสัตว์ป่วย/ ตาย</string>
+    <string name="time_range_report">ช่วงเวลาการรายงานบ่อยสุด</string>
+    <string name="negative_report">เหตุผิดปกติ</string>
+    <string name="positive_report">ไม่พบเหตุผิดปกติ</string>
+    <string name="grade_A">เหรียญทอง</string>
+    <string name="grade_B">เหรียญเงิน</string>
+    <string name="grade_C">เหรียญทองแดง</string>
+    <string name="animal_sick">สัตว์ป่วย</string>
+    <string name="animal_death">สัตว์ตาย</string>
+    <string name="title_picker_choose_month">เลือกเดือนเพื่อดูผลประเมิน</string>
+    <string name="min_date">2014-12-01</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="no_data">ไม่พบข้อมูล</string>
+    <string name="summary_detail">ข้อมูลการประเมิน</string>
+    <string name="visual_month">ประจำเดือน : </string>
+    <string name="volunteer">อาสา</string>
+    <string name="no_volunteer">ไม่พบอาสา</string>
+
+    <!-- dashboard card -->
+    <string name="fail_refresh_dashboard">เกิดข้อผิดพลาด กรุณาลองใหม่</string>
+    <string name="empty_report">ไม่พบรายงาน</string>
+    <string name="try_again">ลองใหม่</string>
+
+    <string name="dummy_report_type">รายงานสัตว์ป่วย/ตาย</string>
+    <string name="dummy_report_timeago">23 ก.พ. 2558</string>
+    <string name="dummy_report_address">องค์การบริหารส่วนตำบลแจ่มหลวง อำเภอกัลยาณิวัฒนา</string>
+    <string name="dummy_report_description">พบ หมา ป่วยจำนวน 1 ตัว, ตายจำนวน 4 ตัว จากทั้งหมด 1 ตัว จำนวนเล้า/คอกข้างเคียงที่มีอาการ 0 โดยคาดว่าจะเป็นโรค ลำไส้อักเสบ มีอาการดังนี้</string>
+    <string name="thumbnail_description">Thumbnail image</string>
+
+    <!-- for report view -->
+    <string name="report_date">วันที่รายงาน</string>
+    <string name="report_incidentDate">วันที่เกิดเหตุ</string>
+    <string name="report_type">ประเภทรายงาน</string>
+    <string name="report_area">พื้นที่เกิดเหตุ</string>
+    <string name="by">โดย</string>
+    <string name="contact">ติดต่อ</string>
+    <string name="reporter_telephone">เบอร์โทรส่วนตัว</string>
+    <string name="reporter_project_telephone">เบอร์โทรในโครงการ</string>
+    <string name="report_summary">ข้อมูลรายงาน</string>
+    <string name="data_explanation">ข้อมูลแบบสอบถาม</string>
+    <string name="form_data_explanation">คำอธิบายรายงาน</string>
+    <string name="flag_confirm_case_title">ยืนยันการเปลี่ยนค่า</string>
+    <string name="flag_confirm_case_message">คุณต้องการยืนยันการเปลี่ยนค่านี้หรือไม่?</string>
+    <string name="no_case_to_follow">ยังไม่มี Case ให้ติดตาม</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="follow_up_reports">รายงานที่เกี่ยวข้อง</string>
+    <string name="comment_reports">ความคิดเห็น</string>
+    <string name="follow_up_parent">รายงานที่เกี่ยวข้อง (Case)</string>
+    <string name="empty_follow_up_list">ยังไม่มีรายงานที่เกี่ยวข้อง</string>
+    <string name="follow_up_report_item_template">รายงานหมายเลข #:id</string>
+    <string name="report_activity_title_template">รายงาน:type</string>
+    <string name="report_select_flag">ติดตามรายงาน :</string>
+    <string name="report_not_found">ไม่พบรายงาน</string>
+    <string-array name="flags_optional">
+        <item>- เลือก -</item>
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+    </string-array>
+    <string-array name="flags_required">
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+    </string-array>
+    <string-array name="flags_with_hint">
+        <item>Ignore</item>
+        <item>OK</item>
+        <item>Contact</item>
+        <item>Follow</item>
+        <item>Case</item>
+        <item>- ตั้งค่ารายงาน -</item>
+    </string-array>
+    <string name="set_report_state">ตั้งค่าสถานะรายงาน</string>
+    <string name="ok">ตกลง</string>
+    <string name="choose">เลือก</string>
+    <string name="choose_case">เลือก Case ที่ต้องการติดตาม</string>
+    <string name="set_flag_error">เกิดความผิดพลาด กรุณาลองใหม่</string>
+    <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
+
+    <!-- comment -->
+    <string name="no_comment">ไม่พบความคิดเห็น</string>
+    <string name="no_user">ไม่พบผู้ใช้</string>
+    <string name="enter_comment">แสดงความคิดเห็น</string>
+
+    <string name="comment_date">โพสต์เมื่อ</string>
+    <string name="title_activity_comment">ความคิดเห็น</string>
+    <string name="alert_view_comment">กดเพื่อดูความคิดเห็น</string>
+    <string name="comment_error">ขออภัย คุณไม่สามารถแสดงความคิดเห็นได้</string>
+    <string name="mention_regex">"@\\[([\\w-]+)]"</string>
+    <string name="mention_render"><![CDATA[<font color=\'#0099FF\'>@$1</font>]]></string>
+
+    <string name="comment_mention_regex">"@([\\w-]+)"</string>
+    <string name="comment_mention_render">"@[$1]"</string>
+
+    <!-- notification -->
+    <string name="no_news_update_text">ไม่มีรายการข่าวสาร</string>
+
+    <!-- forgot password -->
+    <string name="title_activity_forget_password">ลืมรหัสผ่าน</string>
+    <string name="prove_identity_dlg_title">ยืนยันตัวตน</string>
+    <string name="password_sent_via_sms_text">
+        ระบบได้ส่งรหัสผ่านชั่วคราวผ่านทาง sms ไปยังหมายเลข:\n\n %1$s\n\n กรุณารอสักครู่
+    </string>
+    <string name="fill_temp_password_btn">กรอกรหัสผ่านชั่วคราว</string>
+    <string name="temp_password_title">รหัสผ่านชั่วคราว</string>
+    <string name="forget_password_title">กรุณากรอกเลขที่บัตรประชาชน</string>
+    <string name="serial_number_error">เลขที่บัตรประชาชนไม่ถูกต้อง กรุณาลองอีกครั้ง</string>
+    <string name="forget_passsword_submit_error">รหัสผ่านไม่ถูกต้อง</string>
+    <string name="forget_passsword_submit_success">รหัสผ่านถูกต้อง</string>
+    <string name="code_title">กรอกรหัสผ่านชั่วคราว</string>
+    <string name="reset_password_title">เปลี่ยนรหัสผ่าน</string>
+    <string name="new_password">รหัสผ่านใหม่</string>
+    <string name="re_new_password">กรอกรหัสผ่านใหม่ (อีกครั้ง)</string>
+    <string name="password_not_match">รหัสผ่านไม่ถูกต้อง รหัสผ่านต้องเป็นตัวเลข 4 หลักขึ้นไปเท่านั้น และต้องกรอกให้ตรงกัน</string>
+
+    <!-- registration -->
+    <string name="title_activity_registration">ลงทะเบียน</string>
+    <string name="register_submit_success">ลงทะเบียนสำเร็จ</string>
+    <string name="register_submit_error">คุณกรอกข้อมูลไม่ถูกต้อง</string>
+    <string name="login_title">การเข้าใช้ระบบ</string>
+    <string name="login_success">คุณเข้าใช้ระบบสำเร็จแล้ว</string>
+    <string name="start_app">เริ่มใช้งาน</string>
+    <string name="register_success">คุณลงทะเบียนสำเร็จแล้ว</string>
+    <string name="register_warning_success">** ข้อมูลนี้เป็นข้อมูลสำคัญในการใช้เข้าระบบ **</string>
+    <string name="invite_code_error">ไม่มีรหัสพื้นที่ของคุณ กรุณากรอกใหม่</string>
+    <string name="register_area_title">พื้นที่ลงทะเบียน</string>
+    <string name="your_area_text">พื้นที่ของคุณคือ: \"%1$s\"</string>
+    <string name="registration_form">แบบฟอร์มลงทะเบียน</string>
+    <string name="confirm_data_title">กรุณาตรวจสอบข้อมูลให้ถูกต้อง</string>
+    <string name="registration_data_detail">
+        ข้อมูลการลงทะเบียนของคุณคือ\n\n
+        ชื่อ %1$s \n\n
+        นามสกุล %2$s \n\n
+        เลขบัตรประชาชน %3$s \n\n
+        เบอร์โทร %4$s \n\n
+        อีเมล %5$s \n\n
+        พื้นที่ %6$s \n\n
+    </string>
+    <string name="telephone_error">หมายเลขโทรศัพท์ไม่ถูกต้อง</string>
+    <string name="email_error">อีเมล์ไม่ถูกต้อง</string>
+    <string name="name_error">กรุณากรอกชือ นามสกุล</string>
+    <string name="serial_number_same_error">เลขที่บัตรประจำตัวประชาชนซ้ำ</string>
+    <string name="telephone_same_error">หมายเลขโทรศัพท์ซ้ำ</string>
+
+    <!-- registration form -->
+    <string name="first_name">ชื่อ</string>
+    <string name="last_name">นามสกุล</string>
+    <string name="serial_number">เลขที่บัตรประจำตัวประชาชน</string>
+    <string name="telephone">เบอร์โทรศัพท์มือถือ</string>
+    <string name="email">อีเมล (ถ้ามี)</string>
+
+    <string name="first_name_required">ชื่อ *</string>
+    <string name="last_name_required">นามสกุล *</string>
+    <string name="serial_number_required">เลขที่บัตรประจำตัวประชาชน *</string>
+    <string name="telephone_required">เบอร์โทรศัพท์มือถือ *</string>
+
+    <string name="invite_code">รหัสพื้นที่</string>
+    <string name="invite_code_title">กรอกรหัสพื้นที่ของคุณ</string>
+    <string name="authority">พื้นที่</string>
+
+
+    <string name="start_alert_hour">10</string>
+    <string name="title_activity_qrconfig">Custom QR Code</string>
+
+    <!-- unused, wait to be removed -->
+    <string name="image_hint">กดปุ่มกล้องเพื่อถ่ายภาพใหม่ หรือเลือกจากคลังรูปภาพ</string>
+    <string name="follow_up_report_alert">กรุณาส่งรายงานติดตามของรายงาน</string>
+    <string name="trigger_pattern_test">101</string>
+    <string name="frequency_alert_hour">2</string>
+    <string name="gps_not_found_title">ตำแหน่ง</string>
+    <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
+    <string name="unseen">ใหม่</string>
+    <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
+
+
+</resources>
