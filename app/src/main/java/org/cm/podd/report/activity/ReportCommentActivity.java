@@ -4,11 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,7 +21,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -53,7 +49,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -377,7 +372,7 @@ public class ReportCommentActivity extends ActionBarActivity {
 
             TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
             createdAtTextView.setTypeface(face);
-            createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.convertToThaiDateTime(date));
+            createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.formatLocaleDateTime(date));
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 

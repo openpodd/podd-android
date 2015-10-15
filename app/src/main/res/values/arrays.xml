@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="pick_media_selection">
-        <item>ถ่ายภาพใหม่</item>
-        <item>ภาพจากคลังรูปภาพ</item>
-    </string-array>
-    <string-array name="image_edit_action_selection">
-        <item>ลบรูปออก</item>
-        <item>แก้ไขคำบรรยายรูป</item>
-    </string-array>
-    <string-array name="menu_titles">
-        <item>รายงาน</item>
-        <item>ข่าวสาร</item>
-        <item>เหตุการณ์ในพื้นที่</item>
-        <item>สรุปผลการรายงาน</item>
-    </string-array>
+
 </resources>

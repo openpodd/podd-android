@@ -46,7 +46,6 @@ import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * A fragment representing a list of Items.
@@ -516,7 +515,7 @@ public class ReportListFragment extends ListFragment {
 
             holder.draftText.setVisibility(
                     draft == Report.TRUE && submit == Report.FALSE ? View.VISIBLE : View.GONE);
-            String dateStr = DateUtil.convertToThaiDate(date);
+            String dateStr = DateUtil.formatLocaleDate(date);
             holder.dateText.setText(dateStr);
 
             if (submit == Report.FALSE && draft == Report.FALSE) {

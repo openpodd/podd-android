@@ -111,7 +111,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
             Date date = DateUtil.fromJsonDateString(report.getString("date"));
-            String dateStr = DateUtil.convertToThaiDate(date);
+            String dateStr = DateUtil.formatLocaleDate(date);
             viewHolder.getTimeagoView().setText(dateStr);
             // form data explanation
             viewHolder.getDescriptionView().setText(

@@ -29,12 +29,10 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -48,14 +46,12 @@ import com.squareup.picasso.Picasso;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
-import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.db.ReportStateDataSource;
 import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportState;
 import org.cm.podd.report.model.State;
-import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
@@ -275,9 +271,9 @@ public class ReportViewActivity extends ActionBarActivity {
         try {
             setActivityTitleWithType(report.getString("reportTypeName"));
 
-            dateView.setText(DateUtil.convertToThaiDateTime(
+            dateView.setText(DateUtil.formatLocaleDateTime(
                     DateUtil.fromJsonDateString(report.getString("date"))));
-            incidentDateView.setText(DateUtil.convertToThaiDate(
+            incidentDateView.setText(DateUtil.formatLocaleDate(
                     DateUtil.fromJsonDateString(report.getString("incidentDate"))));
             typeView.setText(report.getString("reportTypeName"));
             areaView.setText(report.getString("administrationAreaAddress"));
