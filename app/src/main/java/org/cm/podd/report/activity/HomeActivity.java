@@ -93,7 +93,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     DrawerAdapter drawerAdapter;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private int drawerPosition;
 
@@ -151,23 +150,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        mDrawerTitle = getAppTitle();
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                setTitle(drawerPosition == 0 ? getAppTitle(): mMenuTitles[drawerPosition]);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                setTitle(mDrawerTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
         };
 
         // Set the drawer toggle as the DrawerListener
@@ -235,7 +219,11 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     }
 
     private String getAppTitle() {
-        return getString(R.string.app_name);
+        String title = sharedPrefUtil.getCustomTitle();
+        if (title == null) {
+            title = getString(R.string.app_name);
+        }
+        return title;
     }
 
     /** Swaps fragments in the main content view */

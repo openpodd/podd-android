@@ -4,10 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.TelephonyManager;
@@ -30,7 +34,13 @@ import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -40,6 +50,7 @@ import static android.provider.Settings.Secure.ANDROID_ID;
 
 public class LoginActivity extends ActionBarActivity {
 
+    public static final int REQUEST_FOR_QR_CODE_CONFIG = 700;
     private static String TAG = "LoginActivity";
 
     private boolean isUserLoggedIn;
@@ -53,6 +64,7 @@ public class LoginActivity extends ActionBarActivity {
     EditText serverUrlText;
 
     SharedPreferences settings;
+    private ImageView logoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +122,8 @@ public class LoginActivity extends ActionBarActivity {
 
         // Config api end point on the fly
 
-        ImageView logo = (ImageView) findViewById(R.id.logo);
-        logo.setOnLongClickListener(new View.OnLongClickListener() {
+        logoView = (ImageView) findViewById(R.id.logo);
+        logoView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 checkAndShowServerUrlForm(true);
@@ -120,12 +132,17 @@ public class LoginActivity extends ActionBarActivity {
 
         });
 
-        logo.setOnClickListener(new View.OnClickListener() {
+        logoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAndShowServerUrlForm(false);
             }
         });
+
+        String customLogoPath = sharedPrefUtil.getCustomIconPath();
+        if (customLogoPath != null) {
+            logoView.setImageDrawable(new BitmapDrawable(getResources(), customLogoPath));
+        }
 
         findViewById(R.id.server_url_save).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,16 +157,54 @@ public class LoginActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 700 && resultCode == 0) {
+        if (requestCode == REQUEST_FOR_QR_CODE_CONFIG && resultCode == 0) {
             String result = data.getStringExtra("result");
 
+            /*
+                format of result
+                {
+                    "server": "https://api.cmonehealth.org",
+                    "shortcut": {
+                        "icon": "http://lab.bon.co.th/mbds/ic_launcher.png",
+                        "text": "MBDS"
+                    },
+                    "title": "MBDS DDR",
+                    "loginLogoIcon": "http://lab.bon.co.th/mbds/logo.png"
+                }
+             */
             try {
                 JSONObject obj = new JSONObject(result);
                 if (obj.has("server")) {
                     String server = obj.getString("server");
                     saveServerUrl(server);
                     Crouton.makeText(LoginActivity.this, getString(R.string.change_server_message) + server, Style.CONFIRM)
-                            .setConfiguration(new Configuration.Builder().setDuration(5000).build()).show();
+                            .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
+                }
+
+                if (obj.has("shortcut")) {
+                    JSONObject shortcut = obj.getJSONObject("shortcut");
+                    String icon = shortcut.getString("icon");
+                    String text = shortcut.getString("text");
+
+                    Crouton.makeText(LoginActivity.this, getString(R.string.create_shortcut_message) + " " + text, Style.CONFIRM)
+                            .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
+
+
+                    if (obj.has("title")) {
+                        String title = obj.getString("title");
+                        sharedPrefUtil.setCustomTitle(title);
+                    }
+
+                    new ShortcutTask().execute(icon, text);
+
+                    if (obj.has("loginLogoIcon")) {
+                        String loginIcon = obj.getString("loginLogoIcon");
+                        new LogoDownloadTask().execute(loginIcon);
+                    }
+
+                } else {
+                    // clear shortcut
+                    sharedPrefUtil.clearCustomIconPath();
                 }
 
             } catch (JSONException e) {
@@ -193,7 +248,7 @@ public class LoginActivity extends ActionBarActivity {
 
         if (numOfLongClick4QRCode == 2) {
             Intent intent = new Intent(getApplicationContext(), QRConfigActivity.class);
-            startActivityForResult(intent, 700);
+            startActivityForResult(intent, REQUEST_FOR_QR_CODE_CONFIG);
         }
 
         prevValidServerUrlIsLongClick = isLongClick;
@@ -215,7 +270,10 @@ public class LoginActivity extends ActionBarActivity {
         String password = passwordText.getText().toString();
         if (username.length() > 0 && password.length() > 0) {
             if (RequestDataUtil.hasNetworkConnection(this)) {
-                new LoginTask().execute((Void[]) null);
+                new LoginTask().execute(
+                        usernameText.getText().toString(),
+                        passwordText.getText().toString()
+                );
             }
         } else {
             if (username.length() == 0) {
@@ -262,10 +320,123 @@ public class LoginActivity extends ActionBarActivity {
         hideProgressDialog();
     }
 
+    private File getCustomIconFile() {
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        path.mkdirs();
+        File file = new File(path, "custom_logo.png");
+
+        return file;
+    }
+
+    protected void setLogoView(Bitmap bitmap) {
+
+        logoView.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+
+        String filename = getCustomIconFile().getPath();
+
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(filename);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            // PNG is a lossless format, the compression factor (100) is ignored
+
+            sharedPrefUtil.setCustomIconPath(filename);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString(), e);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                Log.e(TAG, e.toString(), e);
+            }
+        }
+    }
+
+    public class LogoDownloadTask extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            try {
+                URL url = new URL(params[0]);
+                /* Open a connection to that URL. */
+                URLConnection ucon = url.openConnection();
+
+                InputStream is = ucon.getInputStream();
+                return BitmapFactory.decodeStream(is);
+
+            } catch (IOException e) {
+                Log.d("ImageManager", "Error: " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null) {
+                setLogoView(bitmap);
+            }
+        }
+    }
+
+    /**
+     * download short-cut icon
+     */
+    public class ShortcutTask extends AsyncTask<String, Void, Bitmap> {
+
+        String name;
+        @Override
+        protected Bitmap doInBackground(String... params) {
+
+            name = params[1];
+            try {
+                URL url = new URL(params[0]);
+                /* Open a connection to that URL. */
+                URLConnection ucon = url.openConnection();
+
+                /*
+                 * Define InputStreams to read from the URLConnection.
+                 */
+                InputStream is = ucon.getInputStream();
+                return BitmapFactory.decodeStream(is);
+
+            } catch (IOException e) {
+                Log.d("ImageManager", "Error: " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null) {
+                int size = (int) getResources().getDimension(android.R.dimen.app_icon_size);
+
+                Intent shortcutIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                shortcutIntent.setAction("start");
+
+                Intent addIntent = new Intent();
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+                addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, Bitmap.createScaledBitmap(bitmap, size, size, false));
+
+                addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                getApplicationContext().sendBroadcast(addIntent);
+
+                setLogoView(bitmap);
+            }
+        }
+
+
+    }
+
     /**
      * Post login
      */
-    public class LoginTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+    public class LoginTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
 
         @Override
         protected void onPreExecute() {
@@ -274,13 +445,15 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            String username = params[0];
+            String password = params[1];
             // authenticate and get access token
             String reqData = null;
             try {
                 JSONObject json = new JSONObject();
-                json.put("username", usernameText.getText().toString());
-                json.put("password", passwordText.getText().toString());
+                json.put("username", username);
+                json.put("password", password);
                 reqData = json.toString();
 
             } catch (JSONException e) {

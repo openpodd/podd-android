@@ -307,6 +307,7 @@
     <string name="no_animal_type">No animal type defined</string>
     <string name="incident_date">วันที่เกิดเหตุ</string>
     <string name="incident_area">สถานที่เกิดเหตุ</string>
+    <string name="create_shortcut_message"><![CDATA[create a shortcut name ->]]></string>
 
 
 </resources>

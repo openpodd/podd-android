@@ -43,9 +43,12 @@ public class SharedPrefUtil {
     public static final String PROFILE_IMAGE_FILE_PATH = "profile_image_file_path";
     public static final String IS_VOLUNTEER = "is_volunteer";
     public static final String CAN_SET_FLAG = "can_set_flag";
-    private static final String TAG = "SharedPrefUtil";
+    public static final String TAG = "SharedPrefUtil";
+    public static final String CUSTOM_ICON_PATH = "custom_icon_path";
+    public static final String CUSTOM_TITLE = "custom_title";
 
     private SharedPreferences sharedPrefs;
+    private String customTitle;
 
     public SharedPrefUtil (Context context) {
         sharedPrefs = context.getSharedPreferences(APP_SHARED_PREFS, Context.MODE_PRIVATE);
@@ -141,7 +144,18 @@ public class SharedPrefUtil {
 
     public void clearAllData() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
+        // save customIcon & customTitle to next login
+        String customIconPath = getCustomIconPath();
+        String customTitle = getCustomTitle();
+
         editor.clear();
+
+        if (customIconPath != null) {
+            editor.putString(CUSTOM_ICON_PATH, customIconPath);
+        }
+        if (customTitle != null) {
+            editor.putString(CUSTOM_TITLE, customTitle);
+        }
         editor.commit();
     }
 
@@ -173,6 +187,33 @@ public class SharedPrefUtil {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putBoolean(CAN_SET_FLAG, canSetFlag);
         editor.commit();
+    }
+
+    public String getCustomIconPath() {
+        return sharedPrefs.getString(CUSTOM_ICON_PATH, null);
+    }
+
+    public void setCustomIconPath(String path) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(CUSTOM_ICON_PATH, path);
+        editor.commit();
+    }
+
+    public void clearCustomIconPath() {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.remove(CUSTOM_ICON_PATH);
+        editor.remove(CUSTOM_TITLE);
+        editor.commit();
+    }
+
+    public void setCustomTitle(String customTitle) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(CUSTOM_TITLE, customTitle);
+        editor.commit();
+    }
+
+    public String getCustomTitle() {
+        return sharedPrefs.getString(CUSTOM_TITLE, null);
     }
 }
 
