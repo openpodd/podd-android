@@ -46,6 +46,8 @@ public class SharedPrefUtil {
     public static final String TAG = "SharedPrefUtil";
     public static final String CUSTOM_ICON_PATH = "custom_icon_path";
     public static final String CUSTOM_TITLE = "custom_title";
+    public static final String CUSTOM_ICON_SIZE = "custom_icon_size";
+    public static final String LANGUAGE = "language";
 
     private SharedPreferences sharedPrefs;
     private String customTitle;
@@ -203,7 +205,18 @@ public class SharedPrefUtil {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.remove(CUSTOM_ICON_PATH);
         editor.remove(CUSTOM_TITLE);
+        editor.remove(CUSTOM_ICON_SIZE);
         editor.commit();
+    }
+
+    public void setCustomIconSize(int size) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt(CUSTOM_ICON_SIZE, size);
+        editor.commit();
+    }
+
+    public int getCustomIconSize() {
+        return sharedPrefs.getInt(CUSTOM_ICON_SIZE, -1);
     }
 
     public void setCustomTitle(String customTitle) {
@@ -214,6 +227,16 @@ public class SharedPrefUtil {
 
     public String getCustomTitle() {
         return sharedPrefs.getString(CUSTOM_TITLE, null);
+    }
+
+    public void setLanguage(String lang) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(LANGUAGE, lang);
+        editor.commit();
+    }
+
+    public String getLanguage() {
+        return sharedPrefs.getString(LANGUAGE, "th");
     }
 }
 

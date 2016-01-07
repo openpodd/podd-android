@@ -1,5 +1,7 @@
 package org.cm.podd.report.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,9 +24,11 @@ import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.cm.podd.report.BuildConfig;
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -65,6 +69,7 @@ public class LoginActivity extends ActionBarActivity {
 
     SharedPreferences settings;
     private ImageView logoView;
+    private TextView languageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,35 @@ public class LoginActivity extends ActionBarActivity {
         usernameText = (EditText) findViewById(R.id.username);
         passwordText = (EditText) findViewById(R.id.password);
         serverUrlText = (EditText) findViewById(R.id.server_url);
+        languageView = (TextView) findViewById(R.id.language);
+
+        String lang = sharedPrefUtil.getLanguage();
+        if (lang.equals("en")) {
+            languageView.setText("th");
+        } else {
+            languageView.setText("en");
+        }
+
+        languageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String lang = sharedPrefUtil.getLanguage();
+                if (lang.equals("en")) {
+                    // change to thai
+                    sharedPrefUtil.setLanguage("th");
+
+                } else {
+                    // change to english
+                    sharedPrefUtil.setLanguage("en");
+
+                }
+                Intent mStartActivity = new Intent(getApplicationContext(), LoginActivity.class);
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                System.exit(0);
+            }
+        });
 
         settings = getSharedPreferences("PoddPrefsFile", 0);
 
@@ -151,6 +185,12 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
+        // resize icon
+        int size = sharedPrefUtil.getCustomIconSize();
+        if (size > 0) {
+            resizeIcon(size);
+        }
+
     }
 
     @Override
@@ -200,6 +240,20 @@ public class LoginActivity extends ActionBarActivity {
                     if (obj.has("loginLogoIcon")) {
                         String loginIcon = obj.getString("loginLogoIcon");
                         new LogoDownloadTask().execute(loginIcon);
+                    }
+
+                    if (obj.has("loginLogoSize")) {
+                        int size = obj.getInt("loginLogoSize");
+                        sharedPrefUtil.setCustomIconSize(size);
+                        resizeIcon(size);
+                    }
+
+                    if (obj.has("language")) {
+                        String lang = obj.getString("language");
+                        sharedPrefUtil.setLanguage(lang);
+
+                        ((PoddApplication) getApplication()).setLanguage(lang);
+
                     }
 
                 } else {
@@ -320,6 +374,13 @@ public class LoginActivity extends ActionBarActivity {
         hideProgressDialog();
     }
 
+    private void resizeIcon(int size) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) logoView.getLayoutParams();
+        params.width = size;
+        params.height = size;
+        logoView.setLayoutParams(params);
+    }
+
     private File getCustomIconFile() {
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         path.mkdirs();
@@ -378,6 +439,12 @@ public class LoginActivity extends ActionBarActivity {
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
                 setLogoView(bitmap);
+
+                Intent mStartActivity = new Intent(getApplicationContext(), LoginActivity.class);
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                System.exit(0);
             }
         }
     }

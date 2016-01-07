@@ -18,6 +18,7 @@ package org.cm.podd.report;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Configuration;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -26,6 +27,7 @@ import com.google.android.gms.analytics.Tracker;
 import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 public class PoddApplication extends Application {
 
@@ -66,9 +68,26 @@ public class PoddApplication extends Application {
         return mTrackers.get(trackerId);
     }
 
+    public void setLanguage(String lang) {
+        if (lang.equals("en")) {
+            Configuration config = new Configuration(getResources().getConfiguration());
+            config.locale = Locale.US;
+            getResources().updateConfiguration(config,getResources().getDisplayMetrics());
+        } else {
+            Configuration config = new Configuration(getResources().getConfiguration());
+            config.locale = new Locale("th", "TH") ;
+            getResources().updateConfiguration(config,getResources().getDisplayMetrics());
+        }
+    }
+
     public void onCreate(){
         super.onCreate();
         PoddApplication.context = getApplicationContext();
+
+        SharedPrefUtil prefUtil = new SharedPrefUtil(getApplicationContext());
+
+        String lang = prefUtil.getLanguage();
+        setLanguage(lang);
     }
 
     public static Context getAppContext() {
