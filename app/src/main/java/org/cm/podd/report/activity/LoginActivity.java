@@ -198,6 +198,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_FOR_QR_CODE_CONFIG && resultCode == 0) {
+            clearLongAndShortClickCount();
             String result = data.getStringExtra("result");
 
             /*
@@ -306,6 +307,12 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         prevValidServerUrlIsLongClick = isLongClick;
+    }
+
+    private void clearLongAndShortClickCount() {
+        numOfLongClick4QRCode = 0;
+        numOfValidServerUrl = 0;
+        numOfValidServerUrl = 0;
     }
 
     private void saveServerUrl(String serverUrl) {
