@@ -107,8 +107,9 @@ public class AdministrationAreaDataSource {
         Cursor cursor = db.rawQuery("select * from administration_area where is_leaf=1 order by parent_name asc", null);
         String parent_name = "";
         while (cursor.moveToNext()) {
-            if (parent_name.equals("") || cursor.getString(cursor.getColumnIndex("parent_name")).equals("null")
-                    || !parent_name.equals(cursor.getString(cursor.getColumnIndex("parent_name")))){
+            if (cursor.getString(cursor.getColumnIndex("parent_name")).equals("null") ||
+                    !parent_name.equals(cursor.getString(cursor.getColumnIndex("parent_name")))){
+
                 parent_name = cursor.getString(cursor.getColumnIndex("parent_name"));
                 if (!parent_name.equals("null")) {
                     AdministrationArea administrationArea = new AdministrationArea(

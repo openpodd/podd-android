@@ -38,7 +38,7 @@ public class VisualizationAreaService extends IntentService {
         SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
         String accessToken = sharedPrefUtil.getAccessToken();
         RequestDataUtil.ResponseObject resp = RequestDataUtil.get(
-                "/summary/areas/show-detail/?month=" + month + "/" + year + "&administrationAreaId=" + areaId, null, accessToken);
+                "/summary/authorities/show-detail/?month=" + month + "/" + year + "&authorityId=" + areaId, null, accessToken);
 
         if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
             VisualizationAreaDataSource dbSource = new VisualizationAreaDataSource(this);

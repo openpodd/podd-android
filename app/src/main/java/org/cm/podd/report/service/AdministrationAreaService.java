@@ -53,7 +53,7 @@ public class AdministrationAreaService extends IntentService {
         SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
         String accessToken = sharedPrefUtil.getAccessToken();
         RequestDataUtil.ResponseObject resp = RequestDataUtil.get(
-                "/administrationArea/", null, accessToken);
+                "/authorities/?short=true", null, accessToken);
 
         if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
             AdministrationAreaDataSource dbSource = new AdministrationAreaDataSource(this);
@@ -77,14 +77,14 @@ public class AdministrationAreaService extends IntentService {
 
                         area.setName(updateAdministrationArea.optString("name"));
                         area.setParentName(updateAdministrationArea.optString("parentName"));
-                        area.setIsLeaf(updateAdministrationArea.optBoolean("isLeaf")? 1: 0);
+                        area.setIsLeaf(1);
 
                         dbSource.update(area);
                     }else{
                         long administrationAreaId = updateAdministrationArea.optInt("id");
                         String name = updateAdministrationArea.optString("name");
                         String parentName = updateAdministrationArea.optString("parentName");
-                        int isLeaf = updateAdministrationArea.optBoolean("isLeaf")? 1: 0;
+                        int isLeaf = 1;
 
                         Log.d(TAG, "Found new administration area id= " + administrationAreaId);
 
