@@ -92,7 +92,7 @@ public class AdministrationAreaFragment extends ListFragment {
         adapter.getFilter().filter(searchView.getQuery().toString());
         setListAdapter(adapter);
 
-        listView.setEmptyView(emptyText);
+//        listView.setEmptyView(emptyText);
         hideProgressBar();
     }
 
