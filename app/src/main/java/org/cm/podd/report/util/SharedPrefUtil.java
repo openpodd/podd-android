@@ -88,6 +88,42 @@ public class SharedPrefUtil {
         return regions;
     }
 
+    public List<String> getAllParentRegions() {
+        List<String> regions = new ArrayList<String>();
+        String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonArr = new JSONArray(jsonStr);
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    regions.add(jsonObj.getString("address").replace(jsonObj.getString("name") + " ", ""));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return regions;
+    }
+
+    public List<Region> getFilterByRegions(String address) {
+        if (address == null) return null;
+        List<Region> regions = new ArrayList<Region>();
+        String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonArr = new JSONArray(jsonStr);
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObj = jsonArr.getJSONObject(i);
+                    if (jsonObj.getString("address").contains(address))
+                        regions.add(new Region(jsonObj.getLong("id"), jsonObj.getString("name")));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return regions;
+    }
+
     public String getAwsSecretKey() {
         return sharedPrefs.getString(AWS_SECRET_KEY, "");
     }

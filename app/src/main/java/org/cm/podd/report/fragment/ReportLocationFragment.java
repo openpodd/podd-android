@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
@@ -41,6 +42,9 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
     private DatePicker mDatePicker;
     private Spinner mRegionsSpinner;
     private ArrayAdapter<Region> regionAdapter;
+
+    private Spinner mRegionsParentSpinner;
+    private ArrayAdapter<String> regionParentAdapter;
 
     private SharedPrefUtil sharedPrefUtil;
 
@@ -87,9 +91,25 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         mDatePicker.setMaxDate(maxDate);
         mDatePicker.setMinDate(minDate);
 
+        mRegionsParentSpinner = (Spinner) view.findViewById(R.id.regions_parent_spinner);
+        regionParentAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_location_item, sharedPrefUtil.getAllParentRegions());
+        mRegionsParentSpinner.setAdapter(regionParentAdapter);
+
+        mRegionsParentSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                refreshRegion();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         mRegionsSpinner = (Spinner) view.findViewById(R.id.regions_spinner);
-        regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, sharedPrefUtil.getAllRegions());
-        mRegionsSpinner.setAdapter(regionAdapter);
+
+        refreshRegion();
 
         loadData();
 
@@ -155,6 +175,14 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         }
     }
 
+
+    private void refreshRegion() {
+
+        String address = (String) mRegionsParentSpinner.getSelectedItem();
+        regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, sharedPrefUtil.getFilterByRegions(address));
+        mRegionsSpinner.setAdapter(regionAdapter);
+
+    }
 
     @Override
     public void onPrevious() {

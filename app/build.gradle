@@ -8,7 +8,7 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 11
         targetSdkVersion 20
-        versionCode 40
+        versionCode 41
         versionName "1.0.40"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
