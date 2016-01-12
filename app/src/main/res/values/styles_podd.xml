@@ -142,6 +142,12 @@
         <item name="android:textSize">22sp</item>
     </style>
 
+    <style name="TestButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@drawable/button_yellow</item>
+    </style>
+
     <style name="ConfirmButton">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">18sp</item>

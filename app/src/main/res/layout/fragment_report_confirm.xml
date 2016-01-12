@@ -21,6 +21,14 @@
         android:orientation="vertical" >
 
         <Button
+            android:id="@+id/testBtn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/TestButton"
+            android:text="@string/test_title"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
             android:id="@+id/confirmBtn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

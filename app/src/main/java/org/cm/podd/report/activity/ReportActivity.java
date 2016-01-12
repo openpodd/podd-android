@@ -541,6 +541,7 @@ public class ReportActivity extends ActionBarActivity
         Bundle bundle = new Bundle();
         bundle.putSerializable("page", formIterator.getCurrentPage());
         bundle.putBoolean("isSubmit", isDoneSubmit());
+        bundle.putBoolean("isTestReport", isTestReport());
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -634,6 +635,36 @@ public class ReportActivity extends ActionBarActivity
 //        }
     }
 
+    public void submitReportToServer(Report report) {
+
+        saveForm(0);
+        reportQueueDataSource.addDataQueue(reportId);
+        reportQueueDataSource.addImageQueue(reportId);
+
+
+        broadcastReportSubmission();
+
+        if (report.getTestReport() == Report.FALSE && !follow && trigger != null) {
+
+            new FollowAlertScheduleService.SetFollowAlertScheduleTask(this, trigger.getPattern(), trigger.getNotificationText(),
+                    report.getId(), report.getType(), false
+            ).execute((Void[]) null);
+        }
+
+        if (follow && parentReportId != -1) {
+            new FollowAlertScheduleService.CancelFollowAlertScheduleTask(this, parentReportId).execute((Void[]) null);
+        }
+
+        if (report.getTestReport() == Report.TRUE && !follow && trigger != null) {
+            Log.d(TAG, "schedule test notification");
+            new FollowAlertScheduleService.SetFollowAlertScheduleTask(this,
+                    trigger.getPattern(), trigger.getNotificationText(),
+                    report.getId(), report.getType(),
+                    true
+            ).execute((Void[]) null);
+        }
+
+    }
 
     @Override
     public void finishReport(int action) {
@@ -647,36 +678,17 @@ public class ReportActivity extends ActionBarActivity
                 reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark, followActionName);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
-                    saveForm(0);
-                    reportQueueDataSource.addDataQueue(reportId);
-                    reportQueueDataSource.addImageQueue(reportId);
-
-
-                    broadcastReportSubmission();
-
-                    if (report.getTestReport() == Report.FALSE && !follow && trigger != null) {
-
-                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this, trigger.getPattern(), trigger.getNotificationText(),
-                                report.getId(), report.getType(), false
-                        ).execute((Void[]) null);
-                    }
-
-                    if (follow && parentReportId != -1) {
-                        new FollowAlertScheduleService.CancelFollowAlertScheduleTask(this, parentReportId).execute((Void[]) null);
-                    }
-
-                    if (report.getTestReport() == Report.TRUE && !follow && trigger != null) {
-                        Log.d(TAG, "schedule test notification");
-                        new FollowAlertScheduleService.SetFollowAlertScheduleTask(this,
-                                trigger.getPattern(), trigger.getNotificationText(),
-                                report.getId(), report.getType(),
-                                true
-                        ).execute((Void[]) null);
-                    }
+                    submitReportToServer(report);
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
                     // save as draft
                     saveForm(1);
+                } else if (action == ReportDataInterface.TEST_ACTION) {
+                    // save as test report
+                    report.setTestReport(Report.TRUE);
+                    reportDataSource.updateToTestReport(reportId);
+
+                    submitReportToServer(report);
                 }
             }
         }
@@ -945,6 +957,11 @@ public class ReportActivity extends ActionBarActivity
     @Override
     public boolean isDoneSubmit() {
         return this.reportSubmit == 1;
+    }
+
+    @Override
+    public boolean isTestReport() {
+        return this.testReport;
     }
 
     private void showHideDisableMask(boolean shown) {

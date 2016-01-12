@@ -62,12 +62,14 @@ public class ReportConfirmFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_report_confirm, container, false);
+        Button testBtn = (Button) view.findViewById(R.id.testBtn);
         Button confirmBtn = (Button) view.findViewById(R.id.confirmBtn);
         Button cancelBtn = (Button) view.findViewById(R.id.cancelBtn);
         Button draftBtn = (Button) view.findViewById(R.id.draftBtn);
         TextView confirmText = (TextView) view.findViewById(R.id.confirm_message);
 
         if (dataInterface.isDoneSubmit()) {
+            testBtn.setVisibility(View.GONE);
             draftBtn.setVisibility(View.GONE);
             confirmBtn.setVisibility(View.GONE);
             cancelBtn.setText(R.string.button_back_to_report_list);
@@ -75,6 +77,18 @@ public class ReportConfirmFragment extends Fragment {
         } else {
             cancelBtn.setVisibility(View.GONE);
         }
+
+        if (dataInterface.isTestReport()) {
+            testBtn.setVisibility(View.GONE);
+        }
+
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayDialog();
+                navigationInterface.finishReport(ReportDataInterface.TEST_ACTION);
+            }
+        });
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +114,7 @@ public class ReportConfirmFragment extends Fragment {
         });
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
+        testBtn.setTypeface(face);
         confirmText.setTypeface(face);
         confirmBtn.setTypeface(face);
         cancelBtn.setTypeface(face);

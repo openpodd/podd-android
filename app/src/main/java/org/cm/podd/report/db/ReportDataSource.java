@@ -353,6 +353,14 @@ public class ReportDataSource {
         }
         values.put("remark", remark);
         values.put("action_name", followActionName);
+        db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
+        db.close();
+    }
+
+    public void updateToTestReport(long reportId) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("test_report", Report.TRUE);
         db.update("report", values, "_id = ?", new String[] {Long.toString(reportId)});
         db.close();
     }
