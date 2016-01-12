@@ -95,7 +95,6 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_marginRight="10dp"
                 style="@style/PrevButton"
                 android:text="@string/btn_prev" />
 
@@ -115,6 +114,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 style="@style/NextButton"
                 android:text="@string/btn_next" />
 
