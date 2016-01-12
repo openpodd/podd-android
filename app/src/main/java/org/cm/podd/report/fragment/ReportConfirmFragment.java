@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.util.StyleUtil;
 
@@ -85,6 +89,11 @@ public class ReportConfirmFragment extends Fragment {
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Tracker tracker = ((PoddApplication) getActivity().getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+                tracker.setScreenName("ReportConfirmToTest");
+                tracker.send(new HitBuilders.AppViewBuilder().build());
+
                 displayDialog();
                 navigationInterface.finishReport(ReportDataInterface.TEST_ACTION);
             }
