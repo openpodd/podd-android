@@ -49,6 +49,7 @@ public class SharedPrefUtil {
     public static final String CUSTOM_TITLE = "custom_title";
     public static final String CUSTOM_ICON_SIZE = "custom_icon_size";
     public static final String LANGUAGE = "language";
+    private static final String DEFAULT_ADMINISTRATION_AREA_ID = "default_administration_area_id";
 
     private SharedPreferences sharedPrefs;
     private String customTitle;
@@ -274,6 +275,20 @@ public class SharedPrefUtil {
 
     public String getLanguage() {
         return sharedPrefs.getString(LANGUAGE, "th");
+    }
+
+    public void setDefaultAdministrationAreaId(long id) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putLong(DEFAULT_ADMINISTRATION_AREA_ID, id);
+        editor.commit();
+    }
+
+    public long getDefaultAdministrationAreaId() {
+        return sharedPrefs.getLong(DEFAULT_ADMINISTRATION_AREA_ID, -99);
+    }
+
+    public boolean isDefaultAdministrationAreaIdExits() {
+        return sharedPrefs.contains(DEFAULT_ADMINISTRATION_AREA_ID);
     }
 }
 

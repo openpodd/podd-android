@@ -109,8 +109,6 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
 
         mRegionsSpinner = (Spinner) view.findViewById(R.id.regions_spinner);
 
-        refreshRegion();
-
         loadData();
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
@@ -166,11 +164,15 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
             mDatePicker.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
         }
 
+
+    }
+
+    private void setRegionValue() {
         long regionId = reportDataInterface.getRegionId();
         int cnt = regionAdapter.getCount();
         for (int i = 0; i < cnt; i++) {
             if (regionAdapter.getItem(i).getId() == regionId) {
-                mRegionsSpinner.setSelection(i);
+                mRegionsSpinner.setSelection(i, false);
             }
         }
     }
@@ -181,6 +183,8 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         String address = (String) mRegionsParentSpinner.getSelectedItem();
         regionAdapter = new ArrayAdapter<Region>(getActivity(), R.layout.spinner_location_item, sharedPrefUtil.getFilterByRegions(address));
         mRegionsSpinner.setAdapter(regionAdapter);
+
+        setRegionValue();
 
     }
 

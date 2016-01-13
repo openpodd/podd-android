@@ -212,7 +212,12 @@
             android:name=".service.FollowAlertService"
             android:exported="false" >
         </service>
+
         <service android:name=".service.FollowAlertRescheduleService" >
+        </service>
+
+        <service android:name=".service.SyncAdministrationAreaService"
+            android:exported="false">
         </service>
 
         <receiver

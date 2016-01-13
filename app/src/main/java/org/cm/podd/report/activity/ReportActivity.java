@@ -18,6 +18,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -87,6 +88,7 @@ import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertReceiver;
 import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.FollowAlertService;
+import org.cm.podd.report.service.SyncAdministrationAreaService;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
@@ -150,12 +152,27 @@ public class ReportActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mAlertReceiver,
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.registerReceiver(mAlertReceiver,
                 new IntentFilter(FollowAlertService.TAG));
+
+
+        broadcastManager.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long administrationAreaId = intent.getLongExtra("administrationAreaId", -99);
+                setRegionId(administrationAreaId);
+            }
+        }, new IntentFilter(SyncAdministrationAreaService.TAG));
 
         sharedPrefUtil = new SharedPrefUtil(this);
 
         setContentView(R.layout.activity_report);
+
+        long areaId = sharedPrefUtil.getDefaultAdministrationAreaId();
+        if (areaId != -99) {
+            setRegionId(areaId);
+        }
 
         formView = findViewById(R.id.form);
         locationView = findViewById(R.id.location);
@@ -241,6 +258,10 @@ public class ReportActivity extends ActionBarActivity
 
             if (reportId == -99) {
                 reportId = reportDataSource.createDraftReport(reportType, testReport);
+
+                Intent getAreaIntent = new Intent(this, SyncAdministrationAreaService.class);
+                startService(getAreaIntent);
+
             } else {
                 loadFormData();
             }
