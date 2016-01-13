@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class SharedPrefUtil {
@@ -89,7 +90,7 @@ public class SharedPrefUtil {
     }
 
     public List<String> getAllParentRegions() {
-        List<String> regions = new ArrayList<String>();
+        HashSet<String> regions = new HashSet<String>();
         String jsonStr = sharedPrefs.getString(ADMIN_AREA, null);
         if (jsonStr != null) {
             try {
@@ -102,7 +103,7 @@ public class SharedPrefUtil {
                 e.printStackTrace();
             }
         }
-        return regions;
+        return new ArrayList<String>(regions);
     }
 
     public List<Region> getFilterByRegions(String address) {
