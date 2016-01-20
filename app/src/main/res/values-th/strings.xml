@@ -305,6 +305,10 @@
     <string name="gps_not_found_message">ต้องการเปิดการระบุตำแหน่งหรือไม่</string>
     <string name="unseen">ใหม่</string>
     <string name="no_animal_type">ไม่ได้ระบุประเภทสัตว์</string>
+    <string name="confirm_positive_report">เหตุการณ์จริง</string>
+    <string name="confirm_test_report">เหตุการณ์ทดสอบ</string>
+    <string name="confirm_report_message">ข้อมุลการรายงานเหตุผิดปกติของท่านเป็น</string>
+    <string name="confirm_message_title">ยืนยันเหตุการณ์</string>
 
 
 </resources>

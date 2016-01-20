@@ -1,7 +1,9 @@
 package org.cm.podd.report.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,8 +104,34 @@ public class ReportConfirmFragment extends Fragment {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                displayDialog();
-                navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
+
+                if (dataInterface.isTestReport()) {
+
+                    displayDialog();
+                    navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
+
+                } else {
+                    final AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.confirm_message_title)
+                            .setMessage(R.string.confirm_report_message)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(R.string.confirm_positive_report, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    displayDialog();
+                                    navigationInterface.finishReport(ReportDataInterface.CONFIRM_ACTION);
+                                }
+                            })
+                            .setNegativeButton(R.string.confirm_test_report, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    displayDialog();
+                                    navigationInterface.finishReport(ReportDataInterface.TEST_ACTION);
+                                }
+                            }).create();
+
+                    dialog.show();
+                }
             }
         });
 
