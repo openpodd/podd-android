@@ -305,8 +305,6 @@
     <string name="gps_not_found_message">Do you want to turn on location tracking?</string>
     <string name="unseen">New</string>
     <string name="no_animal_type">No animal type defined</string>
-    <string name="incident_date">Incident Date</string>
-    <string name="incident_area">Incident Area</string>
     <string name="create_shortcut_message"><![CDATA[create a shortcut name ->]]></string>
     <string name="confirm_positive_report">Yes</string>
     <string name="confirm_test_report">No, just a test</string>

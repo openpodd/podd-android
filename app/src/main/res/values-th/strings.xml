@@ -309,6 +309,7 @@
     <string name="confirm_test_report">เหตุการณ์ทดสอบ</string>
     <string name="confirm_report_message">ข้อมุลการรายงานเหตุผิดปกติของท่านเป็น</string>
     <string name="confirm_message_title">ยืนยันเหตุการณ์</string>
+    <string name="create_shortcut_message"><![CDATA[สร้างทางลัดชื่อ ->]]></string>
 
 
 </resources>

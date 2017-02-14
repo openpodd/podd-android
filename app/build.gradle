@@ -8,8 +8,8 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 11
         targetSdkVersion 20
-        versionCode 44
-        versionName "1.0.44"
+        versionCode 45
+        versionName "1.0.45"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
@@ -89,6 +89,6 @@ task askForPasswords << {
 
 tasks.whenTaskAdded { theTask ->
     if (theTask.name.equals("packageServer_productionRelease") || theTask.name.equals("packageServer_testRelease")) {
-        theTask.dependsOn "askForPasswords"
+//        theTask.dependsOn "askForPasswords"
     }
 }
