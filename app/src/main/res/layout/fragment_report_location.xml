@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/ReportTextLabel"
-            android:text="@string/incident_date"/>
+            android:text="@string/report_incidentDate"/>
 
         <DatePicker
             android:id="@+id/date_picker"
@@ -29,7 +29,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             style="@style/ReportTextLabel"
-            android:text="@string/incident_area"/>
+            android:text="@string/report_area"/>
 
         <Spinner
             android:id="@+id/regions_parent_spinner"
