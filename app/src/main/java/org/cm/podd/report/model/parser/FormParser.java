@@ -181,6 +181,10 @@ public class FormParser {
             question.setDataUrl(q.getString("dataUrl"));
         }
 
+        if (! q.isNull("filterFields")) {
+            question.setFilterFields(q.getString("filterFields"));
+        }
+
         if (! q.isNull("validations")) {
             JSONArray validations = q.getJSONArray("validations");
             for (int i = 0; i < validations.length(); i++) {

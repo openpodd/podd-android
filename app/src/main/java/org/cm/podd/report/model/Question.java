@@ -39,7 +39,7 @@ public class Question<T> implements Serializable {
     private List<IValidation<T>> validations;
 
     private String dataUrl;
-    private List<String> multiChoiceItems;
+    private String filterFields;
 
     private T data;
     private T oldData;
@@ -78,6 +78,18 @@ public class Question<T> implements Serializable {
 
     public String getDataUrl() {
         return dataUrl;
+    }
+
+    public void setFilterFields(String filterFields) {
+        this.filterFields = filterFields;
+    }
+
+    public String getFilterFields() {
+        if (filterFields == null || filterFields.equalsIgnoreCase("")) {
+            return "name";
+        }
+
+        return filterFields;
     }
 
     public void addValidation(IValidation<T> validation) {

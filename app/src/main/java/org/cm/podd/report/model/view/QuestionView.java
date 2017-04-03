@@ -138,46 +138,44 @@ public class QuestionView extends LinearLayout {
 
             String system = "fetchData";
             String key = question.getDataUrl();
-
             startSyncConfigService(context, system, key);
 
             ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
             Config config = dbSource.getConfigValue(system, key);
 
-            ArrayList<String> listData = new ArrayList<String>();
+            String[] fields = question.getFilterFields().split(",");
+            ArrayList[] listData = new ArrayList[fields.length];
+            for (int idx = 0; idx < fields.length; idx++) {
+                listData[idx] = new ArrayList<String>();
+            }
+
             if (config != null) {
                 try {
                     JSONArray items = new JSONArray(config.getValue());
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
-                        String name = item.getString("name");
-                        listData.add(name);
+                        for (int j = 0; j < fields.length; j++) {
+                            String value = item.getString(fields[j].replaceAll(" ", ""));
+                            listData[j].add(value);
+                        }
                     }
-
                 } catch (JSONException e) {
 
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData);
+            spinnerViews = new Spinner[fields.length];
 
-            spinnerViews = new Spinner[1];
+            for (int idx = 0; idx < listData.length; idx++) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData[idx]);
 
-            spinnerViews[0] = new Spinner(context);
-            spinnerViews[0].setLayoutParams(params);
-            spinnerViews[0].setPadding(0, 0, 0, 0);
-            spinnerViews[0].setAdapter(adapter);
+                spinnerViews[idx] = new Spinner(context);
+                spinnerViews[idx].setLayoutParams(params);
+                spinnerViews[idx].setPadding(0, 0, 0, 0);
+                spinnerViews[idx].setAdapter(adapter);
 
-//            spinnerViews[1] = new Spinner(context);
-//            spinnerViews[1].setLayoutParams(params);
-//            spinnerViews[1].setPadding(0, 0, 0, 0);
-//
-//            spinnerViews[2] = new Spinner(context);
-//            spinnerViews[2].setLayoutParams(params);
-//            spinnerViews[2].setPadding(0, 0, 0, 0);
+                addView(spinnerViews[idx]);
 
-            for (int i = 0; i < spinnerViews.length; i++) {
-                addView(spinnerViews[i]);
             }
 
         } else if (question.getDataType() == DataType.AUTOCOMPLETE) {
@@ -314,7 +312,6 @@ public class QuestionView extends LinearLayout {
         intent.putExtra("url", key);
         context.startService(intent);
     }
-
 
     private SoftKeyActionHandler listener;
 
