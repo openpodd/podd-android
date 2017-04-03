@@ -69,9 +69,7 @@ public class QuestionView extends LinearLayout {
     private EditText editView = null;
     private AutoCompleteTextView autoCompleteTextView = null;
     private DatePicker calendarView = null;
-    private Spinner spinnerSubDistrictView = null;
-    private Spinner spinnerDistrictView = null;
-    private Spinner spinnerProvinceView = null;
+    private Spinner [] spinnerViews = null;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public QuestionView(final Context context, Question q, final boolean readonly) {
@@ -137,21 +135,50 @@ public class QuestionView extends LinearLayout {
             addView(calendarView);
 
         } else if (question.getDataType() == DataType.ADDRESS) {
-            spinnerSubDistrictView = new Spinner(context);
-            spinnerSubDistrictView.setLayoutParams(params);
-            spinnerSubDistrictView.setPadding(0, 0, 0, 0);
 
-            spinnerDistrictView = new Spinner(context);
-            spinnerDistrictView.setLayoutParams(params);
-            spinnerDistrictView.setPadding(0, 0, 0, 0);
+            String system = "fetchData";
+            String key = question.getDataUrl();
 
-            spinnerProvinceView = new Spinner(context);
-            spinnerProvinceView.setLayoutParams(params);
-            spinnerProvinceView.setPadding(0, 0, 0, 0);
+            startSyncConfigService(context, system, key);
 
-            addView(spinnerSubDistrictView);
-            addView(spinnerDistrictView);
-            addView(spinnerProvinceView);
+            ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+            Config config = dbSource.getConfigValue(system, key);
+
+            ArrayList<String> listData = new ArrayList<String>();
+            if (config != null) {
+                try {
+                    JSONArray items = new JSONArray(config.getValue());
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        String name = item.getString("name");
+                        listData.add(name);
+                    }
+
+                } catch (JSONException e) {
+
+                }
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData);
+
+            spinnerViews = new Spinner[1];
+
+            spinnerViews[0] = new Spinner(context);
+            spinnerViews[0].setLayoutParams(params);
+            spinnerViews[0].setPadding(0, 0, 0, 0);
+            spinnerViews[0].setAdapter(adapter);
+
+//            spinnerViews[1] = new Spinner(context);
+//            spinnerViews[1].setLayoutParams(params);
+//            spinnerViews[1].setPadding(0, 0, 0, 0);
+//
+//            spinnerViews[2] = new Spinner(context);
+//            spinnerViews[2].setLayoutParams(params);
+//            spinnerViews[2].setPadding(0, 0, 0, 0);
+
+            for (int i = 0; i < spinnerViews.length; i++) {
+                addView(spinnerViews[i]);
+            }
 
         } else if (question.getDataType() == DataType.AUTOCOMPLETE) {
 
