@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -46,20 +47,8 @@ public class StyleUtil {
         }
     }
 
-    public static void setActionBarTitle(Activity activity, String title) {
-        int actionBarTitleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        if (actionBarTitleId > 0) {
-            TextView titleView = (TextView) (activity.findViewById(actionBarTitleId));
-            if (titleView != null) {
-                titleView.setText(title);
-                titleView.setTypeface(getDefaultTypeface(activity.getAssets(), Typeface.NORMAL));
-                titleView.setPadding(0, 15, 0, 0);
-                if (title == null) {
-                    titleView.setCompoundDrawablesWithIntrinsicBounds(
-                            activity.getResources().getDrawable(R.drawable.logo_podd), null, null, null);
-                }
-            }
-        }
+    public static void setActionBarTitle(AppCompatActivity activity, String title) {
+        activity.getSupportActionBar().setTitle(title);
     }
 
     public static Typeface getSecondTypeface(AssetManager assets, int type) {

@@ -19,14 +19,23 @@
 
 <resources>
 
-    <style name="Theme.Podd" parent="@style/Theme.AppCompat.Light">
+    <style name="Theme.Podd" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/ColorPrimary</item>
+        <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+
+
         <item name="android:actionBarStyle">@style/ActionBar.Solid.Podd</item>
         <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Podd</item>
         <item name="android:actionBarItemBackground">@drawable/selectable_background_podd</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Podd</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Podd</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Podd</item>
-        <item name="android:actionModeBackground">@drawable/abc_ab_solid_light_holo</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_podd</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Podd</item>
         <item name="android:actionBarTabTextStyle">@style/ActionBarTabTextStyle</item>
@@ -45,12 +54,10 @@
 
     <style name="ActionBar.Solid.Podd" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
         <item name="android:logo">@drawable/logo_with_pad</item>
-        <item name="android:background">@drawable/abc_ab_solid_light_holo</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Podd</item>
         <item name="android:titleTextStyle">@style/ActionBarTitleTextStyle</item>
 
         <item name="logo">@drawable/logo_with_pad</item>
-        <item name="background">@drawable/abc_ab_solid_light_holo</item>
         <item name="progressBarStyle">@style/ProgressBar.Podd</item>
         <item name="titleTextStyle">@style/ActionBarTitleTextStyle</item>
     </style>

@@ -130,7 +130,7 @@ public class ResetPasswordFragment extends Fragment {
                 rootView.getRootView().findViewById(R.id.detail_content).setVisibility(View.VISIBLE);
                 rootView.getRootView().findViewById(R.id.form_content).setVisibility(View.GONE);
 
-                StyleUtil.setActionBarTitle(getActivity(), getString(R.string.title_activity_setting));
+//                StyleUtil.setActionBarTitle(getActivity(), getString(R.string.title_activity_setting));
 
                 Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_success), Style.INFO).show();
 

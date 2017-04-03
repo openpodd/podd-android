@@ -296,6 +296,12 @@
     <string name="start_alert_hour">10</string>
     <string name="title_activity_qrconfig">Custom QR Code</string>
 
+    <!-- new drwaer menu -->
+    <string name="home_menu_reports">Reports</string>
+    <string name="home_menu_news">News</string>
+    <string name="home_menu_incidents">Incidents</string>
+    <string name="home_menu_summary">Summary</string>
+
     <!-- unused, wait to be removed -->
     <string name="image_hint">Click on camera thumbnail to take new pictrue or choose from album</string>
     <string name="follow_up_report_alert">Please follow up your report</string>

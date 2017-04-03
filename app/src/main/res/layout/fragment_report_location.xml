@@ -21,6 +21,7 @@
             android:id="@+id/date_picker"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:datePickerMode="spinner"
             android:calendarViewShown="false">
         </DatePicker>
 

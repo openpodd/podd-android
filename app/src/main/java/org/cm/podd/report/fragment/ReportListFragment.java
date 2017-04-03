@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -114,7 +115,7 @@ public class ReportListFragment extends ListFragment {
                                 getListView().setItemChecked(i, false);
                             }
                         }
-                        mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
+                        mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(
                                 new ActionModeCallback(getActivity()));
                     }
                 }

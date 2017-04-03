@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,7 +53,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 import static android.provider.Settings.Secure.ANDROID_ID;
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends AppCompatActivity {
 
     public static final int REQUEST_FOR_QR_CODE_CONFIG = 700;
     private static String TAG = "LoginActivity";
@@ -75,7 +76,6 @@ public class LoginActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        getSupportActionBar().hide();
 
         setContentView(R.layout.activity_login);
 

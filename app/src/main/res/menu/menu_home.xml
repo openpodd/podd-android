@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/reports"
+            android:checked="true"
+            android:title="@string/home_menu_reports"
+            android:icon="@drawable/ic_action_view_as_list"/>
+
+        <item
+            android:id="@+id/news"
+            android:checked="false"
+            android:title="@string/home_menu_news"
+            android:icon="@drawable/ic_action_event"/>
+
+        <item
+            android:id="@+id/incidents"
+            android:checked="false"
+            android:title="@string/home_menu_incidents"
+            android:icon="@drawable/ic_cast_menu"/>
+
+        <item
+            android:id="@+id/summary"
+            android:checked="false"
+            android:title="@string/home_menu_summary"
+            android:icon="@drawable/ic_stat_menu"/>
+    </group>
+</menu>

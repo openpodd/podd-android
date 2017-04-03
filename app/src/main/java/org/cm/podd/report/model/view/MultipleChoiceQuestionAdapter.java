@@ -68,12 +68,14 @@ public class MultipleChoiceQuestionAdapter extends BaseAdapter {
         CheckedTextView ctv = (CheckedTextView) view;
         ctv.setSingleLine(false);
 
-        // Remove android checkbox
-        ctv.setCheckMarkDrawable(0);
         if (question.getSelectionType() == MultipleChoiceSelection.MULTIPLE) {
             ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_multiple_state, 0, 0, 0);
+//            ctv.setCompoundDrawablesWithIntrinsicBounds(android.support.v7.appcompat.R.drawable.abc_btn_check_material, 0, 0, 0);
+
         } else {
             ctv.setCompoundDrawablesWithIntrinsicBounds(org.cm.podd.report.R.drawable.checkbox_single_state, 0, 0, 0);
+//            ctv.setCompoundDrawablesWithIntrinsicBounds(android.support.v7.appcompat.R.drawable.abc_btn_radio_material, 0, 0, 0);
+
         }
         MultipleChoiceItem item = (MultipleChoiceItem) getItem(i);
         ctv.setText(item.getText().replaceAll("\\\\n", "\n"));

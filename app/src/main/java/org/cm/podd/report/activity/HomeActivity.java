@@ -27,14 +27,18 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -77,7 +81,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 
-public class HomeActivity extends ActionBarActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
+public class HomeActivity extends AppCompatActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
@@ -110,7 +114,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Receiving action " + intent.getAction());
             setNotificationCount();
-            refreshDrawerAdapter();
+            refreshDrawerMenu();
             supportInvalidateOptionsMenu();
             refreshNotificationListAdapter();
         }
@@ -120,6 +124,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     private MenuItem newEventMenuItem;
     private Button badgeCounterButton;
     private View notifCountView;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +132,9 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         setContentView(R.layout.activity_home);
 
         notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         // notification receiver from gcm intent service
         registerReceiver(mNotificationReceiver, new IntentFilter(RECEIVE_MESSAGE_ACTION));
@@ -139,19 +147,50 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
-        mMenuTitles = getResources().getStringArray(R.array.menu_titles);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+
+                mDrawerLayout.closeDrawers();
+                setTitle(item.getTitle());
+
+                switch (item.getItemId()) {
+                    case R.id.reports:
+                        mCurrentFragment = new ReportListFragment();
+                        setTitle(getAppTitle());
+                        break;
+                    case R.id.news:
+                        mCurrentFragment = new NotificationListFragment();
+                        break;
+                    case R.id.incidents:
+                        mCurrentFragment = new DashboardFeedFragment();
+                        break;
+                    case R.id.summary:
+                        mCurrentFragment = new AdministrationAreaFragment();
+                        break;
+                }
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+
+                // Insert the fragment by replacing any existing fragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                        .commit();
+
+                return true;
+            }
+        });
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
         setNotificationCount();
-        refreshDrawerAdapter();
+        refreshDrawerMenu();
 
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, myToolbar, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -165,21 +204,18 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
 
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
 
-//        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
-//                new FollowAlertReceiver(),
-//                new IntentFilter(FollowAlertService.TAG));
 
         /* return to last position after recreate activity */
         if (savedInstanceState != null) {
@@ -197,9 +233,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         mNotificationCount = notificationDataSource.getUnseenCount();
     }
 
-    public void refreshDrawerAdapter() {
-        drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, mMenuTitles, mNotificationCount);
-        mDrawerList.setAdapter(drawerAdapter);
+    public void refreshDrawerMenu() {
     }
 
     public void refreshNotificationListAdapter() {
@@ -244,7 +278,6 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         if (position == 0) {
             mCurrentFragment = new ReportListFragment();
             setTitle(getAppTitle());
-
         } else if (position == 1) {
             mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
@@ -268,10 +301,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
                 .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
                 .commit();
 
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-
-        mDrawerLayout.closeDrawer(mDrawerList);
+        mDrawerLayout.closeDrawer(navigationView);
 
     }
 
@@ -293,6 +323,8 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
         MenuItemCompat.setActionView(badgeMenuItem, notifCountView);
         badgeCounterButton = (Button) MenuItemCompat.getActionView(badgeMenuItem);
 
+
+
         return true;
     }
 
@@ -300,7 +332,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(navigationView);
 
         settingMenuItem.setVisible(!drawerOpen);
         newEventMenuItem.setVisible(!drawerOpen);
@@ -381,7 +413,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
             }
 
             setNotificationCount();
-            refreshDrawerAdapter();
+            refreshDrawerMenu();
             supportInvalidateOptionsMenu();
 
         }
@@ -550,7 +582,7 @@ public class HomeActivity extends ActionBarActivity implements ReportListFragmen
     @Override
     public void refreshNotificationCount() {
         setNotificationCount();
-        refreshDrawerAdapter();
+        refreshDrawerMenu();
         // refresh actionbar menu
         supportInvalidateOptionsMenu();
     }

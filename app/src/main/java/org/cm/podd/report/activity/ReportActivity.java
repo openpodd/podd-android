@@ -34,6 +34,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -103,7 +105,7 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class ReportActivity extends ActionBarActivity
+public class ReportActivity extends AppCompatActivity
         implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = "ReportActivity";
@@ -168,6 +170,9 @@ public class ReportActivity extends ActionBarActivity
         sharedPrefUtil = new SharedPrefUtil(this);
 
         setContentView(R.layout.activity_report);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        setSupportActionBar(myToolbar);
 
         long areaId = sharedPrefUtil.getDefaultAdministrationAreaId();
         if (areaId != -99) {
@@ -569,6 +574,7 @@ public class ReportActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         String title = getString(R.string.title_activity_report);
         if (testReport) {
             title = getString(R.string.test_title) + title;
@@ -580,7 +586,7 @@ public class ReportActivity extends ActionBarActivity
         if (testReport) {
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.report_test_indicator));
         } else {
-            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.abc_ab_solid_light_holo));
+//            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.abc_ab_solid_light_holo));
         }
 
         // Inflate the menu; this adds items to the action bar if it is present.
