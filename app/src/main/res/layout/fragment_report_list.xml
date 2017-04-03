@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/color_scheme_1_2"
+        app:backgroundTint="@color/color_scheme_1_2"
         app:layout_anchor="@id/listview_main_layout"
         app:layout_anchorGravity="bottom|right|end"
         />
