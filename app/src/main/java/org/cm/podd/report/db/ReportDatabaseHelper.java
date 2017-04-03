@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 15;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -179,6 +179,14 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  color TEXT,"
             + "  can_edit INTEGER"
             + ")";
+
+    private static final String CREATE_CONFIGURATION = "create table if not exists configuration"
+            + "("
+            + "  system TEXT,"
+            + "  key TEXT,"
+            + "  value TEXT"
+            + ")";
+
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -197,6 +205,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         sqLiteDatabase.execSQL(CREATE_TABLE_FOLLOW_ALERT);
         sqLiteDatabase.execSQL(CREATE_REPORT_STATE);
+        sqLiteDatabase.execSQL(CREATE_CONFIGURATION);
         Log.i("DB", "on create");
     }
 
@@ -255,6 +264,9 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 13:
                 Log.i("DB", ">> upgrade from version 13");
                 db.execSQL("ALTER TABLE report ADD COLUMN action_name TEXT");
+            case 14:
+                Log.i("DB", ">> upgrade from version 14");
+                db.execSQL(CREATE_CONFIGURATION);
         }
     }
 

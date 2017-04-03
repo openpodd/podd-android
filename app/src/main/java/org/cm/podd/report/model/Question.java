@@ -38,6 +38,9 @@ public class Question<T> implements Serializable {
     private DataType dataType;
     private List<IValidation<T>> validations;
 
+    private String dataUrl;
+    private List<String> multiChoiceItems;
+
     private T data;
     private T oldData;
 
@@ -67,6 +70,14 @@ public class Question<T> implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setDataUrl(String dataUrl) {
+        this.dataUrl = dataUrl;
+    }
+
+    public String getDataUrl() {
+        return dataUrl;
     }
 
     public void addValidation(IValidation<T> validation) {

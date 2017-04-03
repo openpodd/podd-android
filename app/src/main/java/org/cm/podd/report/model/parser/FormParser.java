@@ -17,6 +17,8 @@
 
 package org.cm.podd.report.model.parser;
 
+import android.content.Intent;
+
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.FollowAction;
 import org.cm.podd.report.model.Form;
@@ -32,10 +34,12 @@ import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
 import org.cm.podd.report.model.validation.RequireValidation;
 import org.cm.podd.report.model.validation.ScriptValidation;
+import org.cm.podd.report.service.CommentService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -65,6 +69,8 @@ public class FormParser {
             if (type.equals("integer") ||
                     type.equals("date") ||
                     type.equals("double") ||
+                    type.equals("address") ||
+                    type.equals("autocomplete") ||
                     type.equals("text")) {
                 parseQuestion(q);
             } else {
@@ -156,6 +162,12 @@ public class FormParser {
         } else if (type.equals("date")) {
             question = new Question<Date>();
             question.setDataType(DataType.DATE);
+        } else if (type.equals("address")) {
+            question = new Question<Date>();
+            question.setDataType(DataType.ADDRESS);
+        } else if (type.equals("autocomplete")) {
+            question = new Question<Date>();
+            question.setDataType(DataType.AUTOCOMPLETE);
         } else {
             question = new Question<String>();
             question.setDataType(DataType.STRING);
@@ -164,6 +176,10 @@ public class FormParser {
         question.setId(q.getInt("id"));
         question.setTitle(q.getString("title"));
         question.setName(q.getString("name"));
+
+        if (! q.isNull("dataUrl")) {
+            question.setDataUrl(q.getString("dataUrl"));
+        }
 
         if (! q.isNull("validations")) {
             JSONArray validations = q.getJSONArray("validations");

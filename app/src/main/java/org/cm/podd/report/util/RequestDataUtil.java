@@ -66,9 +66,16 @@ public class RequestDataUtil extends Service {
 
         //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
         String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
+        String reqUrl = "";
 
-        String reqUrl = String.format("%s%s%s", serverUrl, path,
-                query == null ? "" : "?"+query);
+        if (path.contains("http://") || path.contains("https://")) {
+            reqUrl = String.format("%s%s", path,
+                    query == null ? "" : "?" + query);
+        } else {
+            reqUrl = String.format("%s%s%s", serverUrl, path,
+                    query == null ? "" : "?" + query);
+        }
+
         Log.i(TAG, "submit url=" + reqUrl);
         Log.i(TAG, "post data=" + json);
 
@@ -121,8 +128,14 @@ public class RequestDataUtil extends Service {
         //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
         String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
 
-        String reqUrl = String.format("%s%s%s", serverUrl, path,
-                query == null ? "" : "?"+query);
+        String reqUrl = "";
+        if (path.contains("http://") || path.contains("https://")) {
+            reqUrl = String.format("%s%s", path,
+                    query == null ? "" : "?" + query);
+        } else {
+            reqUrl = String.format("%s%s%s", serverUrl, path,
+                    query == null ? "" : "?" + query);
+        }
         Log.i(TAG, "submit url=" + reqUrl);
 
 

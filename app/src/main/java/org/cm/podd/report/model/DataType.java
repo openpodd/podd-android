@@ -120,8 +120,47 @@ public enum DataType {
         public Object fromJson(Object value) {
             return value;
         }
-    };
+    },
 
+    AUTOCOMPLETE () {
+        @Override
+        public Object parseFromString(String value) {
+            return value;
+        }
+
+        @Override
+        public Object toJson(Object value) {
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return value;
+        }
+    },
+
+    ADDRESS() {
+        @Override
+        public Object parseFromString(String value) {
+            return value;
+        }
+
+        @Override
+        public Object toJson(Object value) {
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
+        @Override
+        public Object fromJson(Object value) {
+            return value;
+        }
+    };
     public abstract Object parseFromString(String value);
     public abstract Object toJson(Object value);
     public abstract Object fromJson(Object value);

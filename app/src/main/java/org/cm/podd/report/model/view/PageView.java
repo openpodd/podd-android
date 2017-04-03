@@ -37,7 +37,7 @@ public class PageView extends ScrollView {
     private final Page page;
     private QuestionView firstView = null;
 
-    public PageView(Context context, Page page, boolean readonly) {
+    public   PageView(Context context, Page page, boolean readonly) {
         super(context);
         this.page = page;
 

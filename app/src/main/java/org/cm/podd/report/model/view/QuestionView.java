@@ -18,26 +18,43 @@
 package org.cm.podd.report.model.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.ConfigurationDataSource;
+import org.cm.podd.report.model.Comment;
+import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.CommentService;
+import org.cm.podd.report.service.ConfigService;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -50,8 +67,13 @@ public class QuestionView extends LinearLayout {
 
     private final Question question;
     private EditText editView = null;
+    private AutoCompleteTextView autoCompleteTextView = null;
     private DatePicker calendarView = null;
+    private Spinner spinnerSubDistrictView = null;
+    private Spinner spinnerDistrictView = null;
+    private Spinner spinnerProvinceView = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
         this.question = q;
@@ -114,6 +136,56 @@ public class QuestionView extends LinearLayout {
 
             addView(calendarView);
 
+        } else if (question.getDataType() == DataType.ADDRESS) {
+            spinnerSubDistrictView = new Spinner(context);
+            spinnerSubDistrictView.setLayoutParams(params);
+            spinnerSubDistrictView.setPadding(0, 0, 0, 0);
+
+            spinnerDistrictView = new Spinner(context);
+            spinnerDistrictView.setLayoutParams(params);
+            spinnerDistrictView.setPadding(0, 0, 0, 0);
+
+            spinnerProvinceView = new Spinner(context);
+            spinnerProvinceView.setLayoutParams(params);
+            spinnerProvinceView.setPadding(0, 0, 0, 0);
+
+            addView(spinnerSubDistrictView);
+            addView(spinnerDistrictView);
+            addView(spinnerProvinceView);
+
+        } else if (question.getDataType() == DataType.AUTOCOMPLETE) {
+
+            String system = "fetchData";
+            String key = question.getDataUrl();
+
+            startSyncConfigService(context, system, key);
+
+            ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+            Config config = dbSource.getConfigValue(system, key);
+
+            ArrayList<String> listData = new ArrayList<String>();
+            if (config != null) {
+                try {
+                    JSONArray items = new JSONArray(config.getValue());
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject item = items.getJSONObject(i);
+                        String name = item.getString("name");
+                        listData.add(name);
+                    }
+
+                } catch (JSONException e) {
+
+                }
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData);
+
+            autoCompleteTextView = new AutoCompleteTextView(context);
+            autoCompleteTextView.setLayoutParams(params);
+
+            autoCompleteTextView.setAdapter(adapter);
+
+            addView(autoCompleteTextView);
         } else {
             editView = new EditText(context);
             editView.setLayoutParams(params);
@@ -208,6 +280,14 @@ public class QuestionView extends LinearLayout {
 
     }
 
+    private void startSyncConfigService(Context context, String system, String key) {
+        Intent intent = new Intent(context, ConfigService.class);
+        intent.putExtra("system", system);
+        intent.putExtra("key", key);
+        intent.putExtra("url", key);
+        context.startService(intent);
+    }
+
 
     private SoftKeyActionHandler listener;
 
@@ -229,4 +309,5 @@ public class QuestionView extends LinearLayout {
             }, 100);
         }
     }
+
 }
