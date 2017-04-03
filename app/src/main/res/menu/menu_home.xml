@@ -19,10 +19,5 @@
             android:title="@string/home_menu_incidents"
             android:icon="@drawable/ic_cast_menu"/>
 
-        <item
-            android:id="@+id/summary"
-            android:checked="false"
-            android:title="@string/home_menu_summary"
-            android:icon="@drawable/ic_stat_menu"/>
     </group>
 </menu>

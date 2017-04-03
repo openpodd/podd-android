@@ -4,17 +4,31 @@
     android:layout_height="190dp"
     android:background="@color/cardview_dark_background">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/avatar"
+        android:layout_marginLeft="24dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="24dp"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#d4d4d4"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Akash.bangad93@gmail.com"
-        android:id="@+id/email"
+        android:id="@+id/username"
         android:gravity="left"
         android:layout_marginBottom="8dp"
         android:textSize="14sp"
         android:textColor="#fff"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/username"
-        android:layout_alignStart="@+id/username" />
+        android:layout_alignLeft="@+id/profile_image"
+        android:layout_alignStart="@+id/profile_image" />
 
 </RelativeLayout>
