@@ -24,19 +24,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -167,9 +169,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                     case R.id.incidents:
                         mCurrentFragment = new DashboardFeedFragment();
                         break;
-                    case R.id.summary:
-                        mCurrentFragment = new AdministrationAreaFragment();
-                        break;
                 }
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -185,6 +184,28 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             }
         });
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        View header = navigationView.getHeaderView(0);
+        ImageView profileImageView = (ImageView) header.findViewById(R.id.profile_image);
+        String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
+        Bitmap profileBitmap;
+        if (profileImageFilePath == null) {
+            // Use default profile image if not setup
+            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+        } else {
+            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+            // use default image, if user deleted an image somehow
+            if (profileBitmap == null) {
+                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            }
+        }
+        profileImageView.setImageBitmap(profileBitmap);
+
+        Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+
+        final TextView userText = (TextView) header.findViewById(R.id.username);
+        userText.setText(sharedPrefUtil.getFullName());
+        userText.setTypeface(face);
 
         // Set the adapter for the list view
         setNotificationCount();

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="org.cm.podd.report" >
+    package="org.cm.podd.report">
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -80,6 +79,7 @@
             android:name=".activity.ReportTypeActivity"
             android:label="@string/title_activity_report_type"
             android:noHistory="true"
+            android:theme="@style/reportTypeDialog"
             android:parentActivityName=".activity.HomeActivity"
             android:screenOrientation="portrait" >
             <meta-data

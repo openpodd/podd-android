@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import org.cm.podd.report.R;
@@ -22,7 +21,6 @@ import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.State;
-import org.cm.podd.report.service.AdministrationAreaService;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.service.SyncReportStateService;
@@ -45,7 +43,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     protected RecyclerView mRecyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected FeedAdapter mAdapter;
-    protected ProgressBar mProgressBar;
     protected RelativeLayout mEmpty;
     protected Button mEmptyRetryButton;
     protected SharedPrefUtil sharedPrefUtil;
@@ -106,10 +103,24 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         feedItemDataSource = new FeedItemDataSource(getActivity().getApplicationContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         getActivity().registerReceiver(mReceiver, new IntentFilter(FilterService.ACTION_QUERY_DONE));
         getActivity().registerReceiver(mFlagSetReceiver, new IntentFilter(ReportService.ACTION_FLAG_SET_DONE));
         getActivity().registerReceiver(mStateSetReceiver, new IntentFilter(ReportService.ACTION_STATE_SET_DONE));
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
+        getActivity().unregisterReceiver(mFlagSetReceiver);
+        getActivity().unregisterReceiver(mStateSetReceiver);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
@@ -122,8 +133,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
 
         // set fragmentView to let super class know what to do next.
         mFragmentView = rootView;
-
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.dashboard_feed_list);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -171,8 +180,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     private void onRefreshComplete() {
         Log.d(TAG, "onRefreshComplete");
         setRefreshing(false);
-        mProgressBar.setVisibility(View.GONE);
-
         if (mAdapter.getmDataSet().size() == 0) {
             mEmpty.setVisibility(View.VISIBLE);
         } else {
@@ -183,13 +190,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getActivity().unregisterReceiver(mReceiver);
-        getActivity().unregisterReceiver(mFlagSetReceiver);
     }
 
     @Override

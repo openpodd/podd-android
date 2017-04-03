@@ -12,8 +12,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ReportActivity;
+import org.cm.podd.report.activity.ReportTypeActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -93,7 +94,6 @@ public class ReportListFragment extends ListFragment {
         reportDataSource = new ReportDataSource(this.getActivity());
         reportTypeDataSource = new ReportTypeDataSource(this.getActivity());
         reportQueueDataSource = new ReportQueueDataSource(this.getActivity());
-        getActivity().registerReceiver(mReceiver, new IntentFilter(DataSubmitService.ACTION_REPORT_STATUS_CHANGE));
     }
 
     @Override
@@ -142,22 +142,38 @@ public class ReportListFragment extends ListFragment {
             }
         }
         skipRefreshAdapter = false;
+        getActivity().registerReceiver(mReceiver, new IntentFilter(DataSubmitService.ACTION_REPORT_STATUS_CHANGE));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        View view = inflater.inflate(R.layout.fragment_report_list, null, false);
+
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        ViewGroup parent = (ViewGroup) listView.getParent();
-        TextView emptyText = (TextView) getActivity().getLayoutInflater().inflate(R.layout.empty_text, null);
+        TextView emptyText = (TextView) view.findViewById(R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText(R.string.no_report_found_msg);
         listView.setEmptyView(emptyText);
 
         emptyText.setVisibility(View.GONE);
-        parent.addView(emptyText);
+
+        FloatingActionButton fabAdd = (FloatingActionButton) view.findViewById(R.id.fab_add);
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ReportTypeActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        });
 
         return view;
     }
@@ -167,7 +183,6 @@ public class ReportListFragment extends ListFragment {
         super.onDestroyView();
         reportDataSource.close();
         reportQueueDataSource.close();
-        getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
