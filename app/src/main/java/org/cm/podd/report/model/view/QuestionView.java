@@ -97,6 +97,8 @@ public class QuestionView extends LinearLayout {
                 ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
                 config = dbSource.getConfigValue(system, key);
 
+                if (config == null) return;
+
                 String[] values = question.getFilterFields().split("\\|");
                 String filterKey = question.getFilterFields().replaceAll(" ", "");
 
@@ -116,6 +118,8 @@ public class QuestionView extends LinearLayout {
 
                 ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
                 config = dbSource.getConfigValue(system, key);
+
+                if (config == null) return;
 
                 final String[] fields = question.getFilterFields().split(",");
                 for (int idx = 0; idx < fields.length; idx++) {
