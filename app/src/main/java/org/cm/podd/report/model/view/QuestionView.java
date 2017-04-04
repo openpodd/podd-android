@@ -34,6 +34,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
@@ -214,9 +215,33 @@ public class QuestionView extends LinearLayout {
 
             autoCompleteTextView = new AutoCompleteTextView(context);
             autoCompleteTextView.setLayoutParams(params);
-
             autoCompleteTextView.setAdapter(adapter);
+            Object value = question.getValue();
+            if (value != null) {
+                autoCompleteTextView.setText(value.toString());
+            }
+
+            autoCompleteTextView.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    question.setData(question.getDataType().parseFromString(autoCompleteTextView.getText().toString()));
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+
+            });
+
             addView(autoCompleteTextView);
+
         } else {
             editView = new EditText(context);
             editView.setLayoutParams(params);
