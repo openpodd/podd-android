@@ -69,6 +69,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by pphetra on 9/30/14 AD.
@@ -142,15 +144,12 @@ public class QuestionView extends LinearLayout {
 
                     Object text = question.getValue();
                     if (text != null) {
-                        int selectedPosition = 0;
                         for (int i = 0; i < listData.size(); i++) {
-                            if (text.toString().toLowerCase().contains(listData.get(i).toLowerCase())) {
-                                selectedPosition = i;
+                            if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
+                                spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
                             }
                         }
-                        spinnerViews[idx].setSelection(selectedPosition);
                     }
-
                 }
             }
         }
@@ -272,6 +271,7 @@ public class QuestionView extends LinearLayout {
                 spinnerViews[idx].setLayoutParams(params);
                 spinnerViews[idx].setPadding(0, 0, 0, 0);
                 spinnerViews[idx].setAdapter(adapter);
+                spinnerViews[idx].setSelected(true);
 
                 final int finalIdx = idx;
                 spinnerViews[idx].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -287,6 +287,7 @@ public class QuestionView extends LinearLayout {
                             }
 
                         }
+                        value += "[specific:" + editView.getText().toString() + "]";
 
                         question.setData(value);
 
@@ -310,6 +311,15 @@ public class QuestionView extends LinearLayout {
                             final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
                             adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                             spinnerViews[idx].setAdapter(adapter);
+
+                            Object text = question.getValue();
+                            if (text != null) {
+                                for (int i = 0; i < listData.size(); i++) {
+                                    if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
+                                        spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -321,13 +331,15 @@ public class QuestionView extends LinearLayout {
 
                 Object text = question.getValue();
                 if (text != null) {
-                    int selectedPosition = 0;
                     for (int i = 0; i < listData.size(); i++) {
-                        if (text.toString().toLowerCase().contains(listData.get(i).toLowerCase())) {
-                            selectedPosition = i;
+                        if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
+                            spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
                         }
                     }
-                    spinnerViews[idx].setSelection(selectedPosition);
+                }
+
+                if (readonly) {
+                    spinnerViews[idx].setEnabled(false);
                 }
 
                 TextView headerView = new TextView(context);
@@ -338,6 +350,72 @@ public class QuestionView extends LinearLayout {
                 addView(headerView);
                 addView(spinnerViews[idx]);
 
+            }
+
+            TextView headerView = new TextView(context);
+            headerView.setLayoutParams(params);
+            headerView.setPadding(10, 0, 0, 10);
+            headerView.setText("ระบุโดยละเอียด (บ้านเลขที่, หมู่บ้าน)");
+
+            addView(headerView);
+
+            editView = new EditText(context);
+            editView.setLayoutParams(params);
+            editView.setPadding(0, 0, 0, 20);
+            editView.setClickable(true);
+            editView.setHint(hintText);
+            editView.setOnTouchListener(new OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    editView.setHint("");
+                    return false;
+                }
+
+            });
+
+            Object text = question.getValue();
+            if (text != null) {
+                Pattern specificPattern = Pattern.compile("\\[specific:(.*?)\\]");
+                Matcher match = specificPattern.matcher(text.toString());
+                while (match.find()) {
+                    String value = match.group(1);
+                    editView.setText(value);
+                }
+
+            }
+
+            addView(editView);
+            if (readonly) {
+                editView.setFocusable(false);
+                editView.setClickable(false);
+            }
+
+            if (! readonly) {
+                editView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        String text = "";
+
+                        Object value = question.getValue();
+                        if (value != null) {
+                            text += value.toString();
+                        }
+
+                        text += "[specific:" + editable.toString() + "]";
+                        question.setData(text);
+                    }
+                });
             }
 
         } else if (question.getDataType() == DataType.AUTOCOMPLETE) {
@@ -375,6 +453,11 @@ public class QuestionView extends LinearLayout {
             Object value = question.getValue();
             if (value != null) {
                 autoCompleteTextView.setText(value.toString());
+            }
+
+            if (readonly) {
+                autoCompleteTextView.setFocusable(false);
+                autoCompleteTextView.setClickable(false);
             }
 
             autoCompleteTextView.addTextChangedListener(new TextWatcher() {
