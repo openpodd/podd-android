@@ -17,8 +17,10 @@
 
 package org.cm.podd.report.model.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
@@ -64,6 +66,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -77,16 +80,41 @@ public class QuestionView extends LinearLayout {
     private AutoCompleteTextView autoCompleteTextView = null;
     private DatePicker calendarView = null;
     private Spinner [] spinnerViews = null;
+    private AutocompleteAdapter adapter;
+
+    Context context;
+
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (question.getDataType() == DataType.AUTOCOMPLETE) {
+                String system = "fetchData";
+                String key = question.getDataUrl();
+
+                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+                Config config = dbSource.getConfigValue(system, key);
+
+                ArrayList<String> listData = getStringByKey(config.getValue(), "name", new FilterWord[0]);
+
+                adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+                autoCompleteTextView.setAdapter(adapter);
+            }
+        }
+    };
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
+
+        this.context = context;
         this.question = q;
         final String hintText = context.getString(R.string.edittext_hint);
 
+        context.registerReceiver(mSyncReceiver, new IntentFilter(ConfigService.SYNC));
+
         setOrientation(VERTICAL);
 
-        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 0, 24);
         setLayoutParams(params);
         setTag(q.getName());
@@ -148,38 +176,85 @@ public class QuestionView extends LinearLayout {
             startSyncConfigService(context, system, key);
 
             ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-            Config config = dbSource.getConfigValue(system, key);
+            final Config config = dbSource.getConfigValue(system, key);
 
-            String[] fields = question.getFilterFields().split(",");
-            ArrayList[] listData = new ArrayList[fields.length];
-            for (int idx = 0; idx < fields.length; idx++) {
-                listData[idx] = new ArrayList<String>();
-            }
-
-            if (config != null) {
-                try {
-                    JSONArray items = new JSONArray(config.getValue());
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        for (int j = 0; j < fields.length; j++) {
-                            String value = item.getString(fields[j].replaceAll(" ", ""));
-                            listData[j].add(value);
-                        }
-                    }
-                } catch (JSONException e) {
-
-                }
-            }
+            final String[] fields = question.getFilterFields().split(",");
 
             spinnerViews = new Spinner[fields.length];
+            for (int idx = 0; idx < fields.length; idx++) {
 
-            for (int idx = 0; idx < listData.length; idx++) {
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData[idx]);
+                FilterWord [] filterWords = new FilterWord[idx];
+                for (int jdx = 0; jdx < idx; jdx++) {
+                    String _key = fields[jdx];
+                    String _value = spinnerViews[jdx].getSelectedItem().toString();
+
+                    FilterWord word = new FilterWord(_key, _value);
+                    filterWords[jdx] = word;
+                }
+
+                String value = fields[idx].replaceAll(" ", "");
+
+                final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
+                adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
 
                 spinnerViews[idx] = new Spinner(context);
                 spinnerViews[idx].setLayoutParams(params);
                 spinnerViews[idx].setPadding(0, 0, 0, 0);
                 spinnerViews[idx].setAdapter(adapter);
+
+                final int finalIdx = idx;
+                spinnerViews[idx].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        String value = "";
+                        String [] findValue = new String[fields.length];
+                        for (int idx = 0; idx < fields.length; idx++) {
+                            Object selected = spinnerViews[idx].getSelectedItem();
+                            if(selected != null) {
+                                findValue[idx] = value;
+                                value += " " + selected.toString();
+                            }
+
+                        }
+
+                        question.setData(value);
+
+                        // refresh
+                        for (int idx = finalIdx + 1; idx < fields.length; idx++) {
+                            FilterWord[] filterWords = new FilterWord[idx];
+                            for (int jdx = 0; jdx < idx; jdx++) {
+                                String _key = fields[jdx];
+                                String _value = spinnerViews[jdx].getSelectedItem().toString();
+
+                                FilterWord word = new FilterWord(_key, _value);
+                                filterWords[jdx] = word;
+                            }
+
+                            value = fields[idx].replaceAll(" ", "");
+
+                            final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
+                            adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+
+                            spinnerViews[idx].setAdapter(adapter);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                    }
+
+                });
+
+                Object text = question.getValue();
+                if (text != null) {
+                    int selectedPosition = 0;
+                    for (int i = 0; i < listData.size(); i++) {
+                        if (text.toString().toLowerCase().contains(listData.get(i).toLowerCase())) {
+                            selectedPosition = i;
+                        }
+                    }
+                    spinnerViews[idx].setSelection(selectedPosition);
+                }
 
                 addView(spinnerViews[idx]);
 
@@ -195,23 +270,8 @@ public class QuestionView extends LinearLayout {
             ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
             Config config = dbSource.getConfigValue(system, key);
 
-            ArrayList<String> listData = new ArrayList<String>();
-            if (config != null) {
-                try {
-                    JSONArray items = new JSONArray(config.getValue());
-                    for (int i = 0; i < items.length(); i++) {
-                        JSONObject item = items.getJSONObject(i);
-                        String name = item.getString("name");
-                        listData.add(name);
-                    }
-
-                } catch (JSONException e) {
-
-                }
-            }
-
-            AutocompleteAdapter adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
-            adapter.getFilter();
+            ArrayList<String> listData = getStringByKey(config.getValue(), "name", new FilterWord[0]);
+            adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
 
             autoCompleteTextView = new AutoCompleteTextView(context);
             autoCompleteTextView.setLayoutParams(params);
@@ -430,6 +490,45 @@ public class QuestionView extends LinearLayout {
         }
 
 
+    }
+
+    class FilterWord {
+        public String key;
+        public String value;
+
+        public FilterWord(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    public ArrayList<String> getStringByKey(String json, String key, FilterWord [] filterLevels) {
+        ArrayList<String> listData = new ArrayList<String>();
+        if (json != null) {
+            try {
+                JSONArray items = new JSONArray(json);
+                for (int i = 0; i < items.length(); i++) {
+                    JSONObject item = items.getJSONObject(i);
+                    boolean checked = true;
+                    for (int j = 0; j < filterLevels.length; j++) {
+                        String _itemValue = item.getString(filterLevels[j].key);
+                        String _realValue = filterLevels[j].value;
+                        if (!_itemValue.equalsIgnoreCase(_realValue)) {
+                            checked = false;
+                        }
+                    }
+                    if (checked) {
+                        String name = item.getString(key);
+                        listData.add(name);
+                    }
+                }
+
+            } catch (JSONException e) {
+
+            }
+        }
+
+        return listData;
     }
 
 }
