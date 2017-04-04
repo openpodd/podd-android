@@ -17,8 +17,8 @@
 package org.cm.podd.report.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
@@ -42,6 +42,10 @@ public class WebContentActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_content);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
         notificationDataSource = new NotificationDataSource(this);
 
         webView = (WebView) findViewById(R.id.webView);
@@ -60,6 +64,8 @@ public class WebContentActivity extends ActionBarActivity {
         Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("WebContent");
         tracker.send(new HitBuilders.AppViewBuilder().build());
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

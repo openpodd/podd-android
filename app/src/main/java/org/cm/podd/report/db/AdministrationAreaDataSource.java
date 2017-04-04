@@ -21,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import org.cm.podd.report.model.AdministrationArea;
 import org.json.JSONArray;
@@ -52,8 +51,8 @@ public class AdministrationAreaDataSource {
                 AdministrationArea administrationArea = new AdministrationArea(
                         jsonObj.getLong("id"),
                         jsonObj.getString("name"),
-                        jsonObj.getString("parentName"),
-                        jsonObj.getBoolean("isLeaf")? 1:0
+                        jsonObj.optString("parentName", ""),
+                        jsonObj.optBoolean("isLeaf", true)? 1:0
                 );
                 insert(administrationArea);
             }
