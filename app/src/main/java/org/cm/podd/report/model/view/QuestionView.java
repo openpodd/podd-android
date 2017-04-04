@@ -82,22 +82,76 @@ public class QuestionView extends LinearLayout {
     private Spinner [] spinnerViews = null;
     private AutocompleteAdapter adapter;
 
-    Context context;
+    private Context context;
+    private Config config;
 
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, Intent intent) {
             if (question.getDataType() == DataType.AUTOCOMPLETE) {
                 String system = "fetchData";
                 String key = question.getDataUrl();
 
                 ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-                Config config = dbSource.getConfigValue(system, key);
+                config = dbSource.getConfigValue(system, key);
 
-                ArrayList<String> listData = getStringByKey(config.getValue(), "name", new FilterWord[0]);
+                String[] values = question.getFilterFields().split("\\|");
+                String filterKey = question.getFilterFields().replaceAll(" ", "");
 
-                adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+                if (values.length > 1) {
+                    filterKey = values[0].replaceAll(" ", "");
+                }
+
+                ArrayList<String> listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
+
+                adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                 autoCompleteTextView.setAdapter(adapter);
+
+            } else if (question.getDataType() == DataType.ADDRESS) {
+
+                String system = "fetchData";
+                String key = question.getDataUrl();
+
+                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+                config = dbSource.getConfigValue(system, key);
+
+                final String[] fields = question.getFilterFields().split(",");
+                for (int idx = 0; idx < fields.length; idx++) {
+
+                    FilterWord [] filterWords = new FilterWord[idx];
+                    for (int jdx = 0; jdx < idx; jdx++) {
+                        String _key = fields[jdx];
+                        Object _value = spinnerViews[jdx].getSelectedItem();
+                        if (_value != null) {
+                            FilterWord word = new FilterWord(_key, _value.toString());
+                            filterWords[jdx] = word;
+                        }
+                    }
+
+                    String[] values = fields[idx].split("\\|");
+                    String value = fields[idx].replaceAll(" ", "");
+
+                    if (values.length > 1) {
+                        value = values[0].replaceAll(" ", "");
+                    }
+
+                    final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
+                    adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+
+                    spinnerViews[idx].setAdapter(adapter);
+
+                    Object text = question.getValue();
+                    if (text != null) {
+                        int selectedPosition = 0;
+                        for (int i = 0; i < listData.size(); i++) {
+                            if (text.toString().toLowerCase().contains(listData.get(i).toLowerCase())) {
+                                selectedPosition = i;
+                            }
+                        }
+                        spinnerViews[idx].setSelection(selectedPosition);
+                    }
+
+                }
             }
         }
     };
@@ -176,7 +230,7 @@ public class QuestionView extends LinearLayout {
             startSyncConfigService(context, system, key);
 
             ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-            final Config config = dbSource.getConfigValue(system, key);
+            config = dbSource.getConfigValue(system, key);
 
             final String[] fields = question.getFilterFields().split(",");
 
@@ -186,16 +240,33 @@ public class QuestionView extends LinearLayout {
                 FilterWord [] filterWords = new FilterWord[idx];
                 for (int jdx = 0; jdx < idx; jdx++) {
                     String _key = fields[jdx];
-                    String _value = spinnerViews[jdx].getSelectedItem().toString();
+                    Object _value = spinnerViews[jdx].getSelectedItem();
 
-                    FilterWord word = new FilterWord(_key, _value);
-                    filterWords[jdx] = word;
+                    if (_value != null) {
+                        FilterWord word = new FilterWord(_key, _value.toString());
+                        filterWords[jdx] = word;
+                    }
                 }
 
+                String[] values = fields[idx].split("\\|");
+
+                String header = fields[idx].replaceAll(" ", "");
                 String value = fields[idx].replaceAll(" ", "");
 
-                final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
-                adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+                if (values.length > 1) {
+                    value = values[0].replaceAll(" ", "");
+                    header = values[1];
+                }
+
+                final ArrayList<String> listData;
+
+                if (config == null) {
+                    listData = new ArrayList<String>();
+                } else {
+                    listData = getStringByKey(config.getValue(), value, filterWords);
+                }
+
+                adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
 
                 spinnerViews[idx] = new Spinner(context);
                 spinnerViews[idx].setLayoutParams(params);
@@ -232,9 +303,12 @@ public class QuestionView extends LinearLayout {
 
                             value = fields[idx].replaceAll(" ", "");
 
-                            final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
-                            adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+                            if (config == null) {
+                                continue;
+                            }
 
+                            final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
+                            adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                             spinnerViews[idx].setAdapter(adapter);
                         }
                     }
@@ -256,6 +330,12 @@ public class QuestionView extends LinearLayout {
                     spinnerViews[idx].setSelection(selectedPosition);
                 }
 
+                TextView headerView = new TextView(context);
+                headerView.setLayoutParams(params);
+                headerView.setPadding(10, 0, 0, 10);
+                headerView.setText(header);
+
+                addView(headerView);
                 addView(spinnerViews[idx]);
 
             }
@@ -270,8 +350,24 @@ public class QuestionView extends LinearLayout {
             ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
             Config config = dbSource.getConfigValue(system, key);
 
-            ArrayList<String> listData = getStringByKey(config.getValue(), "name", new FilterWord[0]);
-            adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+            String[] values = question.getFilterFields().split("\\|");
+            String header = question.getFilterFields().replaceAll(" ", "");
+            String filterKey = question.getFilterFields().replaceAll(" ", "");
+
+            if (values.length > 1) {
+                filterKey = values[0].replaceAll(" ", "");
+                header = values[1];
+            }
+
+            final ArrayList<String> listData;
+
+            if (config == null) {
+                listData = new ArrayList<String>();
+            } else {
+                listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
+            }
+
+            adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
 
             autoCompleteTextView = new AutoCompleteTextView(context);
             autoCompleteTextView.setLayoutParams(params);
@@ -300,6 +396,12 @@ public class QuestionView extends LinearLayout {
 
             });
 
+            TextView headerView = new TextView(context);
+            headerView.setLayoutParams(params);
+            headerView.setPadding(10, 0, 0, 10);
+            headerView.setText(header);
+
+            addView(headerView);
             addView(autoCompleteTextView);
 
         } else {
@@ -511,6 +613,10 @@ public class QuestionView extends LinearLayout {
                     JSONObject item = items.getJSONObject(i);
                     boolean checked = true;
                     for (int j = 0; j < filterLevels.length; j++) {
+                        if (filterLevels == null) {
+                            continue;
+                        }
+
                         String _itemValue = item.getString(filterLevels[j].key);
                         String _realValue = filterLevels[j].value;
                         if (!_itemValue.equalsIgnoreCase(_realValue)) {
@@ -519,7 +625,9 @@ public class QuestionView extends LinearLayout {
                     }
                     if (checked) {
                         String name = item.getString(key);
-                        listData.add(name);
+                        if (!listData.contains(name)) {
+                            listData.add(name);
+                        }
                     }
                 }
 

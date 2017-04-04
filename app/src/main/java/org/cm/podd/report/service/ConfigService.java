@@ -49,12 +49,18 @@ public class ConfigService extends IntentService {
             ConfigurationDataSource dbSource = new ConfigurationDataSource(this);
             Config origConfig = dbSource.getConfigValue(system, key);
 
-            if (origConfig != null) {
-                origConfig.setValue(resp.getRawData());
-                dbSource.update(origConfig);
-            } else {
-                Config config = new Config(system, key, resp.getRawData());
-                dbSource.insert(config);
+            JSONObject response = null;
+            try {
+                response = new JSONObject(resp.getRawData());
+                if (origConfig != null) {
+                    origConfig.setValue(response.getString("results"));
+                    dbSource.update(origConfig);
+                } else {
+                    Config config = new Config(system, key, response.getString("results"));
+                    dbSource.insert(config);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             dbSource.close();
