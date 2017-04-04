@@ -23,6 +23,8 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.InputType;
@@ -36,11 +38,15 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.ConfigurationDataSource;
 import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.model.Config;
@@ -203,13 +209,13 @@ public class QuestionView extends LinearLayout {
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listData);
+            AutocompleteAdapter adapter = new AutocompleteAdapter(context, android.R.layout.simple_dropdown_item_1line, listData);
+            adapter.getFilter();
 
             autoCompleteTextView = new AutoCompleteTextView(context);
             autoCompleteTextView.setLayoutParams(params);
 
             autoCompleteTextView.setAdapter(adapter);
-
             addView(autoCompleteTextView);
         } else {
             editView = new EditText(context);
@@ -332,6 +338,73 @@ public class QuestionView extends LinearLayout {
                 }
             }, 100);
         }
+    }
+
+
+    class StringContainFilter extends Filter {
+
+        AutocompleteAdapter adapter;
+        ArrayList<String> originalList;
+        ArrayList<String> filteredList;
+
+        public StringContainFilter(AutocompleteAdapter adapter, ArrayList<String> originalList) {
+            super();
+            this.adapter = adapter;
+            this.originalList = (ArrayList<String>) originalList.clone();
+            this.filteredList = new ArrayList<>();
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            filteredList.clear();
+            final FilterResults results = new FilterResults();
+
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(originalList);
+            } else {
+                final String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (final String text : originalList) {
+                    if (text.contains(filterPattern)) {
+                        filteredList.add(text);
+                    }
+                }
+            }
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.filteredString.clear();
+            adapter.filteredString.addAll((ArrayList) results.values);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public class AutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
+
+        Context context;
+        ArrayList<String> filteredString = new ArrayList<String>();
+
+        public AutocompleteAdapter(Context context, int resource, ArrayList<String> filteredString) {
+            super(context, resource, filteredString);
+            this.context = context;
+            this.filteredString = filteredString;
+        }
+
+        @Override
+        public int getCount() {
+            return filteredString.size();
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new StringContainFilter(this, filteredString);
+        }
+
+
     }
 
 }
