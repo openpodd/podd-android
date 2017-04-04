@@ -69,11 +69,16 @@
             android:name=".activity.ReportViewActivity"
             android:label="@string/title_activity_report"
             android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
         <activity
             android:name=".activity.ReportFollowUpActivity"
-            android:label="@string/title_activity_report"
             android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.ReportViewActivity" />
         </activity>
         <activity
             android:name=".activity.ReportTypeActivity"
@@ -194,7 +199,11 @@
         <activity
             android:name=".activity.ReportCommentActivity"
             android:label="@string/title_activity_comment"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ReportViewActivity">
+            </meta-data>
         </activity>
         <activity
             android:name=".activity.RegistrationActivity"

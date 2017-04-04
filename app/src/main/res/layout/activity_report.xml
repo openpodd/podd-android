@@ -1,149 +1,169 @@
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:fitsSystemWindows="true"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        xmlns:tools="http://schemas.android.com/tools"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/root"
+            >
+
+            <RelativeLayout
+                android:id="@+id/location"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/progress_location_text"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="25dp"
+                        android:text="@string/progress_location_text"
+                        android:gravity="center"
+                        android:textAlignment="center"/>
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:id="@+id/countdownTextView"
+                        android:textSize="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/form"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                tools:context="org.cm.podd.report.activity.ReportActivity"
+                tools:ignore="MergeRootFrame">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/controlBar"
+                    android:layout_below="@+id/controlCameraBar">
+
+                    <FrameLayout
+                        android:id="@+id/container"
+                        android:paddingLeft="@dimen/page_padding"
+                        android:paddingRight="@dimen/page_padding"
+                        android:paddingBottom="@dimen/page_padding"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </FrameLayout>
+
+                    <View
+                        android:id="@+id/disableMask"
+                        android:visibility="invisible"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/black"
+                        android:alpha="0.0"
+                        android:clickable="true" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/controlBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="@dimen/page_padding"
+                    android:paddingRight="@dimen/page_padding" >
+
+                    <Button
+                        android:id="@+id/prevBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        style="@style/PrevButton"
+                        android:text="@string/btn_prev" />
+
+                    <!--<Button-->
+                    <!--android:id="@+id/cameraBtn"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--style="@style/CameraButton"-->
+                    <!--android:layout_marginRight="10dp"-->
+                    <!--android:drawableLeft="@drawable/icon_camera"-->
+                    <!--android:drawablePadding="0dp"-->
+                    <!--android:text="@string/btn_camera" />-->
+
+                    <Button
+                        android:id="@+id/nextBtn"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        style="@style/NextButton"
+                        android:text="@string/btn_next" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <!-- We use a Toolbar so that our drawer can be displayed
          in front of the action bar -->
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/report_toolbar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_height="wrap_content">
 
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/root"
-        >
-
-        <RelativeLayout
-            android:id="@+id/location"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/progress_location_text"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="25dp"
-                    android:text="@string/progress_location_text"
-                    android:gravity="center"
-                    android:textAlignment="center"/>
-
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-
-                <TextView
-                    android:id="@+id/countdownTextView"
-                    android:textSize="25dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"/>
-            </LinearLayout>
-
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/form"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/report_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            tools:context="org.cm.podd.report.activity.ReportActivity"
-            tools:ignore="MergeRootFrame">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@+id/controlBar"
-                android:layout_below="@+id/controlCameraBar">
+    </android.support.design.widget.AppBarLayout>
 
-                <FrameLayout
-                    android:id="@+id/container"
-                    android:paddingLeft="@dimen/page_padding"
-                    android:paddingRight="@dimen/page_padding"
-                    android:paddingBottom="@dimen/page_padding"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                </FrameLayout>
 
-                <View
-                    android:id="@+id/disableMask"
-                    android:visibility="invisible"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/black"
-                    android:alpha="0.0"
-                    android:clickable="true" />
-            </FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
 
-            <LinearLayout
-                android:id="@+id/controlBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal"
-                android:paddingBottom="20dp"
-                android:paddingLeft="@dimen/page_padding"
-                android:paddingRight="@dimen/page_padding" >
 
-                <Button
-                    android:id="@+id/prevBtn"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    style="@style/PrevButton"
-                    android:text="@string/btn_prev" />
-
-                <!--<Button-->
-                <!--android:id="@+id/cameraBtn"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_weight="1"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--style="@style/CameraButton"-->
-                <!--android:layout_marginRight="10dp"-->
-                <!--android:drawableLeft="@drawable/icon_camera"-->
-                <!--android:drawablePadding="0dp"-->
-                <!--android:text="@string/btn_camera" />-->
-
-                <Button
-                    android:id="@+id/nextBtn"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    style="@style/NextButton"
-                    android:text="@string/btn_next" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-    </RelativeLayout>
-
-</LinearLayout>
 
 
 

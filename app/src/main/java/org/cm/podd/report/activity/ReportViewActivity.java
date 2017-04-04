@@ -16,13 +16,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +75,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by siriwat on 2/23/15.
  */
-public class ReportViewActivity extends ActionBarActivity {
+public class ReportViewActivity extends AppCompatActivity {
 
     private static final String TAG = "ReportViewActivity";
 
@@ -161,6 +161,9 @@ public class ReportViewActivity extends ActionBarActivity {
 
         setContentView(R.layout.dashboard_feed_view);
 
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
         FontUtil.overrideFonts(this, getWindow().getDecorView());
 
         scrollView = (ScrollView) findViewById(R.id.report_main_scrollview);
@@ -230,6 +233,7 @@ public class ReportViewActivity extends ActionBarActivity {
         tracker.setScreenName("ReportView");
         tracker.send(new HitBuilders.AppViewBuilder().build());
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void refreshViewRefresh(){
@@ -764,7 +768,7 @@ public class ReportViewActivity extends ActionBarActivity {
 
     private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
-        setTitle(template.replace(":type", type));
+        getSupportActionBar().setTitle(template.replace(":type", type));
     }
 
     public static class RemoteImageAsyncTask extends AsyncTask<String, Void, Drawable> {
@@ -952,14 +956,6 @@ public class ReportViewActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_report));
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        return true;
     }
 
 }

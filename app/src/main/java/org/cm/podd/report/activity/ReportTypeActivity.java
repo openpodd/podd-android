@@ -31,6 +31,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -158,7 +160,13 @@ public class ReportTypeActivity extends AppCompatActivity implements AdapterView
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
+
+
+        Animation animation = new AlphaAnimation(0.3f, 1f);
+        animation.setDuration(600);
+        view.startAnimation(animation);
+
         ReportType item = adapter.getItem(position);
         if (item.getId() == -99) {
 

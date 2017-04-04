@@ -154,7 +154,7 @@ public class ReportListFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_report_list, null, false);
+        View view = inflater.inflate(R.layout.fragment_report_list, null);
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
 

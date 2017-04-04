@@ -6,14 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +61,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class ReportCommentActivity extends ActionBarActivity {
+public class ReportCommentActivity extends AppCompatActivity {
     private String TAG = "CommentActivity";
     private Long reportId;
 
@@ -103,6 +103,10 @@ public class ReportCommentActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_comment);
         FontUtil.overrideFonts(this, getWindow().getDecorView());
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
 
         listCommentView = (ListView) findViewById(R.id.list_comment);
 
@@ -178,6 +182,14 @@ public class ReportCommentActivity extends ActionBarActivity {
         Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("ReportComment");
         tracker.send(new HitBuilders.AppViewBuilder().build());
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mSyncReceiver);
     }
 
     private void fetchMentions(CharSequence s, int start, int before, int count){
@@ -460,21 +472,6 @@ public class ReportCommentActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_comment));
-//        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-//        actionBar.setHomeAsUpIndicator(0);
-//        actionBar.setHomeButtonEnabled(true);
-//        actionBar.setLogo(R.drawable.arrow_left_with_pad);
-
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -491,5 +488,7 @@ public class ReportCommentActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }
