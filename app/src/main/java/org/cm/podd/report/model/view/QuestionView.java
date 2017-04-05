@@ -236,6 +236,7 @@ public class QuestionView extends LinearLayout {
             config = dbSource.getConfigValue(system, key);
 
             final String[] fields = question.getFilterFields().split(",");
+            final EditText editView = new EditText(context);
 
             spinnerViews = new Spinner[fields.length];
             for (int idx = 0; idx < fields.length; idx++) {
@@ -364,11 +365,10 @@ public class QuestionView extends LinearLayout {
             TextView headerView = new TextView(context);
             headerView.setLayoutParams(params);
             headerView.setPadding(10, 0, 0, 10);
-            headerView.setText("ระบุโดยละเอียด (บ้านเลขที่, หมู่บ้าน)");
+            headerView.setText(context.getString(R.string.specific_address));
 
             addView(headerView);
 
-            editView = new EditText(context);
             editView.setLayoutParams(params);
             editView.setPadding(0, 0, 0, 20);
             editView.setClickable(true);
@@ -393,8 +393,8 @@ public class QuestionView extends LinearLayout {
                 }
 
             }
-
             addView(editView);
+
             if (readonly) {
                 editView.setFocusable(false);
                 editView.setClickable(false);
@@ -426,6 +426,7 @@ public class QuestionView extends LinearLayout {
                     }
                 });
             }
+
 
         } else if (question.getDataType() == DataType.AUTOCOMPLETE) {
 
