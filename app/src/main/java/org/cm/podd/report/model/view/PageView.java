@@ -17,7 +17,10 @@
 
 package org.cm.podd.report.model.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -37,6 +40,9 @@ public class PageView extends ScrollView {
     private final Page page;
     private QuestionView firstView = null;
 
+    protected BroadcastReceiver mSyncReceiver;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public   PageView(Context context, Page page, boolean readonly) {
         super(context);
         this.page = page;
@@ -63,6 +69,7 @@ public class PageView extends ScrollView {
                 qView = new MultipleChoiceQuestionView(context, (MultipleChoiceQuestion) q, readonly);
             } else {
                 qView = new QuestionView(context, q, readonly);
+                mSyncReceiver = ((QuestionView) qView).getSyncReceiver();
             }
             qView.setLayoutParams(wrapContent);
             scrollViewContent.addView(qView);
@@ -73,6 +80,10 @@ public class PageView extends ScrollView {
             }
             cnt++;
         }
+    }
+
+    public BroadcastReceiver getSyncReceivers() {
+        return mSyncReceiver;
     }
 
     public void askForFocus() {

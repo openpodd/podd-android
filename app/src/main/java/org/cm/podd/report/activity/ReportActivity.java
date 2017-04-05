@@ -150,6 +150,8 @@ public class ReportActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private String followActionName;
 
+    private BroadcastReceiver mSyncReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -438,6 +440,13 @@ public class ReportActivity extends AppCompatActivity
             ((ReportNavigationChangeCallbackInterface) oldFragment).onNext();
         }
 
+        if (oldFragment != null && oldFragment instanceof FormPageFragment) {
+            mSyncReceiver = ((FormPageFragment) oldFragment).getSyncReceivers();
+            if (mSyncReceiver != null) {
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncReceiver);
+            }
+        }
+
         if (currentFragment == null) { /* first screen */
             Log.d(TAG, "first screen");
             fragment = ReportImageFragment.newInstance(reportId);
@@ -452,6 +461,7 @@ public class ReportActivity extends AppCompatActivity
                 /* do nothing */
 
             } else {
+
                 isDynamicForm = true;
 
                 setNextVisible(true);
@@ -526,6 +536,7 @@ public class ReportActivity extends AppCompatActivity
             } else {
                 currentFragment = fragment.getClass().getName();
             }
+
         }
 
         Log.d("----", "current fragment = " + currentFragment);
@@ -569,6 +580,7 @@ public class ReportActivity extends AppCompatActivity
         bundle.putBoolean("isSubmit", isDoneSubmit());
         bundle.putBoolean("isTestReport", isTestReport());
         fragment.setArguments(bundle);
+
         return fragment;
     }
 
@@ -732,7 +744,12 @@ public class ReportActivity extends AppCompatActivity
             stopLocationUpdates();
             mGoogleApiClient.disconnect();
         }
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mAlertReceiver);
+        if (mSyncReceiver!= null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncReceiver);
+        }
+
         reportDataSource.close();
         reportQueueDataSource.close();
         reportTypeDataSource.close();
@@ -909,6 +926,7 @@ public class ReportActivity extends AppCompatActivity
     public static class FormPageFragment extends Fragment {
 
         private Page page;
+        private BroadcastReceiver mSyncReceiver;
 
         public FormPageFragment() {
             super();
@@ -928,7 +946,13 @@ public class ReportActivity extends AppCompatActivity
             PageView pageView = new PageView(getActivity(), page, isSubmit);
             pageView.setQuestionActionListener((QuestionView.SoftKeyActionHandler) getActivity());
             pageView.askForFocus();
+
+            mSyncReceiver = pageView.getSyncReceivers();
             return pageView;
+        }
+
+        public BroadcastReceiver getSyncReceivers() {
+            return mSyncReceiver;
         }
     }
 

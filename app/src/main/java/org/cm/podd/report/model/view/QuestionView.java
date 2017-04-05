@@ -600,9 +600,12 @@ public class QuestionView extends LinearLayout {
     }
 
     private SoftKeyActionHandler listener;
-
     public void setListener(SoftKeyActionHandler listener) {
         this.listener = listener;
+    }
+
+    public BroadcastReceiver getSyncReceiver() {
+        return mSyncReceiver;
     }
 
     public interface SoftKeyActionHandler {
