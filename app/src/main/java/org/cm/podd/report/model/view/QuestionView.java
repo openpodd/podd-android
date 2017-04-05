@@ -87,6 +87,8 @@ public class QuestionView extends LinearLayout {
     private Context context;
     private Config config;
 
+    private int init = 0;
+
     protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -94,67 +96,65 @@ public class QuestionView extends LinearLayout {
                 String system = "fetchData";
                 String key = question.getDataUrl();
 
-                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-                config = dbSource.getConfigValue(system, key);
+                if (config == null) {
+                    ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+                    config = dbSource.getConfigValue(system, key);
 
-                if (config == null) return;
+                    if (config == null) return;
 
-                String[] values = question.getFilterFields().split("\\|");
-                String filterKey = question.getFilterFields().replaceAll(" ", "");
+                    String filterKey = question.getFilterFields().replaceAll(" ", "");
+                    ArrayList<String> listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
 
-                if (values.length > 1) {
-                    filterKey = values[0].replaceAll(" ", "");
+                    adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+                    autoCompleteTextView.setAdapter(adapter);
                 }
-
-                ArrayList<String> listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
-
-                adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
-                autoCompleteTextView.setAdapter(adapter);
 
             } else if (question.getDataType() == DataType.ADDRESS) {
 
                 String system = "fetchData";
                 String key = question.getDataUrl();
 
-                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-                config = dbSource.getConfigValue(system, key);
+                if (config == null) {
+                    ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
+                    config = dbSource.getConfigValue(system, key);
 
-                if (config == null) return;
+                    if (config == null) return;
 
-                final String[] fields = question.getFilterFields().split(",");
-                for (int idx = 0; idx < fields.length; idx++) {
+                    final String[] fields = question.getFilterFields().split(",");
+                    for (int idx = 0; idx < fields.length; idx++) {
 
-                    FilterWord [] filterWords = new FilterWord[idx];
-                    for (int jdx = 0; jdx < idx; jdx++) {
-                        String _key = fields[jdx];
-                        Object _value = spinnerViews[jdx].getSelectedItem();
-                        if (_value != null) {
-                            FilterWord word = new FilterWord(_key, _value.toString());
-                            filterWords[jdx] = word;
+                        FilterWord [] filterWords = new FilterWord[idx];
+                        for (int jdx = 0; jdx < idx; jdx++) {
+                            String _key = fields[jdx];
+                            Object _value = spinnerViews[jdx].getSelectedItem();
+                            String[] values = _key.split("\\|");
+                            if (values.length > 1) {
+                                _key = values[0].replaceAll(" ", "");
+                            }
+
+                            if (_value != null) {
+                                FilterWord word = new FilterWord(_key, _value.toString());
+                                filterWords[jdx] = word;
+                            }
                         }
-                    }
+                        String value = fields[idx].replaceAll(" ", "");
+                        final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
+                        adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+                        spinnerViews[idx].setAdapter(adapter);
 
-                    String[] values = fields[idx].split("\\|");
-                    String value = fields[idx].replaceAll(" ", "");
-
-                    if (values.length > 1) {
-                        value = values[0].replaceAll(" ", "");
-                    }
-
-                    final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
-                    adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
-
-                    spinnerViews[idx].setAdapter(adapter);
-
-                    Object text = question.getValue();
-                    if (text != null) {
-                        for (int i = 0; i < listData.size(); i++) {
-                            if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
-                                spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
+                        Object text = question.getValue();
+                        if (text != null) {
+                            for (int i = 0; i < listData.size(); i++) {
+                                if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
+                                    spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
+                                }
                             }
                         }
                     }
                 }
+
+                init = 1;
+
             }
         }
     };
@@ -244,6 +244,10 @@ public class QuestionView extends LinearLayout {
                 for (int jdx = 0; jdx < idx; jdx++) {
                     String _key = fields[jdx];
                     Object _value = spinnerViews[jdx].getSelectedItem();
+                    String[] values = _key.split("\\|");
+                    if (values.length > 1) {
+                        _key = values[0].replaceAll(" ", "");
+                    }
 
                     if (_value != null) {
                         FilterWord word = new FilterWord(_key, _value.toString());
@@ -281,6 +285,8 @@ public class QuestionView extends LinearLayout {
                 spinnerViews[idx].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        if (init == 0) return;
+
                         String value = "";
                         String [] findValue = new String[fields.length];
                         for (int idx = 0; idx < fields.length; idx++) {
@@ -300,30 +306,29 @@ public class QuestionView extends LinearLayout {
                             FilterWord[] filterWords = new FilterWord[idx];
                             for (int jdx = 0; jdx < idx; jdx++) {
                                 String _key = fields[jdx];
-                                String _value = spinnerViews[jdx].getSelectedItem().toString();
+                                Object _value = spinnerViews[jdx].getSelectedItem();
 
-                                FilterWord word = new FilterWord(_key, _value);
-                                filterWords[jdx] = word;
+                                String[] values = _key.split("\\|");
+                                if (values.length > 1) {
+                                    _key = values[0].replaceAll(" ", "");
+                                }
+
+                                if (_value != null) {
+                                    FilterWord word = new FilterWord(_key, _value.toString());
+                                    filterWords[jdx] = word;
+                                }
                             }
-
-                            value = fields[idx].replaceAll(" ", "");
 
                             if (config == null) {
                                 continue;
                             }
 
+                            value = fields[idx].replaceAll(" ", "");
+
                             final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
                             adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                             spinnerViews[idx].setAdapter(adapter);
 
-                            Object text = question.getValue();
-                            if (text != null) {
-                                for (int i = 0; i < listData.size(); i++) {
-                                    if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
-                                        spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
-                                    }
-                                }
-                            }
                         }
                     }
 
@@ -692,6 +697,12 @@ public class QuestionView extends LinearLayout {
     }
 
     public ArrayList<String> getStringByKey(String json, String key, FilterWord [] filterLevels) {
+        String[] values = key.split("\\|");
+        key = key.replaceAll(" ", "");
+        if (values.length > 1) {
+            key = values[0].replaceAll(" ", "");
+        }
+
         ArrayList<String> listData = new ArrayList<String>();
         if (json != null) {
             try {
@@ -699,15 +710,15 @@ public class QuestionView extends LinearLayout {
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
                     boolean checked = true;
-                    for (int j = 0; j < filterLevels.length; j++) {
-                        if (filterLevels == null) {
-                            continue;
-                        }
-
-                        String _itemValue = item.getString(filterLevels[j].key);
-                        String _realValue = filterLevels[j].value;
-                        if (!_itemValue.equalsIgnoreCase(_realValue)) {
-                            checked = false;
+                    if (filterLevels != null && filterLevels.length > 0) {
+                        for (int j = 0; j < filterLevels.length; j++) {
+                            if (filterLevels[j] != null) {
+                                String _itemValue = item.getString(filterLevels[j].key);
+                                String _realValue = filterLevels[j].value;
+                                if (!_itemValue.equalsIgnoreCase(_realValue)) {
+                                    checked = false;
+                                }
+                            }
                         }
                     }
                     if (checked) {
