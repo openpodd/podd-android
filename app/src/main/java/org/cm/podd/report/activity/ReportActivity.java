@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -117,6 +116,8 @@ public class ReportActivity extends AppCompatActivity
     private View locationView;
     private TextView countdownTextView;
     private TextView textProgressLocationView;
+    private View progressBar;
+    private Button refreshLocationButton;
     private boolean testReport = false;
 
     private String currentFragment;
@@ -187,6 +188,15 @@ public class ReportActivity extends AppCompatActivity
         textProgressLocationView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
         countdownTextView = (TextView) findViewById(R.id.countdownTextView);
         countdownTextView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
+        refreshLocationButton = (Button) findViewById(R.id.refresh_location_button);
+        refreshLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestGPSLocation();
+                startLocationSearchTimeoutCountdown();
+            }
+        });
+        progressBar = findViewById(R.id.progressBar);
 
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
@@ -538,7 +548,13 @@ public class ReportActivity extends AppCompatActivity
     private void switchToProgressLocationMode() {
         locationView.setVisibility(View.VISIBLE);
         formView.setVisibility(View.INVISIBLE);
+        refreshLocationButton.setVisibility(View.GONE);
+        startLocationSearchTimeoutCountdown();
+    }
+
+    private void startLocationSearchTimeoutCountdown() {
         countdownTextView.setText("30");
+        progressBar.setVisibility(View.VISIBLE);
 
         ct = new CountDownTimer(30000, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -549,7 +565,10 @@ public class ReportActivity extends AppCompatActivity
             }
 
             public void onFinish() {
-                switchToFormMode();
+                countdownTextView.setText("0");
+                textProgressLocationView.setText(R.string.gps_location_not_found);
+                refreshLocationButton.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
         }.start();
     }
@@ -732,6 +751,9 @@ public class ReportActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (ct != null) {
+            ct.cancel();
+        }
         if (mGoogleApiClient != null) {
             stopLocationUpdates();
             mGoogleApiClient.disconnect();
@@ -832,7 +854,7 @@ public class ReportActivity extends AppCompatActivity
     public void onConnected(Bundle connectionHint) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        if (mLastLocation != null) {
+        if (mLastLocation != null && !formIterator.getForm().isForceLocation()) {
             currentLatitude = mLastLocation.getLatitude();
             currentLongitude = mLastLocation.getLongitude();
 
@@ -842,48 +864,54 @@ public class ReportActivity extends AppCompatActivity
             switchToFormMode();
         } else {
             Log.d(TAG, "mLastLocation is null");
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-            builder.setAlwaysShow(true);
-            builder.addLocationRequest(locationRequest);
-            PendingResult<LocationSettingsResult> result =
-                    LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
-
-            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @Override
-                public void onResult(LocationSettingsResult result) {
-                    final Status status = result.getStatus();
-                    final LocationSettingsStates states = result.getLocationSettingsStates();
-                    switch (status.getStatusCode()) {
-                        case LocationSettingsStatusCodes.SUCCESS:
-                            // All location settings are satisfied. The client can initialize location
-                            // requests here.
-
-                            break;
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            // Location settings are not satisfied. But could be fixed by showing the user
-                            // a dialog.
-                            try {
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                status.startResolutionForResult(
-                                        ReportActivity.this,
-                                        REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG);
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the error.
-                            }
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            // Location settings are not satisfied. However, we have no way to fix the
-                            // settings so we won't show the dialog.
-                            break;
-                    }
-                }
-            });
+            requestGPSLocation();
 
         }
 
+    }
+
+    private void requestGPSLocation() {
+        final LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.setAlwaysShow(true);
+        builder.addLocationRequest(locationRequest);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates states = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, ReportActivity.this);
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user
+                        // a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    ReportActivity.this,
+                                    REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
     }
 
     @Override
