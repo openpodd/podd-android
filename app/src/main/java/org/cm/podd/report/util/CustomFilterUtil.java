@@ -34,7 +34,7 @@ public class CustomFilterUtil {
         }
     }
 
-    public ArrayList<String> getStringByKey(String json, String key, FilterWord[] filterLevels) {
+    public ArrayList<String> getListStringByKey(String json, String key, FilterWord[] filterLevels) {
         String[] values = key.split("\\|");
         key = key.replaceAll(" ", "");
         if (values.length > 1) {

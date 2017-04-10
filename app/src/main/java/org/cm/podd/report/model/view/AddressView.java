@@ -162,7 +162,7 @@ public class AddressView extends LinearLayout {
             if (config.getValue() == null) {
                 listData = new ArrayList<String>();
             } else {
-                listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
+                listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
             }
 
             adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
@@ -211,7 +211,7 @@ public class AddressView extends LinearLayout {
 
                         value = fields[idx].replaceAll(" ", "");
 
-                        final ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
+                        final ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
                         adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
                         spinnerViews[idx].setAdapter(adapter);
 
@@ -379,7 +379,7 @@ public class AddressView extends LinearLayout {
                             }
                         }
                         String value = fields[idx].replaceAll(" ", "");
-                        final ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
+                        final ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
                         adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
                         spinnerViews[idx].setAdapter(adapter);
 

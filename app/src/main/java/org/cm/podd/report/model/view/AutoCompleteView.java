@@ -120,7 +120,7 @@ public class AutoCompleteView extends LinearLayout {
         if (config == null) {
             listData = new ArrayList<String>();
         } else {
-            listData = customFilterUtil.getStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
+            listData = customFilterUtil.getListStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
         }
 
         adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
@@ -217,7 +217,7 @@ public class AutoCompleteView extends LinearLayout {
                     if (config.getValue() == null) return;
 
                     String filterKey = question.getFilterFields().replaceAll(" ", "");
-                    ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
+                    ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
 
                     adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                     autoCompleteTextView.setAdapter(adapter);
