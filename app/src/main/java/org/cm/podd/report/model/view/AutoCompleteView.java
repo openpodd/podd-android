@@ -42,6 +42,7 @@ import android.widget.TextView;
 import org.cm.podd.report.R;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.util.CustomFilterUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -66,11 +67,14 @@ public class AutoCompleteView extends LinearLayout {
 
     private SharedPrefUtil sharedPrefUtil;
 
+    private CustomFilterUtil customFilterUtil;
+
 
     public AutoCompleteView(final Context context, Question q, final boolean readonly) {
         super(context);
 
         sharedPrefUtil = new SharedPrefUtil(context);
+        customFilterUtil = new CustomFilterUtil();
 
         this.context = context;
         this.question = q;
@@ -116,7 +120,7 @@ public class AutoCompleteView extends LinearLayout {
         if (config == null) {
             listData = new ArrayList<String>();
         } else {
-            listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
+            listData = customFilterUtil.getStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
         }
 
         adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
@@ -213,7 +217,7 @@ public class AutoCompleteView extends LinearLayout {
                     if (config.getValue() == null) return;
 
                     String filterKey = question.getFilterFields().replaceAll(" ", "");
-                    ArrayList<String> listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
+                    ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), filterKey, new CustomFilterUtil.FilterWord[0]);
 
                     adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                     autoCompleteTextView.setAdapter(adapter);
@@ -287,59 +291,6 @@ public class AutoCompleteView extends LinearLayout {
         public Filter getFilter() {
             return new StringContainFilter(this, filteredString);
         }
-
-
-    }
-
-    class FilterWord {
-        public String key;
-        public String value;
-
-        public FilterWord(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    public ArrayList<String> getStringByKey(String json, String key, FilterWord [] filterLevels) {
-        String[] values = key.split("\\|");
-        key = key.replaceAll(" ", "");
-        if (values.length > 1) {
-            key = values[0].replaceAll(" ", "");
-        }
-
-        ArrayList<String> listData = new ArrayList<String>();
-        if (json != null) {
-            try {
-                JSONArray items = new JSONArray(json);
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    boolean checked = true;
-                    if (filterLevels != null && filterLevels.length > 0) {
-                        for (int j = 0; j < filterLevels.length; j++) {
-                            if (filterLevels[j] != null) {
-                                String _itemValue = item.getString(filterLevels[j].key);
-                                String _realValue = filterLevels[j].value;
-                                if (!_itemValue.equalsIgnoreCase(_realValue)) {
-                                    checked = false;
-                                }
-                            }
-                        }
-                    }
-                    if (checked) {
-                        String name = item.getString(key);
-                        if (!listData.contains(name)) {
-                            listData.add(name);
-                        }
-                    }
-                }
-
-            } catch (JSONException e) {
-
-            }
-        }
-
-        return listData;
     }
 
 }

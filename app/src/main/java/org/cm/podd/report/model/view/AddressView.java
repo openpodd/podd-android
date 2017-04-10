@@ -38,6 +38,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -56,6 +57,7 @@ import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.util.CustomFilterUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -78,7 +80,7 @@ public class AddressView extends LinearLayout {
 
     private final Question question;
     private Spinner [] spinnerViews = null;
-    private AutocompleteAdapter adapter;
+    private ArrayAdapter<String> adapter;
 
     private Context context;
     private Config config;
@@ -86,11 +88,13 @@ public class AddressView extends LinearLayout {
     private int init = 0;
 
     private SharedPrefUtil sharedPrefUtil;
+    private CustomFilterUtil customFilterUtil;
 
     public AddressView(final Context context, Question q, final boolean readonly) {
         super(context);
 
         sharedPrefUtil = new SharedPrefUtil(context);
+        customFilterUtil = new CustomFilterUtil();
 
         this.context = context;
         this.question = q;
@@ -128,7 +132,7 @@ public class AddressView extends LinearLayout {
         spinnerViews = new Spinner[fields.length];
         for (int idx = 0; idx < fields.length; idx++) {
 
-            FilterWord [] filterWords = new FilterWord[idx];
+            CustomFilterUtil.FilterWord [] filterWords = new CustomFilterUtil.FilterWord[idx];
             for (int jdx = 0; jdx < idx; jdx++) {
                 String _key = fields[jdx];
                 Object _value = spinnerViews[jdx].getSelectedItem();
@@ -138,7 +142,7 @@ public class AddressView extends LinearLayout {
                 }
 
                 if (_value != null) {
-                    FilterWord word = new FilterWord(_key, _value.toString());
+                    CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
                     filterWords[jdx] = word;
                 }
             }
@@ -158,10 +162,10 @@ public class AddressView extends LinearLayout {
             if (config.getValue() == null) {
                 listData = new ArrayList<String>();
             } else {
-                listData = getStringByKey(config.getValue(), value, filterWords);
+                listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
             }
 
-            adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
 
             spinnerViews[idx] = new Spinner(context);
             spinnerViews[idx].setLayoutParams(params);
@@ -191,18 +195,12 @@ public class AddressView extends LinearLayout {
 
                     // refresh
                     for (int idx = finalIdx + 1; idx < fields.length; idx++) {
-                        FilterWord[] filterWords = new FilterWord[idx];
+                        CustomFilterUtil.FilterWord[] filterWords = new CustomFilterUtil.FilterWord[idx];
                         for (int jdx = 0; jdx < idx; jdx++) {
                             String _key = fields[jdx];
                             Object _value = spinnerViews[jdx].getSelectedItem();
-
-                            String[] values = _key.split("\\|");
-                            if (values.length > 1) {
-                                _key = values[0].replaceAll(" ", "");
-                            }
-
                             if (_value != null) {
-                                FilterWord word = new FilterWord(_key, _value.toString());
+                                CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
                                 filterWords[jdx] = word;
                             }
                         }
@@ -213,8 +211,8 @@ public class AddressView extends LinearLayout {
 
                         value = fields[idx].replaceAll(" ", "");
 
-                        final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
-                        adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+                        final ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
+                        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
                         spinnerViews[idx].setAdapter(adapter);
 
                     }
@@ -370,23 +368,19 @@ public class AddressView extends LinearLayout {
                     final String[] fields = question.getFilterFields().split(",");
                     for (int idx = 0; idx < fields.length; idx++) {
 
-                        FilterWord[] filterWords = new FilterWord[idx];
+                        CustomFilterUtil.FilterWord[] filterWords = new CustomFilterUtil.FilterWord[idx];
                         for (int jdx = 0; jdx < idx; jdx++) {
                             String _key = fields[jdx];
                             Object _value = spinnerViews[jdx].getSelectedItem();
-                            String[] values = _key.split("\\|");
-                            if (values.length > 1) {
-                                _key = values[0].replaceAll(" ", "");
-                            }
 
                             if (_value != null) {
-                                FilterWord word = new FilterWord(_key, _value.toString());
+                                CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
                                 filterWords[jdx] = word;
                             }
                         }
                         String value = fields[idx].replaceAll(" ", "");
-                        final ArrayList<String> listData = getStringByKey(config.getValue(), value, filterWords);
-                        adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
+                        final ArrayList<String> listData = customFilterUtil.getStringByKey(config.getValue(), value, filterWords);
+                        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
                         spinnerViews[idx].setAdapter(adapter);
 
                         Object text = question.getValue();
@@ -406,123 +400,6 @@ public class AddressView extends LinearLayout {
                 // show error
             }
         }
-    }
-
-    class StringContainFilter extends Filter {
-
-        AutocompleteAdapter adapter;
-        ArrayList<String> originalList;
-        ArrayList<String> filteredList;
-
-        public StringContainFilter(AutocompleteAdapter adapter, ArrayList<String> originalList) {
-            super();
-            this.adapter = adapter;
-            this.originalList = (ArrayList<String>) originalList.clone();
-            this.filteredList = new ArrayList<>();
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            filteredList.clear();
-            final FilterResults results = new FilterResults();
-
-            if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(originalList);
-            } else {
-                final String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for (final String text : originalList) {
-                    if (text.contains(filterPattern)) {
-                        filteredList.add(text);
-                    }
-                }
-            }
-            results.values = filteredList;
-            results.count = filteredList.size();
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            adapter.filteredString.clear();
-            adapter.filteredString.addAll((ArrayList) results.values);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    public class AutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
-
-        Context context;
-        ArrayList<String> filteredString = new ArrayList<String>();
-
-        public AutocompleteAdapter(Context context, int resource, ArrayList<String> filteredString) {
-            super(context, resource, filteredString);
-            this.context = context;
-            this.filteredString = filteredString;
-        }
-
-        @Override
-        public int getCount() {
-            return filteredString.size();
-        }
-
-        @Override
-        public Filter getFilter() {
-            return new StringContainFilter(this, filteredString);
-        }
-
-
-    }
-
-    class FilterWord {
-        public String key;
-        public String value;
-
-        public FilterWord(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    public ArrayList<String> getStringByKey(String json, String key, FilterWord [] filterLevels) {
-        String[] values = key.split("\\|");
-        key = key.replaceAll(" ", "");
-        if (values.length > 1) {
-            key = values[0].replaceAll(" ", "");
-        }
-
-        ArrayList<String> listData = new ArrayList<String>();
-        if (json != null) {
-            try {
-                JSONArray items = new JSONArray(json);
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    boolean checked = true;
-                    if (filterLevels != null && filterLevels.length > 0) {
-                        for (int j = 0; j < filterLevels.length; j++) {
-                            if (filterLevels[j] != null) {
-                                String _itemValue = item.getString(filterLevels[j].key);
-                                String _realValue = filterLevels[j].value;
-                                if (!_itemValue.equalsIgnoreCase(_realValue)) {
-                                    checked = false;
-                                }
-                            }
-                        }
-                    }
-                    if (checked) {
-                        String name = item.getString(key);
-                        if (!listData.contains(name)) {
-                            listData.add(name);
-                        }
-                    }
-                }
-
-            } catch (JSONException e) {
-
-            }
-        }
-
-        return listData;
     }
 
 }
