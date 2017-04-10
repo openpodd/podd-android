@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.MultipleChoiceQuestion;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
@@ -39,8 +40,6 @@ public class PageView extends ScrollView {
 
     private final Page page;
     private QuestionView firstView = null;
-
-    protected BroadcastReceiver mSyncReceiver;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public   PageView(Context context, Page page, boolean readonly) {
@@ -67,9 +66,12 @@ public class PageView extends ScrollView {
             View qView;
             if (q instanceof MultipleChoiceQuestion) {
                 qView = new MultipleChoiceQuestionView(context, (MultipleChoiceQuestion) q, readonly);
+            } else if (q.getDataType() == DataType.ADDRESS) {
+                qView = new AddressView(context, q, readonly);
+            } else if (q.getDataType() == DataType.AUTOCOMPLETE) {
+                qView = new AutoCompleteView(context, q, readonly);
             } else {
                 qView = new QuestionView(context, q, readonly);
-                mSyncReceiver = ((QuestionView) qView).getSyncReceiver();
             }
             qView.setLayoutParams(wrapContent);
             scrollViewContent.addView(qView);
@@ -80,10 +82,6 @@ public class PageView extends ScrollView {
             }
             cnt++;
         }
-    }
-
-    public BroadcastReceiver getSyncReceivers() {
-        return mSyncReceiver;
     }
 
     public void askForFocus() {
@@ -101,6 +99,9 @@ public class PageView extends ScrollView {
         List<Question> questions = page.getQuestions();
         QuestionView lastView = null;
         for (Question q : questions) {
+            if (q.getDataType() == DataType.ADDRESS || q.getDataType() == DataType.AUTOCOMPLETE)
+                continue;
+            
             if (!(q instanceof MultipleChoiceQuestion)) {
                 QuestionView qView = (QuestionView) lo.findViewWithTag(q.getName());
                 qView.setListener(questionActionListener);

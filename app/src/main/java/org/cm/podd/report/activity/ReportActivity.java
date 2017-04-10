@@ -150,7 +150,6 @@ public class ReportActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private String followActionName;
 
-    private BroadcastReceiver mSyncReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -438,13 +437,6 @@ public class ReportActivity extends AppCompatActivity
         Fragment oldFragment = getVisibleFragment();
         if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
             ((ReportNavigationChangeCallbackInterface) oldFragment).onNext();
-        }
-
-        if (oldFragment != null && oldFragment instanceof FormPageFragment) {
-            mSyncReceiver = ((FormPageFragment) oldFragment).getSyncReceivers();
-            if (mSyncReceiver != null) {
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncReceiver);
-            }
         }
 
         if (currentFragment == null) { /* first screen */
@@ -746,9 +738,6 @@ public class ReportActivity extends AppCompatActivity
         }
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mAlertReceiver);
-        if (mSyncReceiver!= null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mSyncReceiver);
-        }
 
         reportDataSource.close();
         reportQueueDataSource.close();
@@ -946,14 +935,9 @@ public class ReportActivity extends AppCompatActivity
             PageView pageView = new PageView(getActivity(), page, isSubmit);
             pageView.setQuestionActionListener((QuestionView.SoftKeyActionHandler) getActivity());
             pageView.askForFocus();
-
-            mSyncReceiver = pageView.getSyncReceivers();
             return pageView;
         }
 
-        public BroadcastReceiver getSyncReceivers() {
-            return mSyncReceiver;
-        }
     }
 
     public void hideKeyboard() {

@@ -163,10 +163,10 @@ public class FormParser {
             question = new Question<Date>();
             question.setDataType(DataType.DATE);
         } else if (type.equals("address")) {
-            question = new Question<Date>();
+            question = new Question<String>();
             question.setDataType(DataType.ADDRESS);
         } else if (type.equals("autocomplete")) {
-            question = new Question<Date>();
+            question = new Question<String>();
             question.setDataType(DataType.AUTOCOMPLETE);
         } else {
             question = new Question<String>();
