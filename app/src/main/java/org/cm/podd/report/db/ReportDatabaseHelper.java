@@ -205,7 +205,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         sqLiteDatabase.execSQL(CREATE_TABLE_FOLLOW_ALERT);
         sqLiteDatabase.execSQL(CREATE_REPORT_STATE);
-        sqLiteDatabase.execSQL(CREATE_CONFIGURATION);
+//        sqLiteDatabase.execSQL(CREATE_CONFIGURATION);
         Log.i("DB", "on create");
     }
 
@@ -264,9 +264,6 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 13:
                 Log.i("DB", ">> upgrade from version 13");
                 db.execSQL("ALTER TABLE report ADD COLUMN action_name TEXT");
-            case 14:
-                Log.i("DB", ">> upgrade from version 14");
-                db.execSQL(CREATE_CONFIGURATION);
         }
     }
 

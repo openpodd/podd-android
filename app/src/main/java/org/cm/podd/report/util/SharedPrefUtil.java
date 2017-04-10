@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.Region;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -290,5 +291,18 @@ public class SharedPrefUtil {
     public boolean isDefaultAdministrationAreaIdExits() {
         return sharedPrefs.contains(DEFAULT_ADMINISTRATION_AREA_ID);
     }
+
+    public void setSyncData(String system, String key, String jsonData) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(system + ":[" +key + "]", jsonData);
+        editor.commit();
+    }
+
+    public Config getSyncData(String system, String key) {
+        String jsonData = sharedPrefs.getString(system + ":[" +key + "]", null);
+        Config config = new Config(system, key, jsonData);
+        return config;
+    }
+
 }
 

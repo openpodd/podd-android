@@ -50,7 +50,6 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
-import org.cm.podd.report.db.ConfigurationDataSource;
 import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;

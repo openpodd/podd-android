@@ -40,7 +40,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.db.ConfigurationDataSource;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -101,8 +100,7 @@ public class AutoCompleteView extends LinearLayout {
         String system = "fetchData";
         String key = question.getDataUrl();
 
-        ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-        Config config = dbSource.getConfigValue(system, key);
+        config = sharedPrefUtil.getSyncData(system, key);
 
         String[] values = question.getFilterFields().split("\\|");
         String header = question.getFilterFields().replaceAll(" ", "");
@@ -199,28 +197,20 @@ public class AutoCompleteView extends LinearLayout {
                 String system = "fetchData";
                 String key = question.getDataUrl();
 
-                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-                Config origConfig = dbSource.getConfigValue(system, key);
-
                 JSONObject response = null;
                 try {
                     response = new JSONObject(resp.getRawData());
-                    if (origConfig != null) {
-                        origConfig.setValue(response.getString("results"));
-                        dbSource.update(origConfig);
-                    } else {
-                        Config config = new Config(system, key, response.getString("results"));
-                        dbSource.insert(config);
-                    }
+                    sharedPrefUtil.setSyncData(system, key, response.getString("results"));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                if (config.getValue() == null) {
 
-                if (config == null) {
-                    config = dbSource.getConfigValue(system, key);
+                    config = sharedPrefUtil.getSyncData(system, key);
 
-                    if (config == null) return;
+                    if (config.getValue() == null) return;
 
                     String filterKey = question.getFilterFields().replaceAll(" ", "");
                     ArrayList<String> listData = getStringByKey(config.getValue(), filterKey, new FilterWord[0]);
@@ -228,8 +218,6 @@ public class AutoCompleteView extends LinearLayout {
                     adapter = new AutocompleteAdapter(context, android.R.layout.simple_spinner_dropdown_item, listData);
                     autoCompleteTextView.setAdapter(adapter);
                 }
-
-                dbSource.close();
 
             } else {
                 // show error

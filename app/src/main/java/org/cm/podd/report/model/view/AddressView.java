@@ -51,7 +51,7 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.ForgetPasswordActivity;
-import org.cm.podd.report.db.ConfigurationDataSource;
+
 import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;
@@ -120,8 +120,7 @@ public class AddressView extends LinearLayout {
         String system = "fetchData";
         String key = question.getDataUrl();
 
-        ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-        config = dbSource.getConfigValue(system, key);
+        config = sharedPrefUtil.getSyncData(system, key);
 
         final String[] fields = question.getFilterFields().split(",");
         final EditText editView = new EditText(context);
@@ -156,7 +155,7 @@ public class AddressView extends LinearLayout {
 
             final ArrayList<String> listData;
 
-            if (config == null) {
+            if (config.getValue() == null) {
                 listData = new ArrayList<String>();
             } else {
                 listData = getStringByKey(config.getValue(), value, filterWords);
@@ -208,7 +207,7 @@ public class AddressView extends LinearLayout {
                             }
                         }
 
-                        if (config == null) {
+                        if (config.getValue() == null) {
                             continue;
                         }
 
@@ -353,33 +352,25 @@ public class AddressView extends LinearLayout {
                 String system = "fetchData";
                 String key = question.getDataUrl();
 
-                ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
-                Config origConfig = dbSource.getConfigValue(system, key);
-
                 JSONObject response = null;
                 try {
                     response = new JSONObject(resp.getRawData());
-                    if (origConfig != null) {
-                        origConfig.setValue(response.getString("results"));
-                        dbSource.update(origConfig);
-                    } else {
-                        Config config = new Config(system, key, response.getString("results"));
-                        dbSource.insert(config);
-                    }
+                    sharedPrefUtil.setSyncData(system, key, response.getString("results"));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                if (config.getValue() == null) {
 
-                if (config == null) {
-                    config = dbSource.getConfigValue(system, key);
+                    config = sharedPrefUtil.getSyncData(system, key);
 
-                    if (config == null) return;
+                    if (config.getValue() == null) return;
 
                     final String[] fields = question.getFilterFields().split(",");
                     for (int idx = 0; idx < fields.length; idx++) {
 
-                        FilterWord [] filterWords = new FilterWord[idx];
+                        FilterWord[] filterWords = new FilterWord[idx];
                         for (int jdx = 0; jdx < idx; jdx++) {
                             String _key = fields[jdx];
                             Object _value = spinnerViews[jdx].getSelectedItem();
@@ -408,7 +399,7 @@ public class AddressView extends LinearLayout {
                         }
                     }
                 }
-                dbSource.close();
+
                 init = 1;
 
             } else {
