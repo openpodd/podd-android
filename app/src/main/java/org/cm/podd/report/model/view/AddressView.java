@@ -56,7 +56,6 @@ import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
-import org.cm.podd.report.service.ConfigService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -120,7 +119,6 @@ public class AddressView extends LinearLayout {
 
         String system = "fetchData";
         String key = question.getDataUrl();
-        startSyncConfigService(context, system, key);
 
         ConfigurationDataSource dbSource = new ConfigurationDataSource(context);
         config = dbSource.getConfigValue(system, key);
@@ -317,14 +315,6 @@ public class AddressView extends LinearLayout {
             });
         }
 
-    }
-
-    private void startSyncConfigService(Context context, String system, String key) {
-        Intent intent = new Intent(context, ConfigService.class);
-        intent.putExtra("system", system);
-        intent.putExtra("key", key);
-        intent.putExtra("url", key);
-        context.startService(intent);
     }
 
     private SoftKeyActionHandler listener;

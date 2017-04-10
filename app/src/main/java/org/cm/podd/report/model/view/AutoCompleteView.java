@@ -43,7 +43,6 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.ConfigurationDataSource;
 import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.Question;
-import org.cm.podd.report.service.ConfigService;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;

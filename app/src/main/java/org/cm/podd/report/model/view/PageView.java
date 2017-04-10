@@ -101,7 +101,7 @@ public class PageView extends ScrollView {
         for (Question q : questions) {
             if (q.getDataType() == DataType.ADDRESS || q.getDataType() == DataType.AUTOCOMPLETE)
                 continue;
-            
+
             if (!(q instanceof MultipleChoiceQuestion)) {
                 QuestionView qView = (QuestionView) lo.findViewWithTag(q.getName());
                 qView.setListener(questionActionListener);

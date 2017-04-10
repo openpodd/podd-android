@@ -57,7 +57,6 @@ import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.CommentService;
-import org.cm.podd.report.service.ConfigService;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -238,14 +237,6 @@ public class QuestionView extends LinearLayout {
         }
 
 
-    }
-
-    private void startSyncConfigService(Context context, String system, String key) {
-        Intent intent = new Intent(context, ConfigService.class);
-        intent.putExtra("system", system);
-        intent.putExtra("key", key);
-        intent.putExtra("url", key);
-        context.startService(intent);
     }
 
     private SoftKeyActionHandler listener;
