@@ -28,6 +28,7 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -718,6 +719,8 @@ public class ReportActivity extends AppCompatActivity
 
     @Override
     public void finishReport(int action) {
+        stopLocationUpdates();
+
         // Reload report to get current submit status
         Report report = reportDataSource.getById(reportId);
         reportSubmit = report.getSubmit();
@@ -784,10 +787,20 @@ public class ReportActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG) {
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+            final LocationRequest locationRequest = getLocationRequest();
+
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
         }
+    }
+
+    @NonNull
+    private LocationRequest getLocationRequest() {
+        final LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        return locationRequest;
     }
 
     protected void stopLocationUpdates() {
@@ -852,29 +865,11 @@ public class ReportActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null && !formIterator.getForm().isForceLocation()) {
-            currentLatitude = mLastLocation.getLatitude();
-            currentLongitude = mLastLocation.getLongitude();
-
-            Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
-            reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
-
-            switchToFormMode();
-        } else {
-            Log.d(TAG, "mLastLocation is null");
-            requestGPSLocation();
-
-        }
-
+        requestGPSLocation();
     }
 
     private void requestGPSLocation() {
-        final LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(2000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        final LocationRequest locationRequest = getLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.setAlwaysShow(true);
         builder.addLocationRequest(locationRequest);
@@ -901,6 +896,7 @@ public class ReportActivity extends AppCompatActivity
                             status.startResolutionForResult(
                                     ReportActivity.this,
                                     REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG);
+
                         } catch (IntentSender.SendIntentException e) {
                             // Ignore the error.
                         }
@@ -933,7 +929,6 @@ public class ReportActivity extends AppCompatActivity
         Log.d(TAG, "current location = " + currentLatitude + "," + currentLongitude);
         reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
 
-        stopLocationUpdates();
         switchToFormMode();
     }
 
