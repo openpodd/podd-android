@@ -45,6 +45,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -57,6 +58,7 @@ import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.util.StyleUtil;
+import org.cm.podd.report.view.NumberPickerView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +80,7 @@ public class QuestionView extends LinearLayout {
     private final Question question;
     private EditText editView = null;
     private DatePicker calendarView = null;
+    private NumberPickerView numberPicker = null;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public QuestionView(final Context context, Question q, final boolean readonly) {
@@ -143,6 +146,37 @@ public class QuestionView extends LinearLayout {
             });
 
             addView(calendarView);
+
+        } else if (question.getDataType() == DataType.INTEGER) {
+            numberPicker = new NumberPickerView(context);
+            numberPicker.setOrientation(HORIZONTAL);
+            numberPicker.setLayoutParams(params);
+            numberPicker.setPadding(0, 0, 0, 0);
+
+            int value = 0;
+            if (question.getValue() != null) {
+                value = (int) question.getValue();
+                numberPicker.setValue(value);
+            }
+            numberPicker.getNumberEditText().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    int value = (int) question.getDataType().parseFromString(editable.toString());
+                    question.setData(value);
+                }
+            });
+
+            addView(numberPicker);
 
         } else {
             editView = new EditText(context);
