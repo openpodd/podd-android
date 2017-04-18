@@ -316,6 +316,9 @@
     <string name="confirm_test_report">No, just a test</string>
     <string name="confirm_report_message">Is this real incident?</string>
     <string name="confirm_message_title">Confirm</string>
-
+    <string name="gps_location_not_found">Location not found</string>
+    <string name="report_type_category_1">Human</string>
+    <string name="report_type_category_2">Animal</string>
+    <string name="report_type_category_3">Environment</string>
 
 </resources>

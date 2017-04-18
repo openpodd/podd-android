@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_top"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_bottom"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="?attr/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:minHeight="?attr/actionBarSize" />
+
+
+    <LinearLayout
+        android:paddingTop="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar_top"
+        android:id="@+id/test_section"
+        android:orientation="vertical">
+
+
+        <CheckBox
+            android:id="@+id/test_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/test_label"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            />
+
+        <View android:id="@+id/separator_full"
+            android:background="@color/report_row_divider"
+            android:layout_width = "match_parent"
+            android:layout_height="1dip"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/zero_report_btn"
+        android:layout_below="@id/test_section"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:backgroundTint="@color/color_scheme_1_2"
+        android:textColor="@color/white"
+        android:text="@string/normal_case"/>
+
+    <ExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/report_type_list_view"
+        android:layout_below="@id/zero_report_btn"
+        android:layout_above="@id/toolbar_bottom"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp">
+
+
+
+    </ExpandableListView>
+
+
+
+
+
+</RelativeLayout>

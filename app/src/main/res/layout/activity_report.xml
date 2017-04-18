@@ -47,6 +47,7 @@
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/progressBar"
                         />
 
                     <TextView
@@ -55,6 +56,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"/>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/refresh_location_button"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        app:backgroundTint="@color/color_scheme_1_1"
+                        android:text="Refresh"
+                        android:visibility="gone"
+                        />
                 </LinearLayout>
 
 
