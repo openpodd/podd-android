@@ -316,6 +316,9 @@
     <string name="create_shortcut_message"><![CDATA[create a shortcut name ->]]></string>
     <string name="specific_address">ระบุโดยละเอียด (บ้านเลขที่, หมู่บ้าน)</string>
     <string name="gps_location_not_found">ไม่สามารถหาพิกัดตำแหน่งได้</string>
+    <string name="report_type_category_1">คน</string>
+    <string name="report_type_category_2">สัตว์</string>
+    <string name="report_type_category_3">สิ่งแวดล้อม</string>
 
 
 </resources>

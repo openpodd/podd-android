@@ -393,7 +393,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     }
 
     private void newReport() {
-        Intent intent = new Intent(this, ReportTypeActivity.class);
+        Intent intent = new Intent(this, GroupReportTypeActivity.class);
         startActivityForResult(intent, 0);
     }
 

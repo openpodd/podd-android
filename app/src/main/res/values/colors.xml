@@ -38,4 +38,7 @@
     <color name="wallet_dim_foreground_disabled_holo_dark">#7f06000c</color>
     <color name="ColorPrimary">#f5f5f5</color>
     <color name="ColorPrimaryDark">#7c57bb</color>
+    <color name="report_type_human">#FFF4A60C</color>
+    <color name="report_type_animal">#FFCF6221</color>
+    <color name="report_type_environment">#FF96B220</color>
 </resources>

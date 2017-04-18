@@ -91,6 +91,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
+
+        <activity android:name=".activity.GroupReportTypeActivity"
+            android:label="@string/title_activity_report_type"
+            android:noHistory="true"
+            android:parentActivityName=".activity.HomeActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.cm.podd.report.activity.HomeActivity" />
+        </activity>
         <activity
             android:name=".activity.ImageActivity"
             android:label="@string/title_activity_image"
