@@ -29,6 +29,7 @@ import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.model.Transition;
 import org.cm.podd.report.model.Trigger;
+import org.cm.podd.report.model.validation.AddressValidation;
 import org.cm.podd.report.model.validation.IValidation;
 import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
@@ -224,6 +225,8 @@ public class FormParser {
             iv = ScriptValidation.newInstance(question.getDataType(),
                     v.getString("expression"),
                     v.getString("message"));
+        } else if (type.equals("address")) {
+            iv = AddressValidation.newInstance(question.getDataType(), v.getString("message"));
         }
         if (iv != null) {
             question.addValidation(iv);
