@@ -155,7 +155,7 @@ public class QuestionView extends LinearLayout {
 
             int value = 0;
             if (question.getValue() != null) {
-                value = (int) question.getValue();
+                value = Integer.parseInt(question.getValue().toString());
                 numberPicker.setValue(value);
             }
             numberPicker.getNumberEditText().addTextChangedListener(new TextWatcher() {
