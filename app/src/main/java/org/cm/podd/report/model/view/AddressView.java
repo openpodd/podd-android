@@ -18,6 +18,7 @@
 package org.cm.podd.report.model.view;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -79,7 +80,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class AddressView extends LinearLayout {
 
     private final Question question;
-    private Spinner [] spinnerViews = null;
+    private View [] spinnerViews = null;
     private ArrayAdapter<String> adapter;
 
     private Context context;
@@ -90,7 +91,17 @@ public class AddressView extends LinearLayout {
     private SharedPrefUtil sharedPrefUtil;
     private CustomFilterUtil customFilterUtil;
 
-    public AddressView(final Context context, Question q, final boolean readonly) {
+    private LayoutParams params;
+    private String hintText;
+
+    private boolean readonly;
+
+    private String[] fields;
+    private EditText editView;
+
+    private ProgressDialog progressDialog;
+
+    public AddressView(final Context context, Question q, boolean readonly) {
         super(context);
 
         sharedPrefUtil = new SharedPrefUtil(context);
@@ -101,11 +112,11 @@ public class AddressView extends LinearLayout {
 
         new SyncDataTask().execute((Void[]) null);
 
-        final String hintText = context.getString(R.string.edittext_hint);
+        hintText = context.getString(R.string.edittext_hint);
 
         setOrientation(VERTICAL);
 
-        final LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 0, 24);
         setLayoutParams(params);
         setTag(q.getName());
@@ -120,30 +131,41 @@ public class AddressView extends LinearLayout {
 
         addView(titleView);
 
+        this.readonly = readonly;
 
+        showProgressDialog();
+        createAddressView();
+    }
+
+    public void createAddressView () {
         String system = "fetchData";
         String key = question.getDataUrl();
 
         config = sharedPrefUtil.getSyncData(system, key);
+        if (init == 0 && config.getValue() == null) {
+            return;
+        }
 
-        final String[] fields = question.getFilterFields().split(",");
-        final EditText editView = new EditText(context);
+        fields = question.getFilterFields().split(",");
+        editView = new EditText(context);
 
-        spinnerViews = new Spinner[fields.length];
+        spinnerViews = new View[fields.length];
         for (int idx = 0; idx < fields.length; idx++) {
 
             CustomFilterUtil.FilterWord [] filterWords = new CustomFilterUtil.FilterWord[idx];
             for (int jdx = 0; jdx < idx; jdx++) {
-                String _key = fields[jdx];
-                Object _value = spinnerViews[jdx].getSelectedItem();
-                String[] values = _key.split("\\|");
-                if (values.length > 1) {
-                    _key = values[0].replaceAll(" ", "");
-                }
+                if (spinnerViews[jdx] instanceof Spinner) {
+                    String _key = fields[jdx];
+                    Object _value = ((Spinner) spinnerViews[jdx]).getSelectedItem();
+                    String[] values = _key.split("\\|");
+                    if (values.length > 1) {
+                        _key = values[0].replaceAll(" ", "");
+                    }
 
-                if (_value != null) {
-                    CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
-                    filterWords[jdx] = word;
+                    if (_value != null) {
+                        CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
+                        filterWords[jdx] = word;
+                    }
                 }
             }
 
@@ -165,85 +187,137 @@ public class AddressView extends LinearLayout {
                 listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
             }
 
-            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
-
-            spinnerViews[idx] = new Spinner(context);
-            spinnerViews[idx].setLayoutParams(params);
-            spinnerViews[idx].setPadding(0, 0, 0, 0);
-            spinnerViews[idx].setAdapter(adapter);
-            spinnerViews[idx].setSelected(true);
-
-            final int finalIdx = idx;
-            spinnerViews[idx].setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                    if (init == 0) return;
-
-                    String value = "";
-                    String [] findValue = new String[fields.length];
-                    for (int idx = 0; idx < fields.length; idx++) {
-                        Object selected = spinnerViews[idx].getSelectedItem();
-                        if(selected != null) {
-                            findValue[idx] = value;
-                            value += " " + selected.toString();
-                        }
-
-                    }
-                    value += "[specific:" + editView.getText().toString() + "]";
-
-                    question.setData(value);
-
-                    // refresh
-                    for (int idx = finalIdx + 1; idx < fields.length; idx++) {
-                        CustomFilterUtil.FilterWord[] filterWords = new CustomFilterUtil.FilterWord[idx];
-                        for (int jdx = 0; jdx < idx; jdx++) {
-                            String _key = fields[jdx];
-                            Object _value = spinnerViews[jdx].getSelectedItem();
-                            if (_value != null) {
-                                CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
-                                filterWords[jdx] = word;
-                            }
-                        }
-
-                        if (config.getValue() == null) {
-                            continue;
-                        }
-
-                        value = fields[idx].replaceAll(" ", "");
-
-                        final ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
-                        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
-                        spinnerViews[idx].setAdapter(adapter);
-
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parentView) {
-                }
-
-            });
-
-            Object text = question.getValue();
-            if (text != null) {
-                for (int i = 0; i < listData.size(); i++) {
-                    if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
-                        spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
-                    }
-                }
-            }
-
-            if (readonly) {
-                spinnerViews[idx].setEnabled(false);
-            }
-
             TextView headerView = new TextView(context);
             headerView.setLayoutParams(params);
             headerView.setPadding(10, 0, 0, 10);
             headerView.setText(header);
 
             addView(headerView);
-            addView(spinnerViews[idx]);
+
+            if (listData != null) {
+                adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
+
+                Spinner spinnerView =  new Spinner(context);
+                spinnerView = new Spinner(context);
+                spinnerView.setLayoutParams(params);
+                spinnerView.setPadding(0, 0, 0, 0);
+                spinnerView.setAdapter(adapter);
+                spinnerView.setSelected(true);
+
+                final int finalIdx = idx;
+                final Spinner finalSpinnerView = spinnerView;
+                spinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        if (init == 0) return;
+                        question.setData(getAddressUpdated());
+
+                        // refresh
+                        for (int idx = finalIdx + 1; idx < fields.length; idx++) {
+                            if (!(spinnerViews[idx] instanceof Spinner)) continue;
+
+                            CustomFilterUtil.FilterWord[] filterWords = new CustomFilterUtil.FilterWord[idx];
+                            for (int jdx = 0; jdx < idx; jdx++) {
+                                if (spinnerViews[jdx] instanceof Spinner) {
+                                    String _key = fields[jdx];
+                                    Object _value = ((Spinner)spinnerViews[jdx]).getSelectedItem();
+                                    if (_value != null) {
+                                        CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
+                                        filterWords[jdx] = word;
+                                    }
+                                }
+                            }
+
+                            if (config.getValue() == null) {
+                                continue;
+                            }
+
+                            String value = fields[idx].replaceAll(" ", "");
+                            final ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
+                            adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
+                            ((Spinner)spinnerViews[idx]).setAdapter(adapter);
+                        }
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                    }
+
+                });
+
+                Object text = question.getValue();
+                if (text != null) {
+                    for (int i = 0; i < listData.size(); i++) {
+                        if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
+                            spinnerView.setSelection(adapter.getPosition(adapter.getItem(i)));
+                        }
+                    }
+                }
+
+                if (readonly) {
+                    spinnerView.setEnabled(false);
+                }
+
+                spinnerViews[idx] = spinnerView;
+                addView(spinnerViews[idx]);
+            } else {
+
+                final EditText editView = new EditText(context);
+                editView.setLayoutParams(params);
+                editView.setPadding(0, 0, 0, 20);
+                editView.setClickable(true);
+                editView.setHint(hintText);
+                editView.setOnTouchListener(new OnTouchListener() {
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        editView.setHint("");
+                        return false;
+                    }
+
+                });
+
+                Object text = question.getValue();
+                if (text != null) {
+                    Pattern specificPattern = Pattern.compile("\\[" + header + ":(.*?)\\]");
+                    Matcher match = specificPattern.matcher(text.toString());
+                    while (match.find()) {
+                        value = match.group(1);
+                        editView.setText(value);
+                    }
+
+                }
+
+                if (readonly) {
+                    editView.setFocusable(false);
+                    editView.setClickable(false);
+                }
+
+                if (!readonly) {
+                    editView.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                            question.setData(getAddressUpdated());
+                        }
+                    });
+                }
+
+                spinnerViews[idx] = editView;
+                addView(spinnerViews[idx]);
+
+            }
+
 
         }
 
@@ -299,19 +373,12 @@ public class AddressView extends LinearLayout {
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    String text = "";
-
-                    Object value = question.getValue();
-                    if (value != null) {
-                        text += value.toString();
-                    }
-
-                    text += "[specific:" + editable.toString() + "]";
-                    question.setData(text);
+                    question.setData(getAddressUpdated());
                 }
             });
         }
 
+        hideProgressDialog();
     }
 
     private SoftKeyActionHandler listener;
@@ -360,45 +427,59 @@ public class AddressView extends LinearLayout {
                 }
 
                 if (config.getValue() == null) {
-
                     config = sharedPrefUtil.getSyncData(system, key);
-
-                    if (config.getValue() == null) return;
-
-                    final String[] fields = question.getFilterFields().split(",");
-                    for (int idx = 0; idx < fields.length; idx++) {
-
-                        CustomFilterUtil.FilterWord[] filterWords = new CustomFilterUtil.FilterWord[idx];
-                        for (int jdx = 0; jdx < idx; jdx++) {
-                            String _key = fields[jdx];
-                            Object _value = spinnerViews[jdx].getSelectedItem();
-
-                            if (_value != null) {
-                                CustomFilterUtil.FilterWord word = new CustomFilterUtil.FilterWord(_key, _value.toString());
-                                filterWords[jdx] = word;
-                            }
-                        }
-                        String value = fields[idx].replaceAll(" ", "");
-                        final ArrayList<String> listData = customFilterUtil.getListStringByKey(config.getValue(), value, filterWords);
-                        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
-                        spinnerViews[idx].setAdapter(adapter);
-
-                        Object text = question.getValue();
-                        if (text != null) {
-                            for (int i = 0; i < listData.size(); i++) {
-                                if (text.toString().toLowerCase().contains(adapter.getItem(i).toLowerCase())) {
-                                    spinnerViews[idx].setSelection(adapter.getPosition(adapter.getItem(i)));
-                                }
-                            }
-                        }
-                    }
+                    createAddressView();
                 }
-
                 init = 1;
 
             } else {
                 // show error
             }
+        }
+    }
+
+    public String getAddressUpdated() {
+        String value = "";
+        String [] findValue = new String[fields.length];
+        for (int idx = 0; idx < fields.length; idx++) {
+            String[] values = fields[idx].split("\\|");
+            String header = fields[idx].replaceAll(" ", "");
+            if (values.length > 1) {
+                header = values[1];
+            }
+
+            if (spinnerViews[idx] instanceof Spinner) {
+                Object selected = ((Spinner)spinnerViews[idx]).getSelectedItem();
+                if(selected != null) {
+                    findValue[idx] = value;
+                    value += "[" + header + ":" +selected.toString() + "]";
+                }
+            } else {
+                if (!((EditText) spinnerViews[idx]).getText().toString().equalsIgnoreCase("")) {
+                    value += "[" + header + ":" + ((EditText) spinnerViews[idx]).getText().toString() + "]";
+                }
+            }
+
+        }
+
+        if (!editView.getText().toString().equalsIgnoreCase("")) {
+            value += "[specific:" + editView.getText().toString() + "]";
+        }
+        return value;
+    }
+
+    public void showProgressDialog() {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle(R.string.request_fetching_data);
+        progressDialog.setMessage(context.getString(R.string.request_please_wait));
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
     }
 

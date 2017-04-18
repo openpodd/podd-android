@@ -61,14 +61,18 @@ public class CustomFilterUtil {
                     }
                     if (checked) {
                         String name = item.getString(key);
-                        if (!listData.contains(name)) {
+                        if (!name.equalsIgnoreCase("") && !listData.contains(name)) {
                             listData.add(name);
+                        } else if ("".equalsIgnoreCase(name)) {
+                            throw new Exception();
                         }
                     }
                 }
 
             } catch (JSONException e) {
-
+                return null;
+            } catch (Exception e) {
+                return null;
             }
         }
 
