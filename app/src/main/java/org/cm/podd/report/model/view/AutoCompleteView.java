@@ -91,16 +91,6 @@ public class AutoCompleteView extends LinearLayout {
         setTag(q.getName());
         setId(q.getId());
 
-
-        TextView titleView = new TextView(context);
-        titleView.setText(question.getTitle());
-        titleView.setLayoutParams(params);
-        titleView.setTextAppearance(context, R.style.ReportTextLabel);
-        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
-
-        addView(titleView);
-
-
         String system = "fetchData";
         String key = question.getDataUrl();
 
@@ -160,6 +150,8 @@ public class AutoCompleteView extends LinearLayout {
         TextView headerView = new TextView(context);
         headerView.setLayoutParams(params);
         headerView.setPadding(10, 0, 0, 10);
+        headerView.setTextAppearance(context, R.style.ReportTextLabel);
+        headerView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
         headerView.setText(header);
 
         addView(headerView);

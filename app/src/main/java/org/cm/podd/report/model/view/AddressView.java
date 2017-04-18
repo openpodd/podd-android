@@ -122,15 +122,6 @@ public class AddressView extends LinearLayout {
         setTag(q.getName());
         setId(q.getId());
 
-
-        TextView titleView = new TextView(context);
-        titleView.setText(question.getTitle());
-        titleView.setLayoutParams(params);
-        titleView.setTextAppearance(context, R.style.ReportTextLabel);
-        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
-
-        addView(titleView);
-
         this.readonly = readonly;
 
         showProgressDialog();
@@ -190,6 +181,8 @@ public class AddressView extends LinearLayout {
             TextView headerView = new TextView(context);
             headerView.setLayoutParams(params);
             headerView.setPadding(10, 0, 0, 10);
+            headerView.setTextAppearance(context, R.style.ReportTextLabel);
+            headerView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
             headerView.setText(header);
 
             addView(headerView);
@@ -319,63 +312,6 @@ public class AddressView extends LinearLayout {
             }
 
 
-        }
-
-        TextView headerView = new TextView(context);
-        headerView.setLayoutParams(params);
-        headerView.setPadding(10, 0, 0, 10);
-        headerView.setText(context.getString(R.string.specific_address));
-
-        addView(headerView);
-
-        editView.setLayoutParams(params);
-        editView.setPadding(0, 0, 0, 20);
-        editView.setClickable(true);
-        editView.setHint(hintText);
-        editView.setOnTouchListener(new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                editView.setHint("");
-                return false;
-            }
-
-        });
-
-        Object text = question.getValue();
-        if (text != null) {
-            Pattern specificPattern = Pattern.compile("\\[specific:(.*?)\\]");
-            Matcher match = specificPattern.matcher(text.toString());
-            while (match.find()) {
-                String value = match.group(1);
-                editView.setText(value);
-            }
-
-        }
-        addView(editView);
-
-        if (readonly) {
-            editView.setFocusable(false);
-            editView.setClickable(false);
-        }
-
-        if (! readonly) {
-            editView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    question.setData(getAddressUpdated());
-                }
-            });
         }
 
         hideProgressDialog();
