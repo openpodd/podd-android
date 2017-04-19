@@ -41,6 +41,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.PoddApplication;
@@ -75,7 +85,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by siriwat on 2/23/15.
  */
-public class ReportViewActivity extends AppCompatActivity {
+public class ReportViewActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = "ReportViewActivity";
 
@@ -139,6 +149,8 @@ public class ReportViewActivity extends AppCompatActivity {
     private LinearLayout alertComment;
     private RelativeLayout moveToCommentButton;
 
+    private MapView mapView;
+
     private FragmentManager fragmentManager;
     private FollowUpItemAdapter followUpItemAdapter;
 
@@ -155,6 +167,11 @@ public class ReportViewActivity extends AppCompatActivity {
     public Map<String, State> states = new HashMap<String, State>();
 
     ReportStateDataSource reportStateDataSource;
+
+    private GoogleMap mMap;
+    private double latitude = -1;
+    private double longitude = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -540,6 +557,18 @@ public class ReportViewActivity extends AppCompatActivity {
             });
 
             sectionComment.setVisibility(View.VISIBLE);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+            JSONObject reportLocation = report.getJSONObject("reportLocation");
+            if (reportLocation.getString("type").equalsIgnoreCase("Point")) {
+                latitude = Double.parseDouble(reportLocation.getJSONArray("coordinates").get(1).toString());
+                longitude = Double.parseDouble(reportLocation.getJSONArray("coordinates").get(0).toString());
+                refreshMap();
+            }
+
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         } catch (IllegalStateException e){
@@ -662,6 +691,23 @@ public class ReportViewActivity extends AppCompatActivity {
 
     private void reverseState() {
         flagSpinnerView.setSelection(oldStateCodePosition);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        refreshMap();
+    }
+
+    public void refreshMap() {
+        if (mMap == null) return;
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+
+        LatLng position = new LatLng(latitude, longitude);
+        mMap.addMarker(new MarkerOptions().position(position));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 12));
     }
 
     public class HintAdapter extends ArrayAdapter<String> {
