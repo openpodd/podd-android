@@ -47,6 +47,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     public static final State[] stateColors = new State[]{
         new State("report", R.drawable.blank),
+        new State("insignificant-report", R.drawable.flag_ignore),
         new State("false-report", R.drawable.flag_ignore),
         new State("no-outbreak-identified", R.drawable.flag_ignore),
         new State("case", R.drawable.flag_contact),

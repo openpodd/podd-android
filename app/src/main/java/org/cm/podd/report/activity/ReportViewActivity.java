@@ -81,6 +81,7 @@ public class ReportViewActivity extends AppCompatActivity {
 
     public static final State[] stateColors = new State[]{
             new State("report", R.drawable.blank),
+            new State("insignificant-report", R.drawable.flag_ignore),
             new State("false-report", R.drawable.flag_ignore),
             new State("no-outbreak-identified", R.drawable.flag_ignore),
             new State("case", R.drawable.flag_contact),
@@ -424,19 +425,17 @@ public class ReportViewActivity extends AppCompatActivity {
             flagSpinnerView.setAdapter(mFlagAdapter);
             flagSpinnerView.setSelection(statePosition);
 
-//            if (!stateCode.equals("")) {
-//                flagSpinnerView.setSelection(reportFlag.intValue() - 1);
-//            } else {
-//                flagSpinnerView.setSelection(mFlagAdapter.getCount());
-//            }
+            if (stateCode.equals("")) {
+                flagSpinnerView.setSelection(mFlagAdapter.getCount());
+            }
 
 
-
+            final int[] initial = {0};
             flagSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
                     final String state = mFlagAdapter.getItem(position);
-                    if (position != mFlagAdapter.getCount() && !oldStateCode.equals(state)) {
+                    if (position != mFlagAdapter.getCount() && !oldStateCode.equals(state) && initial[0] > 0) {
                         // Show prompt dialog.
                         new AlertDialog.Builder(ReportViewActivity.this)
                                 .setTitle(R.string.flag_confirm_case_title)
@@ -457,9 +456,13 @@ public class ReportViewActivity extends AppCompatActivity {
                                     reverseState();
                                 }
                             }).create().show();
+
+
                     } else {
                         // do nothings.
                     }
+
+                    initial[0] = 1;
                 }
 
                 @Override

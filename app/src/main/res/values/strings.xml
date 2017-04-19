@@ -321,4 +321,5 @@
     <string name="report_type_category_2">Animal</string>
     <string name="report_type_category_3">Environment</string>
 
+    <string name="report_map">Map</string>
 </resources>
