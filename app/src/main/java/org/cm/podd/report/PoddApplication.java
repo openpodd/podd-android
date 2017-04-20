@@ -16,9 +16,9 @@
  */
 package org.cm.podd.report;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.multidex.MultiDexApplication;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -29,7 +29,7 @@ import org.cm.podd.report.util.SharedPrefUtil;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class PoddApplication extends Application {
+public class PoddApplication extends MultiDexApplication {
 
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-57082327-1";
