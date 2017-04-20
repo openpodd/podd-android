@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -150,6 +152,7 @@ public class ReportViewActivity extends AppCompatActivity implements OnMapReadyC
     private RelativeLayout moveToCommentButton;
 
     private MapView mapView;
+    private LinearLayout mapButton;
 
     private FragmentManager fragmentManager;
     private FollowUpItemAdapter followUpItemAdapter;
@@ -227,6 +230,7 @@ public class ReportViewActivity extends AppCompatActivity implements OnMapReadyC
         emptyView = (TextView) findViewById(android.R.id.empty);
         // Preference
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+        mapButton = (LinearLayout) findViewById(R.id.map_button);
 
         // register receiver.
         mReceiver = new BroadcastReceiver() {
@@ -568,6 +572,17 @@ public class ReportViewActivity extends AppCompatActivity implements OnMapReadyC
                 longitude = Double.parseDouble(reportLocation.getJSONArray("coordinates").get(0).toString());
                 refreshMap();
             }
+
+            mapButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri gmmIntentUri = Uri.parse("geo:"+ latitude + "," + longitude + "?q="+ latitude + "," + longitude);
+
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
+                }
+            });
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
