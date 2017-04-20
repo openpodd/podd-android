@@ -120,4 +120,13 @@ public class QuestionTest extends TestCase {
         question1.setData(null);
         assertFalse(question1.isDirty());
     }
+
+    public void testInitIntegerQuestionWithZeroValue() {
+        Question<Integer> q1 = new Question<Integer>();
+        q1.setDataType(DataType.INTEGER);
+        assertNull(q1.getValue());
+        q1.initWithDefaultValue();
+        assertNotNull(q1.getValue());
+        assertTrue(q1.getValue().intValue() == 0);
+    }
 }

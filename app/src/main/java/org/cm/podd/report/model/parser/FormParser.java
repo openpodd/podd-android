@@ -17,8 +17,6 @@
 
 package org.cm.podd.report.model.parser;
 
-import android.content.Intent;
-
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.FollowAction;
 import org.cm.podd.report.model.Form;
@@ -35,12 +33,10 @@ import org.cm.podd.report.model.validation.MaxValidation;
 import org.cm.podd.report.model.validation.MinValidation;
 import org.cm.podd.report.model.validation.RequireValidation;
 import org.cm.podd.report.model.validation.ScriptValidation;
-import org.cm.podd.report.service.CommentService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -194,7 +190,7 @@ public class FormParser {
             }
         }
 
-
+        question.initWithDefaultValue();
         form.addQuestion(question);
     }
 

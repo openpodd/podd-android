@@ -163,4 +163,10 @@ public class Question<T> implements Serializable {
     public String getKey() {
         return getId() + "@@@" + getName();
     }
+
+    public void initWithDefaultValue() {
+        if (dataType == DataType.INTEGER) {
+            setData((T) new Integer(0));
+        }
+    }
 }
