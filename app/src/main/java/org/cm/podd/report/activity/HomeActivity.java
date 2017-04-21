@@ -156,10 +156,16 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_new_report_active).setText(R.string.home_menu_reports));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_feed_active).setText(R.string.home_menu_news));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_news_active).setText(R.string.home_menu_incidents));
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+
+        final TabLayout.Tab tabNewReport = tabLayout.newTab().setIcon(R.drawable.ic_new_report_active).setText(R.string.home_menu_reports);
+        final TabLayout.Tab tabFeed = tabLayout.newTab().setIcon(R.drawable.ic_feed_active).setText(R.string.home_menu_news);
+        final TabLayout.Tab tabNews = tabLayout.newTab().setIcon(R.drawable.ic_news_active).setText(R.string.home_menu_incidents);
+
+        tabLayout.addTab(tabNewReport);
+        tabLayout.addTab(tabFeed);
+        tabLayout.addTab(tabNews);
+
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -210,14 +216,17 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
                         drawerPosition = 0;
+                        tabNewReport.select();
                         break;
                     case R.id.news:
                         mCurrentFragment = new NotificationListFragment();
                         drawerPosition = 1;
+                        tabFeed.select();
                         break;
                     case R.id.incidents:
                         mCurrentFragment = new DashboardFeedFragment();
                         drawerPosition = 2;
+                        tabNews.select();
                         break;
                 }
 
