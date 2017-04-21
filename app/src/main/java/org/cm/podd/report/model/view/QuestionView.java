@@ -136,6 +136,8 @@ public class QuestionView extends LinearLayout {
 
             Calendar c = Calendar.getInstance();
             c.setTime(value);
+            question.setData(c.getTime());
+            
             calendarView.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker datePicker, int year, int month, int day) {
