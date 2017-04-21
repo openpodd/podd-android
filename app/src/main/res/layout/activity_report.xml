@@ -58,13 +58,16 @@
                         android:gravity="center"/>
 
                     <Button
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/refresh_location_button"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        app:backgroundTint="@color/color_scheme_1_1"
-                        android:text="Refresh"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:textColor="@color/white"
+                        app:backgroundTint="@color/color_new_report_action"
+                        android:text="@string/refresh_location_service"
                         android:visibility="gone"
                         />
                 </LinearLayout>

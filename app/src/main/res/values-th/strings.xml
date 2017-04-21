@@ -322,5 +322,6 @@
 
     <string name="report_map">แผนที่</string>
     <string name="go_to_map">แสดงบน Google Map</string>
+    <string name="refresh_location_service">หาตำแหน่งใหม่</string>
 
 </resources>
