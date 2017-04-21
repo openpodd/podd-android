@@ -24,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -82,20 +81,6 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         Toolbar topBar = (Toolbar) findViewById(R.id.toolbar_top);
         setSupportActionBar(topBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        Toolbar bottomBar = (Toolbar) findViewById(R.id.toolbar_bottom);
-        bottomBar.inflateMenu(R.menu.report_type_footer);
-        bottomBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.action_refresh_report_type) {
-                    Log.d(TAG, "refresh");
-                    return true;
-                }
-                return false;
-            }
-        });
 
         listView = (ExpandableListView) findViewById(R.id.report_type_list_view);
         adapter = new GroupReportTypeAdapter(this, dataSource.getAll());

@@ -36,9 +36,10 @@
     <color name="color_scheme_1_3">#FFBB33</color>
     <color name="color_scheme_1_4">#FF4444</color>
     <color name="wallet_dim_foreground_disabled_holo_dark">#7f06000c</color>
-    <color name="ColorPrimary">#f5f5f5</color>
-    <color name="ColorPrimaryDark">#7c57bb</color>
-    <color name="report_type_human">#FFF4A60C</color>
-    <color name="report_type_animal">#FFCF6221</color>
-    <color name="report_type_environment">#FF96B220</color>
+    <color name="ColorPrimary">#7547C2</color>
+    <color name="ColorPrimaryDark">#000000</color>
+    <color name="report_type_human">#FF3FB7CA</color>
+    <color name="report_type_animal">#FF874E9A</color>
+    <color name="report_type_environment">#FFB4D34A</color>
+    <color name="color_new_report_action">#FFFF8500</color>
 </resources>

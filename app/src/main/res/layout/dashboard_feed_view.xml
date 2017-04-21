@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:elevation="5dp"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/title_activity_report"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary" />

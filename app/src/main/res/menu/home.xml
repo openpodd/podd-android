@@ -4,7 +4,7 @@
     tools:context="org.cm.podd.report.activity.HomeActivity" >
 
     <item android:id="@+id/action_new_event"
-        android:icon="@drawable/ic_menu_add"
+        android:icon="@drawable/ic_add_white_24dp"
         android:title="New Report"
         app:showAsAction="always" />
 

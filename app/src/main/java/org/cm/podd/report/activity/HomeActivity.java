@@ -67,7 +67,6 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
-import org.cm.podd.report.fragment.AdministrationAreaFragment;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
@@ -75,6 +74,7 @@ import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertService;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -133,6 +133,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        mMenuTitles = new String[] {
+            getString(R.string.home_menu_reports),
+            getString(R.string.home_menu_news),
+            getString(R.string.home_menu_incidents)
+        };
+
         notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -162,23 +168,19 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                     case R.id.reports:
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
+                        drawerPosition = 0;
                         break;
                     case R.id.news:
                         mCurrentFragment = new NotificationListFragment();
+                        drawerPosition = 1;
                         break;
                     case R.id.incidents:
                         mCurrentFragment = new DashboardFeedFragment();
+                        drawerPosition = 2;
                         break;
                 }
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-
-                // Insert the fragment by replacing any existing fragment
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                        .commit();
+                changeFragment();
 
                 return true;
             }
@@ -201,11 +203,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         }
         profileImageView.setImageBitmap(profileBitmap);
 
-        Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
-
-        final TextView userText = (TextView) header.findViewById(R.id.username);
-        userText.setText(sharedPrefUtil.getFullName());
-        userText.setTypeface(face);
+        ((TextView) header.findViewById(R.id.full_name)).setText(sharedPrefUtil.getFullName());
+        ((TextView) header.findViewById(R.id.username)).setText(sharedPrefUtil.getUserName());
 
         // Set the adapter for the list view
         setNotificationCount();
@@ -233,6 +232,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        View drawerHeader = findViewById(R.id.drawer_header);
+        FontUtil.overrideFonts(this, drawerHeader);
+
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 new ConnectivityChangeReceiver(),
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
@@ -248,6 +250,17 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         onNewIntent(getIntent());
 
+    }
+
+    private void changeFragment() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                .commit();
     }
 
     public void setNotificationCount() {
@@ -302,28 +315,18 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         } else if (position == 1) {
             mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
+            navigationView.setCheckedItem(R.id.news);
         } else if (position == 2) {
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
-        } else if (position == 3) {
-            mCurrentFragment = new AdministrationAreaFragment();
-            setTitle(mMenuTitles[position]);
-        }else {
+        } else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
         }
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                .commit();
+        changeFragment();
 
         mDrawerLayout.closeDrawer(navigationView);
-
     }
 
     @Override
@@ -343,7 +346,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         badgeMenuItem = menu.findItem(R.id.badge);
         MenuItemCompat.setActionView(badgeMenuItem, notifCountView);
         badgeCounterButton = (Button) MenuItemCompat.getActionView(badgeMenuItem);
-
+        badgeCounterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectItem(1);
+            }
+        });
 
 
         return true;

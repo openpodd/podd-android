@@ -30,13 +30,13 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add"
-        android:src="@drawable/ic_menu_add"
+        android:src="@drawable/ic_add_white_24dp"
         app:fabSize="auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
-        app:backgroundTint="@color/color_scheme_1_2"
+        app:backgroundTint="@color/color_new_report_action"
         app:layout_anchor="@id/listview_main_layout"
         app:layout_anchorGravity="bottom|right|end"
         />
