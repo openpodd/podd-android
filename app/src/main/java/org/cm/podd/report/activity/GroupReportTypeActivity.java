@@ -17,7 +17,11 @@
 
 package org.cm.podd.report.activity;
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,6 +29,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -38,6 +45,8 @@ import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.GroupReportTypeAdapter;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.service.SyncReportTypeService;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 /**
@@ -54,6 +63,17 @@ public class GroupReportTypeActivity extends AppCompatActivity {
     private ReportQueueDataSource reportQueueDataSource;
     private GroupReportTypeAdapter adapter;
     private CheckBox testCheckbox;
+
+    ProgressDialog progress;
+
+    protected BroadcastReceiver mSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            progress.hide();
+            adapter = new GroupReportTypeAdapter(GroupReportTypeActivity.this, dataSource.getAll());
+            listView.setAdapter(adapter);
+        }
+    };
 
 
     @Override
@@ -120,6 +140,10 @@ public class GroupReportTypeActivity extends AppCompatActivity {
             }
         });
 
+        progress = new ProgressDialog(this);
+        progress.setTitle(getString(R.string.update_report_type));
+        registerReceiver(mSyncReceiver, new IntentFilter(SyncReportTypeService.SYNC));
+
     }
 
     private void broadcastReportSubmission() {
@@ -134,6 +158,29 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         reportDataSource.close();
         reportQueueDataSource.close();
 
+        unregisterReceiver(mSyncReceiver);
+
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.group_report_type_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh_report_type:
+                if (RequestDataUtil.hasNetworkConnection(this)) {
+                    progress.show();
+                    Intent intent = new Intent(this, SyncReportTypeService.class);
+                    startService(intent);
+                }
+                break;
+        }
+        return true;
     }
 }
