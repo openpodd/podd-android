@@ -32,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -154,6 +155,46 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_new_report_active).setText(R.string.home_menu_reports));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_feed_active).setText(R.string.home_menu_news));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_news_active).setText(R.string.home_menu_incidents));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                switch (tab.getPosition()) {
+                    case 0:
+                        mCurrentFragment = new ReportListFragment();
+                        setTitle(getAppTitle());
+                        drawerPosition = 0;
+                        break;
+                    case 1:
+                        mCurrentFragment = new NotificationListFragment();
+                        drawerPosition = 1;
+                        break;
+                    case 2:
+                        mCurrentFragment = new DashboardFeedFragment();
+                        drawerPosition = 2;
+                        break;
+                }
+
+                changeFragment();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
