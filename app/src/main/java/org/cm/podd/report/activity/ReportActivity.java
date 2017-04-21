@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -788,9 +789,13 @@ public class ReportActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG) {
 
-            final LocationRequest locationRequest = getLocationRequest();
+            if (resultCode == Activity.RESULT_OK) {
+                final LocationRequest locationRequest = getLocationRequest();
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
+            } else {
 
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
+            }
+
         }
     }
 
