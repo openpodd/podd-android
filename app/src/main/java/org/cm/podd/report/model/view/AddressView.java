@@ -133,7 +133,7 @@ public class AddressView extends LinearLayout {
         String key = question.getDataUrl();
 
         config = sharedPrefUtil.getSyncData(system, key);
-        if (init == 0 && config.getValue() == null) {
+        if (init == 0) {
             return;
         }
 
@@ -187,7 +187,7 @@ public class AddressView extends LinearLayout {
 
             addView(headerView);
 
-            if (listData != null) {
+            if (listData != null && config.getValue() != null && !readonly) {
                 adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, listData);
 
                 Spinner spinnerView =  new Spinner(context);
@@ -364,13 +364,18 @@ public class AddressView extends LinearLayout {
 
                 if (config.getValue() == null) {
                     config = sharedPrefUtil.getSyncData(system, key);
-                    createAddressView();
                 }
-                init = 1;
+
 
             } else {
                 // show error
             }
+
+            init = 1;
+            createAddressView();
+            question.setData(getAddressUpdated());
+
+            hideProgressDialog();
         }
     }
 
