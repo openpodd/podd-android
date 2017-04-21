@@ -102,7 +102,8 @@ public class ReportCommentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_comment);
-        FontUtil.overrideFonts(this, getWindow().getDecorView());
+        FontUtil.overrideFonts(this, findViewById(R.id.comment_layout));
+        FontUtil.overrideFonts(this, findViewById(R.id.section_post_comment));
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
