@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,9 +33,11 @@ import android.widget.LinearLayout;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.GroupReportTypeAdapter;
 import org.cm.podd.report.model.ReportType;
+import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.util.StyleUtil;
 
 /**
@@ -48,6 +51,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
     private ExpandableListView listView;
     private ReportTypeDataSource dataSource;
     private ReportDataSource reportDataSource;
+    private ReportQueueDataSource reportQueueDataSource;
     private GroupReportTypeAdapter adapter;
     private CheckBox testCheckbox;
 
@@ -58,6 +62,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
 
         dataSource = new ReportTypeDataSource(this);
         reportDataSource = new ReportDataSource(this);
+        reportQueueDataSource = new ReportQueueDataSource(this);
 
         typeface = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
         setContentView(R.layout.activity_group_report_type);
@@ -97,13 +102,37 @@ public class GroupReportTypeActivity extends AppCompatActivity {
                 return true;
             }
         });
+        listView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView expandableListView, View view, int groupPosition, long id) {
+                Log.d(TAG, "group " + groupPosition);
+                if (groupPosition == 0) {
+                    long reportId = reportDataSource.createPositiveReport();
 
+                    // after save positive report, submit to queue right away
+                    reportQueueDataSource.addDataQueue(reportId);
+                    broadcastReportSubmission();
+
+                    finish();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    private void broadcastReportSubmission() {
+        // Broadcasts the Intent to network receiver
+        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
     }
 
     @Override
     protected void onDestroy() {
         dataSource.close();
         reportDataSource.close();
+        reportQueueDataSource.close();
 
         super.onDestroy();
     }

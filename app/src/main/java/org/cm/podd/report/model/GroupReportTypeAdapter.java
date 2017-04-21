@@ -52,18 +52,20 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return 3;
+        return 4;
     }
 
     @Override
     public int getChildrenCount(int i) {
         switch (i) {
-            case 0:
-                return humanReportTypes.size();
             case 1:
-                return animalReportTypes.size();
+                return humanReportTypes.size();
             case 2:
+                return animalReportTypes.size();
+            case 3:
                 return environmentReportTypes.size();
+            case 0:
+                return 0;
         }
         return 0;
     }
@@ -71,12 +73,14 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
     @Override
     public Object getGroup(int i) {
         switch(i) {
-            case 0:
-                return context.getString(R.string.report_type_category_1);
             case 1:
-                return context.getString(R.string.report_type_category_2);
+                return context.getString(R.string.report_type_category_1);
             case 2:
+                return context.getString(R.string.report_type_category_2);
+            case 3:
                 return context.getString(R.string.report_type_category_3);
+            case 0:
+                return context.getString(R.string.normal_case);
         }
         return "";
     }
@@ -84,12 +88,14 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
     @Override
     public Object getChild(int i, int i1) {
         switch (i) {
-            case 0:
-                return humanReportTypes.get(i1);
             case 1:
-                return animalReportTypes.get(i1);
+                return humanReportTypes.get(i1);
             case 2:
+                return animalReportTypes.get(i1);
+            case 3:
                 return environmentReportTypes.get(i1);
+            case 0:
+                return new ArrayList();
         }
         return null;
     }
@@ -132,24 +138,28 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
 
     private int getDrawable(int i) {
         switch(i) {
-            case 0:
-                return R.drawable.ic_cat_human;
             case 1:
-                return R.drawable.ic_cat_animal;
+                return R.drawable.people;
             case 2:
-                return R.drawable.ic_cat_enviroment;
+                return R.drawable.animal;
+            case 3:
+                return R.drawable.tree;
+            case 0:
+                return R.drawable.zero;
         }
         return R.drawable.ic_cat_human;
     }
 
     private int getColor(int i) {
         switch(i) {
-            case 0:
-                return R.color.report_type_human;
             case 1:
-                return R.color.report_type_animal;
+                return R.color.white;
             case 2:
-                return R.color.report_type_environment;
+                return R.color.white;
+            case 3:
+                return R.color.white;
+            case 0:
+                return R.color.white;
         }
         return R.color.white;
     }

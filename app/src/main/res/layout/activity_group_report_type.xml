@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/test_label"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="14dp"
             android:layout_marginBottom="10dp"
             />
 
@@ -41,24 +41,13 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/zero_report_btn"
-        android:layout_below="@id/test_section"
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:backgroundTint="@color/common_signin_btn_light_text_default"
-        android:textColor="@color/white"
-        android:text="@string/normal_case"/>
-
     <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/report_type_list_view"
-        android:layout_below="@id/zero_report_btn"
+        android:layout_below="@id/test_section"
         android:layout_marginLeft="14dp"
+        android:drawSelectorOnTop="true"
         android:layout_marginRight="14dp">
 
 

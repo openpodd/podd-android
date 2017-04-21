@@ -35,8 +35,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
+import org.cm.podd.report.activity.GroupReportTypeActivity;
 import org.cm.podd.report.activity.ReportActivity;
-import org.cm.podd.report.activity.ReportTypeActivity;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -170,7 +170,7 @@ public class ReportListFragment extends ListFragment {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ReportTypeActivity.class);
+                Intent intent = new Intent(getActivity(), GroupReportTypeActivity.class);
                 startActivityForResult(intent, 0);
             }
         });
