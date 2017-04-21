@@ -178,9 +178,11 @@ public class GroupReportTypeActivity extends AppCompatActivity {
                     progress.show();
                     Intent intent = new Intent(this, SyncReportTypeService.class);
                     startService(intent);
+                    return true;
                 }
                 break;
         }
-        return true;
+
+        return super.onOptionsItemSelected(item);
     }
 }
