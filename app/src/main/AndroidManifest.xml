@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- get device_id from telephoney service -->
-    <uses-permission android:name="android.permission.WAKE_LOCK"/> <!-- use to receive gcm -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- use to receive gcm -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
@@ -31,24 +31,22 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Podd" >
+        android:theme="@style/Theme.Podd">
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="GOOGLE_MAP_API_KEY"/>
 
         <activity
             android:name=".activity.TestFormActivity"
-            android:label="@string/title_activity_test_form" >
-        </activity>
+            android:label="@string/title_activity_test_form"></activity>
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -64,7 +62,7 @@
             android:launchMode="singleTop"
             android:parentActivityName=".activity.HomeActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -72,14 +70,14 @@
         <activity
             android:name=".activity.ReportViewActivity"
             android:label="@string/title_activity_report"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
         <activity
             android:name=".activity.ReportFollowUpActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.ReportViewActivity" />
@@ -88,15 +86,15 @@
             android:name=".activity.ReportTypeActivity"
             android:label="@string/title_activity_report_type"
             android:noHistory="true"
-            android:theme="@style/reportTypeDialog"
             android:parentActivityName=".activity.HomeActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/reportTypeDialog">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
         </activity>
-
-        <activity android:name=".activity.GroupReportTypeActivity"
+        <activity
+            android:name=".activity.GroupReportTypeActivity"
             android:label="@string/title_activity_report_type"
             android:noHistory="true"
             android:parentActivityName=".activity.HomeActivity"
@@ -109,7 +107,7 @@
             android:name=".activity.ImageActivity"
             android:label="@string/title_activity_image"
             android:parentActivityName=".activity.ReportActivity"
-            android:screenOrientation="fullSensor" >
+            android:screenOrientation="fullSensor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.ReportActivity" />
@@ -117,7 +115,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/title_activity_login"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -125,7 +123,7 @@
         <activity
             android:name=".activity.SettingActivity"
             android:label="@string/title_activity_setting"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -133,7 +131,7 @@
         <activity
             android:name=".activity.WebContentActivity"
             android:label="@string/title_activity_web_content"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -142,7 +140,7 @@
             android:name=".activity.VisualizationAreaActivity"
             android:label="@string/title_activity_visualization_area"
             android:parentActivityName=".activity.HomeActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -150,10 +148,9 @@
         <activity
             android:name=".activity.VisualizationVolunteerActivity"
             android:label="@string/title_activity_visualization_volunteer"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
-        <receiver android:name=".service.ConnectivityChangeReceiver" >
+        <receiver android:name=".service.ConnectivityChangeReceiver">
             <intent-filter>
 
                 <!-- <action android:name="android.net.wifi.STATE_CHANGE" /> -->
@@ -176,7 +173,7 @@
 
         <receiver
             android:name=".service.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
@@ -187,24 +184,19 @@
         <service android:name=".service.GcmIntentService" />
         <service
             android:name=".service.FilterService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name=".service.ReportService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name=".service.CommentService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name=".service.VisualizationAreaService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
         <service
             android:name=".service.VisualizationVolunteerService"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
 
         <activity
             android:name=".activity.ReportCommentActivity"
@@ -212,36 +204,29 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ReportViewActivity">
-            </meta-data>
+                android:value=".activity.ReportViewActivity"></meta-data>
         </activity>
         <activity
             android:name=".activity.RegistrationActivity"
             android:label="@string/title_activity_registration"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activity.ForgetPasswordActivity"
             android:label="@string/title_activity_forget_password"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
         <service
             android:name=".service.FollowAlertService"
-            android:exported="false" >
-        </service>
-
-        <service android:name=".service.FollowAlertRescheduleService" >
-        </service>
-
-        <service android:name=".service.SyncAdministrationAreaService"
-            android:exported="false">
-        </service>
+            android:exported="false"></service>
+        <service android:name=".service.FollowAlertRescheduleService"></service>
+        <service
+            android:name=".service.SyncAdministrationAreaService"
+            android:exported="false"></service>
 
         <receiver
             android:name=".service.FollowAlertReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -253,8 +238,8 @@
 
         <activity
             android:name=".activity.QRConfigActivity"
-            android:label="@string/title_activity_qrconfig" >
-        </activity>
+            android:label="@string/title_activity_qrconfig"></activity>
+        <activity android:name=".activity.ResetPasswordActivity"></activity>
     </application>
 
 </manifest>
