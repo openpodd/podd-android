@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <!-- Your normal content view -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,6 +16,7 @@
              in front of the action bar -->
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appBarLayout"
+            app:elevation="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -27,16 +27,11 @@
                 android:background="?attr/colorPrimary"
                 app:contentInsetLeft="0dp"
                 app:contentInsetStart="0dp"
-                android:elevation="4dp"
+                android:elevation="0dp"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-            <View android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/toolbar_dropshadow"/>
-
         </android.support.design.widget.AppBarLayout>
-
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
@@ -47,11 +42,12 @@
             app:tabTextColor="@color/white"
             app:tabSelectedTextColor="@color/white"
             app:tabIndicatorColor="@color/color_scheme_1_3"
-            android:elevation="6dp"/>
+            android:elevation="0dp"/>
 
         <!-- The rest of your content view -->
         <!-- The main content view -->
         <FrameLayout
+            android:background="@color/white"
             android:id="@+id/content_frame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
