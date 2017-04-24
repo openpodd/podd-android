@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group>
         <item
-            android:id="@+id/reports"
+            android:id="@+id/user_profile"
             android:checked="true"
-            android:title="@string/home_menu_reports"
-            android:icon="@drawable/ic_action_view_as_list"/>
+            android:title="@string/setting_user"/>
 
         <item
-            android:id="@+id/news"
+            android:id="@+id/user_password"
             android:checked="false"
-            android:title="@string/home_menu_news"
-            android:icon="@drawable/ic_action_event"/>
-
-        <item
-            android:id="@+id/incidents"
-            android:checked="false"
-            android:title="@string/home_menu_incidents"
-            android:icon="@drawable/ic_cast_menu"/>
-
+            android:title="@string/setting_password"/>
     </group>
+    <item android:title="@string/about_app_version">
+        <menu>
+            <item
+                android:title="@string/app_version_code" />
+            <item
+                android:title="@string/app_version_name" />
+        </menu>
+    </item>
+    <item android:title="@string/logout">
+        <menu>
+            <item
+                android:id="@+id/logout"
+                android:title="@string/logout" />
+        </menu>
+    </item>
 </menu>

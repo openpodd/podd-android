@@ -67,13 +67,16 @@ import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
+import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
@@ -82,6 +85,8 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
@@ -134,6 +139,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        final Context context = this;
         mMenuTitles = new String[] {
             getString(R.string.home_menu_reports),
             getString(R.string.home_menu_news),
@@ -225,41 +231,34 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
-
                 mDrawerLayout.closeDrawers();
-                setTitle(item.getTitle());
 
                 switch (item.getItemId()) {
-                    case R.id.reports:
-                        mCurrentFragment = new ReportListFragment();
-                        setTitle(getAppTitle());
-                        drawerPosition = 0;
-
-                        tabNewReport.select();
-                        tabNewReport.setIcon(activeIcons[0]);
-                        tabFeed.setIcon(defaultIcons[1]);
-                        tabNews.setIcon(defaultIcons[2]);
-
+                    case R.id.user_profile:
+                        showSetting();
                         break;
-                    case R.id.news:
-                        mCurrentFragment = new NotificationListFragment();
-                        drawerPosition = 1;
-
-                        tabFeed.select();
-                        tabNewReport.setIcon(defaultIcons[0]);
-                        tabFeed.setIcon(activeIcons[1]);
-                        tabNews.setIcon(defaultIcons[2]);
-
+                    case R.id.user_password:
+                        showSetting();
                         break;
-                    case R.id.incidents:
-                        mCurrentFragment = new DashboardFeedFragment();
-                        drawerPosition = 2;
-                        tabNews.select();
+                    case R.id.logout:
 
-                        tabNewReport.setIcon(defaultIcons[0]);
-                        tabFeed.setIcon(defaultIcons[1]);
-                        tabNews.setIcon(activeIcons[2]);
-
+                        new AlertDialog.Builder(context)
+                                .setTitle(R.string.confirm_logout_title)
+                                .setMessage(getString(R.string.confirm_logout_text))
+                                .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        logout();
+                                    }
+                                })
+                                .setNegativeButton(R.string.btn_not_ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .create()
+                                .show();
                         break;
                 }
 
@@ -398,7 +397,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         } else if (position == 1) {
             mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
-            navigationView.setCheckedItem(R.id.news);
         } else if (position == 2) {
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
@@ -592,6 +590,35 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         intent.putExtra("content", content);
         intent.putExtra("id", id);
         startActivity(intent);
+    }
+
+    private void logout() {
+        // clear access token
+        sharedPrefUtil.clearAllData();
+
+        clearAllPendingAlert();
+
+        // clear all report data
+        ReportDataSource db = new ReportDataSource(this);
+        db.clearAllData();
+
+        // Back to home, then redirect to login
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    private void clearAllPendingAlert() {
+        FollowAlertDataSource followAlertDataSource = new FollowAlertDataSource(getApplicationContext());
+        List<Map> requestCodes = followAlertDataSource.getUnDoneRequest();
+        for (Map tmp : requestCodes) {
+            FollowAlertScheduleService.cancelFollowAlert(getApplicationContext(),
+                    (Long) tmp.get("reportId"),
+                    (Integer) tmp.get("requestCode"),
+                    (Long) tmp.get("reportType"),
+                    (String) tmp.get("message")
+            );
+        }
     }
 
     @Override
