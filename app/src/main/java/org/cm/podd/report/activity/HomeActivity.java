@@ -190,12 +190,17 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
                 switch (tab.getPosition()) {
                     case 0:
+                        if (mCurrentFragment instanceof  DashboardFeedFragment) {
+                            ((DashboardFeedFragment) mCurrentFragment).onRefreshComplete();
+                        }
+
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
                         drawerPosition = 0;
                         tabNewReport.setIcon(activeIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
+
                         break;
                     case 1:
                         mCurrentFragment = new DashboardFeedFragment();
@@ -205,6 +210,10 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabFeed.setIcon(activeIcons[2]);
                         break;
                     case 2:
+                        if (mCurrentFragment instanceof  DashboardFeedFragment) {
+                            ((DashboardFeedFragment) mCurrentFragment).onRefreshComplete();
+                        }
+
                         mCurrentFragment = new NotificationListFragment();
                         drawerPosition = 2;
                         tabNewReport.setIcon(defaultIcons[0]);

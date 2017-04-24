@@ -177,7 +177,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         return wrappedView;
     }
 
-    private void onRefreshComplete() {
+    public void onRefreshComplete() {
         Log.d(TAG, "onRefreshComplete");
         setRefreshing(false);
         if (mAdapter.getmDataSet().size() == 0) {
