@@ -324,7 +324,7 @@
     <string name="go_to_map">แสดงบน Google Map</string>
     <string name="refresh_location_service">หาตำแหน่งใหม่</string>
     <string name="setting_user">แก้ไขข้อมูลส่วนตัว</string>
-    <string name="setting_password">แก้ไขรหัสผ่าน</string>
+    <string name="setting_password">เปลี่ยนรหัสผ่าน</string>
     <string name="about_app_version">เกี่ยวกับแอปพลิเคชัน</string>
 
 </resources>
