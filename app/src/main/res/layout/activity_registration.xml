@@ -1,54 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="horizontal"
-    android:background="@color/white"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/invite_content"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/invite_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/invite_code_title"
-            android:layout_marginBottom="12.5dp"
-            android:textSize="20dp"
-            android:id="@+id/textView" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/invite_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/edittext_hint"
-            android:imeOptions="actionNext"
-            android:singleLine="true"
-            style="@style/EditTextFlat"
-            android:background="@drawable/edit_text_box"
-            android:padding="5dp"
-            android:layout_marginBottom="15dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/invite_code_title"
+                android:layout_marginBottom="12.5dp"
+                android:textSize="20dp"
+                android:id="@+id/textView" />
 
-        <Button
-            android:id="@+id/invite_code_submit"
+            <EditText
+                android:id="@+id/invite_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edittext_hint"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                style="@style/EditTextFlat"
+                android:background="@drawable/edit_text_box"
+                android:padding="5dp"
+                android:layout_marginBottom="15dp"/>
+
+            <Button
+                android:id="@+id/invite_code_submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_next"
+                android:layout_marginBottom="15dp"
+                style="@style/NextButton" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/form_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_next"
-            android:layout_marginBottom="15dp"
-            style="@style/NextButton" />
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/form_content"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        app:elevation="0dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        />
+        android:layout_height="wrap_content">
 
-</RelativeLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:elevation="5dp"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/registration_form"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
+
+    </android.support.design.widget.AppBarLayout>
+
+</android.support.design.widget.CoordinatorLayout>
