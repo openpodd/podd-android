@@ -323,7 +323,8 @@
 
     <string name="report_map">Map</string>
     <string name="refresh_location_service">Refresh</string>
-    <string name="setting_user">แก้ไขข้อมูลส่วนตัว</string>
-    <string name="setting_password">แก้ไขรหัสผ่าน</string>
-    <string name="about_app_version">เกี่ยวกับแอปพลิเคชัน</string>
+    <string name="setting_user">Edit profile</string>
+    <string name="setting_password">Change password</string>
+    <string name="about_app_version">App version</string>
+    <string name="title_activity_user_password">Change password</string>
 </resources>

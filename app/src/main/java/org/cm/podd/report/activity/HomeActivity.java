@@ -247,7 +247,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         showSetting();
                         break;
                     case R.id.user_password:
-                        showSetting();
+                        showChangePassword();
                         break;
                     case R.id.app_version_code:
                         return true;
@@ -459,7 +459,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         settingMenuItem = menu.findItem(R.id.action_settings);
         newEventMenuItem = menu.findItem(R.id.action_new_event);
         badgeMenuItem = menu.findItem(R.id.badge);
+
         MenuItemCompat.setActionView(badgeMenuItem, notifCountView);
+
         badgeCounterButton = (Button) MenuItemCompat.getActionView(badgeMenuItem);
         badgeCounterButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -512,6 +514,11 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     private void showSetting() {
         Intent intent = new Intent(this, SettingActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
+    private void showChangePassword() {
+        Intent intent = new Intent(this, ResetPasswordActivity.class);
         startActivityForResult(intent, 0);
     }
 

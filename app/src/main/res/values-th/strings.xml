@@ -326,5 +326,6 @@
     <string name="setting_user">แก้ไขข้อมูลส่วนตัว</string>
     <string name="setting_password">เปลี่ยนรหัสผ่าน</string>
     <string name="about_app_version">เกี่ยวกับแอปพลิเคชัน</string>
+    <string name="title_activity_user_password">เปลี่ยนรหัสผ่าน</string>
 
 </resources>
