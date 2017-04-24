@@ -134,6 +134,13 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     private View notifCountView;
     private NavigationView navigationView;
 
+    private TabLayout.Tab tabNewReport;
+    private TabLayout.Tab tabFeed;
+    private TabLayout.Tab tabNews;
+
+    private int[] activeIcons;
+    private int[] defaultIcons;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,16 +171,16 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        final int[] activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_feed_active, R.drawable.ic_news_active};
-        final int[] defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_feed, R.drawable.ic_news};
+        activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active};
+        defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed};
 
-        final TabLayout.Tab tabNewReport = tabLayout.newTab().setIcon(activeIcons[0]).setText(R.string.home_menu_reports);
-        final TabLayout.Tab tabFeed = tabLayout.newTab().setIcon(defaultIcons[1]).setText(R.string.home_menu_news);
-        final TabLayout.Tab tabNews = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
+        tabNewReport = tabLayout.newTab().setIcon(activeIcons[0]).setText(R.string.home_menu_reports);
+        tabNews = tabLayout.newTab().setIcon(defaultIcons[1]).setText(R.string.home_menu_news);
+        tabFeed = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
 
         tabLayout.addTab(tabNewReport);
-        tabLayout.addTab(tabFeed);
         tabLayout.addTab(tabNews);
+        tabLayout.addTab(tabFeed);
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -186,29 +193,23 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
                         drawerPosition = 0;
-
                         tabNewReport.setIcon(activeIcons[0]);
-                        tabFeed.setIcon(defaultIcons[1]);
-                        tabNews.setIcon(defaultIcons[2]);
-
+                        tabNews.setIcon(defaultIcons[1]);
+                        tabFeed.setIcon(defaultIcons[2]);
                         break;
                     case 1:
                         mCurrentFragment = new NotificationListFragment();
                         drawerPosition = 1;
-
                         tabNewReport.setIcon(defaultIcons[0]);
-                        tabFeed.setIcon(activeIcons[1]);
-                        tabNews.setIcon(defaultIcons[2]);
-
+                        tabNews.setIcon(activeIcons[1]);
+                        tabFeed.setIcon(defaultIcons[2]);
                         break;
                     case 2:
                         mCurrentFragment = new DashboardFeedFragment();
                         drawerPosition = 2;
-
                         tabNewReport.setIcon(defaultIcons[0]);
-                        tabFeed.setIcon(defaultIcons[1]);
-                        tabNews.setIcon(activeIcons[2]);
-
+                        tabNews.setIcon(defaultIcons[1]);
+                        tabFeed.setIcon(activeIcons[2]);
                         break;
                 }
 
@@ -347,6 +348,20 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     public void setNotificationCount() {
         mNotificationCount = notificationDataSource.getUnseenCount();
+
+        if (mNotificationCount > 0) {
+            activeIcons[1] = R.drawable.ic_news_noti_active;
+            defaultIcons[1] = R.drawable.ic_news_noti;
+        } else {
+            activeIcons[1] = R.drawable.ic_news_active;
+            defaultIcons[1] = R.drawable.ic_news;
+        }
+
+        if (tabNews.isSelected()) {
+            tabNews.setIcon(activeIcons[1]);
+        } else {
+            tabNews.setIcon(defaultIcons[1]);
+        }
     }
 
     public void refreshDrawerMenu() {
