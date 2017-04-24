@@ -309,7 +309,7 @@
     <string name="confirm_test_report">เหตุการณ์ทดสอบ</string>
     <string name="confirm_report_message">ข้อมุลการรายงานเหตุผิดปกติของท่านเป็น</string>
     <string name="confirm_message_title">ยืนยันเหตุการณ์</string>
-    <string name="home_menu_incidents">เหตุการณ์ในพื้นที่</string>
+    <string name="home_menu_incidents">เหตุการณ์</string>
     <string name="home_menu_news">ข่าวสาร</string>
     <string name="home_menu_reports">รายงาน</string>
     <string name="home_menu_summary">สรุปผลการรายงาน</string>

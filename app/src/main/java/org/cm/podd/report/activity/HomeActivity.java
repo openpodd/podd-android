@@ -179,8 +179,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         tabFeed = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
 
         tabLayout.addTab(tabNewReport);
-        tabLayout.addTab(tabNews);
         tabLayout.addTab(tabFeed);
+        tabLayout.addTab(tabNews);
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -198,18 +198,18 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabFeed.setIcon(defaultIcons[2]);
                         break;
                     case 1:
-                        mCurrentFragment = new NotificationListFragment();
-                        drawerPosition = 1;
-                        tabNewReport.setIcon(defaultIcons[0]);
-                        tabNews.setIcon(activeIcons[1]);
-                        tabFeed.setIcon(defaultIcons[2]);
-                        break;
-                    case 2:
                         mCurrentFragment = new DashboardFeedFragment();
-                        drawerPosition = 2;
+                        drawerPosition = 1;
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(activeIcons[2]);
+                        break;
+                    case 2:
+                        mCurrentFragment = new NotificationListFragment();
+                        drawerPosition = 2;
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabNews.setIcon(activeIcons[1]);
+                        tabFeed.setIcon(defaultIcons[2]);
                         break;
                 }
 
@@ -410,12 +410,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             mCurrentFragment = new ReportListFragment();
             setTitle(getAppTitle());
         } else if (position == 1) {
-            mCurrentFragment = new NotificationListFragment();
-            setTitle(mMenuTitles[position]);
-        } else if (position == 2) {
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
-        } else {
+        } else if (position == 2) {
+            mCurrentFragment = new NotificationListFragment();
+            setTitle(mMenuTitles[position]);
+        }else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
         }
