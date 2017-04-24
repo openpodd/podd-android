@@ -232,7 +232,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
-                mDrawerLayout.closeDrawers();
 
                 switch (item.getItemId()) {
                     case R.id.user_profile:
@@ -241,8 +240,11 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                     case R.id.user_password:
                         showSetting();
                         break;
+                    case R.id.app_version_code:
+                        return true;
+                    case R.id.app_version_name:
+                        return true;
                     case R.id.logout:
-
                         new AlertDialog.Builder(context)
                                 .setTitle(R.string.confirm_logout_title)
                                 .setMessage(getString(R.string.confirm_logout_text))
@@ -263,8 +265,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         break;
                 }
 
-                changeFragment();
+                mDrawerLayout.closeDrawers();
 
+                changeFragment();
                 return true;
             }
         });
@@ -307,6 +310,13 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
+
+        TextView appVersionCode = (TextView) navigationView.getMenu().findItem(R.id.app_version_code).getActionView();
+        appVersionCode.setText(String.valueOf(BuildConfig.VERSION_CODE));
+
+        TextView appVersionName = (TextView) navigationView.getMenu().findItem(R.id.app_version_name).getActionView();
+        appVersionName.setText(String.valueOf(BuildConfig.VERSION_NAME));
+
         mDrawerToggle.setDrawerIndicatorEnabled(true);
 
         // Set the drawer toggle as the DrawerListener
