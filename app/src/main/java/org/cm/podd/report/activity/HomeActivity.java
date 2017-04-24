@@ -158,9 +158,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        final TabLayout.Tab tabNewReport = tabLayout.newTab().setIcon(R.drawable.ic_new_report_active).setText(R.string.home_menu_reports);
-        final TabLayout.Tab tabFeed = tabLayout.newTab().setIcon(R.drawable.ic_feed_active).setText(R.string.home_menu_news);
-        final TabLayout.Tab tabNews = tabLayout.newTab().setIcon(R.drawable.ic_news_active).setText(R.string.home_menu_incidents);
+        final int[] activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_feed_active, R.drawable.ic_news_active};
+        final int[] defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_feed, R.drawable.ic_news};
+
+        final TabLayout.Tab tabNewReport = tabLayout.newTab().setIcon(activeIcons[0]).setText(R.string.home_menu_reports);
+        final TabLayout.Tab tabFeed = tabLayout.newTab().setIcon(defaultIcons[1]).setText(R.string.home_menu_news);
+        final TabLayout.Tab tabNews = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
 
         tabLayout.addTab(tabNewReport);
         tabLayout.addTab(tabFeed);
@@ -177,14 +180,29 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
                         drawerPosition = 0;
+
+                        tabNewReport.setIcon(activeIcons[0]);
+                        tabFeed.setIcon(defaultIcons[1]);
+                        tabNews.setIcon(defaultIcons[2]);
+
                         break;
                     case 1:
                         mCurrentFragment = new NotificationListFragment();
                         drawerPosition = 1;
+
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabFeed.setIcon(activeIcons[1]);
+                        tabNews.setIcon(defaultIcons[2]);
+
                         break;
                     case 2:
                         mCurrentFragment = new DashboardFeedFragment();
                         drawerPosition = 2;
+
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabFeed.setIcon(defaultIcons[1]);
+                        tabNews.setIcon(activeIcons[2]);
+
                         break;
                 }
 
@@ -216,17 +234,32 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         mCurrentFragment = new ReportListFragment();
                         setTitle(getAppTitle());
                         drawerPosition = 0;
+
                         tabNewReport.select();
+                        tabNewReport.setIcon(activeIcons[0]);
+                        tabFeed.setIcon(defaultIcons[1]);
+                        tabNews.setIcon(defaultIcons[2]);
+
                         break;
                     case R.id.news:
                         mCurrentFragment = new NotificationListFragment();
                         drawerPosition = 1;
+
                         tabFeed.select();
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabFeed.setIcon(activeIcons[1]);
+                        tabNews.setIcon(defaultIcons[2]);
+
                         break;
                     case R.id.incidents:
                         mCurrentFragment = new DashboardFeedFragment();
                         drawerPosition = 2;
                         tabNews.select();
+
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabFeed.setIcon(defaultIcons[1]);
+                        tabNews.setIcon(activeIcons[2]);
+
                         break;
                 }
 
