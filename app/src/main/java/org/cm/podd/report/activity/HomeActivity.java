@@ -212,7 +212,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabFeed.setIcon(defaultIcons[2]);
                         break;
                 }
-
+                invalidateOptionsMenu();
                 changeFragment();
             }
 
@@ -465,7 +465,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             newEventMenuItem.setVisible(false);
         }
 
-        badgeMenuItem.setVisible(mNotificationCount > 0);
+        badgeMenuItem.setVisible(false);
         badgeCounterButton.setText(String.valueOf(mNotificationCount));
 
         return super.onPrepareOptionsMenu(menu);
