@@ -41,7 +41,8 @@
             android:background="?attr/colorPrimary"
             app:tabTextColor="@color/white"
             app:tabSelectedTextColor="@color/white"
-            app:tabIndicatorColor="@color/color_scheme_1_3"
+            app:tabIndicatorColor="@color/color_new_report_action"
+            app:tabIndicatorHeight="3dp"
             android:elevation="0dp"/>
 
         <!-- The rest of your content view -->
