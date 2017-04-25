@@ -284,24 +284,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         });
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        View header = navigationView.getHeaderView(0);
-        ImageView profileImageView = (ImageView) header.findViewById(R.id.profile_image);
-        String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
-        Bitmap profileBitmap;
-        if (profileImageFilePath == null) {
-            // Use default profile image if not setup
-            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
-        } else {
-            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
-            // use default image, if user deleted an image somehow
-            if (profileBitmap == null) {
-                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
-            }
-        }
-        profileImageView.setImageBitmap(profileBitmap);
-
-        ((TextView) header.findViewById(R.id.full_name)).setText(sharedPrefUtil.getFullName());
-        ((TextView) header.findViewById(R.id.username)).setText(sharedPrefUtil.getUserName());
+        updateProfile();
 
         // Set the adapter for the list view
         setNotificationCount();
@@ -356,6 +339,27 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         onNewIntent(getIntent());
 
+    }
+
+    private void updateProfile() {
+        View header = navigationView.getHeaderView(0);
+        ImageView profileImageView = (ImageView) header.findViewById(R.id.profile_image);
+        String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
+        Bitmap profileBitmap;
+        if (profileImageFilePath == null) {
+            // Use default profile image if not setup
+            profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+        } else {
+            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+            // use default image, if user deleted an image somehow
+            if (profileBitmap == null) {
+                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            }
+        }
+        profileImageView.setImageBitmap(profileBitmap);
+
+        ((TextView) header.findViewById(R.id.full_name)).setText(sharedPrefUtil.getFullName());
+        ((TextView) header.findViewById(R.id.username)).setText(sharedPrefUtil.getUserName());
     }
 
     private void changeFragment() {
@@ -584,6 +588,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
             drawerPosition = 0;
             selectItem(drawerPosition);
+
+            updateProfile();
 
         }
     }
