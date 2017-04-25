@@ -191,7 +191,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                 switch (tab.getPosition()) {
                     case 0:
                         if (mCurrentFragment instanceof  DashboardFeedFragment) {
-                            ((DashboardFeedFragment) mCurrentFragment).onRefreshComplete();
+                            ((DashboardFeedFragment) mCurrentFragment).onPauseRefresh();
                         }
 
                         mCurrentFragment = new ReportListFragment();
@@ -211,7 +211,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         break;
                     case 2:
                         if (mCurrentFragment instanceof  DashboardFeedFragment) {
-                            ((DashboardFeedFragment) mCurrentFragment).onRefreshComplete();
+                            ((DashboardFeedFragment) mCurrentFragment).onPauseRefresh();
                         }
 
                         mCurrentFragment = new NotificationListFragment();

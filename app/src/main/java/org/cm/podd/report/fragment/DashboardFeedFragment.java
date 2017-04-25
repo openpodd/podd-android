@@ -169,12 +169,18 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                 mRefreshListener.onRefresh();
             }
         });
+
         FontUtil.overrideFonts(getActivity(), mEmpty);
 
         View wrappedView = super.onCreateView(inflater, container, savedInstanceState);
         mRefreshListener.onRefresh();
 
         return wrappedView;
+    }
+
+    public void onPauseRefresh() {
+        Log.d(TAG, "onPauseRefresh");
+        setRefreshing(false);
     }
 
     public void onRefreshComplete() {
