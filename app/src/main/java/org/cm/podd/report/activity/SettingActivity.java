@@ -362,7 +362,7 @@ public class SettingActivity extends ActionBarActivity {
         db.clearAllData();
 
         // Back to home, then redirect to login
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
 

@@ -585,12 +585,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             setNotificationCount();
             refreshDrawerMenu();
             supportInvalidateOptionsMenu();
-
-            drawerPosition = 0;
-            selectItem(drawerPosition);
-
-            updateProfile();
-
         }
     }
 
