@@ -204,6 +204,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         break;
                     case 1:
                         mCurrentFragment = new DashboardFeedFragment();
+                        ((DashboardFeedFragment) mCurrentFragment).onRefresh();
+
                         drawerPosition = 1;
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
