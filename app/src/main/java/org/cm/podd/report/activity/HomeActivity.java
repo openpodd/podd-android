@@ -350,6 +350,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         } else {
             drawerPosition = 0;
         }
+
+        drawerPosition = 0;
         selectItem(drawerPosition);
 
         onNewIntent(getIntent());
@@ -430,12 +432,15 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         if (position == 0) {
             mCurrentFragment = new ReportListFragment();
             setTitle(getAppTitle());
+            tabNewReport.select();
         } else if (position == 1) {
             mCurrentFragment = new DashboardFeedFragment();
             setTitle(mMenuTitles[position]);
+            tabFeed.select();
         } else if (position == 2) {
             mCurrentFragment = new NotificationListFragment();
             setTitle(mMenuTitles[position]);
+            tabNews.select();
         }else {
             mCurrentFragment = PlaceholderFragment.newInstance(position + 1);
             setTitle(null);
@@ -576,6 +581,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             setNotificationCount();
             refreshDrawerMenu();
             supportInvalidateOptionsMenu();
+
+            drawerPosition = 0;
+            selectItem(drawerPosition);
 
         }
     }
