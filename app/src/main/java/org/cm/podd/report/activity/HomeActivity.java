@@ -534,12 +534,20 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     }
 
     @Override
+    public void onBackPressed() {
+        if (!sharedPrefUtil.isUserLoggedIn()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        if (! sharedPrefUtil.isUserLoggedIn()) {
+        if (!sharedPrefUtil.isUserLoggedIn()) {
             Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+            finish();
         } else {
             if (sendScreenViewAnalytic) {
                 // send screen view analytic
@@ -645,8 +653,10 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         // Back to home, then redirect to login
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+
+        finish();
     }
 
     private void clearAllPendingAlert() {
@@ -912,4 +922,5 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         }
     }
+
 }

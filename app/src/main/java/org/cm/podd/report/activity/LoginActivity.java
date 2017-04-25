@@ -72,12 +72,16 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView logoView;
     private TextView languageView;
 
+    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         setContentView(R.layout.activity_login);
+
+        context = this;
 
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
         isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
@@ -608,8 +612,14 @@ public class LoginActivity extends AppCompatActivity {
                 administrationAreaDataSource.initNewData(obj.getJSONArray("administrationAreas").toString());
 
                 isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
+
                 // goto report home
-                finish();
+                // finish();
+
+                Intent intent = new Intent(context, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 hideProgressDialog();
