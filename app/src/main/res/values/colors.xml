@@ -27,8 +27,8 @@
     <color name="list_item_header_text_color">#F0F0F0</color>
     <color name="graph_animal_sick">#A47FB9</color>
     <color name="graph_animal_death">#5B4088</color>
-    <color name="view_report_header_bg">#A068AF</color>
-    <color name="view_report_header_bg_press">#ff8a5699</color>
+    <color name="view_report_header_bg">#7547C2</color>
+    <color name="view_report_header_bg_press">#957bc1</color>
     <color name="report_test_indicator">#ffFEBB31</color>
     <color name="alert_black_bg">#00000000</color>
     <color name="color_scheme_1_1">#33B5E5</color>
