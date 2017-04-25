@@ -327,4 +327,6 @@
     <string name="setting_password">Change password</string>
     <string name="about_app_version">App version</string>
     <string name="title_activity_user_password">Change password</string>
+    <string name="conversation">Conversation</string>
+    <string name="messages">Messages</string>
 </resources>

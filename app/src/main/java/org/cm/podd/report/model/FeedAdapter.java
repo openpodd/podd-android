@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -82,10 +83,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
-        private final CardView cardView;
+        private final LinearLayout cardView;
         private final ImageView flagView;
         private final TextView reportTypeView;
         private final TextView timeagoView;
+        private final TextView createdByView;
         private final TextView descriptionView;
         private final TextView addressView;
         private final RelativeLayout thumbnailViewWrapper;
@@ -95,20 +97,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             super(v);
 
             context = v.getContext();
-            cardView = (CardView) v.findViewById(R.id.feed_card);
+            cardView = (LinearLayout) v.findViewById(R.id.feed_card);
 
             FontUtil.overrideFonts(context, v);
 
             flagView = (ImageView) v.findViewById(R.id.df_item_flag);
             reportTypeView = (TextView) v.findViewById(R.id.df_item_report_type);
             timeagoView = (TextView) v.findViewById(R.id.df_item_timeago);
+            createdByView = (TextView) v.findViewById(R.id.df_item_created_by);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
             addressView = (TextView) v.findViewById(R.id.df_item_address);
             thumbnailViewWrapper = (RelativeLayout) v.findViewById(R.id.df_item_thumbnail_wrapper);
             thumbnailView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
         }
 
-        public CardView getCardView() {
+        public LinearLayout getCardView() {
             return cardView;
         }
 
@@ -130,6 +133,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         public TextView getTimeagoView() {
             return timeagoView;
+        }
+
+        public TextView getCreatedByViewView() {
+            return createdByView;
         }
 
         public TextView getAddressView() {
@@ -179,13 +186,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
             Date date = DateUtil.fromJsonDateString(report.getString("date"));
-            String dateStr = DateUtil.formatLocaleDate(date);
+            String dateStr = DateUtil.formatLocaleDateTime(date);
             viewHolder.getTimeagoView().setText(dateStr);
             // form data explanation
             viewHolder.getDescriptionView().setText(
                     stripHTMLTags(report.getString("formDataExplanation")));
             // address
             viewHolder.getAddressView().setText(report.getString("administrationAreaAddress"));
+            viewHolder.getCreatedByViewView().setText(viewHolder.getContext().getString(R.string.by) + " " + report.getString("createdByName"));
             
             // set on click listener
             viewHolder.getCardView().setOnClickListener(new View.OnClickListener() {
