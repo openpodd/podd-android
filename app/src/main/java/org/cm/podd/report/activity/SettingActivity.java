@@ -44,6 +44,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
@@ -144,14 +145,24 @@ public class SettingActivity extends ActionBarActivity {
         if (profileImageFilePath == null) {
             // Use default profile image if not setup
             profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            profileImageView.setImageBitmap(profileBitmap);
         } else {
-            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
-            // use default image, if user deleted an image somehow
-            if (profileBitmap == null) {
-                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            if (profileImageFilePath.matches("^https?://.*")) {
+                Picasso.with(this)
+                        .load(profileImageFilePath)
+                        .fit()
+                        .centerCrop()
+                        .placeholder(R.drawable.avatar)
+                        .into(profileImageView);
+            } else {
+                profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+                // use default image, if user deleted an image somehow
+                if (profileBitmap == null) {
+                    profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+                }
+                profileImageView.setImageBitmap(profileBitmap);
             }
         }
-        profileImageView.setImageBitmap(profileBitmap);
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

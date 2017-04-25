@@ -61,6 +61,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
@@ -349,14 +350,24 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         if (profileImageFilePath == null) {
             // Use default profile image if not setup
             profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            profileImageView.setImageBitmap(profileBitmap);
         } else {
-            profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
-            // use default image, if user deleted an image somehow
-            if (profileBitmap == null) {
-                profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+            if (profileImageFilePath.matches("^https?://.*")) {
+                Picasso.with(this)
+                        .load(profileImageFilePath)
+                        .fit()
+                        .centerCrop()
+                        .placeholder(R.drawable.avatar)
+                        .into(profileImageView);
+            } else {
+                profileBitmap = BitmapFactory.decodeFile(Uri.parse(profileImageFilePath).getPath());
+                // use default image, if user deleted an image somehow
+                if (profileBitmap == null) {
+                    profileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+                }
+                profileImageView.setImageBitmap(profileBitmap);
             }
         }
-        profileImageView.setImageBitmap(profileBitmap);
 
         ((TextView) header.findViewById(R.id.full_name)).setText(sharedPrefUtil.getFullName());
         ((TextView) header.findViewById(R.id.username)).setText(sharedPrefUtil.getUserName());
@@ -582,6 +593,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
             }
 
+            updateProfile();
             setNotificationCount();
             refreshDrawerMenu();
             supportInvalidateOptionsMenu();

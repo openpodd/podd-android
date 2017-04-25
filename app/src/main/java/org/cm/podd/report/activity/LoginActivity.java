@@ -550,6 +550,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     sharedPrefUtil.setAccessToken(token);
                     sharedPrefUtil.setUserName(usernameText.getText().toString());
+                    sharedPrefUtil.setProfileImageFilePath(obj.getString("thumbnailAvatarUrl").toString());
 
                     // get configuration
                     new ConfigTask().execute((Void[]) null);
