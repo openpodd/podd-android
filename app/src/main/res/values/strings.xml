@@ -329,4 +329,5 @@
     <string name="title_activity_user_password">Change password</string>
     <string name="conversation">Conversation</string>
     <string name="messages">Messages</string>
+    <string name="TEMP_IMAGE_PREFIX">temp-image-</string>
 </resources>
