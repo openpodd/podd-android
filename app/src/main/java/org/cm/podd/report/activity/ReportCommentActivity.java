@@ -363,10 +363,6 @@ public class ReportCommentActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
 
-            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
-            createdByTextView.setTypeface(face, Typeface.BOLD);
-            createdByTextView.setText(getItem(position).getCreatedBy());
-
             String message = getItem(position).getMessage();
             message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
 
@@ -383,9 +379,14 @@ public class ReportCommentActivity extends AppCompatActivity {
                 Log.e(TAG, e.toString());
             }
 
+            TextView createdByTextView = (TextView) view.findViewById(R.id.name);
+            createdByTextView.setTypeface(face);
+            createdByTextView.setText(getString(R.string.by) + " " + getItem(position).getCreatedBy());
+
             TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
             createdAtTextView.setTypeface(face);
             createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.formatLocaleDateTime(date));
+
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 

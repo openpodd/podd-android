@@ -29,24 +29,24 @@
             android:layout_marginBottom="10dp"
             android:layout_weight="1">
 
-            <TextView android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ชื่อ"
-                android:textSize="15sp" />
-
             <TextView
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:text="ข้อความ" />
+
+            <TextView android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ชื่อ"
+                android:textSize="14sp" />
 
             <TextView android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="วันที่"
-                android:textSize="10sp"/>
+                android:textSize="14sp"/>
 
         </LinearLayout>
 
