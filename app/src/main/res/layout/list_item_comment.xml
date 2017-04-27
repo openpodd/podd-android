@@ -37,16 +37,17 @@
                 android:text="ข้อความ" />
 
             <TextView android:id="@+id/name"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="ชื่อ"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <TextView android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="วันที่"
-                android:textSize="14sp"/>
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
