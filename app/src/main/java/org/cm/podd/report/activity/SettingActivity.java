@@ -213,8 +213,8 @@ public class SettingActivity extends ActionBarActivity {
             photoPickerIntent.setDataAndType(mCurrentPhotoUri, "image/*");
         }
         photoPickerIntent.putExtra("crop", "true");
-        photoPickerIntent.putExtra("aspectX", 0);
-        photoPickerIntent.putExtra("aspectY", 0);
+        photoPickerIntent.putExtra("aspectX", 1);
+        photoPickerIntent.putExtra("aspectY", 1);
         photoPickerIntent.putExtra("outputX", 400);
         photoPickerIntent.putExtra("outputY", 400);
 
