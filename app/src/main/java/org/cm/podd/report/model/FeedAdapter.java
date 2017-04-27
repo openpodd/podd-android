@@ -241,7 +241,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
             getViewHolderHashMap().put(feedItem.getItemId(), viewHolder);
 
-            viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
+            try {
+                viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
+            } catch (JSONException e) {
+
+            }
 
             ImageView profileImageView = viewHolder.getProfileImageView();
             String profileImageUrl;

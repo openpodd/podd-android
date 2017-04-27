@@ -1,5 +1,6 @@
 package org.cm.podd.report.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +20,9 @@ import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.model.ReportAdapter;
+import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.FontUtil;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +62,7 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
     protected ReportAdapter mAdapter;
     protected ProgressBar mProgressBar;
 
+    protected TextView empty;
 
     public ReportFollowFragment() {
         // Required empty public constructor
@@ -95,6 +99,8 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        ((ReportViewActivity)getActivity()).showProgressBar();
+
         View view = inflater.inflate(R.layout.fragment_report_follow, null);
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -105,11 +111,13 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        empty = (TextView) view.findViewById(R.id.empty);
+
         String _report = getArguments().getString("report");
         try {
             JSONObject report = new JSONObject(_report);
             try {
-                parentReportId = report.getLong("parent");
+                parentReportId = report.getLong("id");
                 parentReportFlag = report.getLong("flag");
             } catch (JSONException e) {
 
@@ -122,8 +130,8 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
         if (parentReportId != null) {
             fetchFollowUpReports(parentReportId);
         } else {
-            TextView empty = (TextView) view.findViewById(R.id.empty);
             empty.setVisibility(View.VISIBLE);
+            ((ReportViewActivity)getActivity()).showProgressBar();
         }
 
         FontUtil.overrideFonts(getContext(), view);
@@ -145,55 +153,65 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
         startActivity(intent);
     }
 
-    private void fetchFollowUpReports(Long reportId) {
-        FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getActivity());
-        FeedItem reportItem = feedItemDataSource.loadByItemId(reportId);
+    private void fetchFollowUpReports(final Long reportId) {
+        final ReportViewActivity currentActivity = ((ReportViewActivity)getActivity());
+        ReportService.FollowUpAsyncTask task = new ReportService.FollowUpAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                super.onPostExecute(resp);
 
-        ArrayList<FeedItem> feedItems = new ArrayList<FeedItem>();
-        feedItems.add(reportItem);
+                FeedItemDataSource feedItemDataSource = new FeedItemDataSource(getContext());
+                FeedItem reportItem = feedItemDataSource.loadByItemId(reportId);
+                try {
+                    if (reportItem != null & reportItem.getFollow() != null) {
+                        JSONArray items = new JSONArray(reportItem.getFollow());
+                        ArrayList<FeedItem> feedItems = new ArrayList<FeedItem>();
 
-        mAdapter.mDataSet = feedItems;
-        mAdapter.notifyDataSetChanged();
+                        for (int i = 0; i != items.length(); ++i) {
+                            JSONObject item = items.getJSONObject(i);
 
-//        try {
-//            if (reportItem != null && reportItem.getFollow() != null) {
-//                JSONArray items = new JSONArray(reportItem.getFollow());
-//                ArrayList<FeedItem> feedItems = new ArrayList<FeedItem>();
-//
-//                for (int i = 0; i != items.length(); ++i) {
-//                    JSONObject item = items.getJSONObject(i);
-//
-//                    String flagString = item.getString("flag");
-//                    int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
-//
-//                    FeedItem feedItem = new FeedItem();
-//                    feedItem.setItemId(item.getLong("id"));
-//                    feedItem.setType("report");
-//
-//                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
-//                            Locale.getDefault());
-//                    feedItem.setDate(formatter.parse(item.getString("date")));
-//                    feedItem.setExplanation(item.toString());
-//
-//                    if (parentReportFlag == 4) {
-//                        if (flag == 5) {
-//                            feedItems.add(feedItem);
-//                        }
-//                    } else {
-//                        feedItems.add(feedItem);
-//                    }
-//                }
-//
-//                mAdapter.mDataSet = feedItems;
-//                mAdapter.notifyDataSetChanged();
-//
-//                mProgressBar.setVisibility(View.GONE);
-//            }
-//        } catch (ParseException e) {
-//            Log.e(TAG, "Date is not valid, skipping");
-//        } catch (JSONException e) {
-//            Log.e(TAG, "Error parsing JSON data", e);
-//        }
+                            String flagString = item.getString("flag");
+                            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
+
+                            FeedItem feedItem = new FeedItem();
+                            feedItem.setItemId(item.getLong("id"));
+                            feedItem.setType("report");
+
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                    Locale.getDefault());
+                            feedItem.setDate(formatter.parse(item.getString("date")));
+                            feedItem.setExplanation(item.toString());
+
+                            if (parentReportFlag != null && parentReportFlag == 4) {
+                                if (flag == 5) {
+                                    feedItems.add(feedItem);
+                                }
+                            } else {
+                                feedItems.add(feedItem);
+                            }
+                        }
+
+                        mAdapter.mDataSet = feedItems;
+                        mAdapter.notifyDataSetChanged();
+
+                        if (feedItems.size() == 0) {
+                            empty.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        empty.setVisibility(View.VISIBLE);
+                    }
+
+                } catch (ParseException e) {
+                    Log.e(TAG, "Date is not valid, skipping");
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error parsing JSON data", e);
+                }
+
+                currentActivity.hideProgressBar();
+            }
+        };
+        task.setContext(getActivity());
+        task.execute(Long.toString(reportId));
     }
 
     @Override

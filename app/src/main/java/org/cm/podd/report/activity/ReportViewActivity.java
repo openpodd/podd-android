@@ -294,6 +294,9 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
 
     }
 
+    public void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
     public void hideProgressBar() {
         progressBar.setVisibility(View.GONE);
     }
