@@ -145,6 +145,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if (reportDetail == null) return;
 
                 switch (tab.getPosition()) {
                     case 0:
@@ -252,7 +253,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
     private void viewReport(JSONObject report) {
 
         if (!tabInfo.isSelected()) return;
-        
+
         try {
             setActivityTitleWithType(report.getString("reportTypeName"));
 
