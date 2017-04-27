@@ -34,6 +34,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,6 +84,8 @@ public class SettingActivity extends ActionBarActivity {
 
     Fragment mCurrentFragment;
     Bundle bundle;
+
+    private Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +177,9 @@ public class SettingActivity extends ActionBarActivity {
         findViewById(R.id.reset_password).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                setTitleToolbar(getString(R.string.setting_password));
+
                 mCurrentFragment = new ResetPasswordFragment();
 
                 bundle = new Bundle();
@@ -197,6 +203,10 @@ public class SettingActivity extends ActionBarActivity {
         Tracker tracker = ((PoddApplication) getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
         tracker.setScreenName("Setting");
         tracker.send(new HitBuilders.AppViewBuilder().build());
+
+        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void cropImage() {
@@ -324,6 +334,10 @@ public class SettingActivity extends ActionBarActivity {
         startService(intent);
     }
 
+    public void setTitleToolbar(String title) {
+        getSupportActionBar().setTitle(title);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_setting));
@@ -350,6 +364,8 @@ public class SettingActivity extends ActionBarActivity {
                 findViewById(R.id.detail_content).setVisibility(View.VISIBLE);
                 findViewById(R.id.form_content).setVisibility(View.GONE);
                 StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_setting));
+
+                setTitleToolbar(getString(R.string.action_settings));
                 return true;
 
             } else {
