@@ -328,7 +328,7 @@
     <string name="about_app_version">เกี่ยวกับแอปพลิเคชัน</string>
     <string name="title_activity_user_password">เปลี่ยนรหัสผ่าน</string>
     <string name="conversation">พูดคุย</string>
-    <string name="messages">6 ข้อความ</string>
+    <string name="messages">ข้อความ</string>
     <string name="report_info">ข้อมูล</string>
     <string name="report_state">สถานะ</string>
     <string name="report_follow">ติดตาม</string>

@@ -93,6 +93,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         private final RelativeLayout thumbnailViewWrapper;
         private final ImageView thumbnailView;
 
+        private final ImageView profileImageView;
+        private final TextView commentCountView;
+
         public ViewHolder(View v) {
             super(v);
 
@@ -109,6 +112,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             addressView = (TextView) v.findViewById(R.id.df_item_address);
             thumbnailViewWrapper = (RelativeLayout) v.findViewById(R.id.df_item_thumbnail_wrapper);
             thumbnailView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
+
+            profileImageView = (ImageView) v.findViewById(R.id.df_profile_image);
+            commentCountView = (TextView) v.findViewById(R.id.df_comment_count);
         }
 
         public LinearLayout getCardView() {
@@ -150,6 +156,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         public RelativeLayout getThumbnailViewWrapper() {
             return thumbnailViewWrapper;
         }
+
+        public TextView getCommentCountView() {
+            return commentCountView;
+        }
+
+        public ImageView getProfileImageView() {
+            return profileImageView;
+        }
+
     }
 
     public static String stripHTMLTags(String html) {
@@ -225,7 +240,28 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             }
 
             getViewHolderHashMap().put(feedItem.getItemId(), viewHolder);
-            
+
+            viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
+
+            ImageView profileImageView = viewHolder.getProfileImageView();
+            String profileImageUrl;
+            try {
+                profileImageUrl = report.getString("createdByThumbnailUrl");
+                if (!profileImageUrl.isEmpty()) {
+                    Picasso.with(viewHolder.getContext())
+                            .load(profileImageUrl)
+                            .placeholder(R.drawable.avatar)
+                            .fit()
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    thumbnailViewWrapper.setVisibility(View.GONE);
+                }
+            } catch (JSONException e) {
+                thumbnailViewWrapper.setVisibility(View.GONE);
+            }
+
+
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
         }

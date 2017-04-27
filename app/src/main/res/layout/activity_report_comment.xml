@@ -76,22 +76,22 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:layout_alignParentBottom="true">
 
             <LinearLayout
-                android:background="@color/black"
+                android:background="@color/selected_image_mask"
                 android:layout_width="match_parent"
                 android:layout_height=".5dp">
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="5dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -99,15 +99,14 @@
                     android:layout_marginRight="10dp"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
-                    android:hint="@string/enter_comment"
+                    android:hint="@string/conversation"
                     android:focusable="false"
                     android:id="@+id/editText" />
 
                 <LinearLayout
                     android:id="@+id/submit"
                     android:clickable="true"
-                    android:background="@color/view_report_header_bg"
-                    android:layout_marginRight="13dp"
+                    android:background="@color/color_new_report_action"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
                     <ImageView
@@ -117,7 +116,7 @@
                         android:layout_marginRight="15dp"
                         android:layout_gravity="center_vertical"
                         android:id="@+id/imageButton"
-                        android:src="@drawable/ic_post_comment" />
+                        android:src="@drawable/ic_comment_submit" />
                 </LinearLayout>
             </LinearLayout>
 
