@@ -446,6 +446,8 @@ public class ReportImageFragment extends Fragment {
     }
 
     private void saveImage(Uri uri, boolean makeACopy) {
+        Uri targetUri = uri;
+
         if (makeACopy) {
             String inputFile = getImageFilePath(uri);
             File cacheDir = getContext().getCacheDir();
@@ -453,16 +455,17 @@ public class ReportImageFragment extends Fragment {
             try {
                 outputFile = File.createTempFile(getString(R.string.TEMP_IMAGE_PREFIX), "", cacheDir);
                 FileUtil.copy(inputFile, outputFile);
+                targetUri = Uri.parse(outputFile.getPath());
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
             }
         }
 
-        Bitmap thumbnailBitmap = createThumbnail(uri);
+        Bitmap thumbnailBitmap = createThumbnail(targetUri);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        ReportImage reportImage = reportDataSource.saveImage(reportId, uri.toString(), stream.toByteArray());
+        ReportImage reportImage = reportDataSource.saveImage(reportId, targetUri.toString(), stream.toByteArray());
         try {
             stream.close();
             thumbnailBitmap.recycle();
