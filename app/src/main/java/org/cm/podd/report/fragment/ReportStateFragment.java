@@ -1,5 +1,6 @@
 package org.cm.podd.report.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -111,6 +112,7 @@ public class ReportStateFragment extends Fragment {
 
     ReportStateDataSource reportStateDataSource;
 
+    private Context context;
 
     public ReportStateFragment() {
         // Required empty public constructor
@@ -147,6 +149,7 @@ public class ReportStateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        context = getContext();
 
         View view = inflater.inflate(R.layout.fragment_report_state, null);
 
@@ -166,6 +169,8 @@ public class ReportStateFragment extends Fragment {
         String _report = getArguments().getString("report");
         try {
             JSONObject report = new JSONObject(_report);
+
+            id = report.getLong("id");
 
             // Add flag controller
             Long reportFlag;
@@ -187,7 +192,10 @@ public class ReportStateFragment extends Fragment {
                 flagSpinnerView.setVisibility(View.GONE);
             }
 
-            String stateCode = report.getString("stateCode");
+            String stateCode = ((ReportViewActivity)getActivity()).getReportState();
+            if (stateCode == null)
+                stateCode = report.getString("stateCode");
+
             oldStateCode = stateCode;
             int stateImage = R.drawable.blank;
             for (int i = 0; i < stateColors.length; i++ ){
@@ -196,6 +204,7 @@ public class ReportStateFragment extends Fragment {
                     break;
                 }
             }
+
             flagImageView.setImageResource(stateImage);
 
             flagView.setText(getResources().getStringArray(
@@ -235,8 +244,6 @@ public class ReportStateFragment extends Fragment {
                     FontUtil.overrideFonts(getContext(), textView);
                 }
             }
-
-
 
             states_with_hint[reportStates.size()] = getString(R.string.set_report_state);
 
@@ -344,52 +351,19 @@ public class ReportStateFragment extends Fragment {
 
     }
 
-    private void updateFlag(final Long flag) {
-        currentFlag = flag;
-
-        ReportService.FlagAsyncTask task = new ReportService.FlagAsyncTask() {
-            @Override
-            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-                if (resp.getStatusCode() == 201) {
-                    oldFlag = currentFlag;
-                    // notify report data.
-                    Intent intent = new Intent(ReportService.ACTION_FLAG_SET_DONE);
-                    intent.putExtra("reportId", id);
-                    intent.putExtra("flag", flag);
-                    getActivity().sendBroadcast(intent);
-
-                    ReportService.doFetch(context, id);
-                } else {
-                    reverseFlag();
-
-                    if (resp.getStatusCode() == 403) {
-                        Crouton.makeText(getActivity(), getString(R.string.set_flag_forbidden), Style.ALERT).show();
-                    } else {
-                        Crouton.makeText(getActivity(), getString(R.string.set_flag_error), Style.ALERT).show();
-                    }
-                }
-            }
-        };
-
-        task.setContext(getContext());
-        task.execute(Long.toString(id), Long.toString(flag));
-    }
-
     private void updateState(final String stateCode, final int position) {
         Long state = reportStateDataSource.getIdByReportTypeAndCode(reportTypeId, stateCode);
+
+       final Activity currentActivity = getActivity();
         ReportService.StateAsyncTask task = new ReportService.StateAsyncTask() {
             @Override
             protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
                 if (resp.getStatusCode() == 200) {
                     oldStateCode = stateCode;
                     oldStateCodePosition = position;
-                    // notify report data.
-                    Intent intent = new Intent(ReportService.ACTION_STATE_SET_DONE);
-                    intent.putExtra("reportId", id);
-                    intent.putExtra("stateCode", stateCode);
-                    getActivity().sendBroadcast(intent);
 
-                    ReportService.doFetch(context, id);
+                    ((ReportViewActivity) currentActivity).changeReportState(stateCode);
+
                 } else {
                     reverseState();
 
@@ -406,26 +380,16 @@ public class ReportStateFragment extends Fragment {
         task.execute(Long.toString(id), Long.toString(state));
     }
 
-    private void reverseFlag() {
-        currentFlag = oldFlag;
-        if (currentFlag == 0) {
-            flagSpinnerView.setSelection(mFlagAdapter.getCount());
-        } else {
-            flagSpinnerView.setSelection(currentFlag.intValue() - 1);
-        }
-    }
-
     private void reverseState() {
         flagSpinnerView.setSelection(oldStateCodePosition);
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
 
         if (caseDialog != null && caseDialog.getVisibility() == View.VISIBLE) {
             caseDialog.setVisibility(View.GONE);
-            reverseFlag();
+            reverseState();
             selectedCaseId = null;
         } else {
             if (mListener != null) {

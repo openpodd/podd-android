@@ -111,7 +111,13 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
     private FloatingActionButton fabComment;
     private String reportDetail;
 
+    private String stateCode;
+
     Context context;
+
+    TabLayout.Tab tabInfo;
+    TabLayout.Tab tabState;
+    TabLayout.Tab tabFollow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +132,9 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        TabLayout.Tab tabInfo = tabLayout.newTab().setText(R.string.report_info);
-        TabLayout.Tab tabState = tabLayout.newTab().setText(R.string.report_state);
-        TabLayout.Tab tabFollow = tabLayout.newTab().setText(R.string.report_follow);
+        tabInfo = tabLayout.newTab().setText(R.string.report_info);
+        tabState = tabLayout.newTab().setText(R.string.report_state);
+        tabFollow = tabLayout.newTab().setText(R.string.report_follow);
 
         tabLayout.addTab(tabInfo);
         tabLayout.addTab(tabState);
@@ -245,6 +251,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
 
     private void viewReport(JSONObject report) {
 
+        if (!tabInfo.isSelected()) return;
+        
         try {
             setActivityTitleWithType(report.getString("reportTypeName"));
 
@@ -292,6 +300,23 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
     private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
         getSupportActionBar().setTitle(template.replace(":type", type));
+    }
+
+    public String getReportState() {
+        return stateCode;
+    }
+
+    public void changeReportState(String stateCode) {
+        this.stateCode = stateCode;
+
+        Intent intent = new Intent(ReportService.ACTION_STATE_SET_DONE);
+        intent.putExtra("reportId", id);
+        intent.putExtra("stateCode", stateCode);
+
+        sendBroadcast(intent);
+
+        ReportService.doFetch(context, id);
+
     }
 
     public static class RemoteImageAsyncTask extends AsyncTask<String, Void, Drawable> {

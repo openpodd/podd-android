@@ -72,7 +72,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
 
             FeedAdapter.ViewHolder viewHolder = mAdapter.getViewHolderHashMap().get(reportId);
             if (viewHolder != null) {
-//                viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
+                viewHolder.getFlagView().setImageResource(FeedAdapter.flagColors[flag.intValue()]);
             }
         }
     };
@@ -118,6 +118,11 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
         getActivity().unregisterReceiver(mFlagSetReceiver);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         getActivity().unregisterReceiver(mStateSetReceiver);
     }
 

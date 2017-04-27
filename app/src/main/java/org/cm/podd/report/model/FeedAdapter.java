@@ -36,15 +36,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     private ArrayList<FeedItem> mDataSet = new ArrayList<FeedItem>();
     private HashMap<Long, ViewHolder> viewHolderHashMap = new HashMap<Long, ViewHolder>();
 
-//    public static final int[] flagColors = new int[]{
-//        R.drawable.blank,
-//        R.drawable.flag_ignore,
-//        R.drawable.flag_ok,
-//        R.drawable.flag_contact,
-//        R.drawable.flag_follow,
-//        R.drawable.flag_case,
-//        R.drawable.flag_case
-//    };
+    public static final int[] flagColors = new int[]{
+        R.drawable.blank,
+        R.drawable.flag_ignore,
+        R.drawable.flag_ok,
+        R.drawable.flag_contact,
+        R.drawable.flag_follow,
+        R.drawable.flag_case,
+        R.drawable.flag_case
+    };
 
     public static final State[] stateColors = new State[]{
         new State("report", R.drawable.blank),
