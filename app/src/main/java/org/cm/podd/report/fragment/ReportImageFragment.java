@@ -453,7 +453,7 @@ public class ReportImageFragment extends Fragment {
             File cacheDir = getContext().getCacheDir();
             File outputFile;
             try {
-                outputFile = File.createTempFile(getString(R.string.TEMP_IMAGE_PREFIX), "", cacheDir);
+                outputFile = File.createTempFile(FileUtil.TEMP_IMAGE_PREFIX, "", cacheDir);
                 FileUtil.copy(inputFile, outputFile);
                 targetUri = Uri.parse(outputFile.getPath());
             } catch (IOException e) {

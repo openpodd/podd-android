@@ -320,6 +320,8 @@
     <string name="report_type_category_1">Human</string>
     <string name="report_type_category_2">Animal</string>
     <string name="report_type_category_3">Environment</string>
+    <string name="specific_address">Specific address (House No., Village)</string>
+    <string name="go_to_map">View on Google Map</string>
 
     <string name="report_map">Map</string>
     <string name="refresh_location_service">Refresh</string>
@@ -329,7 +331,6 @@
     <string name="title_activity_user_password">Change password</string>
     <string name="conversation">Conversation</string>
     <string name="messages">Messages</string>
-    <string name="TEMP_IMAGE_PREFIX">temp-image-</string>
     <string name="report_info">Information</string>
     <string name="report_state">State</string>
     <string name="report_follow">Follow</string>
