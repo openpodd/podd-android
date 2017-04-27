@@ -52,6 +52,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.ReportImage;
 import org.cm.podd.report.service.DataSubmitService;
+import org.cm.podd.report.util.FileUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.view.TouchyGridView;
 
@@ -147,6 +148,7 @@ public class ReportImageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             reportId = getArguments().getLong(ARG_REPORT_ID);
         }
@@ -304,7 +306,7 @@ public class ReportImageFragment extends Fragment {
             case CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE:
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
+                startActivityForResult(Intent.createChooser(photoPickerIntent, "Select File"), CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
                 break;
 
             case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
@@ -402,6 +404,17 @@ public class ReportImageFragment extends Fragment {
         reportQueueDataSource.close();
     }
 
+    private String getImageFilePath(Uri uri) {
+        String imageFilePath = uri.getPath();
+        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            imageFilePath = cursor.getString(idx);
+        }
+        return imageFilePath;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "result code = " + resultCode + ", request code = " + requestCode + " data = " + data);
@@ -421,13 +434,31 @@ public class ReportImageFragment extends Fragment {
         } else if (requestCode == CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 Log.d(TAG, "image uri = " + data.getData());
-                Uri selectedImage = data.getData();
-                saveImage(selectedImage);
+
+                Uri contentUri = data.getData();
+                saveImage(contentUri, true);
             }
         }
     }
 
     private void saveImage(Uri uri) {
+        saveImage(uri, false);
+    }
+
+    private void saveImage(Uri uri, boolean makeACopy) {
+        if (makeACopy) {
+            String inputFile = getImageFilePath(uri);
+            File cacheDir = getContext().getCacheDir();
+            File outputFile;
+            try {
+                outputFile = File.createTempFile(getString(R.string.TEMP_IMAGE_PREFIX), "", cacheDir);
+                FileUtil.copy(inputFile, outputFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
         Bitmap thumbnailBitmap = createThumbnail(uri);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -447,8 +478,8 @@ public class ReportImageFragment extends Fragment {
             reportQueueDataSource.addImageQueue(reportId);
 
             // Broadcasts the Intent to network receiver, and prepare queue for sending
-            Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
-            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(networkIntent);
+            Intent intent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
         }
 
         // send event hit

@@ -44,6 +44,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
+import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -324,6 +325,14 @@ public class DataSubmitService extends IntentService {
             success = statusCode == 201;
             // Detect server complaints
             entity.consumeContent();
+
+            // delete cache file if success
+            if (success) {
+                if (reportImage.getImageUri().startsWith(getString(R.string.TEMP_IMAGE_PREFIX))) {
+                    File file = new File(reportImage.getImageUri());
+                    file.delete();
+                }
+            }
 
         } finally {
             client.getConnectionManager().shutdown();
