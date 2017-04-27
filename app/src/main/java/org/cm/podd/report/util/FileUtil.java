@@ -31,6 +31,8 @@ import java.io.OutputStream;
  */
 public class FileUtil {
 
+    public static final String TEMP_IMAGE_PREFIX = "temp-image-";
+
     public static String convertInputStreamToString(InputStream in) {
         StringBuffer sb = new StringBuffer();
         if (in == null) {

@@ -50,6 +50,7 @@ import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.ReportImage;
+import org.cm.podd.report.util.FileUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -328,7 +329,7 @@ public class DataSubmitService extends IntentService {
 
             // delete cache file if success
             if (success) {
-                if (reportImage.getImageUri().startsWith(getString(R.string.TEMP_IMAGE_PREFIX))) {
+                if (reportImage.getImageUri().startsWith(FileUtil.TEMP_IMAGE_PREFIX)) {
                     File file = new File(reportImage.getImageUri());
                     file.delete();
                 }
