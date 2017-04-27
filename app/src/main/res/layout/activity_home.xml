@@ -37,7 +37,7 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/appBarLayout"
+            android:layout_below="@id/appBarLayout"
             android:background="?attr/colorPrimary"
             app:tabTextColor="@color/white"
             app:tabSelectedTextColor="@color/white"

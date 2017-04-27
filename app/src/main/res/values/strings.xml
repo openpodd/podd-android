@@ -330,4 +330,7 @@
     <string name="conversation">Conversation</string>
     <string name="messages">Messages</string>
     <string name="TEMP_IMAGE_PREFIX">temp-image-</string>
+    <string name="report_info">Information</string>
+    <string name="report_state">State</string>
+    <string name="report_follow">Follow</string>
 </resources>
