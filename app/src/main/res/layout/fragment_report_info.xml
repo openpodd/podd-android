@@ -10,6 +10,7 @@
         android:layout_below="@id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:background="@color/white"
         android:orientation="vertical"
         android:scrollbars="vertical">
 
@@ -20,15 +21,13 @@
             android:clipChildren="false"
             android:clipToPadding="false">
 
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                card_view:cardCornerRadius="0dp"
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
@@ -79,12 +78,12 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:background="@color/view_report_header_bg" >
+                        android:background="@color/white" >
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="12dp"
-                            android:src="@drawable/ic_report" />
+                            android:src="@drawable/ic_info" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -92,7 +91,7 @@
                             android:layout_marginLeft="7dp"
                             android:layout_gravity="center_vertical"
                             android:text="@string/report_summary"
-                            android:textColor="@color/white"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -147,128 +146,120 @@
                                     android:padding="2dp"/>
                             </LinearLayout>
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:background="@color/black"
-                            android:layout_width="match_parent"
-                            android:layout_height="0.5dp">
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="13dp"
-                        android:layout_marginRight="13dp">
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView android:text="@string/report_incidentDate"
-                                android:layout_width="135dp"
-                                android:layout_height="wrap_content"
-                                android:padding="2dp"
-                                android:textSize="18sp"
-                                android:textStyle="bold"  />
-                            <TextView
-                                android:id="@+id/report_view_report_incidentDate"
+                            <LinearLayout
+                                android:orientation="horizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"/>
-                        </LinearLayout>
+                                android:layout_height="wrap_content">
 
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView android:text="@string/report_area"
-                                android:layout_width="135dp"
-                                android:layout_height="wrap_content"
-                                android:padding="2dp"
-                                android:textSize="18sp"
-                                android:textStyle="bold"  />
-                            <TextView
-                                android:id="@+id/report_view_report_area"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"/>
-                        </LinearLayout>
+                                <TextView android:text="@string/report_incidentDate"
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:padding="2dp"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"  />
+                                <TextView
+                                    android:id="@+id/report_view_report_incidentDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"/>
+                            </LinearLayout>
 
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView android:text="@string/by"
-                                android:layout_width="135dp"
-                                android:layout_height="wrap_content"
-                                android:padding="2dp"
-                                android:textSize="18sp"
-                                android:textStyle="bold"  />
-                            <TextView
-                                android:id="@+id/report_view_report_created_by"
+                            <LinearLayout
+                                android:orientation="horizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"/>
-                        </LinearLayout>
+                                android:layout_height="wrap_content">
+                                <TextView android:text="@string/report_area"
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:padding="2dp"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"  />
+                                <TextView
+                                    android:id="@+id/report_view_report_area"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"/>
+                            </LinearLayout>
 
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView android:text="@string/reporter_telephone"
-                                android:layout_width="135dp"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/report_view_reporter_telephone"
+                            <LinearLayout
+                                android:orientation="horizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp" />
-                        </LinearLayout>
+                                android:layout_height="wrap_content">
+                                <TextView android:text="@string/by"
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:padding="2dp"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"  />
+                                <TextView
+                                    android:id="@+id/report_view_report_created_by"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"/>
+                            </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/reporter_project_telephone_layout"
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-                            <TextView android:text="@string/reporter_project_telephone"
-                                android:layout_width="135dp"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"
-                                android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/report_view_reporter_project_telephone"
+                            <LinearLayout
+                                android:orientation="horizontal"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="18sp"
-                                android:padding="2dp"/>
+                                android:layout_height="wrap_content">
+                                <TextView android:text="@string/reporter_telephone"
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:id="@+id/report_view_reporter_telephone"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/reporter_project_telephone_layout"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView android:text="@string/reporter_project_telephone"
+                                    android:layout_width="135dp"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:id="@+id/report_view_reporter_project_telephone"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="18sp"
+                                    android:padding="2dp"/>
+                            </LinearLayout>
+
                         </LinearLayout>
 
                     </LinearLayout>
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+            </RelativeLayout>
 
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <LinearLayout
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/wallet_dim_foreground_disabled_holo_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1dp">
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="15dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_marginBottom="5dp">
 
                 <LinearLayout
                     android:background="@color/white"
@@ -280,20 +271,20 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:background="@color/view_report_header_bg" >
+                        android:background="@color/white" >
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="12dp"
-                            android:src="@drawable/ic_questionnaire" />
+                            android:src="@drawable/ic_info" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="7dp"
                             android:layout_gravity="center_vertical"
-                            android:text="@string/data_explanation"
-                            android:textColor="@color/white"
+                            android:text="@string/form_data_explanation"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -308,24 +299,11 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="18sp"
-                            android:text="@string/form_data_explanation"
-                            android:textStyle="bold" />
-
-                        <TextView
                             android:id="@+id/report_view_form_data_explanation"
                             android:layout_marginBottom="10dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"/>
-
-                        <LinearLayout
-                            android:background="@color/report_row_divider"
-                            android:layout_width="match_parent"
-                            android:layout_height="0.5dp">
-                        </LinearLayout>
                     </LinearLayout>
 
                     <ImageView
@@ -348,18 +326,20 @@
 
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+            </RelativeLayout>
 
-            <android.support.v7.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="83dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_marginBottom="10dp"
+                android:background="@color/wallet_dim_foreground_disabled_holo_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1dp">
+            </LinearLayout>
 
-
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:background="@color/white"
                     android:orientation="vertical"
@@ -367,15 +347,17 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:background="@color/view_report_header_bg" >
+                        android:background="@color/white" >
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="12dp"
-                            android:src="@drawable/ic_placeholder" />
+                            android:src="@drawable/ic_pin" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -383,7 +365,7 @@
                             android:layout_marginLeft="7dp"
                             android:layout_gravity="center_vertical"
                             android:text="@string/report_map"
-                            android:textColor="@color/white"
+                            android:textColor="@color/black"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -391,8 +373,6 @@
 
                     <LinearLayout
                         android:orientation="vertical"
-                        android:layout_marginLeft="13dp"
-                        android:layout_marginRight="13dp"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -406,6 +386,8 @@
 
                         <LinearLayout
                             android:id="@+id/map_button"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
                             android:clickable="true"
                             android:orientation="horizontal"
                             android:background="@drawable/button_round_corner"
@@ -436,7 +418,7 @@
 
                 </LinearLayout>
 
-            </android.support.v7.widget.CardView>
+            </RelativeLayout>
 
 
         </LinearLayout>

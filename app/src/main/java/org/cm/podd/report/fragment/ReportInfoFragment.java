@@ -69,7 +69,7 @@ import java.util.Map;
  * Use the {@link ReportInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ReportInfoFragment extends Fragment implements OnMapReadyCallback {
+public class ReportInfoFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -106,6 +106,8 @@ public class ReportInfoFragment extends Fragment implements OnMapReadyCallback {
 
     private Animator mCurrentAnimator;
     private View rootView;
+
+    private SupportMapFragment supportMapFragment;
 
     public ReportInfoFragment() {
         // Required empty public constructor
@@ -245,6 +247,7 @@ public class ReportInfoFragment extends Fragment implements OnMapReadyCallback {
             }
 
             JSONObject reportLocation = report.getJSONObject("reportLocation");
+
             if (reportLocation.getString("type").equalsIgnoreCase("Point")) {
                 latitude = Double.parseDouble(reportLocation.getJSONArray("coordinates").get(1).toString());
                 longitude = Double.parseDouble(reportLocation.getJSONArray("coordinates").get(0).toString());
@@ -264,18 +267,31 @@ public class ReportInfoFragment extends Fragment implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        ((ReportViewActivity)getActivity()).hideProgressBar();
+
         return view;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        supportMapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
+        supportMapFragment = SupportMapFragment.newInstance();
+        fragmentManager.beginTransaction().replace(R.id.map, supportMapFragment).commit();
+        supportMapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+                refreshMap();
+            }
+        });
+    }
 
     private static Spanned linkify(String text, String uri) {
         return Html.fromHtml("<a href=\"" + uri + "\">" + text + "</a>");
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        refreshMap();
     }
 
     public void refreshMap() {
@@ -287,6 +303,7 @@ public class ReportInfoFragment extends Fragment implements OnMapReadyCallback {
         LatLng position = new LatLng(latitude, longitude);
         mMap.addMarker(new MarkerOptions().position(position));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 12));
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -285,6 +285,10 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
 
     }
 
+    public void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void setActivityTitleWithType(String type) {
         String template = getString(R.string.report_activity_title_template);
         getSupportActionBar().setTitle(template.replace(":type", type));
