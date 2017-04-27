@@ -61,6 +61,7 @@
                                 android:ellipsize="marquee"
                                 android:layout_weight="1"
                                 android:textSize="20sp"
+                                android:textColor="@color/black"
                                 android:textStyle="bold"
                                 android:text="@string/dummy_report_type" />
 
