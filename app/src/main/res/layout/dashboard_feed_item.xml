@@ -31,8 +31,8 @@
 
                     <LinearLayout
                         android:layout_marginTop="10dp"
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginRight="24dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">s
@@ -77,14 +77,18 @@
 
                         </LinearLayout>
 
-                        <ImageView
-                            android:visibility="gone"
-                            android:layout_gravity="right"
-                            android:layout_marginLeft="5dp"
+                        <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/df_item_flag"/>
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/df_item_flag"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true" />
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -117,8 +121,8 @@
 
                     <LinearLayout
                         android:layout_marginTop="10dp"
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginRight="24dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -129,7 +133,7 @@
                             android:src="@drawable/ic_pin" />
 
                         <TextView
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textColor="#666"
                             android:layout_marginLeft="6.67dp"
                             android:layout_marginStart="6.67dp"
@@ -141,8 +145,8 @@
 
                     <LinearLayout
                         android:layout_marginTop="10dp"
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginRight="24dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -154,7 +158,7 @@
 
                         <TextView
                             android:id="@+id/df_item_timeago"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textColor="#666"
                             android:layout_marginLeft="6.67dp"
                             android:layout_marginStart="6.67dp"
@@ -164,11 +168,11 @@
                     </LinearLayout>
 
                     <TextView
-                        android:layout_marginLeft="24dp"
-                        android:layout_marginRight="24dp"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="20dp"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:id="@+id/df_item_description"
                         android:layout_width="match_parent"
                         android:layout_height="fill_parent"
@@ -182,14 +186,14 @@
         </LinearLayout>
 
         <View android:background="#BCBBBB"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_width = "match_parent"
             android:layout_height="1dp"/>
 
         <LinearLayout
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -206,7 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:ellipsize="end"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:text="@string/messages" />
             </LinearLayout>
@@ -227,16 +231,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginRight="10dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
-                        android:src="@drawable/ic_conversation" />
+                        android:src="@drawable/ic_chat" />
 
                     <TextView
                         android:textSize="18sp"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:ellipsize="end"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:text="@string/conversation" />
                 </LinearLayout>
