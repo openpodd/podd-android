@@ -123,7 +123,9 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getActivity().unregisterReceiver(mStateSetReceiver);
+        try {
+            getActivity().unregisterReceiver(mStateSetReceiver);
+        } catch (Exception ex) {}
     }
 
 
