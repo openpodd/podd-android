@@ -117,31 +117,6 @@ public class SettingActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.app_version_code_label)).setTypeface(face);
         ((TextView) findViewById(R.id.app_version_name_label)).setTypeface(face);
 
-        final SettingActivity me = this;
-
-        findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(me)
-                        .setTitle(R.string.confirm_logout_title)
-                        .setMessage(getString(R.string.confirm_logout_text))
-                        .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                logout();
-                            }
-                        })
-                        .setNegativeButton(R.string.btn_not_ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .create()
-                        .show();
-            }
-        });
-
         profileImageView = (ImageView) findViewById(R.id.profileImage);
         String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
         Bitmap profileBitmap;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:aandroid="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
@@ -29,13 +29,15 @@
                 android:layout_height="match_parent">
 
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImage"
-                    android:src="@drawable/avatar"
-                    android:layout_gravity="center"
                     android:layout_width="115dp"
                     android:layout_height="115dp"
-                    android:layout_marginBottom="8dp"/>
+                    aandroid:layout_marginBottom="8dp"
+                    android:src="@drawable/avatar"
+                    android:layout_gravity="center"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="#FFFFFF"/>
 
                 <TextView
                     android:id="@+id/name"
@@ -196,15 +198,6 @@
 
 
                 </TableLayout>
-
-                <Button
-                    android:id="@+id/logout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_gravity="right"
-                    android:text="@string/logout"
-                    style="@style/CameraButton" />
 
             </LinearLayout>
         </ScrollView>
