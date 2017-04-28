@@ -3,9 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:fitsSystemWindows="true">
 
+    <TextView
+        android:id="@+id/language"
+        android:layout_margin="20dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="EN"/>
+
     <RelativeLayout
+        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="org.cm.podd.report.activity.LoginActivity"
@@ -13,7 +22,6 @@
         android:layout_centerInParent="true"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-
         android:background="@color/white"
         android:orientation="vertical">
 
@@ -23,25 +31,19 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <ImageView
                 android:id="@+id/logo"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/logo_full" />
-
-            <TextView
-                android:id="@+id/language"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="EN"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/gp_new_logo" />
 
         </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/form"
+            android:layout_marginTop="50dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
