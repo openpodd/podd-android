@@ -181,9 +181,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
         try {
 
-//            String flagString = report.getString("flag");
-//            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
-//            viewHolder.getFlagView().setImageResource(flagColors[flag]);
+            String flagString = report.getString("flag");
+            int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
+            viewHolder.getFlagView().setImageResource(flagColors[flag]);
 
             // state
             String stateCode = report.getString("stateCode");
@@ -196,6 +196,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                 }
             }
             viewHolder.getFlagView().setImageResource(stateImage);
+
+            if (!report.getString("parent").equals("null")) {
+                viewHolder.getFlagView().setImageResource(flagColors[4]);
+            }
 
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
@@ -241,12 +245,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
             getViewHolderHashMap().put(feedItem.getItemId(), viewHolder);
 
-            try {
-                viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
-            } catch (JSONException e) {
-
-            }
-
             ImageView profileImageView = viewHolder.getProfileImageView();
             String profileImageUrl;
             try {
@@ -258,13 +256,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                             .fit()
                             .centerCrop()
                             .into(profileImageView);
-                } else {
-                    thumbnailViewWrapper.setVisibility(View.GONE);
                 }
             } catch (JSONException e) {
-                thumbnailViewWrapper.setVisibility(View.GONE);
             }
 
+            try {
+                viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
+            } catch (JSONException e) {
+
+            }
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);

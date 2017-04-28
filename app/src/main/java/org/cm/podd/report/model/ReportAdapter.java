@@ -9,7 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.util.DateUtil;
@@ -39,23 +43,42 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
 
     };
 
+    public static final State[] stateColors = new State[]{
+            new State("report", R.drawable.blank),
+            new State("insignificant-report", R.drawable.flag_ignore),
+            new State("false-report", R.drawable.flag_ignore),
+            new State("no-outbreak-identified", R.drawable.flag_ignore),
+            new State("case", R.drawable.flag_contact),
+            new State("3", R.drawable.flag_contact),
+            new State("follow", R.drawable.flag_follow),
+            new State("4", R.drawable.flag_follow),
+            new State("suspect-outbreak", R.drawable.flag_case),
+            new State("outbreak", R.drawable.flag_case),
+            new State("5", R.drawable.flag_case),
+            new State("finish", R.drawable.flag_ok),
+    };
     public ReportAdapter(OnItemClickListener listener) {
         mListener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final Context context;
-        private final CardView cardView;
+        private final LinearLayout cardView;
         private final ImageView flagView;
         private final TextView reportTypeView;
         private final TextView timeagoView;
         private final TextView descriptionView;
 
+        private final RelativeLayout thumbnailViewWrapper;
+        private final ImageView thumbnailView;
+
+        private final ImageView profileImageView;
+
         public ViewHolder(View v) {
             super(v);
 
             context = v.getContext();
-            cardView = (CardView) v.findViewById(R.id.feed_card);
+            cardView = (LinearLayout) v.findViewById(R.id.feed_card);
 
             FontUtil.overrideFonts(context, v);
 
@@ -63,9 +86,14 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             reportTypeView = (TextView) v.findViewById(R.id.df_item_report_type);
             timeagoView = (TextView) v.findViewById(R.id.df_item_timeago);
             descriptionView = (TextView) v.findViewById(R.id.df_item_description);
+
+            thumbnailViewWrapper = (RelativeLayout) v.findViewById(R.id.df_item_thumbnail_wrapper);
+            thumbnailView = (ImageView) v.findViewById(R.id.df_item_thumbnail);
+
+            profileImageView = (ImageView) v.findViewById(R.id.df_profile_image);
         }
 
-        public CardView getCardView() {
+        public LinearLayout getCardView() {
             return cardView;
         }
 
@@ -88,6 +116,18 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
         public TextView getDescriptionView() {
             return descriptionView;
         }
+
+        public ImageView getThumbnailView() {
+            return thumbnailView;
+        }
+
+        public RelativeLayout getThumbnailViewWrapper() {
+            return thumbnailViewWrapper;
+        }
+
+        public ImageView getProfileImageView() {
+            return profileImageView;
+        }
     }
 
     public static String stripHTMLTags(String html) {
@@ -107,6 +147,23 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             String flagString = report.getString("flag");
             int flag = flagString.equals("") ? 0 : Integer.parseInt(flagString);
             viewHolder.getFlagView().setImageResource(flagColors[flag]);
+
+            // state
+            String stateCode = report.getString("stateCode");
+
+            int stateImage = R.drawable.blank;
+            for (int i = 0; i < stateColors.length; i++ ){
+                if (stateColors[i].getCode().equals(stateCode)) {
+                    stateImage = stateColors[i].getColor();
+                    break;
+                }
+            }
+            viewHolder.getFlagView().setImageResource(stateImage);
+
+            if (!report.getString("parent").equals("null")) {
+                viewHolder.getFlagView().setImageResource(flagColors[4]);
+            }
+
             // report type
             viewHolder.getReportTypeView().setText(report.getString("reportTypeName"));
             // time ago
@@ -117,6 +174,27 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             viewHolder.getDescriptionView().setText(
                     stripHTMLTags(report.getString("formDataExplanation")));
 
+            // set thumbnail.
+            RelativeLayout thumbnailViewWrapper = viewHolder.getThumbnailViewWrapper();
+            ImageView thumbnailView = viewHolder.getThumbnailView();
+            String thumbnailUrl;
+            try {
+                thumbnailUrl = report.getString("firstImageThumbnail");
+                if (!thumbnailUrl.isEmpty()) {
+                    thumbnailViewWrapper.setVisibility(View.VISIBLE);
+
+                    Picasso.with(viewHolder.getContext())
+                            .load(thumbnailUrl)
+                            .fit()
+                            .centerCrop()
+                            .into(thumbnailView);
+                } else {
+                    thumbnailViewWrapper.setVisibility(View.GONE);
+                }
+            } catch (JSONException e) {
+                thumbnailViewWrapper.setVisibility(View.GONE);
+            }
+
             // set on click listener
             viewHolder.getCardView().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -126,6 +204,21 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             });
 
             viewHolderHashMap.put(feedItem.getItemId(), viewHolder);
+
+            ImageView profileImageView = viewHolder.getProfileImageView();
+            String profileImageUrl;
+            try {
+                profileImageUrl = report.getString("createdByThumbnailUrl");
+                if (!profileImageUrl.isEmpty()) {
+                    Picasso.with(viewHolder.getContext())
+                            .load(profileImageUrl)
+                            .placeholder(R.drawable.avatar)
+                            .fit()
+                            .centerCrop()
+                            .into(profileImageView);
+                }
+            } catch (JSONException e) {
+            }
 
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON data", e);
