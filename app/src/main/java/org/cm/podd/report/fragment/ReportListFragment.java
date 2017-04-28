@@ -436,7 +436,7 @@ public class ReportListFragment extends ListFragment {
                 // cache drawable
                 holder.positive = context.getResources().getDrawable(R.drawable.ic_normal_flag);
                 holder.negative = context.getResources().getDrawable(R.drawable.ic_negative_flag);
-                holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+                holder.follow = context.getResources().getDrawable(R.drawable.ic_follow_flag);
                 holder.testReport = context.getResources().getDrawable(R.drawable.ic_test_flag);
 
                 holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
@@ -459,7 +459,7 @@ public class ReportListFragment extends ListFragment {
 
                 holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
                 // cache drawable
-                holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+                holder.follow = context.getResources().getDrawable(R.drawable.ic_follow_flag);
                 holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
 
                 holder.sendReportStateIcon = (ImageView) retView.findViewById(R.id.report_send_state_icon);
