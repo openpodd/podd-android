@@ -193,6 +193,16 @@ public class ReportStateFragment extends Fragment {
             }
 
             String stateCode = ((ReportViewActivity)getActivity()).getReportState();
+
+
+            if (!report.getString("parent").equals("null")) {
+                flagReadOnlyView.setVisibility(View.VISIBLE);
+                flagSpinnerView.setVisibility(View.GONE);
+                stateCode = "follow";
+                currentFlag = 4L;
+            }
+
+
             if (stateCode == null)
                 stateCode = report.getString("stateCode");
 
@@ -209,6 +219,7 @@ public class ReportStateFragment extends Fragment {
 
             flagView.setText(getResources().getStringArray(
                     R.array.flags_optional)[currentFlag.intValue()]);
+
 
             reportTypeId = report.getInt("reportTypeId");
 
