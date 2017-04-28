@@ -237,4 +237,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/errorArea"
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"></LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

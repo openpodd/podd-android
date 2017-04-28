@@ -60,6 +60,7 @@
     <string name="logout">ออกจากระบบ</string>
     <string name="confirm_logout_title">ยืนยันการออกจากระบบ</string>
     <string name="confirm_logout_text">ข้อมูลรายงานทั้งหมดจะถูกลบ และถูกยกเลิกการส่ง \n\n คุณต้องการออกจากระบบหรือไม่</string>
+    <string name="upload_image_success">เปลี่ยนรูปโปรไฟล์เรียบร้อยแล้ว</string>
     <string name="upload_image_error">ไม่สามารถอัพโหลดภาพได้</string>
     <string name="reset_passsword_submit_error">ไม่สามารถเปลี่ยนรหัสผ่านได้</string>
     <string name="reset_passsword_submit_success">เปลี่ยนรหัสผ่านสำเร็จ</string>
@@ -208,6 +209,7 @@
     <string name="ok">ตกลง</string>
     <string name="choose">เลือก</string>
     <string name="choose_case">เลือก Case ที่ต้องการติดตาม</string>
+    <string name="set_flag_success">เปลี่ยนการตั้งค่านี้เรียบร้อยแล้ว</string>
     <string name="set_flag_error">เกิดความผิดพลาด กรุณาลองใหม่</string>
     <string name="set_flag_forbidden">ขออภัย คุณไม่มีสิทธิตั้งค่านี้</string>
 

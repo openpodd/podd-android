@@ -92,7 +92,7 @@ public class ResetPasswordFragment extends Fragment {
                  /* alert when hasNetworkConnection */
             }
         } else {
-            Crouton.makeText(getActivity(), getString(R.string.password_not_match), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.password_not_match), Style.ALERT, R.id.errorArea).show();
             return;
         }
     }
@@ -132,13 +132,13 @@ public class ResetPasswordFragment extends Fragment {
 
 //                StyleUtil.setActionBarTitle(getActivity(), getString(R.string.title_activity_setting));
 
-                Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_success), Style.INFO).show();
+                Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_success), Style.INFO, R.id.errorArea).show();
 
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                 } else {
-                    Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_error), Style.ALERT, R.id.errorArea).show();
                 }
 
             }

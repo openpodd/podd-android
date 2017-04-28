@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (obj.has("server")) {
                     String server = obj.getString("server");
                     saveServerUrl(server);
-                    Crouton.makeText(LoginActivity.this, getString(R.string.change_server_message) + server, Style.CONFIRM)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.change_server_message) + server, Style.CONFIRM, R.id.errorArea)
                             .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 }
 
@@ -231,7 +231,7 @@ public class LoginActivity extends AppCompatActivity {
                     String icon = shortcut.getString("icon");
                     String text = shortcut.getString("text");
 
-                    Crouton.makeText(LoginActivity.this, getString(R.string.create_shortcut_message) + " " + text, Style.CONFIRM)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.create_shortcut_message) + " " + text, Style.CONFIRM, R.id.errorArea)
                             .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
 
 
@@ -342,12 +342,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         } else {
             if (username.length() == 0) {
-                Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT)
+                Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT, R.id.errorArea)
                         .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 return;
             }
             if (password.length() == 0) {
-                Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT)
+                Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT, R.id.errorArea)
                         .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 return;
             }
@@ -564,10 +564,10 @@ public class LoginActivity extends AppCompatActivity {
                 hideProgressDialog();
 
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea)
                             .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 } else {
-                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT)
+                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT, R.id.errorArea)
                             .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
                 }
 
@@ -625,7 +625,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
                 hideProgressDialog();
 
-                Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
+                Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
             }
         }
     }

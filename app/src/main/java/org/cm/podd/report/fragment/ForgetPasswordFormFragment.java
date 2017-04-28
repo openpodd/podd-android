@@ -91,7 +91,7 @@ public class ForgetPasswordFormFragment extends Fragment {
                 /* alert when hasNetworkConnection */
             }
         } else {
-            Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
             return;
         }
     }
@@ -141,13 +141,13 @@ public class ForgetPasswordFormFragment extends Fragment {
                     new ConfigTask().execute((Void[]) null);
 
                 }catch (JSONException ex) {
-                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.forget_passsword_submit_error), Style.ALERT, R.id.errorArea).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                 } else {
-                    Crouton.makeText(getActivity(),getString(R.string.forget_passsword_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(),getString(R.string.forget_passsword_submit_error), Style.ALERT, R.id.errorArea).show();
                 }
 
             }
@@ -207,7 +207,7 @@ public class ForgetPasswordFormFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
 
-                Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
+                Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
             }
         }
     }

@@ -82,7 +82,7 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                  /* alert when hasNetworkConnection */
             }
         } else {
-            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
+            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
             return;
         }
     }
@@ -161,13 +161,13 @@ public class ForgetPasswordActivity extends ActionBarActivity {
                     findViewById(R.id.form_content).setVisibility(View.VISIBLE);
 
                 }catch (JSONException ex) {
-                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.serial_number_error), Style.ALERT).show();
+                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.serial_number_error), Style.ALERT, R.id.errorArea).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
+                    Crouton.makeText(ForgetPasswordActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                 } else {
-                    Crouton.makeText(ForgetPasswordActivity.this, R.string.serial_number_error, Style.ALERT).show();
+                    Crouton.makeText(ForgetPasswordActivity.this, R.string.serial_number_error, Style.ALERT, R.id.errorArea).show();
                 }
 
             }

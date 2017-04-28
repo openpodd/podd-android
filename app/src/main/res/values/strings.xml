@@ -60,6 +60,7 @@
     <string name="logout">Logout</string>
     <string name="confirm_logout_title">Logout confirmation</string>
     <string name="confirm_logout_text">All report data will be deleted, and any pending submission wiil be aborted.\n\n Do you really want to logout?</string>
+    <string name="upload_image_success">Change profile image success</string>
     <string name="upload_image_error">Unable to upload images</string>
     <string name="reset_passsword_submit_error">Unable to reset password</string>
     <string name="reset_passsword_submit_success">Password reset is complete</string>
@@ -208,6 +209,7 @@
     <string name="ok">OK</string>
     <string name="choose">Choose</string>
     <string name="choose_case">Choose a case to follow</string>
+    <string name="set_flag_success">Change flag success</string>
     <string name="set_flag_error">Error, please try again</string>
     <string name="set_flag_forbidden">Sorry, you are not allowed to make changes</string>
 

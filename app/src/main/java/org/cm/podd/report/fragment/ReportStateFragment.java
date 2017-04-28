@@ -364,14 +364,14 @@ public class ReportStateFragment extends Fragment {
                     oldStateCodePosition = position;
 
                     ((ReportViewActivity) currentActivity).changeReportState(stateCode);
-
+                    Crouton.makeText(currentActivity, getString(R.string.set_flag_success), Style.INFO, R.id.errorArea).show();
                 } else {
                     reverseState();
 
                     if (resp.getStatusCode() == 403) {
-                        Crouton.makeText(getActivity(), getString(R.string.set_flag_forbidden), Style.ALERT).show();
+                        Crouton.makeText(currentActivity, getString(R.string.set_flag_forbidden), Style.ALERT, R.id.errorArea).show();
                     } else {
-                        Crouton.makeText(getActivity(), getString(R.string.set_flag_error), Style.ALERT).show();
+                        Crouton.makeText(currentActivity, getString(R.string.set_flag_error), Style.ALERT, R.id.errorArea).show();
                     }
                 }
             }
