@@ -333,5 +333,7 @@
     <string name="report_state">สถานะ</string>
     <string name="report_follow">ติดตาม</string>
     <string name="report_current_state">สถานะปัจจุบัน</string>
+    <string name="sent_not_success">ยังไม่ส่งข้อมูล</string>
+    <string name="sent_success">ส่งข้อมูลเรียบร้อบแล้ว</string>
 
 </resources>

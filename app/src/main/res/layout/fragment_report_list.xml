@@ -9,11 +9,10 @@
         android:id="@+id/listview_main_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:layout_height="match_parent">
 
         <ListView android:id="@id/android:list"
+            android:background="@color/ColorBackgroundFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

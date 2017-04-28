@@ -43,5 +43,7 @@
     <color name="report_type_human">#FF3FB7CA</color>
     <color name="report_type_animal">#FF874E9A</color>
     <color name="report_type_environment">#FFB4D34A</color>
+    <color name="report_send_not_success">#FF4081</color>
+    <color name="report_send_success">#579B2C</color>
     <color name="color_new_report_action">#FFFF8500</color>
 </resources>

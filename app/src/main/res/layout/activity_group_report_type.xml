@@ -39,12 +39,11 @@
         </LinearLayout>
 
         <ExpandableListView
+            android:background="@color/ColorBackgroundFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/report_type_list_view"
-            android:layout_marginLeft="14dp"
-            android:drawSelectorOnTop="true"
-            android:layout_marginRight="14dp">
+            android:drawSelectorOnTop="true">
 
         </ExpandableListView>
 

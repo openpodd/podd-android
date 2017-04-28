@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -433,10 +434,13 @@ public class ReportListFragment extends ListFragment {
                 holder.followText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
                 // cache drawable
-                holder.positive = context.getResources().getDrawable(R.drawable.icon_status_good);
-                holder.negative = context.getResources().getDrawable(R.drawable.icon_alert);
+                holder.positive = context.getResources().getDrawable(R.drawable.ic_normal_flag);
+                holder.negative = context.getResources().getDrawable(R.drawable.ic_negative_flag);
                 holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
-                holder.testReport = context.getResources().getDrawable(R.drawable.icon_flag_ignore);
+                holder.testReport = context.getResources().getDrawable(R.drawable.ic_test_flag);
+
+                holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
+                holder.sendReportStateIcon = (ImageView) retView.findViewById(R.id.report_send_state_icon);
             } else {
                 retView = inflater.inflate(R.layout.report_list_follow_item, parent, false);
                 holder = new ViewHolder();
@@ -456,6 +460,9 @@ public class ReportListFragment extends ListFragment {
                 holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
                 // cache drawable
                 holder.follow = context.getResources().getDrawable(R.drawable.icon_flag_follow);
+                holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
+
+                holder.sendReportStateIcon = (ImageView) retView.findViewById(R.id.report_send_state_icon);
             }
 
 
@@ -529,10 +536,25 @@ public class ReportListFragment extends ListFragment {
                 }
             }
 
-            holder.draftText.setVisibility(
-                    draft == Report.TRUE && submit == Report.FALSE ? View.VISIBLE : View.GONE);
-            String dateStr = DateUtil.formatLocaleDate(date);
+//            holder.draftText.setVisibility(
+//                    draft == Report.TRUE && submit == Report.FALSE ? View.VISIBLE : View.GONE);
+            String dateStr = DateUtil.formatLocaleDateTime(date);
             holder.dateText.setText(dateStr);
+
+            if (draft == Report.TRUE) {
+                holder.sendReportState.setText(getString(R.string.report_state) + ": " + getString(R.string.draft));
+                holder.sendReportState.setTextColor(ContextCompat.getColor(context, R.color.report_send_not_success));
+                holder.sendReportStateIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_status_unsend));
+            } else if (submit == Report.FALSE) {
+                holder.sendReportState.setText(getString(R.string.report_state) + ": " + getString(R.string.sent_not_success));
+                holder.sendReportState.setTextColor(ContextCompat.getColor(context, R.color.report_send_not_success));
+                holder.sendReportStateIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_status_unsend));
+            } else {
+                holder.sendReportState.setText(getString(R.string.report_state) + ": " + getString(R.string.sent_success));
+                holder.sendReportState.setTextColor(ContextCompat.getColor(context, R.color.report_send_success));
+
+            }
+
 
             if (submit == Report.FALSE && draft == Report.FALSE) {
                 holder.queueImage.setVisibility(View.VISIBLE);
@@ -555,6 +577,8 @@ public class ReportListFragment extends ListFragment {
             Drawable follow;
             Drawable testReport;
             TextView followText;
+            TextView sendReportState;
+            ImageView sendReportStateIcon;
         }
     }
 

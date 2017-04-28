@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="left"
     android:paddingTop="20dp"
     android:paddingLeft="30dp"
     android:paddingBottom="15dp"
+    android:background="@drawable/container_dropshadow"
     android:orientation="horizontal">
-
 
     <ImageView
         android:id="@+id/group_report_type_image"

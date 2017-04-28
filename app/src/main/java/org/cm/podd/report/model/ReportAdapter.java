@@ -169,7 +169,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
             if (!report.getString("parent").equals("null")) {
                 viewHolder.getReportTypeView().setText(viewHolder.getContext().getString(R.string.follow) + report.getString("reportTypeName"));
             }
-            
+
             // time ago
             Date date = DateUtil.fromJsonDateString(report.getString("date"));
             String dateStr = DateUtil.formatLocaleDateTime(date);

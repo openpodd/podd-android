@@ -335,4 +335,6 @@
     <string name="report_state">State</string>
     <string name="report_follow">Follow</string>
     <string name="report_current_state">Current State</string>
+    <string name="sent_not_success">Unsuccessful</string>
+    <string name="sent_success">Sent</string>
 </resources>
