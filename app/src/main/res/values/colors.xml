@@ -39,6 +39,7 @@
     <color name="ColorPrimary">#7547C2</color>
     <color name="ColorPrimaryButton">#9962E8</color>
     <color name="ColorPrimaryDark">#000000</color>
+    <color name="ColorBackgroundFeed">#F9F9F9</color>
     <color name="report_type_human">#FF3FB7CA</color>
     <color name="report_type_animal">#FF874E9A</color>
     <color name="report_type_environment">#FFB4D34A</color>

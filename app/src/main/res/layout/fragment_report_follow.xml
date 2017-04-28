@@ -8,6 +8,7 @@
         android:id="@+id/list_follow_up"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/ColorBackgroundFeed"
         android:paddingTop="0dp"
         android:paddingBottom="10dp"
         android:clipToPadding="false"
