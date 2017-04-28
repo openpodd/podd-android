@@ -5,14 +5,14 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <corners android:radius="5dp" />
-            <solid android:color="#666" />
+            <solid android:color="@color/backButtonPress" />
         </shape>
     </item>
 
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="5dp" />
-            <solid android:color="@android:color/darker_gray" />
+            <solid android:color="@color/backButton" />
         </shape>
     </item>
 

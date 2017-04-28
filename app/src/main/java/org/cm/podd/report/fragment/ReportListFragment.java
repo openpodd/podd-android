@@ -552,7 +552,7 @@ public class ReportListFragment extends ListFragment {
             } else {
                 holder.sendReportState.setText(getString(R.string.report_state) + ": " + getString(R.string.sent_success));
                 holder.sendReportState.setTextColor(ContextCompat.getColor(context, R.color.report_send_success));
-
+                holder.sendReportStateIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_status_ok));
             }
 
 

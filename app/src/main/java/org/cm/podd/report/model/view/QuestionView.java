@@ -183,7 +183,7 @@ public class QuestionView extends LinearLayout {
         } else {
             editView = new EditText(context);
             editView.setLayoutParams(params);
-            editView.setPadding(0, 0, 0, 0);
+            editView.setPadding(0, 0, 0, 20);
             editView.setClickable(true);
             editView.setHint(hintText);
             editView.setOnTouchListener(new OnTouchListener() {
