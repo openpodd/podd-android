@@ -1,72 +1,80 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
-    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    >
 
-    <!-- Your normal content view -->
-    <LinearLayout
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <!-- We use a Toolbar so that our drawer can be displayed
-             in front of the action bar -->
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appBarLayout"
-            app:elevation="0dp"
+        <!-- Your normal content view -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:orientation="vertical">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/my_toolbar"
+            <!-- We use a Toolbar so that our drawer can be displayed
+                 in front of the action bar -->
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/appBarLayout"
+                app:elevation="0dp"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/my_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:contentInsetLeft="0dp"
+                    app:contentInsetStart="0dp"
+                    android:elevation="0dp"
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/appBarLayout"
                 android:background="?attr/colorPrimary"
-                app:contentInsetLeft="0dp"
-                app:contentInsetStart="0dp"
-                android:elevation="0dp"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                app:tabTextColor="@color/white"
+                app:tabSelectedTextColor="@color/white"
+                app:tabIndicatorColor="@color/color_new_report_action"
+                app:tabIndicatorHeight="3dp"
+                android:elevation="0dp"/>
 
-        </android.support.design.widget.AppBarLayout>
+            <!-- The rest of your content view -->
+            <!-- The main content view -->
+            <FrameLayout
+                android:background="@color/white"
+                android:id="@+id/content_frame"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                />
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/appBarLayout"
-            android:background="?attr/colorPrimary"
-            app:tabTextColor="@color/white"
-            app:tabSelectedTextColor="@color/white"
-            app:tabIndicatorColor="@color/color_new_report_action"
-            app:tabIndicatorHeight="3dp"
-            android:elevation="0dp"/>
+        </LinearLayout>
 
-        <!-- The rest of your content view -->
-        <!-- The main content view -->
-        <FrameLayout
-            android:background="@color/white"
-            android:id="@+id/content_frame"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+        <!-- The navigation drawer -->
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/drawer_header"
+            app:menu="@menu/menu_home"
+            app:itemIconTint="@color/drawer_item"
+            app:itemTextColor="@color/drawer_item"
             />
 
-    </LinearLayout>
-
-    <!-- The navigation drawer -->
-
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/menu_home"
-        app:itemIconTint="@color/drawer_item"
-        app:itemTextColor="@color/drawer_item"
-        />
-
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>
+</FrameLayout>
