@@ -18,6 +18,7 @@ package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -92,6 +93,8 @@ public class SettingActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
+        final Context context = this;
+
         setContentView(R.layout.activity_setting);
 
         Typeface face = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
@@ -152,23 +155,8 @@ public class SettingActivity extends ActionBarActivity {
         findViewById(R.id.reset_password).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                setTitleToolbar(getString(R.string.setting_password));
-
-                mCurrentFragment = new ResetPasswordFragment();
-
-                bundle = new Bundle();
-                bundle.putString("reset", "true");
-                mCurrentFragment.setArguments(bundle);
-
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
-                        .commit();
-
-                findViewById(R.id.detail_content).setVisibility(View.GONE);
-                findViewById(R.id.form_content).setVisibility(View.VISIBLE);
-
+                Intent intent = new Intent(context, ResetPasswordActivity.class);
+                context.startActivity(intent);
             }
         });
 
