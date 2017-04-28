@@ -255,7 +255,13 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
         if (!tabInfo.isSelected()) return;
 
         try {
-            setActivityTitleWithType(report.getString("reportTypeName"));
+
+            String title = report.getString("reportTypeName");
+            if (!report.getString("parent").equals("null")) {
+                title = getString(R.string.follow) + "" + title;
+            }
+
+            setActivityTitleWithType(title);
 
             Bundle bundle = new Bundle();
             bundle.putString("report", reportDetail);
