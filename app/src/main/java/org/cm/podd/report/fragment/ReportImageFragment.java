@@ -23,6 +23,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -244,7 +245,7 @@ public class ReportImageFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // use ActionMode.Callback for compatibility with pre Honeycomb
                 if (mMode == null) {
-                    mMode = ((ActionBarActivity) getActivity()).startSupportActionMode(
+                    mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(
                             new ActionModeCallback(getActivity()));
                 }
                 return false;
@@ -436,7 +437,7 @@ public class ReportImageFragment extends Fragment {
                 Log.d(TAG, "image uri = " + data.getData());
 
                 Uri contentUri = data.getData();
-                saveImage(contentUri, true);
+                saveImage(contentUri);
             }
         }
     }
@@ -446,10 +447,10 @@ public class ReportImageFragment extends Fragment {
     }
 
     private void saveImage(Uri uri, boolean makeACopy) {
-        Uri targetUri = uri;
+        Uri targetUri = Uri.parse(getImageFilePath(uri));
 
         if (makeACopy) {
-            String inputFile = getImageFilePath(uri);
+            String inputFile = targetUri.toString();
             File cacheDir = getContext().getCacheDir();
             File outputFile;
             try {

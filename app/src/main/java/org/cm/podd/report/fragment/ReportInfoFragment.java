@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
@@ -12,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Html;
@@ -25,11 +23,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,23 +37,16 @@ import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.TouchHighlightImageButton;
-import org.cm.podd.report.activity.GroupReportTypeActivity;
 import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.activity.ReportViewActivity;
-import org.cm.podd.report.db.ReportStateDataSource;
 import org.cm.podd.report.model.FeedAdapter;
-import org.cm.podd.report.model.ReportState;
-import org.cm.podd.report.model.State;
 import org.cm.podd.report.util.DateUtil;
+import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -148,6 +135,7 @@ public class ReportInfoFragment extends Fragment{
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_report_info, null);
+        FontUtil.overrideFonts(getContext(), view);
         rootView = view;
 
         contentWrapper = view.findViewById(R.id.report_view_content);
