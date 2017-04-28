@@ -1,129 +1,138 @@
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.cm.podd.report.activity.LoginActivity"
-    android:gravity="center"
-    android:layout_centerInParent="true"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
-        android:id="@+id/wrap_logo"
-        android:layout_above="@+id/form"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context="org.cm.podd.report.activity.LoginActivity"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_centerVertical="true"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/wrap_logo"
+            android:layout_above="@+id/form"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/logo_full" />
+
+            <TextView
+                android:id="@+id/language"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="EN"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/form"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/logo_full" />
+            android:layout_centerVertical="true">
 
-        <TextView
-            android:id="@+id/language"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:text="EN"/>
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/username"
+                android:imeOptions="actionNext"
+                android:inputType="textVisiblePassword"
+                android:singleLine="true"
+                style="@style/EditTextFlat"
+                android:background="@drawable/edit_text_box"
+                android:padding="5dp"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:inputType="textPassword"
+                style="@style/EditTextFlat"
+                android:background="@drawable/edit_text_box"
+                android:padding="5dp"
+                android:layout_marginBottom="24dp" />
+
+            <Button
+                android:id="@+id/login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:layout_marginBottom="10dp"
+                style="@style/NextButton" />
+
+            <Button
+                android:id="@+id/registration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/registration"
+                android:layout_marginBottom="10dp"
+                style="@style/RegistrationButton" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/forgot_password"
+                android:text="@string/forgot_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:id="@+id/server_url_form"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/server_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="API End Point URL"
+                    android:layout_marginBottom="10dp"/>
+                <Button
+                    android:id="@+id/server_url_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save"
+                    android:layout_gravity="center_horizontal"
+                    style="@style/RegistrationButton"/>
+            </LinearLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/form"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+</FrameLayout>
 
-        <EditText
-            android:id="@+id/username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/username"
-            android:imeOptions="actionNext"
-            android:inputType="textVisiblePassword"
-            android:singleLine="true"
-            style="@style/EditTextFlat"
-            android:background="@drawable/edit_text_box"
-            android:padding="5dp"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/password"
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            android:inputType="textPassword"
-            style="@style/EditTextFlat"
-            android:background="@drawable/edit_text_box"
-            android:padding="5dp"
-            android:layout_marginBottom="24dp" />
-
-        <Button
-            android:id="@+id/login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login"
-            android:layout_marginBottom="10dp"
-            style="@style/NextButton" />
-
-        <Button
-            android:id="@+id/registration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/registration"
-            android:layout_marginBottom="10dp"
-            style="@style/RegistrationButton" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:layout_marginBottom="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/forgot_password"
-            android:text="@string/forgot_password"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent" />
-
-        <LinearLayout
-            android:id="@+id/server_url_form"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <EditText
-                android:id="@+id/server_url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="API End Point URL"
-                android:layout_marginBottom="10dp"/>
-            <Button
-                android:id="@+id/server_url_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:layout_gravity="center_horizontal"
-                style="@style/RegistrationButton"/>
-        </LinearLayout>
-    </LinearLayout>
-
-</RelativeLayout>
 
