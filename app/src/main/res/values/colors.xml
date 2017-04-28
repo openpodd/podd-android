@@ -48,6 +48,6 @@
     <color name="report_send_success">#579B2C</color>
     <color name="color_new_report_action">#FFFF8500</color>
 
-    <color name="backButton">#555</color>
-    <color name="backButtonPress">#333</color>
+    <color name="backButton">#c1c1c1</color>
+    <color name="backButtonPress">#a1a1a1</color>
 </resources>
