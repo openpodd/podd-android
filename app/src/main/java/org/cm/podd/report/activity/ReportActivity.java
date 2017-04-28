@@ -425,7 +425,7 @@ public class ReportActivity extends AppCompatActivity
             for (ValidationResult vr : validateResults) {
                 buff.append(vr.getMessage()).append("\n");
             }
-            final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT);
+            final Crouton crouton = Crouton.makeText(this, buff.toString(), Style.ALERT, R.id.errorArea);
             crouton.setConfiguration(new Configuration.Builder().setDuration(2500).build());
             crouton.setOnClickListener(new View.OnClickListener() {
                 @Override
