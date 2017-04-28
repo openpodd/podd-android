@@ -265,9 +265,9 @@ public class ReportCommentActivity extends AppCompatActivity {
                     Log.e(TAG, resp.getStatusCode() + "" + resp.getJsonObject());
 
                     if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                        Crouton.makeText(ReportCommentActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
+                        Crouton.makeText(ReportCommentActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                     } else {
-                        Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT).show();
+                        Crouton.makeText(ReportCommentActivity.this, getString(R.string.comment_error), Style.ALERT, R.id.errorArea).show();
                     }
                     hideProgressBar();
                 }

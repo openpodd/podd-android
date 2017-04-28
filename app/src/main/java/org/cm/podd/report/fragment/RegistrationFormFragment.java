@@ -171,22 +171,22 @@ public class RegistrationFormFragment extends Fragment {
         if (firstNameValid && lastNameValid && serialNumberValid && telephoneValid && emailValid) {
             showDialogConfirm();
         } else if (!firstNameValid) {
-            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT, R.id.errorArea).show();
             return;
         } else if (!lastNameValid) {
-            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.name_error), Style.ALERT, R.id.errorArea).show();
             return;
         } else if (!serialNumberValid) {
-            Crouton.makeText(getActivity(), getString(R.string.serial_number_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.serial_number_error), Style.ALERT, R.id.errorArea).show();
             return;
         } else if (!telephoneValid){
-            Crouton.makeText(getActivity(), getString(R.string.telephone_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.telephone_error), Style.ALERT, R.id.errorArea).show();
             return;
         } else if (!emailValid){
-            Crouton.makeText(getActivity(), getString(R.string.email_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.email_error), Style.ALERT, R.id.errorArea).show();
             return;
         } else {
-            Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT).show();
+            Crouton.makeText(getActivity(), getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
             return;
         }
     }
@@ -241,24 +241,24 @@ public class RegistrationFormFragment extends Fragment {
                     new ConfigTask().execute((Void[]) null);
 
                 }catch (JSONException ex) {
-                    Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT, R.id.errorArea).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
+                    Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                 } else {
                     try {
                         JSONObject obj = resp.getJsonObject();
                         String detail = obj.getString("detail");
                         if (detail.contains("serialNumber")) {
-                            Crouton.makeText(getActivity(), getString(R.string.serial_number_same_error), Style.ALERT).show();
+                            Crouton.makeText(getActivity(), getString(R.string.serial_number_same_error), Style.ALERT, R.id.errorArea).show();
                         } else if (detail.contains("telephone")) {
-                            Crouton.makeText(getActivity(), getString(R.string.telephone_same_error), Style.ALERT).show();
+                            Crouton.makeText(getActivity(), getString(R.string.telephone_same_error), Style.ALERT, R.id.errorArea).show();
                         } else {
-                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT, R.id.errorArea).show();
                         }
                     }  catch (JSONException ex) {
-                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT).show();
+                            Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT, R.id.errorArea).show();
                     }
                 }
             }
@@ -314,7 +314,7 @@ public class RegistrationFormFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
 
-                Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT).show();
+                Crouton.makeText(getActivity(), getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
             }
         }
     }

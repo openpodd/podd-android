@@ -103,6 +103,13 @@
 
     </RelativeLayout>
 
+
+    <LinearLayout
+        android:id="@+id/errorArea"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"></LinearLayout>
+
     <RelativeLayout
         android:id="@+id/case_dialog"
         android:layout_width="match_parent"

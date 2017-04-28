@@ -1,201 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
         android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ScrollView
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical">
+            android:id="@+id/scrollView" >
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                android:background="@color/white"
+                android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
-                    android:text="@string/first_name_required"
-                    />
+                    android:layout_gravity="center_horizontal">
 
-                <EditText
-                    android:id="@+id/first_name"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20dp"
+                        android:text="@string/first_name_required"
+                        />
+
+                    <EditText
+                        android:id="@+id/first_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edittext_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/edittext_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
-                    android:layout_marginBottom="15dp" />
+                    android:layout_gravity="center_horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/last_name_required"
+                        android:textSize="20dp"
+                        />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                    <EditText
+                        android:id="@+id/last_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edittext_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp" />
 
-                <TextView
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/last_name_required"
-                    android:textSize="20dp"
-                    />
+                    android:layout_gravity="center_horizontal">
 
-                <EditText
-                    android:id="@+id/last_name"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/serial_number_required"
+                        android:textSize="20dp"
+                        />
+
+                    <EditText
+                        android:id="@+id/serial_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edittext_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/edittext_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
-                    android:layout_marginBottom="15dp" />
+                    android:layout_gravity="center_horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/telephone_required"
+                        android:textSize="20dp"
+                        />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                    <EditText
+                        android:id="@+id/telephone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edittext_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp" />
 
-                <TextView
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/serial_number_required"
-                    android:textSize="20dp"
-                    />
+                    android:layout_gravity="center_horizontal">
 
-                <EditText
-                    android:id="@+id/serial_number"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email"
+                        android:textSize="20dp"
+                        />
+
+                    <EditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/edittext_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/edittext_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
-                    android:layout_marginBottom="15dp" />
+                    android:layout_gravity="center_horizontal">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/authority"
+                        android:textSize="20dp"
+                        />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                    <EditText
+                        android:id="@+id/invite_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:singleLine="true"
+                        style="@style/EditTextFlat"
+                        android:background="@drawable/edit_text_box"
+                        android:paddingTop="5dp"
+                        android:layout_marginBottom="15dp"
+                        android:enabled="false"/>
+                </LinearLayout>
 
-                <TextView
+
+                <Button
+                    android:id="@+id/register_submit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/telephone_required"
-                    android:textSize="20dp"
-                    />
-
-                <EditText
-                    android:id="@+id/telephone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edittext_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
-                    android:layout_marginBottom="15dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/email"
-                    android:textSize="20dp"
-                    />
-
-                <EditText
-                    android:id="@+id/email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/edittext_hint"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
-                    android:layout_marginBottom="15dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/authority"
-                    android:textSize="20dp"
-                    />
-
-                <EditText
-                    android:id="@+id/invite_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textVisiblePassword"
-                    android:singleLine="true"
-                    style="@style/EditTextFlat"
-                    android:background="@drawable/edit_text_box"
-                    android:paddingTop="5dp"
+                    android:text="@string/registration"
                     android:layout_marginBottom="15dp"
-                    android:enabled="false"/>
+                    style="@style/NextButton" />
+
             </LinearLayout>
 
-
-            <Button
-                android:id="@+id/register_submit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/registration"
-                android:layout_marginBottom="15dp"
-                style="@style/NextButton" />
-
-        </LinearLayout>
-
-    </ScrollView>
-</LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>

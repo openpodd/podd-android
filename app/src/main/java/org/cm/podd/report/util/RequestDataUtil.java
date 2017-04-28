@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -225,7 +226,7 @@ public class RequestDataUtil extends Service {
                 cm.getActiveNetworkInfo().isConnected();
 
         if (!connected) {
-            Crouton.makeText(activity, R.string.alert_no_network_connection, Style.ALERT).show();
+            Toast.makeText(activity, R.string.alert_no_network_connection, Toast.LENGTH_LONG).show();
         }
         return connected;
     }

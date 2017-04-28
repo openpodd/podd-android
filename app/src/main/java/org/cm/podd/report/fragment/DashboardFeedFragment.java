@@ -56,7 +56,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Receiving action " + intent.getAction());
             if (intent.getBooleanExtra("error", false)) {
-                Crouton.makeText(getActivity(), R.string.fail_refresh_dashboard, Style.ALERT).show();
+                Crouton.makeText(getActivity(), R.string.fail_refresh_dashboard, Style.ALERT, R.id.errorArea).show();
             } else {
                 refreshAdapter();
             }

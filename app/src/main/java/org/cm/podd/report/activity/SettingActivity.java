@@ -250,6 +250,7 @@ public class SettingActivity extends ActionBarActivity {
                             mCurrentPhotoUri = null;
                             // save output file and save path to share pref
                             saveProfileImage(bmp);
+                            Crouton.makeText(this, getString(R.string.upload_image_success), Style.INFO, R.id.errorArea).show();
                         } else if (selectedImage != null) {
                             String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -268,8 +269,9 @@ public class SettingActivity extends ActionBarActivity {
                             mCurrentPhotoUri = null;
                             // save output file and save path to share pref
                             saveProfileImage(bmp);
+                            Crouton.makeText(this, getString(R.string.upload_image_success), Style.INFO, R.id.errorArea).show();
                         } else {
-                            Crouton.makeText(this, getString(R.string.upload_image_error), Style.ALERT).show();
+                            Crouton.makeText(this, getString(R.string.upload_image_error), Style.ALERT, R.id.errorArea).show();
                         }
                     }
                     break;

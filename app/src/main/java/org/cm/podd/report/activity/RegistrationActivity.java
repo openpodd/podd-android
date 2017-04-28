@@ -77,7 +77,7 @@ public class RegistrationActivity extends ActionBarActivity {
                  /* alert when hasNetworkConnection */
             }
         } else {
-            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT).show();
+            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
             return;
         }
     }
@@ -149,13 +149,13 @@ public class RegistrationActivity extends ActionBarActivity {
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                 }catch (JSONException ex) {
-                    Crouton.makeText(RegistrationActivity.this, getString(R.string.invite_code_error), Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, getString(R.string.invite_code_error), Style.ALERT, R.id.errorArea).show();
                 }
             } else {
                 if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(RegistrationActivity.this, getString(R.string.http_server_error), Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea).show();
                 } else {
-                    Crouton.makeText(RegistrationActivity.this, R.string.invite_code_error, Style.ALERT).show();
+                    Crouton.makeText(RegistrationActivity.this, R.string.invite_code_error, Style.ALERT, R.id.errorArea).show();
                 }
 
             }
