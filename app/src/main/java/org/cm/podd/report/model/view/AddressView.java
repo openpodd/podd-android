@@ -100,6 +100,7 @@ public class AddressView extends LinearLayout {
     private EditText editView;
 
     private ProgressDialog progressDialog;
+    private String oldAddress;
 
     public AddressView(final Context context, Question q, boolean readonly) {
         super(context);
@@ -109,8 +110,6 @@ public class AddressView extends LinearLayout {
 
         this.context = context;
         this.question = q;
-
-        new SyncDataTask().execute((Void[]) null);
 
         hintText = context.getString(R.string.edittext_hint);
 
@@ -133,7 +132,8 @@ public class AddressView extends LinearLayout {
         String key = question.getDataUrl();
 
         config = sharedPrefUtil.getSyncData(system, key);
-        if (init == 0) {
+        if (init == 0 && config.getValue() == null) {
+            new SyncDataTask().execute((Void[]) null);
             return;
         }
 
@@ -203,7 +203,10 @@ public class AddressView extends LinearLayout {
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                         if (init == 0) return;
+                        if(getAddressUpdated().equalsIgnoreCase(oldAddress)) return;
+
                         question.setData(getAddressUpdated());
+                        oldAddress = getAddressUpdated();
 
                         // refresh
                         for (int idx = finalIdx + 1; idx < fields.length; idx++) {
@@ -314,6 +317,8 @@ public class AddressView extends LinearLayout {
 
         }
 
+        init = 1;
+        oldAddress = getAddressUpdated();
         hideProgressDialog();
     }
 
