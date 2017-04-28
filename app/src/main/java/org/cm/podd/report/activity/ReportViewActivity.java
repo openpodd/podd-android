@@ -1,17 +1,9 @@
 package org.cm.podd.report.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,73 +14,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
-import org.cm.podd.report.TouchHighlightImageButton;
 import org.cm.podd.report.db.FeedItemDataSource;
-import org.cm.podd.report.db.ReportStateDataSource;
-import org.cm.podd.report.fragment.DashboardFeedFragment;
-import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportFollowFragment;
 import org.cm.podd.report.fragment.ReportInfoFragment;
-import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.fragment.ReportStateFragment;
-import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.FeedItem;
-import org.cm.podd.report.model.ReportState;
-import org.cm.podd.report.model.State;
 import org.cm.podd.report.service.ReportService;
-import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
-import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by siriwat on 2/23/15.
@@ -288,11 +238,6 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
         } catch (IllegalStateException e){
             Log.e(TAG, "Error IllegalStateException", e);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-
     }
 
     @Override
