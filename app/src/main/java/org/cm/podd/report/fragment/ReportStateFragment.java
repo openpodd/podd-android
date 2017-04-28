@@ -3,18 +3,15 @@ package org.cm.podd.report.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -23,23 +20,15 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import org.cm.podd.report.R;
-import org.cm.podd.report.TouchHighlightImageButton;
-import org.cm.podd.report.activity.ImageActivity;
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.ReportStateDataSource;
-import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.ReportState;
 import org.cm.podd.report.model.State;
 import org.cm.podd.report.service.ReportService;
-import org.cm.podd.report.util.DateUtil;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
-import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -152,6 +141,7 @@ public class ReportStateFragment extends Fragment {
         context = getContext();
 
         View view = inflater.inflate(R.layout.fragment_report_state, null);
+        FontUtil.overrideFonts(getContext(), view);
 
         flagReadOnlyView = (LinearLayout) view.findViewById(R.id.flag_read_only);
         flagView = (TextView) view.findViewById(R.id.flag_name);
