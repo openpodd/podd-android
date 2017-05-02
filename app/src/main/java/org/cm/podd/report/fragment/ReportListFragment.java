@@ -35,6 +35,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.GroupReportTypeActivity;
 import org.cm.podd.report.activity.ReportActivity;
@@ -171,6 +175,12 @@ public class ReportListFragment extends ListFragment {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Tracker tracker = ((PoddApplication) getActivity().getApplication()).getTracker(PoddApplication.TrackerName.APP_TRACKER);
+                tracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("newReport").setAction("FromFloatingButton")
+                        .build());
+
                 Intent intent = new Intent(getActivity(), GroupReportTypeActivity.class);
                 startActivityForResult(intent, 0);
             }

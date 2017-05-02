@@ -18,6 +18,7 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -545,6 +546,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     }
 
     private void newReport() {
+        Tracker tracker = ((PoddApplication) getApplication()).getTracker(
+                PoddApplication.TrackerName.APP_TRACKER);
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("newReport").setAction("FromTabBarButton")
+                .build());
+
         Intent intent = new Intent(this, GroupReportTypeActivity.class);
         startActivityForResult(intent, 0);
     }
