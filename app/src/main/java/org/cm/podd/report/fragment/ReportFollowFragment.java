@@ -54,6 +54,7 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
 
     private OnFragmentInteractionListener mListener;
 
+    private Long reportId;
     private Long parentReportId;
     private Long parentReportFlag;
 
@@ -117,7 +118,8 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
         try {
             JSONObject report = new JSONObject(_report);
             try {
-                parentReportId = report.getLong("id");
+                reportId = report.getLong("id");
+                parentReportId = report.getLong("parent");
                 parentReportFlag = report.getLong("flag");
             } catch (JSONException e) {
 
@@ -127,8 +129,8 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
             // nothing.
         }
 
-        if (parentReportId != null) {
-            fetchFollowUpReports(parentReportId);
+        if (reportId != null) {
+            fetchFollowUpReports(reportId);
         } else {
             empty.setVisibility(View.VISIBLE);
             ((ReportViewActivity)getActivity()).showProgressBar();
@@ -182,7 +184,10 @@ public class ReportFollowFragment extends Fragment implements ReportAdapter.OnIt
                             feedItem.setDate(formatter.parse(item.getString("date")));
                             feedItem.setExplanation(item.toString());
 
-                            if (parentReportFlag != null && parentReportFlag == 4) {
+                            String parent = item.getString("parent");
+                            flag = parent.equalsIgnoreCase("null")? 5:0;
+
+                            if (parentReportId != null) {
                                 if (flag == 5) {
                                     feedItems.add(feedItem);
                                 }
