@@ -127,11 +127,14 @@ public class ResetPasswordFragment extends Fragment {
 
             if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
                 // Back
-                rootView.getRootView().findViewById(R.id.detail_content).setVisibility(View.VISIBLE);
-                rootView.getRootView().findViewById(R.id.form_content).setVisibility(View.GONE);
+//                rootView.getRootView().findViewById(R.id.detail_content).setVisibility(View.VISIBLE);
+//                rootView.getRootView().findViewById(R.id.form_content).setVisibility(View.GONE);
 
 //                StyleUtil.setActionBarTitle(getActivity(), getString(R.string.title_activity_setting));
 
+                passwordEditText.setText("");
+                repasswordEditText.setText("");
+                
                 Crouton.makeText(getActivity(),getString(R.string.reset_passsword_submit_success), Style.INFO, R.id.errorArea).show();
 
             } else {
