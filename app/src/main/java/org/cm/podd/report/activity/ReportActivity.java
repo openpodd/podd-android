@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
@@ -63,8 +62,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
@@ -72,6 +71,7 @@ import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
+import org.cm.podd.report.fragment.MapLocationFragment;
 import org.cm.podd.report.fragment.ReportConfirmFragment;
 import org.cm.podd.report.fragment.ReportDataInterface;
 import org.cm.podd.report.fragment.ReportImageFragment;
@@ -107,7 +107,9 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class ReportActivity extends AppCompatActivity
-        implements ReportNavigationInterface, ReportDataInterface, QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        implements ReportNavigationInterface, ReportDataInterface,
+        QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = "ReportActivity";
     public static final int REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG = 200;
@@ -135,7 +137,6 @@ public class ReportActivity extends AppCompatActivity
     private FormIterator formIterator;
     private Trigger trigger;
 
-
     private double currentLatitude = 0.00;
     private double currentLongitude = 0.00;
 
@@ -153,6 +154,7 @@ public class ReportActivity extends AppCompatActivity
     private GoogleApiClient mGoogleApiClient;
     private String followActionName;
 
+    private MapLocationFragment mapLocationFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,7 +234,9 @@ public class ReportActivity extends AppCompatActivity
             follow = savedInstanceState.getBoolean("follow");
             testReport = savedInstanceState.getBoolean("testReport");
             formIterator = (FormIterator) savedInstanceState.getSerializable("formIterator");
-            trigger = formIterator.getForm().getTrigger();
+            if (formIterator != null) {
+                trigger = formIterator.getForm().getTrigger();
+            }
             reportSubmit = savedInstanceState.getInt("reportSubmit");
             followActionName = savedInstanceState.getString("followActionName");
             Log.d(TAG, "onCreate from savedInstance, testFlag = " + testReport);
@@ -387,11 +391,12 @@ public class ReportActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        Fragment oldFragment = getVisibleFragment();
-        if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
-            ((ReportNavigationChangeCallbackInterface) oldFragment).onPrevious();
-        }
 
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("ReportNavigationChangeCallbackInterface");
+        if (oldFragment != null && oldFragment.isVisible() && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
+            ReportNavigationChangeCallbackInterface inf = (ReportNavigationChangeCallbackInterface) oldFragment;
+            inf.onPrevious();
+        }
 
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
@@ -400,8 +405,15 @@ public class ReportActivity extends AppCompatActivity
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 currentFragment = "dynamicForm";
                 showHideDisableMask(false); // delegate readonly function to dynamic form
-            } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
+            } else if (currentFragment.equals(MapLocationFragment.class.getName())) {
                 currentFragment = null;
+                showHideDisableMask(false);
+            } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
+                if (isForceLocation()) {
+                    currentFragment = MapLocationFragment.class.getName();
+                } else {
+                    currentFragment = null;
+                }
                 showHideDisableMask(false);
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = ReportLocationFragment.class.getName();
@@ -421,7 +433,7 @@ public class ReportActivity extends AppCompatActivity
     private boolean notifyValidationErrors() {
         List<ValidationResult> validateResults = formIterator.validatePageAndGetResult();
         if (validateResults.size() > 0) {
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             for (ValidationResult vr : validateResults) {
                 buff.append(vr.getMessage()).append("\n");
             }
@@ -439,6 +451,10 @@ public class ReportActivity extends AppCompatActivity
         return false;
     }
 
+    private boolean isForceLocation() {
+        return formIterator.getForm().isForceLocation();
+    }
+
     private void nextScreen() {
 
         Fragment fragment = null;
@@ -446,22 +462,49 @@ public class ReportActivity extends AppCompatActivity
 
         hideKeyboard();
 
-        Fragment oldFragment = getVisibleFragment();
-        if (oldFragment != null && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
-            ((ReportNavigationChangeCallbackInterface) oldFragment).onNext();
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("ReportNavigationChangeCallbackInterface");
+        if (oldFragment != null && oldFragment.isVisible() && oldFragment instanceof ReportNavigationChangeCallbackInterface) {
+            ReportNavigationChangeCallbackInterface inf = (ReportNavigationChangeCallbackInterface) oldFragment;
+            inf.onNext();
         }
 
         if (currentFragment == null) { /* first screen */
+
             Log.d(TAG, "first screen");
-            fragment = ReportImageFragment.newInstance(reportId);
+
+            if (isForceLocation()) {
+                if (currentLatitude != 0.0) {
+                    mapLocationFragment = MapLocationFragment.newInstance(currentLatitude, currentLongitude, reportSubmit != 1);
+                } else {
+                    mapLocationFragment = new MapLocationFragment();
+                }
+                fragment = mapLocationFragment;
+            } else {
+                fragment = ReportImageFragment.newInstance(reportId);
+            }
             showHideDisableMask(false);
+
         } else {
 
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
                 fragment = ReportConfirmFragment.newInstance(reportId);
                 showHideDisableMask(false);
 
-            }else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
+            } else if (currentFragment.equals(MapLocationFragment.class.getName())) {
+
+                // save customlocation
+                if (mapLocationFragment != null && mapLocationFragment.isUserChangePosition()) {
+                    LatLng lng = mapLocationFragment.getCustomPosition();
+                    currentLatitude = lng.latitude;
+                    currentLongitude = lng.longitude;
+                    Log.d(TAG, "custom location = " + currentLatitude + "," + currentLongitude);
+                    reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+                }
+
+                fragment = ReportImageFragment.newInstance(reportId);
+                showHideDisableMask(false);
+
+            } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 /* do nothing */
 
             } else {
@@ -527,10 +570,18 @@ public class ReportActivity extends AppCompatActivity
             transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             if (currentFragment == null) {
                 Log.d(TAG, "add fragment");
-                transaction.add(R.id.container, fragment);
+                if (fragment instanceof ReportNavigationChangeCallbackInterface) {
+                    transaction.add(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
+                } else {
+                    transaction.add(R.id.container, fragment);
+                }
             } else {
                 Log.d(TAG, "replace fragment");
-                transaction.replace(R.id.container, fragment);
+                if (fragment instanceof ReportNavigationChangeCallbackInterface) {
+                    transaction.replace(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
+                } else {
+                    transaction.replace(R.id.container, fragment);
+                }
                 transaction.addToBackStack(fragment.getClass().getName());
             }
             transaction.commit();
@@ -610,12 +661,8 @@ public class ReportActivity extends AppCompatActivity
 
         if (testReport) {
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.color.report_test_indicator));
-        } else {
-//            actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.abc_ab_solid_light_holo));
         }
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.report, menu);
         return true;
     }
 
@@ -885,7 +932,6 @@ public class ReportActivity extends AppCompatActivity
             @Override
             public void onResult(LocationSettingsResult result) {
                 final Status status = result.getStatus();
-                final LocationSettingsStates states = result.getLocationSettingsStates();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
@@ -935,6 +981,14 @@ public class ReportActivity extends AppCompatActivity
         reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
 
         switchToFormMode();
+
+        if (isForceLocation()) {
+            if (mapLocationFragment.isVisible()) {
+                if (mapLocationFragment.setLocation(currentLatitude, currentLongitude)) {
+                    stopLocationUpdates();
+                }
+            }
+        }
     }
 
     /**
@@ -943,7 +997,6 @@ public class ReportActivity extends AppCompatActivity
     public static class FormPageFragment extends Fragment {
 
         private Page page;
-        private BroadcastReceiver mSyncReceiver;
 
         public FormPageFragment() {
             super();
@@ -971,19 +1024,6 @@ public class ReportActivity extends AppCompatActivity
     public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-    }
-
-    private Fragment getVisibleFragment(){
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        if (fragments != null) {
-            for(Fragment fragment : fragments){
-                if(fragment != null && fragment.isVisible())
-                    return fragment;
-            }
-        }
-
-        return null;
     }
 
     @Override

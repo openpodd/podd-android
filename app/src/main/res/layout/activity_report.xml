@@ -72,9 +72,6 @@
                         android:visibility="gone"
                         />
                 </LinearLayout>
-
-
-
             </RelativeLayout>
 
             <RelativeLayout
@@ -88,8 +85,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_above="@+id/controlBar"
-                    android:layout_below="@+id/controlCameraBar">
+                    android:layout_above="@+id/controlBar">
 
                     <FrameLayout
                         android:id="@+id/container"
@@ -128,17 +124,6 @@
                         android:layout_alignParentLeft="true"
                         style="@style/PrevButton"
                         android:text="@string/btn_prev" />
-
-                    <!--<Button-->
-                    <!--android:id="@+id/cameraBtn"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--style="@style/CameraButton"-->
-                    <!--android:layout_marginRight="10dp"-->
-                    <!--android:drawableLeft="@drawable/icon_camera"-->
-                    <!--android:drawablePadding="0dp"-->
-                    <!--android:text="@string/btn_camera" />-->
 
                     <Button
                         android:id="@+id/nextBtn"

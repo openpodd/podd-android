@@ -17,10 +17,7 @@
 
 package org.cm.podd.report.model.view;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -41,8 +38,7 @@ public class PageView extends ScrollView {
     private final Page page;
     private QuestionView firstView = null;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public   PageView(Context context, Page page, boolean readonly) {
+    public PageView(Context context, Page page, boolean readonly) {
         super(context);
         this.page = page;
 

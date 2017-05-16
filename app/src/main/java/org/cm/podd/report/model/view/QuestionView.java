@@ -17,60 +17,30 @@
 
 package org.cm.podd.report.model.view;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.activity.HomeActivity;
-import org.cm.podd.report.model.Comment;
-import org.cm.podd.report.model.Config;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
-import org.cm.podd.report.model.ReportType;
-import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.view.NumberPickerView;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by pphetra on 9/30/14 AD.
@@ -82,7 +52,6 @@ public class QuestionView extends LinearLayout {
     private DatePicker calendarView = null;
     private NumberPickerView numberPicker = null;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public QuestionView(final Context context, Question q, final boolean readonly) {
         super(context);
 

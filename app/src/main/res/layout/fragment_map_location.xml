@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.cm.podd.report.fragment.MapLocationFragment">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:id="@+id/change_position_btn"
+        android:paddingTop="6dp"
+        android:text="เลือกตำแหน่งเอง"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/change_position_btn">
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_location"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        </com.google.android.gms.maps.MapView>
+
+
+        <ImageView
+            android:id="@+id/confirm_address_map_custom_marker"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_marker"/>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
