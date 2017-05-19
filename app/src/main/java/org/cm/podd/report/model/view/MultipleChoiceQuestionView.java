@@ -19,17 +19,18 @@ package org.cm.podd.report.model.view;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.model.MultipleChoiceItem;
@@ -44,7 +45,7 @@ import java.util.List;
  */
 public class MultipleChoiceQuestionView extends MultipleChoiceQuestionBaseView {
 
-    private static final String TAG = "MultipleChoiceQuestionView";
+    private static final String TAG = "MultiChoiceQuestionView";
     private EditText editText;
 
     public MultipleChoiceQuestionView(Context context, final MultipleChoiceQuestion question, final boolean readonly) {
@@ -141,7 +142,9 @@ public class MultipleChoiceQuestionView extends MultipleChoiceQuestionBaseView {
                     if (question.isFreeTextChoiceEnable()) {
                         MultipleChoiceItem freeTextItem = (MultipleChoiceItem) items.get(items.size() - 1);
                         if (freeTextItem.isChecked()) {
+                            editText.requestFocus();
                             editText.setVisibility(VISIBLE);
+                            askForFocus();
                         } else {
                             editText.setVisibility(INVISIBLE);
                             editText.setText("");
@@ -170,5 +173,17 @@ public class MultipleChoiceQuestionView extends MultipleChoiceQuestionBaseView {
 
         ViewGroup.LayoutParams params = getLayoutParams();
         params.height = getMeasuredHeight();
+    }
+
+
+    public void askForFocus() {
+        if (editText != null) {
+            (new Handler()).postDelayed(new Runnable() {
+                public void run() {
+                    editText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                    editText.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
+                }
+            }, 100);
+        }
     }
 }
