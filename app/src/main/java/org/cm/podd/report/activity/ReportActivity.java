@@ -398,6 +398,12 @@ public class ReportActivity extends AppCompatActivity
             inf.onPrevious();
         }
 
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         super.onBackPressed();
         Log.d(TAG, "from fragment = " + currentFragment);
 
