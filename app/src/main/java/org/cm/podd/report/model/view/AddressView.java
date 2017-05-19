@@ -17,64 +17,37 @@
 
 package org.cm.podd.report.model.view;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.cm.podd.report.R;
-import org.cm.podd.report.activity.ForgetPasswordActivity;
-
-import org.cm.podd.report.fragment.ForgetPasswordFormFragment;
 import org.cm.podd.report.model.Config;
-import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.Question;
 import org.cm.podd.report.util.CustomFilterUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 
 public class AddressView extends LinearLayout {
@@ -97,7 +70,6 @@ public class AddressView extends LinearLayout {
     private boolean readonly;
 
     private String[] fields;
-    private EditText editView;
 
     private ProgressDialog progressDialog;
     private String oldAddress;
@@ -138,7 +110,13 @@ public class AddressView extends LinearLayout {
         }
 
         fields = question.getFilterFields().split(",");
-        editView = new EditText(context);
+
+        TextView titleView = new TextView(context);
+        titleView.setText(question.getTitle());
+        titleView.setLayoutParams(params);
+        titleView.setTextAppearance(context, R.style.ReportTextLabel);
+        titleView.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
+        addView(titleView);
 
         spinnerViews = new View[fields.length];
         for (int idx = 0; idx < fields.length; idx++) {
@@ -406,10 +384,6 @@ public class AddressView extends LinearLayout {
                 }
             }
 
-        }
-
-        if (!editView.getText().toString().equalsIgnoreCase("")) {
-            value += "[specific:" + editView.getText().toString() + "]";
         }
         return value;
     }
