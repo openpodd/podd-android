@@ -16,12 +16,17 @@
  */
 package org.cm.podd.report.activity;
 
+import android.content.pm.ApplicationInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -35,8 +40,11 @@ import org.cm.podd.report.util.WebContentUtil;
 
 public class WebContentActivity extends ActionBarActivity {
 
+    public static final String URL_SCHEME = "podd";
+
     WebView webView;
     NotificationDataSource notificationDataSource;
+    private WebSettings webSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,37 @@ public class WebContentActivity extends ActionBarActivity {
         notificationDataSource = new NotificationDataSource(this);
 
         webView = (WebView) findViewById(R.id.webView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }
+        }
+
+        webSettings = webView.getSettings();
+        webSettings.setDisplayZoomControls(false);
+
+        /*
+          I wanna use JavascriptInterface but I can't due to security exception here :
+          https://labs.mwrinfosecurity.com/blog/webview-addjavascriptinterface-remote-code-execution/
+         */
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Uri uri = Uri.parse(url);
+                if (uri.getScheme().equals(URL_SCHEME)) {
+                    switch (uri.getHost()) {
+                        case "redirectTo":
+                            String targetUrl = uri.getQueryParameter("url");
+                            view.loadUrl(targetUrl);
+                            break;
+                    }
+                    return false;
+                }
+
+                return true;
+            }
+        });
 
         String title = getIntent().getStringExtra("title");
         String body = getIntent().getStringExtra("content");
