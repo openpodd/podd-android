@@ -72,7 +72,8 @@ public class GcmIntentService extends IntentService {
                         // Save notification
                         NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
 
-                        String payloadStr = android.text.Html.fromHtml(payload).toString();
+                        String strippedHtml = payload.replaceAll("<script.*?</script>", "");
+                        String payloadStr = android.text.Html.fromHtml(strippedHtml).toString();
 
                         int len = 30;
                         if (payloadStr.length() < len) {
