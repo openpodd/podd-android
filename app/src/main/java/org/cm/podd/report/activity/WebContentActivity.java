@@ -16,6 +16,7 @@
  */
 package org.cm.podd.report.activity;
 
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +25,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,6 +37,7 @@ import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.model.Report;
+import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.util.WebContentUtil;
 
@@ -67,6 +70,13 @@ public class WebContentActivity extends ActionBarActivity {
         webSettings = webView.getSettings();
         webSettings.setDisplayZoomControls(false);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+        else {
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
         /*
           I wanna use JavascriptInterface but I can't due to security exception here :
           https://labs.mwrinfosecurity.com/blog/webview-addjavascriptinterface-remote-code-execution/
@@ -82,10 +92,21 @@ public class WebContentActivity extends ActionBarActivity {
                             view.loadUrl(targetUrl);
                             break;
                     }
-                    return false;
+                    return true;
                 }
 
-                return true;
+                if (uri.getHost().equals("www.cmonehealth.org") && url.matches(".*dashboard/#/home\\?reportId=(\\d+).*")) {
+                    Uri newUri = Uri.parse(url.replace("#/", ""));
+                    String reportId = newUri.getQueryParameter("reportId");
+
+                    Intent intent = new Intent(WebContentActivity.this, ReportViewActivity.class);
+                    intent.putExtra(ReportService.PARAM_REPORT_ID, Long.valueOf(reportId));
+                    startActivity(intent);
+
+                    return true;
+                }
+
+                return false;
             }
         });
 
