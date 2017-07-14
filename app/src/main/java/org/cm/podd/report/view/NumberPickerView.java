@@ -1,9 +1,11 @@
 package org.cm.podd.report.view;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -21,41 +23,42 @@ public class NumberPickerView extends LinearLayout {
     private int mValue = 0;
 
     private EditText mValueEditText;
+    private final ImageButton mAddButton;
+    private final ImageButton mMinusButton;
+
+    private ValueChangeListener listener = null;
 
     public NumberPickerView(Context context) {
         super(context);
-        mRootView = LayoutInflater.from(context).inflate(R.layout.number_picker_layout, this);
+        mRootView = LayoutInflater.from(context).inflate(R.layout.number_picker_layout, this, true);
         mContext = context;
 
         mValueEditText = (EditText) mRootView.findViewById(R.id.value_textview);
         mValueEditText.setText(String.valueOf(mValue));
         mValueEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-        ImageButton mAddButton = (ImageButton) mRootView.findViewById(R.id.button_add);
-        ImageButton mMinusButton = (ImageButton) mRootView.findViewById(R.id.button_minus);
-
         mValueEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String text = editable.toString();
-                if (text != null && ! text.equals("")) {
-                    mValue = Integer.parseInt(editable.toString());
-                } else {
-                    mValue = 0;
+                if (listener != null) {
+                    listener.changed(getValue());
                 }
-
             }
         });
+
+
+        mAddButton = (ImageButton) mRootView.findViewById(R.id.button_add);
+        mMinusButton = (ImageButton) mRootView.findViewById(R.id.button_minus);
 
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +81,11 @@ public class NumberPickerView extends LinearLayout {
     }
 
     public int getValue() {
-        return mValue;
+        String valueStr = mValueEditText.getText().toString();
+        if (valueStr != null && !valueStr.equals("")) {
+            return  Integer.parseInt(valueStr);
+        }
+        return 0;
     }
 
     public void setValue(int value) {
@@ -86,7 +93,27 @@ public class NumberPickerView extends LinearLayout {
         mValueEditText.setText(String.valueOf(mValue));
     }
 
+
     public EditText getNumberEditText() {
         return mValueEditText;
+    }
+
+    public void clearAllListeners() {
+        mAddButton.setOnClickListener(null);
+        mMinusButton.setOnClickListener(null);
+    }
+
+    public void setValueChangeListener(ValueChangeListener vcl) {
+        listener = vcl;
+    }
+
+
+    public interface ValueChangeListener {
+        public void changed(int value);
+    }
+
+    @Override
+    protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+
     }
 }

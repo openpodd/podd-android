@@ -129,20 +129,10 @@ public class QuestionView extends LinearLayout {
                 value = Integer.parseInt(question.getValue().toString());
                 numberPicker.setValue(value);
             }
-            numberPicker.getNumberEditText().addTextChangedListener(new TextWatcher() {
+
+            numberPicker.setValueChangeListener(new NumberPickerView.ValueChangeListener() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    int value = (int) question.getDataType().parseFromString(editable.toString());
+                public void changed(int value) {
                     question.setData(value);
                 }
             });
@@ -202,7 +192,7 @@ public class QuestionView extends LinearLayout {
             addView(editView);
 
             if (! readonly) {
-                editView.addTextChangedListener(new TextWatcher() {
+                TextWatcher watcher = new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
@@ -217,7 +207,8 @@ public class QuestionView extends LinearLayout {
                     public void afterTextChanged(Editable editable) {
                         question.setData(question.getDataType().parseFromString(editable.toString()));
                     }
-                });
+                };
+                editView.addTextChangedListener(watcher);
 
                 editView.setOnFocusChangeListener(new OnFocusChangeListener() {
                     @Override
