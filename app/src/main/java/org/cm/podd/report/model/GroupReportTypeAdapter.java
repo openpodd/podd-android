@@ -37,7 +37,8 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
                 animalReportTypes.add(type);
             } else if (type.getName().matches("สิ่งแวดล้อม")) {
                 environmentReportTypes.add(type);
-            } else if (type.getName().matches("(.*)ธรรมชาติ(.*)")) {
+            } else if (type.getName().matches("(.*)ธรรมชาติ(.*)") ||
+                    type.getName().matches(".*ลูกน้ำ.*")) {
                 environmentReportTypes.add(type);
             } else {
                 humanReportTypes.add(type);
