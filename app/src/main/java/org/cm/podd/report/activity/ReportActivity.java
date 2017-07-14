@@ -846,7 +846,9 @@ public class ReportActivity extends AppCompatActivity
                 final LocationRequest locationRequest = getLocationRequest();
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
             } else {
-                switchToProgressLocationMode();
+                if (formIterator.getForm().isForceLocation()) {
+                    switchToProgressLocationMode();
+                }
             }
 
         }
