@@ -12,13 +12,14 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 15
         targetSdkVersion 20
-        versionCode 54
+        versionCode 55
         versionName "2.0.3"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
         multiDexEnabled true
         testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
+        resValue("string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: ""))
     }
 
     signingConfigs {
