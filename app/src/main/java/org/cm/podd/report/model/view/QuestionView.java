@@ -77,15 +77,16 @@ public class QuestionView extends LinearLayout {
             @Override
             public void onClick(final View view) {
                 if (! readonly) {
-                    editView.requestFocus();
-                    (new android.os.Handler()).postDelayed(new Runnable() {
+                    if (editView != null) {
+                        editView.requestFocus();
+                        (new android.os.Handler()).postDelayed(new Runnable() {
 
-                        public void run() {
-                            editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                            editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                        }
-                    }, 200);
-
+                            public void run() {
+                                editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                                editView.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                            }
+                        }, 200);
+                    }
                 }
             }
         });
