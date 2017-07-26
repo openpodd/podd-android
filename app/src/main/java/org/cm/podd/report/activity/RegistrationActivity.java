@@ -4,12 +4,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +45,17 @@ public class RegistrationActivity extends ActionBarActivity {
     }
 
     public void hideProgressDialog() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (this.isDestroyed()) {
+                return;
+            }
+        } else {
+            if (this.isFinishing()) { // or call isFinishing() if min sdk version < 17
+                return;
+            }
+        }
+
         if (pd != null && pd.isShowing()) {
             pd.dismiss();
         }
@@ -72,7 +82,7 @@ public class RegistrationActivity extends ActionBarActivity {
         String inviteCode = inviteCodeText.getText().toString();
         if (inviteCode.length() > 0) {
             if (RequestDataUtil.hasNetworkConnection(this)) {
-                new InviteCodeTask().execute((Void[]) null);
+                new InviteCodeTask().execute(new String[]{inviteCode} );
             } else {
                  /* alert when hasNetworkConnection */
             }
@@ -85,7 +95,7 @@ public class RegistrationActivity extends ActionBarActivity {
     /**
      * Post Invite code
      */
-    public class InviteCodeTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+    public class InviteCodeTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
 
         @Override
         protected void onPreExecute() {
@@ -94,10 +104,10 @@ public class RegistrationActivity extends ActionBarActivity {
         }
 
         @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
             // authenticate and get access token
             String reqData = null;
-            String inviteCode = inviteCodeText.getText().toString();
+            String inviteCode = params[0];
             return RequestDataUtil.get("/users/register/group/code/?invitationCode=" + inviteCode, reqData, null);
         }
 
