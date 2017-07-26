@@ -16,19 +16,12 @@
  */
 package org.cm.podd.report.util;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
-import android.widget.TextView;
-
-import org.cm.podd.report.PoddApplication;
-import org.cm.podd.report.R;
 
 import java.util.Locale;
 
@@ -48,7 +41,9 @@ public class StyleUtil {
     }
 
     public static void setActionBarTitle(AppCompatActivity activity, String title) {
-        activity.getSupportActionBar().setTitle(title);
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setTitle(title);
+        }
     }
 
     public static Typeface getSecondTypeface(AssetManager assets, int type) {
