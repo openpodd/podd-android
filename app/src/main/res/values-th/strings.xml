@@ -337,5 +337,6 @@
     <string name="report_current_state">สถานะปัจจุบัน</string>
     <string name="sent_not_success">ยังไม่ส่งข้อมูล</string>
     <string name="sent_success">ส่งข้อมูลเรียบร้อยแล้ว</string>
+    <string name="warn_cannot_capture_image">ไม่สามารถเก็บข้อมูลจากกล้องได้้</string>
 
 </resources>

@@ -35,6 +35,7 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.model.Transition;
 import org.cm.podd.report.model.parser.FormParser;
 import org.cm.podd.report.model.validation.RequireValidation;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +44,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -52,23 +54,27 @@ public class ReportTypeDataSource {
 
     private static final String TAG = "ReportTypeDataSource";
     private ReportDatabaseHelper dbHelper;
+    SharedPrefUtil sharedPrefUtil;
 
     Context context;
 
     public ReportTypeDataSource(Context context) {
         this.context = context;
         dbHelper = new ReportDatabaseHelper(context);
+        sharedPrefUtil = new SharedPrefUtil(context);
     }
 
     public void initNewData(String reportTypes) {
         deleteAll();
+        HashMap<Long,String> categeryMap = new HashMap<>();
         try {
             JSONArray jsonArr = new JSONArray(reportTypes);
             for (int i = 0; i < jsonArr.length(); i++) {
                 JSONObject jsonObj = jsonArr.getJSONObject(i);
                 Log.d(TAG, String.format("insert report type with id = %d, name = %s", jsonObj.getLong("id"), jsonObj.getString("name")));
+                Long id = jsonObj.getLong("id");
                 ReportType reportType = new ReportType(
-                        jsonObj.getLong("id"),
+                        id,
                         jsonObj.getString("name")
                 );
                 reportType.setVersion(jsonObj.getInt("version"));
@@ -78,8 +84,14 @@ public class ReportTypeDataSource {
                 reportType.setFollowable(jsonObj.optBoolean("followable", false));
                 reportType.setFollowDay(jsonObj.optInt("followDays", 0));
 
+                String categoryCode = jsonObj.optString("categoryCode", "");
+                categeryMap.put(id, categoryCode);
+
                 insert(reportType);
             }
+
+            sharedPrefUtil.setCategoryMap(categeryMap);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

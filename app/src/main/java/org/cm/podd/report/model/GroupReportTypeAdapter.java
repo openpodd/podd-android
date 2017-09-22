@@ -12,10 +12,12 @@ import android.widget.TextView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.util.FontUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,18 +33,39 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
 
     public GroupReportTypeAdapter(Context context, List<ReportType> items) {
         this.context = context;
+        SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+        HashMap<Long, String> categoryMap = sharedPrefUtil.getCategoryMap();
 
         for (ReportType type : items) {
-            if (type.getName().matches("(.*)สัตว(.*)")) {
-                animalReportTypes.add(type);
-            } else if (type.getName().matches("สิ่งแวดล้อม")) {
-                environmentReportTypes.add(type);
-            } else if (type.getName().matches("(.*)ธรรมชาติ(.*)") ||
-                    type.getName().matches(".*ลูกน้ำ.*")) {
-                environmentReportTypes.add(type);
+
+            String catCode = categoryMap.get(type.getId());
+            if (catCode == null) {
+                if (type.getName().matches("(.*)สัตว(.*)")) {
+                    animalReportTypes.add(type);
+                } else if (type.getName().matches("สิ่งแวดล้อม")) {
+                    environmentReportTypes.add(type);
+                } else if (type.getName().matches("(.*)ธรรมชาติ(.*)") ||
+                        type.getName().matches(".*ลูกน้ำ.*")) {
+                    environmentReportTypes.add(type);
+                } else if (type.getName().matches("ไฟป่า")) {
+                    environmentReportTypes.add(type);
+                } else {
+                    humanReportTypes.add(type);
+                }
             } else {
-                humanReportTypes.add(type);
+                switch (catCode) {
+                    case "animal":
+                        animalReportTypes.add(type);
+                        break;
+                    case "human":
+                        humanReportTypes.add(type);
+                        break;
+                    case "environment":
+                        environmentReportTypes.add(type);
+                        break;
+                }
             }
+
         }
         WeightComparator comparator = new WeightComparator();
         Collections.sort(humanReportTypes, comparator);
@@ -50,6 +73,9 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
         Collections.sort(environmentReportTypes, comparator);
 
     }
+
+
+
 
     @Override
     public int getGroupCount() {

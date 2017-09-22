@@ -22,7 +22,6 @@ import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -442,6 +441,18 @@ public class ReportImageFragment extends Fragment {
         }
     }
 
+    private void alertView(String message) {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Warning")
+                .setMessage(message)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();
+    }
+
     private void saveImage(Uri uri) {
         saveImage(uri, false);
     }
@@ -449,6 +460,10 @@ public class ReportImageFragment extends Fragment {
     private void saveImage(Uri uri, boolean makeACopy) {
         Uri targetUri = Uri.parse(getImageFilePath(uri));
 
+        if (targetUri == null) {
+            alertView(getString(R.string.warn_cannot_capture_image));
+            return;
+        }
         if (makeACopy) {
             String inputFile = targetUri.toString();
             File cacheDir = getContext().getCacheDir();
@@ -464,6 +479,10 @@ public class ReportImageFragment extends Fragment {
         }
 
         Bitmap thumbnailBitmap = createThumbnail(targetUri);
+        if (thumbnailBitmap == null) {
+            alertView(getString(R.string.warn_cannot_capture_image));
+            return;
+        }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         ReportImage reportImage = reportDataSource.saveImage(reportId, targetUri.toString(), stream.toByteArray());

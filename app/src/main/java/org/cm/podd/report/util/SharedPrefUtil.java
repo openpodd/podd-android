@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class SharedPrefUtil {
     public static final String CUSTOM_TITLE = "custom_title";
     public static final String CUSTOM_ICON_SIZE = "custom_icon_size";
     public static final String LANGUAGE = "language";
+    public static final String REPORT_TYPE_CATEGORY = "report_type_category";
     private static final String DEFAULT_ADMINISTRATION_AREA_ID = "default_administration_area_id";
 
     private SharedPreferences sharedPrefs;
@@ -302,6 +304,21 @@ public class SharedPrefUtil {
         String jsonData = sharedPrefs.getString(system + ":[" +key + "]", null);
         Config config = new Config(system, key, jsonData);
         return config;
+    }
+
+    public void setCategoryMap(HashMap<Long, String> categoryMap) {
+        String dump = ObjectSerializerHelper.objectToString(categoryMap);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(REPORT_TYPE_CATEGORY, dump);
+        editor.commit();
+    }
+
+    public HashMap<Long, String> getCategoryMap() {
+        String dump = sharedPrefs.getString(REPORT_TYPE_CATEGORY, null);
+        if (dump == null) {
+            return new HashMap<Long, String>();
+        }
+        return (HashMap<Long, String>) ObjectSerializerHelper.stringToObject(dump);
     }
 
 }
