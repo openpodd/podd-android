@@ -39,7 +39,23 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
         for (ReportType type : items) {
 
             String catCode = categoryMap.get(type.getId());
-            if (catCode == null) {
+            boolean foundGroupInCatCode = false;
+            switch (catCode) {
+                case "animal":
+                    animalReportTypes.add(type);
+                    foundGroupInCatCode = true;
+                    break;
+                case "human":
+                    humanReportTypes.add(type);
+                    foundGroupInCatCode = true;
+                    break;
+                case "environment":
+                    environmentReportTypes.add(type);
+                    foundGroupInCatCode = true;
+                    break;
+            }
+
+            if (!foundGroupInCatCode) {
                 if (type.getName().matches("(.*)สัตว(.*)")) {
                     animalReportTypes.add(type);
                 } else if (type.getName().matches("สิ่งแวดล้อม")) {
@@ -52,20 +68,7 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
                 } else {
                     humanReportTypes.add(type);
                 }
-            } else {
-                switch (catCode) {
-                    case "animal":
-                        animalReportTypes.add(type);
-                        break;
-                    case "human":
-                        humanReportTypes.add(type);
-                        break;
-                    case "environment":
-                        environmentReportTypes.add(type);
-                        break;
-                }
             }
-
         }
         WeightComparator comparator = new WeightComparator();
         Collections.sort(humanReportTypes, comparator);
