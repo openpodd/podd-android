@@ -202,4 +202,14 @@ public class GroupReportTypeActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if ( progress != null && progress.isShowing() )
+        {
+            progress.cancel();
+        }
+    }
 }
