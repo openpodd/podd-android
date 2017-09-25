@@ -40,19 +40,21 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
 
             String catCode = categoryMap.get(type.getId());
             boolean foundGroupInCatCode = false;
-            switch (catCode) {
-                case "animal":
-                    animalReportTypes.add(type);
-                    foundGroupInCatCode = true;
-                    break;
-                case "human":
-                    humanReportTypes.add(type);
-                    foundGroupInCatCode = true;
-                    break;
-                case "environment":
-                    environmentReportTypes.add(type);
-                    foundGroupInCatCode = true;
-                    break;
+            if (catCode != null) {
+                switch (catCode) {
+                    case "animal":
+                        animalReportTypes.add(type);
+                        foundGroupInCatCode = true;
+                        break;
+                    case "human":
+                        humanReportTypes.add(type);
+                        foundGroupInCatCode = true;
+                        break;
+                    case "environment":
+                        environmentReportTypes.add(type);
+                        foundGroupInCatCode = true;
+                        break;
+                }
             }
 
             if (!foundGroupInCatCode) {

@@ -317,8 +317,9 @@ public class SharedPrefUtil {
         String dump = sharedPrefs.getString(REPORT_TYPE_CATEGORY, null);
         if (dump == null) {
             return new HashMap<Long, String>();
+        } else {
+            return (HashMap<Long, String>) ObjectSerializerHelper.stringToObject(dump);
         }
-        return (HashMap<Long, String>) ObjectSerializerHelper.stringToObject(dump);
     }
 
 }
