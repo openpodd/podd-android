@@ -4,16 +4,13 @@ import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-
-import org.cm.podd.report.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,5 +67,9 @@ public class QRConfigActivity extends ActionBarActivity implements ZXingScannerV
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        setResult(-1);
+        super.onBackPressed();
+    }
 }
