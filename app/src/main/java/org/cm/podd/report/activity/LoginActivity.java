@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -634,7 +633,7 @@ public class LoginActivity extends AppCompatActivity {
         Context context = this.getBaseContext();
         JSONObject data = new JSONObject();
         try {
-            data.put("wifiMac", ((WifiManager) context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
+            data.put("wifiMac", ((WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
             data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
             data.put("brand", Build.BRAND);
             data.put("model", Build.MODEL);

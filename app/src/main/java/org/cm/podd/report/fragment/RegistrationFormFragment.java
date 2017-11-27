@@ -1,7 +1,6 @@
 package org.cm.podd.report.fragment;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,41 +8,27 @@ import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
-
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
-import org.cm.podd.report.activity.LoginActivity;
-import org.cm.podd.report.activity.ReportActivity;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
-import org.cm.podd.report.model.AnimalType;
-import org.cm.podd.report.model.Report;
-import org.cm.podd.report.model.TimeRange;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -323,7 +308,7 @@ public class RegistrationFormFragment extends Fragment {
         Context context = getActivity().getBaseContext();
         JSONObject data = new JSONObject();
         try {
-            data.put("wifiMac", ((WifiManager) context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
+            data.put("wifiMac", ((WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
             data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
             data.put("brand", Build.BRAND);
             data.put("model", Build.MODEL);

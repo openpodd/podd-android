@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
     useLibrary 'org.apache.http.legacy'
     dexOptions {
         jumboMode = true
@@ -22,12 +21,14 @@ android {
         resValue("string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: ""))
     }
 
+    // keystore password
+    // https://stackoverflow.com/questions/47109799/save-keystore-password-in-android-studio-3
     signingConfigs {
         release {
-            keyAlias 'podd_report'
-            storeFile file('../report.keystore')
-            storePassword "xxx"
-            keyPassword "yyy"
+            storeFile file(PODD_RELEASE_STORE_FILE)
+            storePassword PODD_RELEASE_STORE_PASSWORD
+            keyAlias PODD_RELEASE_KEY_ALIAS
+            keyPassword PODD_RELEASE_KEY_PASSWORD
         }
     }
 
@@ -44,13 +45,10 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
+    flavorDimensions "prod"
     productFlavors {
-        server_test {
-            buildConfigField "String", "SERVER_URL", "\"http://apidev.cmonehealth.org\""
-        }
-
         server_production {
+            dimension "prod"
             buildConfigField "String", "SERVER_URL", "\"https://api.cmonehealth.org\""
             buildConfigField "String", "BUCKET_NAME", "\"podd\""
         }
@@ -68,42 +66,25 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.4@aar') {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation('de.keyboardsurfer.android.widget:crouton:1.8.4@aar') {
         exclude group: 'com.google.android', module: 'support-v4'
     }
-    compile files('libs/aws-android-sdk-2.1.5-core.jar')
-    compile files('libs/aws-android-sdk-2.1.5-s3.jar')
-    compile files('libs/mpandroidchartlibrary-1-7-4.jar')
-    compile 'org.mozilla:rhino:1.7R4'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
-    compile 'com.google.android.gms:play-services-base:7.8.0'
-    compile 'com.google.android.gms:play-services-location:7.8.0'
-    compile 'com.google.android.gms:play-services-analytics:7.8.0'
-    compile 'com.google.android.gms:play-services-gcm:7.8.0'
-    compile 'com.android.support:cardview-v7:25.1.1'
-    compile 'com.android.support:recyclerview-v7:25.1.1'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.0'
-    compile 'me.dm7.barcodescanner:zxing:1.8.2'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:support-v4:25.3.1'
-}
-
-task askForPasswords << {
-    // Must create String because System.readPassword() returns char[]
-    // (and assigning that below fails silently)
-    def storePw = new String(System.console().readPassword("Keystore password: "))
-    //def keyPw  = new String(System.console().readPassword("Key password: "))
-
-    android.signingConfigs.release.storePassword = storePw
-    android.signingConfigs.release.keyPassword = storePw
-}
-
-
-tasks.whenTaskAdded { theTask ->
-    if (theTask.name.equals("packageServer_productionRelease") || theTask.name.equals("packageServer_testRelease")) {
-        theTask.dependsOn "askForPasswords"
-    }
+    implementation files('libs/aws-android-sdk-2.1.5-core.jar')
+    implementation files('libs/aws-android-sdk-2.1.5-s3.jar')
+    implementation files('libs/mpandroidchartlibrary-1-7-4.jar')
+    implementation 'org.mozilla:rhino:1.7R4'
+    implementation 'com.android.support:appcompat-v7:25.1.1'
+    implementation 'com.android.support:design:25.1.1'
+    implementation 'com.google.android.gms:play-services-base:7.8.0'
+    implementation 'com.google.android.gms:play-services-location:7.8.0'
+    implementation 'com.google.android.gms:play-services-analytics:7.8.0'
+    implementation 'com.google.android.gms:play-services-gcm:7.8.0'
+    implementation 'com.android.support:cardview-v7:25.1.1'
+    implementation 'com.android.support:recyclerview-v7:25.1.1'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.0'
+    implementation 'me.dm7.barcodescanner:zxing:1.8.2'
+    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.android.support:support-v4:25.3.1'
 }

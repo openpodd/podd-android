@@ -1,8 +1,6 @@
 package org.cm.podd.report.fragment;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.wifi.WifiManager;
@@ -29,8 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -216,7 +212,7 @@ public class ForgetPasswordFormFragment extends Fragment {
         Context context = getActivity().getBaseContext();
         JSONObject data = new JSONObject();
         try {
-            data.put("wifiMac", ((WifiManager) context.getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
+            data.put("wifiMac", ((WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE)).getConnectionInfo().getMacAddress());
             data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
             data.put("brand", Build.BRAND);
             data.put("model", Build.MODEL);
