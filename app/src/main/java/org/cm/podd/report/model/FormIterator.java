@@ -85,6 +85,10 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
         return results;
     }
 
+    public void flush() {
+        setPageDataToExpressionEngine(currentPage);
+    }
+
     /**
      *
      * @return true if operation can be done.

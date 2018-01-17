@@ -540,6 +540,8 @@ public class ReportActivity extends AppCompatActivity
 
                 } else if (formIterator.isAtLastPage()) {
 
+                    formIterator.flush();
+
                     boolean validatePass = formIterator.validatePage();
                     if (validatePass) {
                         fragment = ReportLocationFragment.newInstance(reportId);
