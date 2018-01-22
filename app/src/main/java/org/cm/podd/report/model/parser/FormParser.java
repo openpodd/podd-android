@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.model.parser;
 
+import org.cm.podd.report.model.ConfirmDialog;
 import org.cm.podd.report.model.DataType;
 import org.cm.podd.report.model.FollowAction;
 import org.cm.podd.report.model.Form;
@@ -131,6 +132,13 @@ public class FormParser {
         for (int i = 0; i < questions.length(); i++) {
             int id = questions.getInt(i);
             p.addQuestion(form.getQuestion(id));
+        }
+        if (page.has(ConfirmDialog.TAG_NAME)) {
+            JSONObject confirmDialog = page.getJSONObject(ConfirmDialog.TAG_NAME);
+            p.setConfirmDialog(new ConfirmDialog(
+                    confirmDialog.getString("message"),
+                    confirmDialog.getString("condition")
+            ));
         }
         form.addPage(p);
     }

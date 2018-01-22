@@ -32,6 +32,7 @@ public class Page implements Serializable {
 
     private int id;
     private List<Question> questions = new ArrayList<Question>();
+    private ConfirmDialog confirmDialog;
 
     public Page(int id) {
         this.id = id;
@@ -107,4 +108,11 @@ public class Page implements Serializable {
     }
 
 
+    public ConfirmDialog getConfirmDialog() {
+        return confirmDialog;
+    }
+
+    public void setConfirmDialog(ConfirmDialog confirmDialog) {
+        this.confirmDialog = confirmDialog;
+    }
 }

@@ -36,12 +36,14 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
     private static final String TAG = "FormIterator";
     private final Form form;
     private Page currentPage;
+    private Page oldPage;
     private transient ExpressionEngine expressionEngine;
 
     private Stack<Page> visited = new Stack<Page>();
 
     public FormIterator(Form form) {
         this.form = form;
+        this.oldPage = null;
         this.currentPage = form.getPage(form.getStartPageId());
         expressionEngine = new ExpressionEngine();
     }
@@ -119,6 +121,7 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
         } else {
             Log.d("FormIterator", "nextPageId =" + nextPageId);
             visited.add(currentPage);
+            oldPage = currentPage;
             currentPage = form.getPage(nextPageId);
             return true;
         }
@@ -132,7 +135,7 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
         if (visited.size() == 0) {
             return false;
         }
-
+        oldPage = null;
         currentPage = visited.pop();
 
         recreateExpressionEngine();
@@ -190,5 +193,19 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
     @Override
     public boolean evaluateExpression(String expression) {
         return getExpressionEngine().evaluateBooleanExpression(expression);
+    }
+
+    public boolean shouldShowConfirmDialog() {
+        if (oldPage != null && oldPage.getConfirmDialog() != null) {
+            return getExpressionEngine().evaluateBooleanExpression(oldPage.getConfirmDialog().getCondition());
+        }
+        return false;
+    }
+
+    public ConfirmDialog getConfirmDialog() {
+        if (oldPage != null) {
+            return oldPage.getConfirmDialog();
+        }
+        return null;
     }
 }

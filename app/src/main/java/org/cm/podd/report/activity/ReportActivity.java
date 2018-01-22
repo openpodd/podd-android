@@ -78,6 +78,7 @@ import org.cm.podd.report.fragment.ReportImageFragment;
 import org.cm.podd.report.fragment.ReportLocationFragment;
 import org.cm.podd.report.fragment.ReportNavigationChangeCallbackInterface;
 import org.cm.podd.report.fragment.ReportNavigationInterface;
+import org.cm.podd.report.model.ConfirmDialog;
 import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
@@ -554,15 +555,18 @@ public class ReportActivity extends AppCompatActivity
                 } else {
                     if (! formIterator.nextPage()) { // can't jump to next page
 
-                        if (! notifyValidationErrors()) {
+                        if (! notifyValidationErrors()) { // display error and return result
                             // no error and no page to go
                             fragment = ReportLocationFragment.newInstance(reportId);
                             isDynamicForm = false;
                             showHideDisableMask(isDoneSubmit());
+                        } else {
+                            // stay at the old page.
+                            // no-op
                         }
 
                     } else {
-
+                        // jump to next page
                         fragment = getPageFragment(formIterator.getCurrentPage());
                         showHideDisableMask(false);
 
@@ -573,37 +577,76 @@ public class ReportActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
-            if (currentFragment == null) {
-                Log.d(TAG, "add fragment");
-                if (fragment instanceof ReportNavigationChangeCallbackInterface) {
-                    transaction.add(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
-                } else {
-                    transaction.add(R.id.container, fragment);
+            if (currentFragment == "dynamicForm") {
+                if (formIterator.shouldShowConfirmDialog()) {
+                    ConfirmDialog confirmDialog = formIterator.getConfirmDialog();
+                    final Fragment finalFragment = fragment;
+                    final boolean finalIsDynamicForm = isDynamicForm;
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.confirm_dialog_title)
+                            .setMessage(confirmDialog.getMessage())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    addFragment(finalFragment, finalIsDynamicForm);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    formIterator.previousPage();
+                                }
+                            })
+                            .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                                @Override
+                                public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                        dialogInterface.dismiss();
+                                        formIterator.previousPage();
+                                    }
+                                    return true;
+                                }
+                            }).setCancelable(false)
+                            .show();
+                    return;
                 }
-            } else {
-                Log.d(TAG, "replace fragment");
-                if (fragment instanceof ReportNavigationChangeCallbackInterface) {
-                    transaction.replace(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
-                } else {
-                    transaction.replace(R.id.container, fragment);
-                }
-                transaction.addToBackStack(fragment.getClass().getName());
             }
-            transaction.commit();
+            addFragment(fragment, isDynamicForm);
+        }
 
-            if (isDynamicForm) {
-                currentFragment = "dynamicForm";
+    }
+
+    private void addFragment(Fragment fragment, boolean isDynamicForm) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+        if (currentFragment == null) {
+            Log.d(TAG, "add fragment");
+            if (fragment instanceof ReportNavigationChangeCallbackInterface) {
+                transaction.add(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
             } else {
-                currentFragment = fragment.getClass().getName();
+                transaction.add(R.id.container, fragment);
             }
+        } else {
+            Log.d(TAG, "replace fragment");
+            if (fragment instanceof ReportNavigationChangeCallbackInterface) {
+                transaction.replace(R.id.container, fragment, "ReportNavigationChangeCallbackInterface");
+            } else {
+                transaction.replace(R.id.container, fragment);
+            }
+            transaction.addToBackStack(fragment.getClass().getName());
+        }
+        transaction.commit();
 
+        if (isDynamicForm) {
+            currentFragment = "dynamicForm";
+        } else {
+            currentFragment = fragment.getClass().getName();
         }
 
         Log.d("----", "current fragment = " + currentFragment);
     }
+
 
     CountDownTimer ct;
     private void switchToProgressLocationMode() {
