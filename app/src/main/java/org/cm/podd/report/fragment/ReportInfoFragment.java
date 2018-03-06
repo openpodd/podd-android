@@ -167,7 +167,7 @@ public class ReportInfoFragment extends Fragment{
                     DateUtil.fromJsonDateString(report.getString("incidentDate"))));
             typeView.setText(report.getString("reportTypeName"));
             areaView.setText(report.getString("administrationAreaAddress"));
-            createdByView.setText(report.getString("createdBy"));
+            createdByView.setText("********");
 
             String telephone = report.getString("createdByTelephone");
             createdByTelephoneView.setText(linkify(telephone, "tel:" + telephone));

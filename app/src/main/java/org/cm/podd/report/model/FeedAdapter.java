@@ -1,7 +1,6 @@
 package org.cm.podd.report.model;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -216,7 +215,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
                     stripHTMLTags(report.getString("formDataExplanation")));
             // address
             viewHolder.getAddressView().setText(report.getString("administrationAreaAddress"));
-            viewHolder.getCreatedByViewView().setText(viewHolder.getContext().getString(R.string.by) + " " + report.getString("createdByName"));
+            viewHolder.getCreatedByViewView().setText(viewHolder.getContext().getString(R.string.by) + " " + "**********");
             
             // set on click listener
             viewHolder.getCardView().setOnClickListener(new View.OnClickListener() {
