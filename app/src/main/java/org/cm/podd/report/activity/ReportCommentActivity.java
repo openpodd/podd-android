@@ -363,7 +363,8 @@ public class ReportCommentActivity extends AppCompatActivity {
             LayoutInflater inflater = LayoutInflater.from(context);
             View view = inflater.inflate(this.resource, parent, false);
 
-            String message = getItem(position).getMessage();
+            Comment comment = getItem(position);
+            String message = comment.getMessage();
             message = message.replaceAll(getString(R.string.mention_regex), getString(R.string.mention_render));
 
             TextView messageTextView = (TextView) view.findViewById(R.id.message);
@@ -371,7 +372,7 @@ public class ReportCommentActivity extends AppCompatActivity {
             messageTextView.setText(Html.fromHtml(message), TextView.BufferType.SPANNABLE);
 
             Date date = null;
-            String dateText = getItem(position).getCreatedAt();
+            String dateText = comment.getCreatedAt();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ");
             try {
                date = format.parse(dateText);
@@ -381,7 +382,11 @@ public class ReportCommentActivity extends AppCompatActivity {
 
             TextView createdByTextView = (TextView) view.findViewById(R.id.name);
             createdByTextView.setTypeface(face);
-            createdByTextView.setText(getString(R.string.by) + " " + getItem(position).getCreatedBy());
+            if (position == 0) {
+                createdByTextView.setText(getString(R.string.by) + " ***********");
+            } else {
+                createdByTextView.setText(getString(R.string.by) + " " + comment.getCreatedBy());
+            }
 
             TextView createdAtTextView = (TextView) view.findViewById(R.id.date);
             createdAtTextView.setTypeface(face);
@@ -390,8 +395,8 @@ public class ReportCommentActivity extends AppCompatActivity {
 
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 
-            if (!getItem(position).getAvatarCreatedBy().equals("null")) {
-                Picasso.with(getContext()).load(getItem(position).getAvatarCreatedBy()).into(avatarCreatedByView);
+            if (!comment.getAvatarCreatedBy().equals("null")) {
+                Picasso.with(getContext()).load(comment.getAvatarCreatedBy()).into(avatarCreatedByView);
             }
             return view;
         }
