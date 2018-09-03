@@ -171,7 +171,7 @@ public class ReportListFragment extends ListFragment {
 
         emptyText.setVisibility(View.GONE);
 
-        FloatingActionButton fabAdd = (FloatingActionButton) view.findViewById(R.id.fab_add);
+        FloatingActionButton fabAdd = (FloatingActionButton) view.findViewById(R.id.addNewRecord);
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,10 +235,7 @@ public class ReportListFragment extends ListFragment {
             Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
             if (report.getNegative() == report.TRUE) {
 
-                Intent intent = new Intent(getActivity(), ReportActivity.class);
-                intent.putExtra("reportType", report.getType());
-                intent.putExtra("reportId", reportId);
-                intent.putExtra("test", report.isTestReport());
+                Intent intent = ReportActivity.editReportIntent(getActivity(), report);
 
                 if (report.getFollowFlag() == Report.TRUE) {
                     Form form = reportTypeDataSource.getForm(report.getType());
@@ -360,12 +357,11 @@ public class ReportListFragment extends ListFragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             FollowAction action = form.getFollowAction(i);
                             Log.d(TAG, String.format("%s report %d, report type %d", action.getName(), reportId, reportType));
-                            Intent intent = new Intent(getActivity(), ReportActivity.class);
-                            intent.putExtra("reportType", reportType);
-                            intent.putExtra("reportId", reportId);
-                            intent.putExtra("follow", true);
-                            intent.putExtra("followActionName", action.getName());
-                            intent.putExtra("startPageId", action.getStartPageId());
+                            Intent intent = ReportActivity.followReportWithActionIntent(getActivity(),
+                                    reportId,
+                                    reportType,
+                                    action.getName(),
+                                    action.getStartPageId());
                             startActivity(intent);
                         }
                     }).create().show();
@@ -376,10 +372,10 @@ public class ReportListFragment extends ListFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d(TAG, String.format("follow report %d, report type %d", reportId, reportType));
-                            Intent intent = new Intent(getActivity(), ReportActivity.class);
-                            intent.putExtra("reportType", reportType);
-                            intent.putExtra("reportId", reportId);
-                            intent.putExtra("follow", true);
+                            Intent intent = ReportActivity.followReportIntent(getActivity(),
+                                    reportId,
+                                    reportType
+                                    );
                             startActivity(intent);
                         }
                     })

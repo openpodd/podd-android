@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":app" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="report" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":app" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -21,6 +21,33 @@
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
       </configuration>
     </facet>
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="JVM 1.6" useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <option name="destination" value="$MODULE_DIR$/build/tmp/kotlin-classes/server_productionDebug" />
+          <option name="noStdlib" value="true" />
+          <option name="noReflect" value="true" />
+          <option name="moduleName" value="app_server_productionDebug" />
+          <option name="addCompilerBuiltIns" value="true" />
+          <option name="loadBuiltInsFromDependencies" value="true" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
+          <option name="pluginOptions">
+            <array>
+              <option value="plugin:org.jetbrains.kotlin.android:experimental=false" />
+              <option value="plugin:org.jetbrains.kotlin.android:enabled=true" />
+              <option value="plugin:org.jetbrains.kotlin.android:defaultCacheImplementation=hashMap" />
+            </array>
+          </option>
+          <option name="pluginClasspaths">
+            <array>
+              <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-android-extensions/1.2.61/564710f8171991001cba1c828c3331d833d9d28b/kotlin-android-extensions-1.2.61.jar" />
+            </array>
+          </option>
+        </compilerArguments>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7">
     <output url="file://$MODULE_DIR$/build/intermediates/classes/server_production/debug" />
@@ -32,6 +59,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/server_production/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/server_production/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/server_production/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/google-services/server_production/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/server_production/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/server_production/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/server_productionDebug/res" type="java-resource" />
@@ -138,11 +166,14 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-apk" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-main-apk-res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaPrecompile" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifest-checker" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
@@ -150,6 +181,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-rules" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
@@ -158,44 +190,81 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
+      <excludeFolder url="file://$MODULE_DIR$/build/kotlin" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/reports" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.android.support:multidex-1.0.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="com.android.support:multidex-1.0.1" level="project" />
-    <orderEntry type="library" name="__local_aars__:/Users/pphetra/projects/podd-android/app/libs/mpandroidchartlibrary-1-7-4.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-maps-7.8.0" level="project" />
-    <orderEntry type="library" name="de.hdodenhof:circleimageview-2.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-ui-25.3.1" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-location-7.8.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-compat-25.3.1" level="project" />
-    <orderEntry type="library" name="com.android.support:cardview-v7-25.1.1" level="project" />
-    <orderEntry type="library" name="com.google.zxing:core:3.2.0@jar" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-analytics-7.8.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:/Users/pphetra/projects/podd-android/app/libs/aws-android-sdk-2.1.5-core.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-utils-25.3.1" level="project" />
-    <orderEntry type="library" name="__local_aars__:/Users/pphetra/projects/podd-android/app/libs/aws-android-sdk-2.1.5-s3.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-v4-25.3.1" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-gcm-7.8.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-fragment-25.3.1" level="project" />
-    <orderEntry type="library" name="com.android.support:support-media-compat-25.3.1" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-base-7.8.0" level="project" />
-    <orderEntry type="library" name="org.mozilla:rhino:1.7R4@jar" level="project" />
-    <orderEntry type="library" name="de.keyboardsurfer.android.widget:crouton-1.8.4" level="project" />
-    <orderEntry type="library" name="com.android.support:animated-vector-drawable-25.1.1" level="project" />
-    <orderEntry type="library" name="com.squareup.picasso:picasso:2.5.0@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:design-25.1.1" level="project" />
-    <orderEntry type="library" name="com.android.support:appcompat-v7-25.1.1" level="project" />
-    <orderEntry type="library" name="com.android.support:transition-25.1.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="com.android.support:multidex-instrumentation-1.0.2" level="project" />
-    <orderEntry type="library" name="com.android.support:recyclerview-v7-25.1.1" level="project" />
-    <orderEntry type="library" name="me.dm7.barcodescanner:core-1.8.2" level="project" />
-    <orderEntry type="library" name="com.android.support:support-vector-drawable-25.1.1" level="project" />
-    <orderEntry type="library" name="com.android.support:support-annotations:25.3.1@jar" level="project" />
-    <orderEntry type="library" name="me.dm7.barcodescanner:zxing-1.8.2" level="project" />
-    <orderEntry type="library" name="org.apache.http.legacy-android-25" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-core-16.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-basement-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.2.61@jar" level="project" />
+    <orderEntry type="library" name="Gradle: me.dm7.barcodescanner:zxing-1.8.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-measurement-base-16.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-16.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tagmanager-v4-impl-16.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-measurement-connector-impl-17.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-analytics-16.0.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.android.support:multidex-1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:multidex-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-media-compat-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-annotations:26.1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.picasso:picasso:2.5.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-v4-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/Users/pphetra/projects/podd-android/app/libs/mpandroidchartlibrary-1-7-4.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:common:1.0.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.61@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-auth-interop-16.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-core-ui-26.1.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.android.support:multidex-instrumentation-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-core-utils-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.anko:anko-common:0.10.5@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-database-collection-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.anko:anko-sqlite:0.10.5@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tasks-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-places-placereport-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:cardview-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/Users/pphetra/projects/podd-android/app/libs/aws-android-sdk-2.1.5-core.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:design-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-measurement-connector-17.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-auth-16.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-analytics-impl-16.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-measurement-api-16.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.13.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:transition-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: de.hdodenhof:circleimageview-2.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.mozilla:rhino:1.7R4@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-fragment-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.core:common:1.0.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-base-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.zxing:core:3.2.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.anko:anko-commons:0.10.5@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-compat-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-gcm-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-ads-identifier-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-database-16.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-location-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.9.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-stats-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-iid-16.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-iid-interop-16.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-maps-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-iid-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-database-connection-16.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: de.keyboardsurfer.android.widget:crouton-1.8.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-common-16.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-flags-15.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: me.dm7.barcodescanner:core-1.8.2" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:/Users/pphetra/projects/podd-android/app/libs/aws-android-sdk-2.1.5-s3.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.61@jar" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:runtime-1.0.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-impl-16.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.http.legacy-android-26" level="project" />
   </component>
 </module>

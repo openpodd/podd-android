@@ -32,7 +32,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -68,7 +68,7 @@ import java.util.Map;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class SettingActivity extends ActionBarActivity {
+public class SettingActivity extends AppCompatActivity {
 
     public static final String TAG = "SettingActivity";
     private static final int REQ_CODE_PICK_IMAGE = 1;

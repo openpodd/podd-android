@@ -63,6 +63,7 @@
 -dontwarn org.joda.convert.**
 -dontwarn org.w3c.dom.bootstrap.**
 -dontwarn com.squareup.okhttp.**
+-dontwarn okio.**
 
 -dontwarn com.amazonaws.services.s3.**
 
@@ -115,4 +116,9 @@
 
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
+}
+
+# firebase
+-keepclassmembernames class org.cm.podd.report.model.RecordData {
+    *;
 }

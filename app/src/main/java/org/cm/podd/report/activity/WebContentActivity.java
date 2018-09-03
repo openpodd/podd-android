@@ -21,7 +21,7 @@ import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,7 +41,7 @@ import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.StyleUtil;
 import org.cm.podd.report.util.WebContentUtil;
 
-public class WebContentActivity extends ActionBarActivity {
+public class WebContentActivity extends AppCompatActivity {
 
     public static final String URL_SCHEME = "podd";
 

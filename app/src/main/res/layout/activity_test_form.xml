@@ -20,13 +20,13 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/prevBtn"
+            android:id="@+id/test_prevBtn"
             android:text="Prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/nextBtn"
+            android:id="@+id/test_nextBtn"
             android:text="Next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

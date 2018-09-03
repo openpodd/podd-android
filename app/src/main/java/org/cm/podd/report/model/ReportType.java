@@ -30,6 +30,7 @@ public class ReportType {
     private double weight = 0.0;
     private int followable;
     private int followDay;
+    private int isFollowAction;
 
     public ReportType(long id, String name) {
         this.id = id;
@@ -119,5 +120,23 @@ public class ReportType {
 
     public void setFollowDay(int followDay) {
         this.followDay = followDay;
+    }
+
+    public void setIsFollowAction(boolean followAction) {
+        if (followAction) {
+            this.isFollowAction = 1;
+        } else {
+            this.isFollowAction = 0;
+        }
+    }
+
+    public void setIsFollowAction(int action) {
+        this.isFollowAction = action;
+    }
+
+    public boolean isFollowAction() { return this.isFollowAction == 1; }
+
+    public int getIsFollowAction() {
+        return this.isFollowAction;
     }
 }

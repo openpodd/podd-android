@@ -31,6 +31,7 @@ import org.cm.podd.report.model.ReportImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by pphetra on 10/8/14 AD.
@@ -65,6 +66,7 @@ public class ReportDataSource {
         values.put("negative", 1);
         values.put("follow_date", Long.MAX_VALUE);
         values.put("test_report", testReport);
+        values.put("guid", String.valueOf(UUID.randomUUID()));
         values.put("submit", 0);
 
         Cursor typeCursor = db.rawQuery("select followable, follow_days from report_type where _id = ?", new String[] {Long.toString(type)});
@@ -79,6 +81,26 @@ public class ReportDataSource {
             }
         }
         typeCursor.close();
+
+        long id = db.insert("report", null, values);
+        db.close();
+        return id;
+    }
+
+    public long createFollowReport(long type, String parentGuid) {
+        SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("date", new Date().getTime());
+        values.put("type", type);
+        values.put("draft", 1);
+        values.put("negative", 1);
+        values.put("follow_date", Long.MAX_VALUE);
+        values.put("follow_flag", 1);
+        values.put("follow_date", new Date().getTime());
+        values.put("test_report", false);
+        values.put("guid", String.valueOf(UUID.randomUUID()));
+        values.put("parent_guid", parentGuid);
+        values.put("submit", 0);
 
         long id = db.insert("report", null, values);
         db.close();
@@ -124,17 +146,23 @@ public class ReportDataSource {
             values.put("follow_flag", 1);
             values.put("follow_date", new Date().getTime());
             values.put("form_data", formData);
-            values.put("start_date", startDate.getTime());
+            if (startDate != null) {
+                values.put("start_date", startDate.getTime());
+            }
             values.put("region_id", regionId);
+            values.put("guid", String.valueOf(UUID.randomUUID()));
             values.put("parent_guid", guid);
             values.put("test_report", testReport);
             long id = db.insert("report", null, values);
-
+            cursor.close();
             db.close();
             return id;
         } else { // parent report had been removed. (maybe from user logout scenario)
+            cursor.close();
+            db.close();
             return -99;
         }
+
 
     }
 
@@ -148,6 +176,7 @@ public class ReportDataSource {
         values.put("draft", 0);
         values.put("negative", 0);
         values.put("submit", 0);
+        values.put("guid", String.valueOf(UUID.randomUUID()));
         long id = db.insert("report", null, values);
         db.close();
         return id;
@@ -168,8 +197,29 @@ public class ReportDataSource {
     public Report getById(long id) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r._id = ?", new String[]{Long.toString(id)});
-        cursor.moveToFirst();
+        Report report = null;
+        if (cursor.moveToFirst()) {
+            report = createFromCursor(cursor);
+        }
+        cursor.close();
+        db.close();
+        return report;
+    }
 
+    public Report getByGUID(String guid) {
+        SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT r.*, rt.version FROM report r left outer join report_type rt on rt._id = r.type where r.guid = ?", new String[]{guid});
+        Report report = null;
+        if (cursor.moveToFirst()) {
+            report = createFromCursor(cursor);
+        }
+        cursor.close();
+        db.close();
+        return report;
+    }
+
+    private Report createFromCursor(Cursor cursor) {
+        long id = cursor.getLong(cursor.getColumnIndex("_id"));
         long type = cursor.getLong(cursor.getColumnIndex("type"));
         Date date = new Date(cursor.getLong(cursor.getColumnIndex("date")));
         int negative = cursor.getInt(cursor.getColumnIndex("negative"));
@@ -193,7 +243,6 @@ public class ReportDataSource {
 
         String actionName = cursor.getString(cursor.getColumnIndex("action_name"));
 
-
         Report report = new Report(id, type, date, negative, draft, submit);
         report.setFormData(cursor.getString(cursor.getColumnIndex("form_data")));
         report.setLatitude(latitude);
@@ -209,8 +258,6 @@ public class ReportDataSource {
         report.setActionName(actionName);
 
         report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
-        cursor.close();
-        db.close();
         return report;
     }
 
@@ -268,7 +315,7 @@ public class ReportDataSource {
 
     public List<ReportImage> getAllImage(long reportId) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-        ArrayList<ReportImage> images = new ArrayList<ReportImage>();
+        ArrayList<ReportImage> images = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * from report_image where report_id = ?", new String[]{Long.toString(reportId)});
         while (cursor.moveToNext()) {
             String uri = cursor.getString(cursor.getColumnIndex("image_uri"));
@@ -293,7 +340,7 @@ public class ReportDataSource {
      */
     public List<ReportImage> getSubmitPendingImages(long reportId) {
         SQLiteDatabase db = reportDatabaseHelper.getReadableDatabase();
-        ArrayList<ReportImage> images = new ArrayList<ReportImage>();
+        ArrayList<ReportImage> images = new ArrayList<>();
         Cursor cursor = db.rawQuery(
                 "SELECT * from report_image where report_id = ? and submit != 1 and guid is null",
                 new String[]{Long.toString(reportId)});
@@ -413,6 +460,7 @@ public class ReportDataSource {
         db.delete("visualization_volunteer", null, null);
         db.delete("follow_alert", null, null);
         db.delete("report_state", null, null);
+        db.delete("record_spec", null, null);
         db.close();
     }
 

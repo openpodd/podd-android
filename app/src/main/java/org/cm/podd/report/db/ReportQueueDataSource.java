@@ -45,8 +45,6 @@ public class ReportQueueDataSource {
 
     public void addDataQueue(long reportId) {
         Log.d(TAG, "add queue report id=" + reportId);
-        String guid = String.valueOf(UUID.randomUUID());
-        mReportDataSource.assignGuid(reportId, DATA_TYPE, guid);
         insertQueue(reportId, 0, DATA_TYPE);
     }
 
@@ -92,7 +90,7 @@ public class ReportQueueDataSource {
 
     public List<Queue> getAllQueues() {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        List<Queue> queues = new ArrayList<Queue>();
+        List<Queue> queues = new ArrayList<>();
 
         Cursor cursor = db.rawQuery("select * from report_queue order by created_at asc", null);
         while (cursor.moveToNext()) {

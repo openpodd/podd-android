@@ -5,7 +5,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-public class QRConfigActivity extends ActionBarActivity implements ZXingScannerView.ResultHandler {
+public class QRConfigActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
     private static final String TAG = "QRConfigActivity";
     private ZXingScannerView mScannerView;

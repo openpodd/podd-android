@@ -1,7 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     useLibrary 'org.apache.http.legacy'
     dexOptions {
         jumboMode = true
@@ -10,15 +12,16 @@ android {
     defaultConfig {
         applicationId "org.cm.podd.report"
         minSdkVersion 15
-        targetSdkVersion 20
-        versionCode 65
-        versionName "2.0.7"
+        targetSdkVersion 26
+        versionCode 67
+        versionName "2.1.0"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
         multiDexEnabled true
         testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
         resValue("string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: ""))
+        vectorDrawables.useSupportLibrary = true
     }
 
     // keystore password
@@ -70,21 +73,35 @@ dependencies {
     implementation('de.keyboardsurfer.android.widget:crouton:1.8.4@aar') {
         exclude group: 'com.google.android', module: 'support-v4'
     }
+
     implementation files('libs/aws-android-sdk-2.1.5-core.jar')
     implementation files('libs/aws-android-sdk-2.1.5-s3.jar')
     implementation files('libs/mpandroidchartlibrary-1-7-4.jar')
     implementation 'org.mozilla:rhino:1.7R4'
-    implementation 'com.android.support:appcompat-v7:25.1.1'
-    implementation 'com.android.support:design:25.1.1'
-    implementation 'com.google.android.gms:play-services-base:7.8.0'
-    implementation 'com.google.android.gms:play-services-location:7.8.0'
-    implementation 'com.google.android.gms:play-services-analytics:7.8.0'
-    implementation 'com.google.android.gms:play-services-gcm:7.8.0'
-    implementation 'com.android.support:cardview-v7:25.1.1'
-    implementation 'com.android.support:recyclerview-v7:25.1.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation "com.google.android.gms:play-services-base:$play_service_version"
+    implementation "com.google.android.gms:play-services-location:$play_service_version"
+    implementation "com.google.android.gms:play-services-analytics:16.0.3"
+    implementation "com.google.android.gms:play-services-maps:$play_service_version"
+    implementation "com.google.android.gms:play-services-gcm:$play_service_version"
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.0'
     implementation 'me.dm7.barcodescanner:zxing:1.8.2'
     implementation 'com.android.support:multidex:1.0.1'
-    implementation 'com.android.support:support-v4:25.3.1'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
+    implementation "org.jetbrains.anko:anko-common:$anko_version"
+    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
 }
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'com.google.gms.google-services'

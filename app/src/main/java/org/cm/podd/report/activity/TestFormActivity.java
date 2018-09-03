@@ -19,7 +19,7 @@ package org.cm.podd.report.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +46,7 @@ import java.util.List;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class TestFormActivity extends ActionBarActivity {
+public class TestFormActivity extends AppCompatActivity {
 
     private Form form;
     private FormIterator formIterator;
@@ -62,8 +62,8 @@ public class TestFormActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_test_form);
 
-        Button prevBtn = (Button) findViewById(R.id.prevBtn);
-        Button nextBtn = (Button) findViewById(R.id.nextBtn);
+        Button prevBtn = (Button) findViewById(R.id.test_prevBtn);
+        Button nextBtn = (Button) findViewById(R.id.test_nextBtn);
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override

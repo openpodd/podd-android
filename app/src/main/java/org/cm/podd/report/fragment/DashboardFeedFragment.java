@@ -23,12 +23,9 @@ import org.cm.podd.report.model.FeedAdapter;
 import org.cm.podd.report.model.State;
 import org.cm.podd.report.service.FilterService;
 import org.cm.podd.report.service.ReportService;
-import org.cm.podd.report.service.SyncReportStateService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -135,9 +132,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         View rootView = inflater.inflate(R.layout.fragment_dashboard_feed, container, false);
         rootView.setTag(TAG);
 
-        // update profile data.
-        updateUserStatus();
-
         // set fragmentView to let super class know what to do next.
         mFragmentView = rootView;
 
@@ -154,8 +148,6 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                 Log.d(TAG, "onRefresh");
 
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
-                    startSyncReportStateService();
-
                     feedItemDataSource.clear();
                     setRefreshing(true);
                     FilterService.doQuery(container.getContext(), "negative:true AND testFlag: false AND date:last 15 days ", null);
@@ -240,47 +232,5 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
     private void refreshAdapter() {
         mAdapter.setmDataSet(feedItemDataSource.latest(DEFAULT_PAGE_SIZE));
         mAdapter.notifyDataSetChanged();
-    }
-
-    private void updateUserStatus() {
-        sharedPrefUtil = new SharedPrefUtil(getActivity().getApplicationContext());
-        ProfileAsyncTask task = new ProfileAsyncTask() {
-            @Override
-            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-                if (resp.getStatusCode() == 200) {
-                    try {
-                        JSONObject result = new JSONObject(resp.getRawData());
-
-                        if (result.getString("status").equals("VOLUNTEER")) {
-                            sharedPrefUtil.setIsVolunteer(true);
-                        } else {
-                            sharedPrefUtil.setIsVolunteer(false);
-                        }
-                        sharedPrefUtil.setCanSetFlag(result.getBoolean("canSetFlag"));
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Error parsing JSON data", e);
-                    }
-                }
-            }
-        };
-        task.setContext(getActivity().getApplicationContext());
-        task.execute();
-    }
-
-    public static class ProfileAsyncTask extends ReportService.ReportAsyncTask {
-        private static final String ENDPOINT = "/users/profile";
-
-        @Override
-        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
-            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
-            String accessToken = sharedPrefUtil.getAccessToken();
-
-            return RequestDataUtil.get(ENDPOINT, "", accessToken);
-        }
-    }
-
-    private void startSyncReportStateService() {
-        Intent intent = new Intent(getActivity(), SyncReportStateService.class);
-        getActivity().startService(intent);
     }
 }

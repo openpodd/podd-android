@@ -6,20 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTabHost;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import android.support.v4.app.FragmentTabHost;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -27,27 +21,18 @@ import com.google.android.gms.analytics.Tracker;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
-import org.cm.podd.report.db.CommentDataSource;
 import org.cm.podd.report.db.VisualizationAreaDataSource;
 import org.cm.podd.report.fragment.VisualizationFragment;
 import org.cm.podd.report.fragment.VisualizationListVolunteer;
-import org.cm.podd.report.model.Comment;
 import org.cm.podd.report.model.VisualizationAdministrationArea;
-import org.cm.podd.report.service.CommentService;
 import org.cm.podd.report.service.VisualizationAreaService;
 import org.cm.podd.report.util.RequestDataUtil;
-import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class VisualizationAreaActivity extends ActionBarActivity {
+public class VisualizationAreaActivity extends AppCompatActivity {
 
     private static final String TAG = "VisualAreaActivity";
 

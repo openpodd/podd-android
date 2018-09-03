@@ -17,6 +17,7 @@
 
 package org.cm.podd.report.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -25,11 +26,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -67,7 +70,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
+import org.cm.podd.report.db.FirebaseContext;
 import org.cm.podd.report.db.FollowAlertDataSource;
+import org.cm.podd.report.db.PreferenceContext;
+import org.cm.podd.report.db.RecordDataSource;
+import org.cm.podd.report.db.RecordSpecDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
@@ -83,6 +90,7 @@ import org.cm.podd.report.model.Form;
 import org.cm.podd.report.model.FormIterator;
 import org.cm.podd.report.model.Page;
 import org.cm.podd.report.model.Question;
+import org.cm.podd.report.model.RecordSpec;
 import org.cm.podd.report.model.Report;
 import org.cm.podd.report.model.Trigger;
 import org.cm.podd.report.model.validation.ValidationResult;
@@ -106,11 +114,19 @@ import java.util.Map;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class ReportActivity extends AppCompatActivity
         implements ReportNavigationInterface, ReportDataInterface,
         QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    public static final String ACTION_NEW_REPORT = "ACTION_NEW_REPORT";
+    public static final String ACTION_FOR_EDIT_OR_VIEW = "ACTION_EDIT_REPORT";
+    public static final String ACTION_CREATE_FOLLOW_REPORT = "ACTION_FOLLOW_REPORT";
+    public static final String ACTION_CREATE_FOLLOW_REPORT_WITH_ACTION = "ACTION_FOLLOW_REPORT_WITH_ACTION";
+    public static final String ACTION_CREATE_FOLLOW_REPORT_FROM_RECORD = "ACTION_FOLLOW_REPORT_FROM_RECORD";
 
     private static final String TAG = "ReportActivity";
     public static final int REQUEST_FOR_OPEN_LOCATION_SERVICE_DIALOG = 200;
@@ -132,7 +148,7 @@ public class ReportActivity extends AppCompatActivity
 
     private FollowAlertDataSource followAlertDataSource;
 
-    private long reportId;
+    private long reportId = -99;
     private long reportType;
     private boolean follow;
     private FormIterator formIterator;
@@ -156,6 +172,55 @@ public class ReportActivity extends AppCompatActivity
     private String followActionName;
 
     private MapLocationFragment mapLocationFragment;
+    private RecordSpecDataSource recordSpecDataSource;
+    private RecordDataSource recordDataSource;
+
+    private String parentReportGuid;
+
+    private RecordSpec recordSpec;
+
+    public static Intent newReportIntent(Context context, long reportTypeId, boolean testFlag) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        intent.putExtra("reportType", reportTypeId);
+        intent.putExtra("test", testFlag);
+        intent.setAction(ACTION_NEW_REPORT);
+        return intent;
+    }
+
+    public static Intent editReportIntent(Context context, Report report) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        intent.putExtra("reportType", report.getType());
+        intent.putExtra("reportId", report.getId());
+        intent.putExtra("test", report.isTestReport());
+        intent.setAction(ACTION_FOR_EDIT_OR_VIEW);
+        return intent;
+    }
+
+    public static Intent followReportWithActionIntent(Context context, long reportId, long reportTypeId, String actionName, int startPageId) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        intent.putExtra("reportType", reportTypeId);
+        intent.putExtra("reportId", reportId);
+        intent.putExtra("followActionName", actionName);
+        intent.putExtra("startPageId", startPageId);
+        intent.setAction(ACTION_CREATE_FOLLOW_REPORT_WITH_ACTION);
+        return intent;
+    }
+
+    public static Intent followReportIntent(Context context, long reportId, long reportTypeId) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        intent.putExtra("reportType", reportTypeId);
+        intent.putExtra("reportId", reportId);
+        intent.setAction(ACTION_CREATE_FOLLOW_REPORT);
+        return intent;
+    }
+
+    public static Intent followReportFromRecord(Context context, String parentReportGuid, long reportTypeId) {
+        Intent intent = new Intent(context, ReportActivity.class);
+        intent.putExtra("reportType", reportTypeId);
+        intent.putExtra("parentReportGuid", parentReportGuid);
+        intent.setAction(ACTION_CREATE_FOLLOW_REPORT_FROM_RECORD);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,6 +291,7 @@ public class ReportActivity extends AppCompatActivity
         reportTypeDataSource = new ReportTypeDataSource(this);
         reportQueueDataSource = new ReportQueueDataSource(this);
 
+        recordSpecDataSource = RecordSpecDataSource.Companion.getInstance(this);
         followAlertDataSource = new FollowAlertDataSource(this);
 
         if (savedInstanceState != null) {
@@ -244,24 +310,52 @@ public class ReportActivity extends AppCompatActivity
 
             currentLatitude = savedInstanceState.getDouble("currentLatitude");
             currentLongitude = savedInstanceState.getDouble("currentLongitude");
-
+            recordSpec = (RecordSpec) savedInstanceState.get("recordSpec");
+            parentReportGuid = savedInstanceState.getString("parentReportGuid");
         } else {
             Intent intent = getIntent();
-            reportType = intent.getLongExtra("reportType", 0);          // mandatory
-            reportId = intent.getLongExtra("reportId", -99);            // optional
-            follow = intent.getBooleanExtra("follow", false);           // optional
-            testReport = intent.getBooleanExtra("test", false);
-            int startPageId = intent.getIntExtra("startPageId", -1);
-            Log.d(TAG, "onCreate, testFlag = " + testReport);
-
-            if (follow) {
-                parentReportId = reportId;
-                followActionName = intent.getStringExtra("followActionName");
-                if (followActionName == null) {
+            String action = intent.getAction();
+            int startPageId = -1;
+            switch (action) {
+                case ACTION_NEW_REPORT:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    testReport = intent.getBooleanExtra("test", false);
+                    reportId = reportDataSource.createDraftReport(reportType, testReport);
+                    follow = false;
+                    break;
+                case FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    testReport = false;
+                    reportId = intent.getLongExtra("reportId", -99);
+                    follow = intent.getBooleanExtra("follow", false);
+                    break;
+                case ACTION_FOR_EDIT_OR_VIEW:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    testReport = intent.getBooleanExtra("test", false);
+                    reportId = intent.getLongExtra("reportId", -99);
+                    break;
+                case ACTION_CREATE_FOLLOW_REPORT:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    parentReportId = intent.getLongExtra("reportId", -99);
+                    reportId = reportDataSource.createFollowReport(parentReportId);
+                    follow = true;
                     followActionName = "follow";
-                }
-                reportId = reportDataSource.createFollowReport(reportId);
-                Log.d(TAG, String.format("create follow report with reportId = %d", reportId));
+                    break;
+                case ACTION_CREATE_FOLLOW_REPORT_WITH_ACTION:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    parentReportId = intent.getLongExtra("reportId", -99);
+                    reportId = reportDataSource.createFollowReport(parentReportId);
+                    follow = true;
+                    followActionName = intent.getStringExtra("followActionName");
+                    startPageId = intent.getIntExtra("startPageId", -1);
+                    break;
+                case ACTION_CREATE_FOLLOW_REPORT_FROM_RECORD:
+                    reportType = intent.getLongExtra("reportType", 0);
+                    parentReportGuid = intent.getStringExtra("parentReportGuid");
+                    reportId = reportDataSource.createFollowReport(reportType, parentReportGuid);
+                    follow = true;
+                    break;
+
             }
 
             Form form = reportTypeDataSource.getForm(reportType);
@@ -278,18 +372,23 @@ public class ReportActivity extends AppCompatActivity
             }
 
             formIterator = new FormIterator(form);
-
-            if (reportId == -99) {
-                reportId = reportDataSource.createDraftReport(reportType, testReport);
-
-                Intent getAreaIntent = new Intent(this, SyncAdministrationAreaService.class);
-                startService(getAreaIntent);
-
-            } else {
-                loadFormData();
-            }
+            Report report = loadFormData(form);
+            recordSpec = recordSpecDataSource.getByReportTypeId(report.getType());
 
             nextScreen();
+        }
+
+        if (recordSpec != null) {
+            final FirebaseContext firebaseContext = FirebaseContext.Companion.getInstance(PreferenceContext.Companion.getInstance(getApplicationContext()));
+            firebaseContext.auth(this, new Function1<Boolean, Unit>() {
+                @Override
+                public Unit invoke(Boolean success) {
+                    if (success) {
+                        recordDataSource = firebaseContext.recordDataSource(recordSpec, parentReportGuid);
+                    }
+                    return null;
+                }
+            });
         }
 
         // open location service only when
@@ -345,49 +444,51 @@ public class ReportActivity extends AppCompatActivity
         outState.putBoolean("testReport", testReport);
         outState.putInt("reportSubmit", reportSubmit);
         outState.putString("followActionName", followActionName);
+        if (recordSpec != null) {
+            outState.putSerializable("recordSpec", recordSpec);
+        }
+        outState.putString("parentReportGuid", parentReportGuid);
         super.onSaveInstanceState(outState);
     }
 
-    private void loadFormData() {
-
-        Form form = formIterator.getForm();
-
+    private Report loadFormData(Form form) {
         Report report = reportDataSource.getById(reportId);
-        reportDate = report.getStartDate();
-        reportRegionId = report.getRegionId();
-        remark = report.getRemark();
-        reportSubmit = report.getSubmit();
-        currentLatitude = report.getLatitude();
-        currentLongitude = report.getLongitude();
+        if (report != null) {
+            reportDate = report.getStartDate();
+            reportRegionId = report.getRegionId();
+            remark = report.getRemark();
+            reportSubmit = report.getSubmit();
+            currentLatitude = report.getLatitude();
+            currentLongitude = report.getLongitude();
 
-        String formDataStr = report.getFormData();
-        Log.d(TAG, "form data = " + formDataStr);
-        if (formDataStr != null) {
-            try {
-                JSONObject jsonObject = new JSONObject(formDataStr);
-                Iterator<String> keys = jsonObject.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    String[] ary = key.split("@@@");
-                    int qid = Integer.parseInt(ary[0]);
-                    String name = ary[1];
+            String formDataStr = report.getFormData();
+            Log.d(TAG, "form data = " + formDataStr);
+            if (formDataStr != null) {
+                try {
+                    JSONObject jsonObject = new JSONObject(formDataStr);
+                    Iterator<String> keys = jsonObject.keys();
+                    while (keys.hasNext()) {
+                        String key = keys.next();
+                        String[] ary = key.split("@@@");
+                        int qid = Integer.parseInt(ary[0]);
+                        String name = ary[1];
 
-                    Question question = form.getQuestion(qid);
-                    if (question != null) {
-                        String value = jsonObject.getString(key);
-                        if (value != null && !value.equals("null")) {
-                            question.setData(name, question.getDataType().fromJson(value));
+                        Question question = form.getQuestion(qid);
+                        if (question != null) {
+                            String value = jsonObject.getString(key);
+                            if (value != null && !value.equals("null")) {
+                                question.setData(name, question.getDataType().fromJson(value));
+                            }
+                        } else {
+                            Log.d(TAG, "Question not found. key= " + key);
                         }
-                    } else {
-                        Log.d(TAG, "Question not found. key= " + key);
                     }
+                } catch (JSONException e) {
+                    Log.e(TAG, "error parsing form_data", e);
                 }
-
-            } catch (JSONException e) {
-                Log.e(TAG, "error parsing form_data", e);
             }
         }
-
+        return report;
     }
 
     @Override
@@ -401,7 +502,7 @@ public class ReportActivity extends AppCompatActivity
 
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
@@ -428,7 +529,7 @@ public class ReportActivity extends AppCompatActivity
                 setPrevVisible(true);
                 showHideDisableMask(reportSubmit == 1);
             } else if (currentFragment.equals("dynamicForm")) {
-                if (! formIterator.previousPage()) {
+                if (!formIterator.previousPage()) {
                     currentFragment = ReportImageFragment.class.getName();
                     showHideDisableMask(false);
                 }
@@ -553,9 +654,9 @@ public class ReportActivity extends AppCompatActivity
                     }
 
                 } else {
-                    if (! formIterator.nextPage()) { // can't jump to next page
+                    if (!formIterator.nextPage()) { // can't jump to next page
 
-                        if (! notifyValidationErrors()) { // display error and return result
+                        if (!notifyValidationErrors()) { // display error and return result
                             // no error and no page to go
                             fragment = ReportLocationFragment.newInstance(reportId);
                             isDynamicForm = false;
@@ -577,7 +678,7 @@ public class ReportActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-            if (currentFragment == "dynamicForm") {
+            if (currentFragment.equals("dynamicForm")) {
                 if (formIterator.shouldShowConfirmDialog()) {
                     ConfirmDialog confirmDialog = formIterator.getConfirmDialog();
                     final Fragment finalFragment = fragment;
@@ -649,6 +750,7 @@ public class ReportActivity extends AppCompatActivity
 
 
     CountDownTimer ct;
+
     private void switchToProgressLocationMode() {
         locationView.setVisibility(View.VISIBLE);
         formView.setVisibility(View.INVISIBLE);
@@ -831,10 +933,17 @@ public class ReportActivity extends AppCompatActivity
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
                     submitReportToServer(report);
+                    // refresh data object
+                    report = reportDataSource.getById(reportId);
+                    saveRecordData(report);
 
                 } else if (action == ReportDataInterface.DRAFT_ACTION) {
                     // save as draft
                     saveForm(1);
+                    // refresh data object
+                    report = reportDataSource.getById(reportId);
+                    saveRecordData(report);
+
                 } else if (action == ReportDataInterface.TEST_ACTION) {
                     // save as test report
                     report.setTestReport(Report.TRUE);
@@ -842,12 +951,21 @@ public class ReportActivity extends AppCompatActivity
 
                     submitReportToServer(report);
                 }
+
             }
         }
 
         Intent returnIntent = new Intent();
+        returnIntent.putExtra("reportId", report.getId());
         setResult(RESULT_OK, returnIntent);
         finish();
+    }
+
+
+    private void saveRecordData(Report report) {
+        if (recordSpec != null && recordDataSource != null) {
+            recordDataSource.persist(report);
+        }
     }
 
     @Override
@@ -868,7 +986,7 @@ public class ReportActivity extends AppCompatActivity
         reportTypeDataSource.close();
         followAlertDataSource.close();
 
-        if (! isDoneSubmit()) {
+        if (!isDoneSubmit()) {
             // send timing hit
             long interval = System.currentTimeMillis() - startTime;
             Log.d(TAG, "Timing interval milli=" + interval);
@@ -889,6 +1007,16 @@ public class ReportActivity extends AppCompatActivity
 
             if (resultCode == Activity.RESULT_OK) {
                 final LocationRequest locationRequest = getLocationRequest();
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
             } else {
                 if (formIterator.getForm().isForceLocation()) {
@@ -989,6 +1117,16 @@ public class ReportActivity extends AppCompatActivity
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
                         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, ReportActivity.this);
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -1020,7 +1158,7 @@ public class ReportActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "can't connect to google play error:" + connectionResult.getErrorCode());
 
     }

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/group0">
+        <item android:title="@string/records">
+            <menu>
+            </menu>
+        </item>
+    </group>
     <group android:id="@+id/group1">
         <item
             android:id="@+id/user_profile"
@@ -11,7 +17,12 @@
             android:id="@+id/user_password"
             android:checked="false"
             android:title="@string/setting_password"/>
+
+        <item
+            android:id="@+id/logout"
+            android:title="@string/logout" />
     </group>
+
     <group android:id="@+id/group2">
         <item android:title="@string/about_app_version">
             <menu>
@@ -25,10 +36,5 @@
                     android:title="@string/app_version_name" />
             </menu>
         </item>
-    </group>
-    <group android:id="@+id/group3">
-        <item
-            android:id="@+id/logout"
-            android:title="@string/logout" />
     </group>
 </menu>

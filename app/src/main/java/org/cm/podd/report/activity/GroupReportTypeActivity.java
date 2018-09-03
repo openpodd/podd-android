@@ -71,7 +71,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             progress.hide();
-            adapter = new GroupReportTypeAdapter(GroupReportTypeActivity.this, dataSource.getAll());
+            adapter = new GroupReportTypeAdapter(GroupReportTypeActivity.this, dataSource.getAllWithNoFollowAction());
             listView.setAdapter(adapter);
         }
     };
@@ -125,16 +125,14 @@ public class GroupReportTypeActivity extends AppCompatActivity {
             listView.setIndicatorBoundsRelative(width - GetPixelFromDips(100), width - GetPixelFromDips(10));
         }
 
-        adapter = new GroupReportTypeAdapter(this, dataSource.getAll());
+        adapter = new GroupReportTypeAdapter(this, dataSource.getAllWithNoFollowAction());
         listView.setAdapter(adapter);
         listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupIndex, int childIndex, long id) {
                 ReportType item = (ReportType) adapter.getChild(groupIndex, childIndex);
                 Log.d(TAG, String.format("select report type = %d", item.getId(), testCheckbox.isChecked()));
-                Intent intent = new Intent(GroupReportTypeActivity.this, ReportActivity.class);
-                intent.putExtra("reportType", item.getId());
-                intent.putExtra("test", testCheckbox.isChecked());
+                Intent intent = ReportActivity.newReportIntent(GroupReportTypeActivity.this, item.getId(), testCheckbox.isChecked());
                 startActivity(intent);
                 return true;
             }

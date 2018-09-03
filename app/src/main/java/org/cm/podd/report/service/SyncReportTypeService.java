@@ -94,6 +94,7 @@ public class SyncReportTypeService extends IntentService {
                             rt.setWeight(result.optDouble("weight", 0.0));
                             rt.setFollowable(result.optBoolean("followable", false));
                             rt.setFollowDay(result.optInt("followDays", 0));
+                            rt.setIsFollowAction(result.optBoolean("isFollowAction", false));
 
                             Log.d(TAG, String.format("Report type id %d updated to version %d",
                                     rt.getId(), rt.getVersion()));
@@ -104,6 +105,7 @@ public class SyncReportTypeService extends IntentService {
                             rt.setWeight(updateReportType.optDouble("weight", 0.0));
                             rt.setFollowable(updateReportType.optBoolean("followable", false));
                             rt.setFollowDay(updateReportType.optInt("followDays", 0));
+                            rt.setIsFollowAction(updateReportType.optBoolean("isFollowAction", false));
 
                         }
                         dbSource.update(rt);
@@ -126,6 +128,7 @@ public class SyncReportTypeService extends IntentService {
                         rt.setWeight(result.optDouble("weight", 0.0));
                         rt.setFollowable(result.optBoolean("followable", false));
                         rt.setFollowDay(result.optInt("followDays", 0));
+                        rt.setIsFollowAction(result.optBoolean("isFollowAction", false));
 
                         dbSource.insert(rt);
                     }

@@ -339,5 +339,8 @@
     <string name="sent_success">ส่งข้อมูลเรียบร้อยแล้ว</string>
     <string name="warn_cannot_capture_image">ไม่สามารถเก็บข้อมูลจากกล้องได้้</string>
     <string name="confirm_dialog_title">คำเตือน</string>
+    <string name="records">ข้อมูล</string>
+    <string name="action_search">search</string>
+    <string name="home_menu_follow_items">ติดตาม</string>
 
 </resources>

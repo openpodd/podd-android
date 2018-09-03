@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 17;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -80,6 +80,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  weight DOUBLE,"
             + "  followable INTEGER,"
             + "  follow_days INTEGER,"
+            + "  is_follow_action INTEGER,"
             + "  definition TEXT"       // json string
             + ")";
 
@@ -180,12 +181,19 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  can_edit INTEGER"
             + ")";
 
-    private static final String CREATE_CONFIGURATION = "create table if not exists configuration"
+    private static final String CREATE_TABLE_RECORD_SPEC = "create table if not exists record_spec"
             + "("
-            + "  system TEXT,"
-            + "  key TEXT,"
-            + "  value TEXT"
+            + "  _id INTEGER,"
+            + "  name TEXT,"
+            + "  tpl_header TEXT,"
+            + "  tpl_subheader TEXT,"
+            + "  type_id INTEGER,"
+            + "  timestamp INTEGER,"
+            + "  parent_id INTEGER,"
+            + "  group_key TEXT"
             + ")";
+
+
 
     public ReportDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -205,7 +213,7 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_TABLE_VISUALIZATION_VOLUNTEER);
         sqLiteDatabase.execSQL(CREATE_TABLE_FOLLOW_ALERT);
         sqLiteDatabase.execSQL(CREATE_REPORT_STATE);
-//        sqLiteDatabase.execSQL(CREATE_CONFIGURATION);
+        sqLiteDatabase.execSQL(CREATE_TABLE_RECORD_SPEC);
         Log.i("DB", "on create");
     }
 
@@ -264,6 +272,13 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             case 13:
                 Log.i("DB", ">> upgrade from version 13");
                 db.execSQL("ALTER TABLE report ADD COLUMN action_name TEXT");
+            case 14:
+                Log.i("DB", ">> upgrade from version 14");
+            case 15:
+                Log.i("DB", ">> upgrade from version 15");
+                db.execSQL("ALTER TABLE report_type ADD COLUMN is_follow_action INTEGER");
+                db.execSQL(CREATE_TABLE_RECORD_SPEC);
+            case 16:
         }
     }
 

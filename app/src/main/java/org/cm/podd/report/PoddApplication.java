@@ -23,6 +23,7 @@ import android.support.multidex.MultiDexApplication;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.cm.podd.report.util.SharedPrefUtil;
 
@@ -88,6 +89,8 @@ public class PoddApplication extends MultiDexApplication {
 
         String lang = prefUtil.getLanguage();
         setLanguage(lang);
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
     }
 
     public static Context getAppContext() {

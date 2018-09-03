@@ -2,7 +2,7 @@ package org.cm.podd.report.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ReportFollowUpActivity extends ActionBarActivity implements ReportAdapter.OnItemClickListener {
+public class ReportFollowUpActivity extends AppCompatActivity implements ReportAdapter.OnItemClickListener {
     private final static String TAG = "ReportFollowUpAct";
 
     private Long parentReportId;

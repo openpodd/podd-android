@@ -341,4 +341,7 @@
     <string name="sent_success">Sent</string>
     <string name="warn_cannot_capture_image">Internal Error whild saving image</string>
     <string name="confirm_dialog_title">Warning</string>
+    <string name="records">records</string>
+    <string name="action_search">search</string>
+    <string name="home_menu_follow_items">Follow</string>
 </resources>

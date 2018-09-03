@@ -1,12 +1,10 @@
 package org.cm.podd.report.service;
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import org.cm.podd.report.activity.ReportViewActivity;
 import org.cm.podd.report.db.CommentDataSource;
@@ -24,9 +22,6 @@ import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 
 public class ReportService extends IntentService {
@@ -157,7 +152,7 @@ public class ReportService extends IntentService {
             this.reportId = Long.parseLong(params[0]);
             SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
             String accessToken = sharedPrefUtil.getAccessToken();
-            return RequestDataUtil.get(ENDPOINT + params[0] + "/involved", null, accessToken);
+            return RequestDataUtil.get(ENDPOINT + params[0] + "/involved/", null, accessToken);
         }
 
         @Override

@@ -28,8 +28,8 @@
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:src="@drawable/ic_add_white_24dp"
+        android:id="@+id/addNewRecord"
+        app:srcCompat="@drawable/ic_add_white_24dp"
         app:fabSize="auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

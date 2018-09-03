@@ -83,6 +83,7 @@ public class ReportTypeDataSource {
                 reportType.setWeight(jsonObj.optDouble("weight", 0.0));
                 reportType.setFollowable(jsonObj.optBoolean("followable", false));
                 reportType.setFollowDay(jsonObj.optInt("followDays", 0));
+                reportType.setIsFollowAction(jsonObj.optBoolean("isFollowAction", false));
 
                 String categoryCode = jsonObj.optString("categoryCode", "");
                 categeryMap.put(id, categoryCode);
@@ -113,6 +114,7 @@ public class ReportTypeDataSource {
         values.put("weight", reportType.getWeight());
         values.put("followable", reportType.getFollowable());
         values.put("follow_days", reportType.getFollowDay());
+        values.put("is_follow_action", reportType.getIsFollowAction());
 
         long id = db.insert("report_type", null, values);
         db.close();
@@ -127,8 +129,7 @@ public class ReportTypeDataSource {
 //        if (formId == 6) return parseForm("podd5.json");
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from report_type where _id = ?",
-                new String[] {Long.toString(formId)});
+        Cursor cursor = db.rawQuery("select * from report_type where _id = ?", new String[] {Long.toString(formId)});
 
         Form result = null;
         if (cursor.moveToFirst()) {
@@ -172,11 +173,22 @@ public class ReportTypeDataSource {
             reportType.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
             reportType.setFollowable(cursor.getInt(cursor.getColumnIndex("followable")));
             reportType.setFollowDay(cursor.getInt(cursor.getColumnIndex("follow_days")));
+            reportType.setIsFollowAction(cursor.getInt(cursor.getColumnIndex("is_follow_action")));
             results.add(reportType);
         }
         cursor.close();
         db.close();
 
+        return results;
+    }
+
+    public List<ReportType> getAllWithNoFollowAction() {
+        ArrayList<ReportType> results = new ArrayList<>();
+        for (ReportType rt : getAll()) {
+            if (! rt.isFollowAction()) {
+                results.add(rt);
+            }
+        }
         return results;
     }
 
@@ -269,6 +281,7 @@ public class ReportTypeDataSource {
         values.put("weight", reportType.getWeight());
         values.put("followable", reportType.getFollowable());
         values.put("follow_days", reportType.getFollowDay());
+        values.put("is_follow_action", reportType.getIsFollowAction());
         db.update("report_type", values, "_id = ?",
                 new String[] {Long.toString(reportType.getId())});
         db.close();

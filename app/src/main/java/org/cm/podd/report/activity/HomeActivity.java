@@ -18,7 +18,6 @@
 package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -71,19 +70,26 @@ import org.cm.podd.report.db.AdministrationAreaDataSource;
 import org.cm.podd.report.db.FeedItemDataSource;
 import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
+import org.cm.podd.report.db.RecordSpecDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
+import org.cm.podd.report.model.RecordSpec;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertScheduleService;
 import org.cm.podd.report.service.FollowAlertService;
+import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.service.SyncAdministrationAreaService;
+import org.cm.podd.report.service.SyncRecordSpecService;
+import org.cm.podd.report.service.SyncReportStateService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -103,8 +109,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     private String[] mMenuTitles;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    DrawerAdapter drawerAdapter;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle;
@@ -113,11 +117,22 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     NotificationDataSource notificationDataSource;
     AdministrationAreaDataSource administrationDataSource;
     FeedItemDataSource feedItemDataSource;
+    RecordSpecDataSource recordSpecDataSource;
+
     private boolean sendScreenViewAnalytic = true;
     private SharedPrefUtil sharedPrefUtil;
 
     GoogleCloudMessaging gcm;
     String regid;
+
+
+    private BroadcastReceiver recordSpecReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "update record spec menu");
+            updateRecordMenu();
+        }
+    };
 
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
@@ -139,6 +154,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     private TabLayout.Tab tabNewReport;
     private TabLayout.Tab tabFeed;
     private TabLayout.Tab tabNews;
+    private TabLayout.Tab tabAssignments;
 
     private int[] activeIcons;
     private int[] defaultIcons;
@@ -147,6 +163,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        updateUserStatus();
+        startSyncReportStateService();
 
         final Context context = this;
         mMenuTitles = new String[] {
@@ -167,23 +186,27 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         notificationDataSource = new NotificationDataSource(this);
         administrationDataSource = new AdministrationAreaDataSource(this);
         feedItemDataSource = new FeedItemDataSource(this);
+        recordSpecDataSource = RecordSpecDataSource.Companion.getInstance(this);
 
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 
-        activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active};
-        defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed};
+        activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active, R.drawable.ic_event_active_24dp};
+        defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed, R.drawable.ic_event_24dp};
 
         tabNewReport = tabLayout.newTab().setIcon(activeIcons[0]).setText(R.string.home_menu_reports);
         tabNews = tabLayout.newTab().setIcon(defaultIcons[1]).setText(R.string.home_menu_news);
         tabFeed = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
+        tabAssignments = tabLayout.newTab().setIcon(defaultIcons[3]).setText(R.string.home_menu_follow_items);
 
         tabLayout.addTab(tabNewReport);
         tabLayout.addTab(tabFeed);
         tabLayout.addTab(tabNews);
-
+        if (recordSpecDataSource.count() > 0) {
+            tabLayout.addTab(tabAssignments);
+        }
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -202,6 +225,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(activeIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
+                        tabAssignments.setIcon(defaultIcons[3]);
 
                         break;
                     case 1:
@@ -212,6 +236,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(activeIcons[2]);
+                        tabAssignments.setIcon(defaultIcons[3]);
                         break;
                     case 2:
                         if (mCurrentFragment instanceof  DashboardFeedFragment) {
@@ -223,7 +248,16 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(activeIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
+                        tabAssignments.setIcon(defaultIcons[3]);
                         break;
+                    case 3:
+                        drawerPosition = 3;
+                        tabNewReport.setIcon(defaultIcons[0]);
+                        tabNews.setIcon(defaultIcons[1]);
+                        tabFeed.setIcon(defaultIcons[2]);
+                        tabAssignments.setIcon(activeIcons[3]);
+                        break;
+
                 }
                 invalidateOptionsMenu();
                 changeFragment();
@@ -276,6 +310,13 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                                 .create()
                                 .show();
                         break;
+                    default:
+                        int recordId = item.getItemId();
+                        RecordSpec spec = recordSpecDataSource.get(recordId);
+                        if (spec != null) {
+                            showRecordActivity(recordId);
+                        }
+
                 }
 
                 mDrawerLayout.closeDrawers();
@@ -288,6 +329,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         updateProfile();
 
+        updateRecordMenu();
         // Set the adapter for the list view
         setNotificationCount();
         refreshDrawerMenu();
@@ -341,6 +383,39 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         onNewIntent(getIntent());
 
+        registerReceiver(recordSpecReceiver, new IntentFilter(SyncRecordSpecService.SYNC));
+        startSyncRecordSpec();
+
+        Intent getAreaIntent = new Intent(this, SyncAdministrationAreaService.class);
+        startService(getAreaIntent);
+    }
+
+
+
+    private void updateRecordMenu() {
+        Menu menu = (Menu) navigationView.getMenu();
+        MenuItem menuItem = (MenuItem) menu.getItem(0);
+        menuItem.getSubMenu().clear();
+
+        int cnt = 0;
+        for (RecordSpec record : recordSpecDataSource.findRootRecords()) {
+            MenuItem item = menuItem.getSubMenu().add(0, (int) record.id, cnt, record.name);
+            cnt++;
+        }
+        if (cnt == 0) {
+            menuItem.setVisible(false);
+        } else {
+            menuItem.setVisible(true);
+        }
+
+        navigationView.invalidate();
+        mDrawerLayout.invalidate();
+
+    }
+
+    private void startSyncRecordSpec() {
+        Intent intent = new Intent(this, SyncRecordSpecService.class);
+        startService(intent);
     }
 
     private void updateProfile() {
@@ -545,6 +620,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         startActivityForResult(intent, 0);
     }
 
+    private void showRecordActivity(long recordId) {
+        Intent intent = new Intent(this, RecordActivity.class);
+        intent.putExtra("recordSpecId", recordId);
+        startActivityForResult(intent, 0);
+    }
+
     private void newReport() {
         Tracker tracker = ((PoddApplication) getApplication()).getTracker(
                 PoddApplication.TrackerName.APP_TRACKER);
@@ -703,9 +784,10 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         notificationDataSource.close();
         unregisterReceiver(mNotificationReceiver);
+        unregisterReceiver(recordSpecReceiver);
+        super.onDestroy();
     }
 
 
@@ -950,6 +1032,48 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             }
 
         }
+    }
+
+    private void updateUserStatus() {
+        sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
+        ProfileAsyncTask task = new ProfileAsyncTask() {
+            @Override
+            protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+                if (resp.getStatusCode() == 200) {
+                    try {
+                        JSONObject result = new JSONObject(resp.getRawData());
+
+                        if (result.getString("status").equals("VOLUNTEER")) {
+                            sharedPrefUtil.setIsVolunteer(true);
+                        } else {
+                            sharedPrefUtil.setIsVolunteer(false);
+                        }
+                        sharedPrefUtil.setCanSetFlag(result.getBoolean("canSetFlag"));
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing JSON data", e);
+                    }
+                }
+            }
+        };
+        task.setContext(getApplicationContext());
+        task.execute();
+    }
+
+    public static class ProfileAsyncTask extends ReportService.ReportAsyncTask {
+        private static final String ENDPOINT = "/users/profile/";
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+            String accessToken = sharedPrefUtil.getAccessToken();
+
+            return RequestDataUtil.get(ENDPOINT, "", accessToken);
+        }
+    }
+
+    private void startSyncReportStateService() {
+        Intent intent = new Intent(this, SyncReportStateService.class);
+        startService(intent);
     }
 
 }
