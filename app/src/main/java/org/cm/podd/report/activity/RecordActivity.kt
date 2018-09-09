@@ -52,6 +52,8 @@ class RecordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.record_activity)
 
+        empty_view.typeface = StyleUtil.getDefaultTypeface(assets, Typeface.NORMAL);
+
         recordSpecDataSource = RecordSpecDataSource.getInstance(this)
         reportDataSource = ReportDataSource(this)
 
@@ -88,6 +90,27 @@ class RecordActivity : AppCompatActivity() {
         }
         recycleView.addItemDecoration(DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL))
+
+        recordAdapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                checkEmpty()
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                checkEmpty()
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                checkEmpty()
+            }
+
+            fun checkEmpty() {
+                empty_view.visibility = if (recordAdapter.itemCount == 0) View.VISIBLE else View.GONE
+            }
+        })
 
 
 
@@ -205,6 +228,11 @@ class RecordActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        recordDataSource?.close()
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

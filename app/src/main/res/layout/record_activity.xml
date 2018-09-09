@@ -34,6 +34,15 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="25dp"
+        android:visibility="visible"
+        android:text="@string/no_record_data_available" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addNewRecord"
         app:srcCompat="@drawable/ic_add_white_24dp"

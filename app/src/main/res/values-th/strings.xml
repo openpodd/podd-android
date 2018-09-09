@@ -342,5 +342,6 @@
     <string name="records">ข้อมูล</string>
     <string name="action_search">search</string>
     <string name="home_menu_follow_items">ติดตาม</string>
+    <string name="no_record_data_available">ไม่พบรายการ</string>
 
 </resources>
