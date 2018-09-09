@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- get device_id from telephoney service -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- use to receive gcm -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -41,7 +40,7 @@
 
         <activity
             android:name=".activity.TestFormActivity"
-            android:label="@string/title_activity_test_form"></activity>
+            android:label="@string/title_activity_test_form" />
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
@@ -149,11 +148,10 @@
         <activity
             android:name=".activity.VisualizationVolunteerActivity"
             android:label="@string/title_activity_visualization_volunteer"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".service.ConnectivityChangeReceiver">
             <intent-filter>
-
                 <!-- <action android:name="android.net.wifi.STATE_CHANGE" /> -->
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
@@ -185,19 +183,19 @@
         <service android:name=".service.GcmIntentService" />
         <service
             android:name=".service.FilterService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".service.ReportService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".service.CommentService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".service.VisualizationAreaService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".service.VisualizationVolunteerService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".activity.ReportCommentActivity"
@@ -205,24 +203,27 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ReportViewActivity"></meta-data>
+                android:value=".activity.ReportViewActivity" />
         </activity>
+
         <activity
             android:name=".activity.RegistrationActivity"
             android:label="@string/title_activity_registration"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activity.ForgetPasswordActivity"
             android:label="@string/title_activity_forget_password"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".service.FollowAlertService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service android:name=".service.FollowAlertRescheduleService"></service>
+
         <service
             android:name=".service.SyncAdministrationAreaService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <receiver
             android:name=".service.FollowAlertReceiver"

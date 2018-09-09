@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -69,7 +68,6 @@ public class LoginActivity extends AppCompatActivity {
 
     SharedPreferences settings;
     private ImageView logoView;
-    private TextView languageView;
 
     Context context;
 
@@ -87,10 +85,10 @@ public class LoginActivity extends AppCompatActivity {
         numOfValidServerUrl = 0;
         prevValidServerUrlIsLongClick = false;
 
-        usernameText = (EditText) findViewById(R.id.username);
-        passwordText = (EditText) findViewById(R.id.password);
-        serverUrlText = (EditText) findViewById(R.id.server_url);
-        languageView = (TextView) findViewById(R.id.language);
+        usernameText = findViewById(R.id.username);
+        passwordText = findViewById(R.id.password);
+        serverUrlText = findViewById(R.id.server_url);
+        TextView languageView = findViewById(R.id.language);
 
         String lang = sharedPrefUtil.getLanguage();
         if (lang.equals("en")) {
@@ -115,7 +113,9 @@ public class LoginActivity extends AppCompatActivity {
                 Intent mStartActivity = new Intent(getApplicationContext(), LoginActivity.class);
                 PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                if (mgr != null) {
+                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                }
                 System.exit(0);
             }
         });
@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Config api end point on the fly
 
-        logoView = (ImageView) findViewById(R.id.logo);
+        logoView = findViewById(R.id.logo);
         logoView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -286,14 +286,13 @@ public class LoginActivity extends AppCompatActivity {
 
         if ((prevValidServerUrlIsLongClick && !isLongClick) || (!prevValidServerUrlIsLongClick && isLongClick)) {
             numOfValidServerUrl++;
-        }
-        else {
+        } else {
             numOfValidServerUrl = 0;
         }
 
         if (numOfValidServerUrl >= 6) {
             String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
-            if (serverUrl == "") {
+            if (serverUrl.equals("")) {
                 serverUrl = BuildConfig.SERVER_URL;
             }
             serverUrlText.setText(serverUrl);
@@ -343,12 +342,10 @@ public class LoginActivity extends AppCompatActivity {
             if (username.length() == 0) {
                 Crouton.makeText(LoginActivity.this, getString(R.string.username_reqired), Style.ALERT, R.id.errorArea)
                         .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
-                return;
             }
             if (password.length() == 0) {
                 Crouton.makeText(LoginActivity.this, getString(R.string.password_reqired), Style.ALERT, R.id.errorArea)
                         .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
-                return;
             }
         }
     }
@@ -394,9 +391,7 @@ public class LoginActivity extends AppCompatActivity {
     private File getCustomIconFile() {
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         path.mkdirs();
-        File file = new File(path, "custom_logo.png");
-
-        return file;
+        return new File(path, "custom_logo.png");
     }
 
     protected void setLogoView(Bitmap bitmap) {
@@ -453,7 +448,9 @@ public class LoginActivity extends AppCompatActivity {
                 Intent mStartActivity = new Intent(getApplicationContext(), LoginActivity.class);
                 PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager mgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                if (mgr != null) {
+                    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                }
                 System.exit(0);
             }
         }
@@ -465,6 +462,7 @@ public class LoginActivity extends AppCompatActivity {
     public class ShortcutTask extends AsyncTask<String, Void, Bitmap> {
 
         String name;
+
         @Override
         protected Bitmap doInBackground(String... params) {
 
@@ -549,7 +547,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     sharedPrefUtil.setAccessToken(token);
                     sharedPrefUtil.setUserName(usernameText.getText().toString());
-                    sharedPrefUtil.setProfileImageFilePath(obj.getString("thumbnailAvatarUrl").toString());
+                    sharedPrefUtil.setProfileImageFilePath(obj.getString("thumbnailAvatarUrl"));
 
                     // get configuration
                     new ConfigTask().execute((Void[]) null);
@@ -637,7 +635,7 @@ public class LoginActivity extends AppCompatActivity {
             data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
             data.put("brand", Build.BRAND);
             data.put("model", Build.MODEL);
-            data.put("deviceId", ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+            data.put("deviceId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
