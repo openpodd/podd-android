@@ -1,7 +1,5 @@
 package org.cm.podd.report.model
 
-import android.util.Log
-
 /**
  * Created by pphetra on 23/8/2018 AD.
  */
@@ -91,7 +89,6 @@ class TemplateEvaluator private constructor() {
         // Add one space to the end of the template to
         // prevent recursive bug in tmpl script
         val script = "tmpl(\"${template} \", ${jsonData})"
-        Log.d("debug", script)
         return engine.evaluateExpression(script).toString()
     }
 }

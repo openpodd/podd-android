@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crash.FirebaseCrash
 import com.google.firebase.database.*
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -34,21 +35,21 @@ interface RecordDataSource {
 
     fun subscribe(datas: ArrayList<RecordData>, cb: (Event, Int)->Unit)
 
-    fun persist(report : Report) : Unit
+    fun close()
+
+    fun persist(report : Report)
 
 }
 
 class PreferenceContext private constructor(context: Context) {
-    val settings: SharedPreferences
-    val sharedPrefUtil: SharedPrefUtil
+    val settings: SharedPreferences = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0)
+    val sharedPrefUtil: SharedPrefUtil = SharedPrefUtil(context)
     val serverUrl: String
     val accessToken: String
     val appContext: Context
     val username: String
 
     init {
-        sharedPrefUtil = SharedPrefUtil(context)
-        settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
         serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL)
         accessToken = sharedPrefUtil.accessToken
         appContext = context
@@ -59,34 +60,35 @@ class PreferenceContext private constructor(context: Context) {
 }
 
 class FirebaseContext private constructor(preferenceContext: PreferenceContext) {
-    val database: FirebaseDatabase
+    val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     val recordsRef: DatabaseReference
     val preferences: PreferenceContext
-    var firebaseToken: String? = null
-    val mAuth: FirebaseAuth
-    var loginSuccess: Boolean = false
+    private var firebaseToken: String? = null
+    private val mAuth: FirebaseAuth
+    private var loginSuccess: Boolean = false
+    val tag = "FirebaseContext"
 
     init {
-        database = FirebaseDatabase.getInstance()
-        recordsRef = database.getReference("records");
+        recordsRef = database.getReference("records")
         preferences = preferenceContext
         mAuth = FirebaseAuth.getInstance()
     }
     companion object : SingletonHolder<FirebaseContext, PreferenceContext>(::FirebaseContext)
 
     fun auth(activity: Activity, cb: (Boolean) -> Unit) {
+
         if (!loginSuccess) {
 
             doAsync {
-                val client = OkHttpClient();
-                val MIMEType = MediaType.parse("application/json; charset=utf-8")
-                val requestBody = RequestBody.create(MIMEType, "{}")
+                val client = OkHttpClient()
+                val mimeType = MediaType.parse("application/json; charset=utf-8")
+                val requestBody = RequestBody.create(mimeType, "{}")
                 val request = Request.Builder()
                         .url("${preferences.serverUrl}/firebase/token/")
                         .post(requestBody)
                         .header("Authorization", "Token ${preferences.accessToken}")
                         .build()
-                var response = client.newCall(request).execute()
+                val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
                     val bodyString = response.body()!!.string()
                     val jsonResult = JSONObject(bodyString)
@@ -94,11 +96,16 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                     firebaseToken = jsonResult.getString("firebase_token")
 
 
-                    mAuth.signInWithCustomToken(firebaseToken!!).addOnCompleteListener(activity) {task ->
-                        loginSuccess = task.isSuccessful
+                    mAuth.signInWithCustomToken(firebaseToken!!).addOnCompleteListener(activity) {task -> loginSuccess = task.isSuccessful
+                        if (! loginSuccess) {
+                            FirebaseCrash.logcat(Log.DEBUG, tag, "firebase login fail")
+                            if (task.exception != null) {
+                                FirebaseCrash.report(task.exception)
+                            }
+                        }
                         cb(loginSuccess)
-                        Log.d("xxxx", "login $loginSuccess")
                     }
+
                 }
             }
         } else {
@@ -111,22 +118,25 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
     fun recordDataSource(spec: RecordSpec, parentReportGuid: String?): RecordDataSource {
         return object: RecordDataSource {
 
+            var listener: ChildEventListener? = null
+            var activeQuery: Query? = null
+
             override fun subscribe(datas: ArrayList<RecordData>, cb: (type: RecordDataSource.Event, position: Int) -> Unit) {
-                var q : Query
-                if (spec.parentId != 0L) {
-                    q = recordsRef.child(spec.id.toString())
+                activeQuery = if (spec.parentId != 0L) {
+                    recordsRef.child(spec.id.toString())
                             .child(spec.groupKey).orderByChild("parentReportGuid")
                             .equalTo(parentReportGuid)
                 } else {
-                    q = recordsRef.child(spec.id.toString()).child(spec.groupKey).orderByKey()
+                    recordsRef.child(spec.id.toString()).child(spec.groupKey).orderByKey()
                 }
-                q.addChildEventListener(object: ChildEventListener {
+                listener = activeQuery?.addChildEventListener(object: ChildEventListener {
                     override fun onCancelled(error: DatabaseError) {
-
+                        Log.e("RecordDataSource", "oncancelled")
+                        Log.e("RecordDataSource", error.message)
                     }
 
                     override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-
+                        Log.e("RecordDataSource", "onchildmove")
                     }
 
                     override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -147,7 +157,7 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                     override fun onChildRemoved(snapshot: DataSnapshot) {
                         val value = snapshot.getValue(RecordData::class.java)
                         if (value != null) {
-                            val idx = datas.indexOfFirst { item -> item.id == value?.id }
+                            val idx = datas.indexOfFirst { item -> item.id == value.id }
                             datas.removeAt(idx)
                             cb(RecordDataSource.Event.REMOVE, idx)
                         }
@@ -155,30 +165,43 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                 })
             }
 
+            override fun close() {
+                if (listener != null) {
+                    if (activeQuery != null) {
+                        activeQuery?.removeEventListener(listener!!)
+                    }
+                }
+            }
+
             override fun persist(report: Report) {
                 val jsonData = report.submitJSONFormData.toString()
-                var header = TemplateEvaluator.instance.evaluate(
-                        spec.tplHeader, jsonData
-                )
-                val subHeader = TemplateEvaluator.instance.evaluate(
-                        spec.tplSubHeader, jsonData
-                )
+                var header: String? = null
+                var subHeader: String? = null
+                try {
+                    header = TemplateEvaluator.instance.evaluate(
+                            spec.tplHeader, jsonData
+                    )
+                    subHeader = TemplateEvaluator.instance.evaluate(
+                            spec.tplSubHeader, jsonData
+                    )
 
-                if (report.isTestReport) {
-                    header = "[${preferences.appContext.resources.getString(R.string.test_title)}] $header"
+                    if (report.isTestReport) {
+                        header = "[${preferences.appContext.resources.getString(R.string.test_title)}] $header"
+                    }
+                    if (report.draft == 1) {
+                        header = "[${preferences.appContext.resources.getString(R.string.draft)}] $header"
+                    }
+                } catch (e: Exception) {
+                    FirebaseCrash.report(e)
                 }
-                if (report.draft == 1) {
-                    header = "[${preferences.appContext.resources.getString(R.string.draft)}] $header"
-                }
-
 
                 val data = RecordData(
                         report.guid,
-                        header,
-                        subHeader,
+                        header ?: "[error]",
+                        subHeader ?: "[error]",
                         report.date.time,
                         report.guid,
-                        if (parentReportGuid != null) parentReportGuid else "",
+                        parentReportGuid ?: "",
                         spec.id,
                         spec.parentId,
                         report.type,
@@ -187,6 +210,7 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
 
                 val ref = recordsRef.child(spec.id.toString()).child(spec.groupKey).push()
                 ref.setValue(data)
+
             }
         }
     }

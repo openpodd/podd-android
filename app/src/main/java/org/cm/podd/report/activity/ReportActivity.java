@@ -243,7 +243,7 @@ public class ReportActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_report);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.report_toolbar);
+        Toolbar myToolbar = findViewById(R.id.report_toolbar);
         setSupportActionBar(myToolbar);
 
         long areaId = sharedPrefUtil.getDefaultAdministrationAreaId();
@@ -254,11 +254,11 @@ public class ReportActivity extends AppCompatActivity
         formView = findViewById(R.id.form);
         locationView = findViewById(R.id.location);
 
-        textProgressLocationView = (TextView) findViewById(R.id.progress_location_text);
+        textProgressLocationView = findViewById(R.id.progress_location_text);
         textProgressLocationView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        countdownTextView = (TextView) findViewById(R.id.countdownTextView);
+        countdownTextView = findViewById(R.id.countdownTextView);
         countdownTextView.setTypeface(StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL));
-        refreshLocationButton = (Button) findViewById(R.id.refresh_location_button);
+        refreshLocationButton = findViewById(R.id.refresh_location_button);
         refreshLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,8 +268,8 @@ public class ReportActivity extends AppCompatActivity
         });
         progressBar = findViewById(R.id.progressBar);
 
-        prevBtn = (Button) findViewById(R.id.prevBtn);
-        nextBtn = (Button) findViewById(R.id.nextBtn);
+        prevBtn = findViewById(R.id.prevBtn);
+        nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -678,7 +678,7 @@ public class ReportActivity extends AppCompatActivity
         }
 
         if (fragment != null) {
-            if (currentFragment.equals("dynamicForm")) {
+            if (currentFragment != null && currentFragment.equals("dynamicForm")) {
                 if (formIterator.shouldShowConfirmDialog()) {
                     ConfirmDialog confirmDialog = formIterator.getConfirmDialog();
                     final Fragment finalFragment = fragment;
@@ -1214,7 +1214,9 @@ public class ReportActivity extends AppCompatActivity
 
     public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 
     @Override

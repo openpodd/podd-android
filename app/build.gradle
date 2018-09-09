@@ -13,7 +13,7 @@ android {
         applicationId "org.cm.podd.report"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 67
+        versionCode 69
         versionName "2.1.0"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
@@ -22,6 +22,7 @@ android {
         testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
         resValue("string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: ""))
         vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     // keystore password
@@ -74,6 +75,12 @@ dependencies {
         exclude group: 'com.google.android', module: 'support-v4'
     }
 
+    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.google.firebase:firebase-crash:16.2.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+
     implementation files('libs/aws-android-sdk-2.1.5-core.jar')
     implementation files('libs/aws-android-sdk-2.1.5-s3.jar')
     implementation files('libs/mpandroidchartlibrary-1-7-4.jar')
@@ -88,9 +95,9 @@ dependencies {
     implementation 'com.android.support:cardview-v7:26.1.0'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-    implementation 'com.squareup.picasso:picasso:2.5.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'me.dm7.barcodescanner:zxing:1.8.2'
-    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.google.firebase:firebase-core:16.0.3'
     implementation 'com.google.firebase:firebase-database:16.0.1'

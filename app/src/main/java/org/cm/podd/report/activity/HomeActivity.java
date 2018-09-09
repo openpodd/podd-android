@@ -148,7 +148,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     private MenuItem badgeMenuItem;
     private MenuItem newEventMenuItem;
     private Button badgeCounterButton;
-    private View notifCountView;
+    private View notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
     private NavigationView navigationView;
 
     private TabLayout.Tab tabNewReport;
@@ -174,9 +174,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             getString(R.string.home_menu_incidents)
         };
 
-        notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
-
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         // notification receiver from gcm intent service
@@ -191,7 +189,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        final TabLayout tabLayout = findViewById(R.id.tab_layout);
 
         activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active, R.drawable.ic_event_active_24dp};
         defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed, R.drawable.ic_event_24dp};
@@ -274,7 +272,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             }
         });
 
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -325,7 +323,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                 return true;
             }
         });
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
         updateProfile();
 
@@ -393,13 +391,13 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
 
     private void updateRecordMenu() {
-        Menu menu = (Menu) navigationView.getMenu();
-        MenuItem menuItem = (MenuItem) menu.getItem(0);
+        Menu menu = navigationView.getMenu();
+        MenuItem menuItem = menu.getItem(0);
         menuItem.getSubMenu().clear();
 
         int cnt = 0;
         for (RecordSpec record : recordSpecDataSource.findRootRecords()) {
-            MenuItem item = menuItem.getSubMenu().add(0, (int) record.id, cnt, record.name);
+            menuItem.getSubMenu().add(0, (int) record.id, cnt, record.name);
             cnt++;
         }
         if (cnt == 0) {
@@ -420,7 +418,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     private void updateProfile() {
         View header = navigationView.getHeaderView(0);
-        ImageView profileImageView = (ImageView) header.findViewById(R.id.profile_image);
+        ImageView profileImageView = header.findViewById(R.id.profile_image);
         String profileImageFilePath = sharedPrefUtil.getProfileImageFilePath();
         Bitmap profileBitmap;
         if (profileImageFilePath == null) {
@@ -451,7 +449,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     private void changeFragment() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        }
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -846,7 +846,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                String msg = "";
+                String msg;
                 try {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(HomeActivity.this);
@@ -918,9 +918,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                 rootView = getLayoutInflater().inflate(R.layout.drawer_list_item, parent, false);
 
                 holder = new DrawerItemHolder();
-                holder.titleView = (TextView) rootView.findViewById(R.id.title);
-                holder.counterView = (TextView) rootView.findViewById(R.id.counter);
-                holder.iconView = (ImageView) rootView.findViewById(R.id.icon);
+                holder.titleView = rootView.findViewById(R.id.title);
+                holder.counterView = rootView.findViewById(R.id.counter);
+                holder.iconView = rootView.findViewById(R.id.icon);
 
                 rootView.setTag(holder);
             } else {
@@ -998,8 +998,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment_home, container, false);
         }
     }
 
@@ -1028,7 +1027,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             if (obj != null) {
                 // Persist the regID - no need to register again.
                 storeRegistrationId(regid);
-                return;
             }
 
         }
