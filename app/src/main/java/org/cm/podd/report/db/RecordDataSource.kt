@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.crash.FirebaseCrash
 import com.google.firebase.database.*
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -30,7 +30,7 @@ import org.json.JSONObject
 interface RecordDataSource {
 
     enum class Event {
-        ADD, CHANGE, REMOVE, ALL
+        ADD, CHANGE, REMOVE
     }
 
     fun subscribe(datas: ArrayList<RecordData>, cb: (Event, Int)->Unit)
@@ -98,9 +98,9 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
 
                     mAuth.signInWithCustomToken(firebaseToken!!).addOnCompleteListener(activity) {task -> loginSuccess = task.isSuccessful
                         if (! loginSuccess) {
-                            FirebaseCrash.logcat(Log.DEBUG, tag, "firebase login fail")
+                            Crashlytics.log(Log.DEBUG, tag, "firebase login fail")
                             if (task.exception != null) {
-                                FirebaseCrash.report(task.exception)
+                                Crashlytics.logException(task.exception)
                             }
                         }
                         cb(loginSuccess)
@@ -192,7 +192,7 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                         header = "[${preferences.appContext.resources.getString(R.string.draft)}] $header"
                     }
                 } catch (e: Exception) {
-                    FirebaseCrash.report(e)
+                    Crashlytics.logException(e)
                 }
 
                 val data = RecordData(

@@ -148,7 +148,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     private MenuItem badgeMenuItem;
     private MenuItem newEventMenuItem;
     private Button badgeCounterButton;
-    private View notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
+    private View notifCountView;
     private NavigationView navigationView;
 
     private TabLayout.Tab tabNewReport;
@@ -185,6 +185,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         administrationDataSource = new AdministrationAreaDataSource(this);
         feedItemDataSource = new FeedItemDataSource(this);
         recordSpecDataSource = RecordSpecDataSource.Companion.getInstance(this);
+
+        notifCountView = getLayoutInflater().inflate(R.layout.notif_count, null);
 
         // initialize prefs
         sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
