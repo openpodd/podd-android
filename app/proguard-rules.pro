@@ -122,3 +122,6 @@
 -keepclassmembernames class org.cm.podd.report.model.RecordData {
     *;
 }
+
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception

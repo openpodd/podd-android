@@ -4,9 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingTop="15dp"
-    android:paddingBottom="12dp"
-    android:paddingLeft="30px"
-    android:paddingRight="30px"
     >
 
     <TextView
@@ -17,7 +14,7 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         android:paddingRight="10dp"
-        android:paddingLeft="10dp"
+        android:paddingLeft="20dp"
         android:text="xxxxxxx"/>
 
     <TextView
@@ -27,7 +24,8 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@id/header"
         android:text="xxxxxxx"
-        android:paddingLeft="10dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="20dp"
         android:textSize="14sp" />
 
     <ImageButton
@@ -38,6 +36,17 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:paddingLeft="50dp"
+        android:paddingRight="20dp"
         app:srcCompat="@drawable/ic_navigate_next_black_24dp" />
 
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/subheader"
+        android:paddingTop="70dp"
+        android:id="@+id/divided"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#c0c0c0"/>
 </RelativeLayout>

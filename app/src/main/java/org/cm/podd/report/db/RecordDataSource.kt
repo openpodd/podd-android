@@ -127,7 +127,7 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                             .child(spec.groupKey).orderByChild("parentReportGuid")
                             .equalTo(parentReportGuid)
                 } else {
-                    recordsRef.child(spec.id.toString()).child(spec.groupKey).orderByKey()
+                    recordsRef.child(spec.id.toString()).child(spec.groupKey).orderByChild("header")
                 }
                 listener = activeQuery?.addChildEventListener(object: ChildEventListener {
                     override fun onCancelled(error: DatabaseError) {
@@ -195,6 +195,10 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                     Crashlytics.logException(e)
                 }
 
+                var startDateValue = 0L
+                if (report.startDate != null) {
+                    startDateValue = report.startDate.time
+                }
                 val data = RecordData(
                         report.guid,
                         header ?: "[error]",
@@ -205,10 +209,13 @@ class FirebaseContext private constructor(preferenceContext: PreferenceContext) 
                         spec.id,
                         spec.parentId,
                         report.type,
-                        preferences.username
+                        preferences.username,
+                        startDateValue,
+                        "",
+                        report.submitJSONFormData.toString()
                 )
 
-                val ref = recordsRef.child(spec.id.toString()).child(spec.groupKey).push()
+                val ref = recordsRef.child(spec.id.toString()).child(spec.groupKey).child(report.guid)
                 ref.setValue(data)
 
             }

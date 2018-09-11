@@ -214,10 +214,11 @@ public class ReportActivity extends AppCompatActivity
         return intent;
     }
 
-    public static Intent followReportFromRecord(Context context, String parentReportGuid, long reportTypeId) {
+    public static Intent followReportFromRecord(Context context, String parentReportGuid, long reportTypeId, String preloadFormData) {
         Intent intent = new Intent(context, ReportActivity.class);
         intent.putExtra("reportType", reportTypeId);
         intent.putExtra("parentReportGuid", parentReportGuid);
+        intent.putExtra("preloadFormData", preloadFormData);
         intent.setAction(ACTION_CREATE_FOLLOW_REPORT_FROM_RECORD);
         return intent;
     }
@@ -352,7 +353,8 @@ public class ReportActivity extends AppCompatActivity
                 case ACTION_CREATE_FOLLOW_REPORT_FROM_RECORD:
                     reportType = intent.getLongExtra("reportType", 0);
                     parentReportGuid = intent.getStringExtra("parentReportGuid");
-                    reportId = reportDataSource.createFollowReport(reportType, parentReportGuid);
+                    String preloadFormData = intent.getStringExtra("preloadFormData");
+                    reportId = reportDataSource.createFollowReport(reportType, parentReportGuid, preloadFormData);
                     follow = true;
                     break;
 
@@ -469,11 +471,18 @@ public class ReportActivity extends AppCompatActivity
                     Iterator<String> keys = jsonObject.keys();
                     while (keys.hasNext()) {
                         String key = keys.next();
-                        String[] ary = key.split("@@@");
-                        int qid = Integer.parseInt(ary[0]);
-                        String name = ary[1];
+                        Question question = null;
+                        String name = null;
+                        if (key.contains("@@@")) {
+                            String[] ary = key.split("@@@");
+                            int qid = Integer.parseInt(ary[0]);
+                            name = ary[1];
+                            question = form.getQuestion(qid);
+                        } else {
+                            name = key;
+                            question = form.findQuestionByName(name);
+                        }
 
-                        Question question = form.getQuestion(qid);
                         if (question != null) {
                             String value = jsonObject.getString(key);
                             if (value != null && !value.equals("null")) {
@@ -942,7 +951,6 @@ public class ReportActivity extends AppCompatActivity
                     saveForm(1);
                     // refresh data object
                     report = reportDataSource.getById(reportId);
-                    saveRecordData(report);
 
                 } else if (action == ReportDataInterface.TEST_ACTION) {
                     // save as test report

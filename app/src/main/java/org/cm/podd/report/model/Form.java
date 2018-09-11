@@ -135,4 +135,8 @@ public class Form implements Serializable {
         }
         return null;
     }
+
+    public Question findQuestionByName(String name) {
+        return questionMapByName.get(name);
+    }
 }

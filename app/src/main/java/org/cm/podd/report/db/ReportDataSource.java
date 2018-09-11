@@ -87,13 +87,14 @@ public class ReportDataSource {
         return id;
     }
 
-    public long createFollowReport(long type, String parentGuid) {
+    public long createFollowReport(long type, String parentGuid, String preloadFormData) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("date", new Date().getTime());
         values.put("type", type);
         values.put("draft", 1);
         values.put("negative", 1);
+        values.put("form_data", preloadFormData);
         values.put("follow_date", Long.MAX_VALUE);
         values.put("follow_flag", 1);
         values.put("follow_date", new Date().getTime());

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
@@ -40,6 +39,7 @@ class RecordActivity : AppCompatActivity() {
     private lateinit var firebaseContext: FirebaseContext
     private val recordDatas = ArrayList<RecordData>()
     private val recordAdapter = RecordListAdapter(recordDatas)
+    private var parentRecord: RecordData? = null
     private var searchView : SearchView? = null
 
     private var parentReportGuid: String? = null
@@ -58,6 +58,11 @@ class RecordActivity : AppCompatActivity() {
         reportDataSource = ReportDataSource(this)
 
         recordSpecId = intent.getLongExtra("recordSpecId", 0)
+        val tmp = intent.getSerializableExtra("parentRecord")
+        if (tmp != null) {
+            parentRecord =  tmp as RecordData
+
+        }
         recordSpec = recordSpecDataSource[recordSpecId]
         hasChildRecordSpec = recordSpecDataSource.findByParentId(recordSpecId).isNotEmpty()
 
@@ -88,8 +93,6 @@ class RecordActivity : AppCompatActivity() {
                 selectRecord(record)
             }
         }
-        recycleView.addItemDecoration(DividerItemDecoration(this,
-                DividerItemDecoration.VERTICAL))
 
         recordAdapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -120,8 +123,9 @@ class RecordActivity : AppCompatActivity() {
 
         addNewRecord.setOnClickListener{ _ ->
             if (parentReportGuid != null) {
+                val preloadFormData = parentRecord?.formData ?: "{}"
                 startActivityForResult(
-                        ReportActivity.followReportFromRecord(this, parentReportGuid, recordSpec!!.typeId),
+                        ReportActivity.followReportFromRecord(this, parentReportGuid, recordSpec!!.typeId, preloadFormData),
                         REQUEST_NEW_REPORT)
             } else {
                 startActivityForResult(
@@ -139,19 +143,12 @@ class RecordActivity : AppCompatActivity() {
         val intent = Intent(this, RecordActivity::class.java)
         intent.putExtra("recordSpecId", specs[0].id)
         intent.putExtra("parentReportGuid", record.reportGuid)
+        intent.putExtra("parentRecord", record)
         startActivityForResult(intent, 0)
     }
 
     private fun selectRecord(record: RecordData) {
         Log.d(TAG, "record --> $record.name was selected")
-        val report = reportDataSource.getByGUID(record.reportGuid)
-        if (report != null) {
-            val reportIntent = Intent(this, ReportActivity::class.java)
-
-            reportIntent.putExtra("reportType", recordSpec!!.typeId)
-            reportIntent.putExtra("reportId", report.id);
-            reportIntent.putExtra("test", report.isTestReport);
-        }
     }
 
     interface RecordListAdapterListener {
@@ -161,7 +158,11 @@ class RecordActivity : AppCompatActivity() {
     }
 
     inner class RecordListAdapter(var items: List<RecordData>)
-        : RecyclerView.Adapter<RecordListAdapter.RecordViewHolder>(), Filterable {
+        : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+
+        val view_type_footer = 1
+        val view_type_content = 0
+
         var filteredItems: List<RecordData> = items
         var listener: RecordListAdapterListener? = null
 
@@ -181,29 +182,49 @@ class RecordActivity : AppCompatActivity() {
             }
         }
 
+        inner class FooterViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.record_list_item, parent, false)
-            return RecordViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: RecordViewHolder?, position: Int) {
+        override fun getItemViewType(position: Int): Int {
+            if (position == filteredItems.size) {
+                return view_type_footer
+            }
+            return view_type_content
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            if (viewType == view_type_content) {
+                return RecordViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_list_item, parent, false))
+            }
+            return FooterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_footer_item, parent, false))
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
             Log.d("debug", "onbind at $position")
-            val item = filteredItems[position]
             if (holder != null) {
-                holder.header.text = item.header
-                holder.subHeader.text = item.subHeader
-                if (hasChildRecordSpec) {
-                    holder.nextBtn.visibility = View.VISIBLE
-                } else {
-                    holder.nextBtn.visibility = View.GONE
+                when (holder.itemViewType) {
+                    view_type_content -> {
+                        val item = filteredItems[position]
+                        val contentHolder = holder as RecordViewHolder
+                        contentHolder.header.text = item.header
+                        contentHolder.subHeader.text = item.subHeader
+                        if (hasChildRecordSpec) {
+                            contentHolder.nextBtn.visibility = View.VISIBLE
+                        } else {
+                            contentHolder.nextBtn.visibility = View.GONE
+                        }
+                    }
+                    view_type_footer -> {
+                        // do nothing
+                    }
                 }
             }
         }
 
         override fun getItemCount(): Int {
-            return filteredItems.size
+            val size = filteredItems.size
+            return if (size > 0) size + 1 else 0
         }
 
         override fun getFilter(): Filter {
