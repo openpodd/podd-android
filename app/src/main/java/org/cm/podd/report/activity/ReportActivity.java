@@ -1268,6 +1268,15 @@ public class ReportActivity extends AppCompatActivity
         return this.testReport;
     }
 
+    @Override
+    public String getIncidentDateLabel() {
+        if (recordSpec != null) {
+            return getString(R.string.report_date);
+        } else {
+            return getString(R.string.report_incidentDate);
+        }
+    }
+
     private void showHideDisableMask(boolean shown) {
         disableMaskView.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
     }

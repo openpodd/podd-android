@@ -17,8 +17,6 @@
 
 package org.cm.podd.report.fragment;
 
-import org.cm.podd.report.model.Region;
-
 import java.util.Date;
 
 /**
@@ -46,5 +44,7 @@ public interface ReportDataInterface {
     public boolean isDoneSubmit();
 
     public boolean isTestReport();
+
+    public String getIncidentDateLabel();
 
 }

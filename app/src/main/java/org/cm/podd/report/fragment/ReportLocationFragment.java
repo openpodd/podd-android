@@ -111,8 +111,11 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
 
         loadData();
 
+        TextView incidentDateLabel = (TextView) view.findViewById(R.id.incident_date);
+        incidentDateLabel.setText(reportDataInterface.getIncidentDateLabel());
+
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
-        ((TextView) view.findViewById(R.id.incident_date)).setTypeface(face);
+        incidentDateLabel.setTypeface(face);
         ((TextView) view.findViewById(R.id.incident_place)).setTypeface(face);
 
         return view;
