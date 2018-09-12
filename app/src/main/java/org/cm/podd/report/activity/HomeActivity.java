@@ -154,7 +154,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     private TabLayout.Tab tabNewReport;
     private TabLayout.Tab tabFeed;
     private TabLayout.Tab tabNews;
-    private TabLayout.Tab tabAssignments;
 
     private int[] activeIcons;
     private int[] defaultIcons;
@@ -193,20 +192,17 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
 
-        activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active, R.drawable.ic_event_active_24dp};
-        defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed, R.drawable.ic_event_24dp};
+        activeIcons = new int []{R.drawable.ic_new_report_active, R.drawable.ic_news_active, R.drawable.ic_feed_active};
+        defaultIcons = new int []{R.drawable.ic_new_report, R.drawable.ic_news, R.drawable.ic_feed};
 
         tabNewReport = tabLayout.newTab().setIcon(activeIcons[0]).setText(R.string.home_menu_reports);
         tabNews = tabLayout.newTab().setIcon(defaultIcons[1]).setText(R.string.home_menu_news);
         tabFeed = tabLayout.newTab().setIcon(defaultIcons[2]).setText(R.string.home_menu_incidents);
-        tabAssignments = tabLayout.newTab().setIcon(defaultIcons[3]).setText(R.string.home_menu_follow_items);
 
         tabLayout.addTab(tabNewReport);
         tabLayout.addTab(tabFeed);
         tabLayout.addTab(tabNews);
-        if (recordSpecDataSource.count() > 0) {
-            tabLayout.addTab(tabAssignments);
-        }
+
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -225,7 +221,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(activeIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
-                        tabAssignments.setIcon(defaultIcons[3]);
 
                         break;
                     case 1:
@@ -236,7 +231,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(activeIcons[2]);
-                        tabAssignments.setIcon(defaultIcons[3]);
                         break;
                     case 2:
                         if (mCurrentFragment instanceof  DashboardFeedFragment) {
@@ -248,14 +242,12 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(activeIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
-                        tabAssignments.setIcon(defaultIcons[3]);
                         break;
                     case 3:
                         drawerPosition = 3;
                         tabNewReport.setIcon(defaultIcons[0]);
                         tabNews.setIcon(defaultIcons[1]);
                         tabFeed.setIcon(defaultIcons[2]);
-                        tabAssignments.setIcon(activeIcons[3]);
                         break;
 
                 }
