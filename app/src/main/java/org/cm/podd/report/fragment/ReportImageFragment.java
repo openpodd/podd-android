@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
@@ -19,8 +20,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -41,6 +46,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -78,6 +84,7 @@ public class ReportImageFragment extends Fragment {
     private static final int CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE = 500;
     private static final String TAG = "ReportImageFragment";
     private static final int MAX_IMAGE_GUIDE = 4;
+    private static final int REQUEST_FOR_WRITE_EXTERNAL_STORAGE = 20;
 
     private long reportId;
 
@@ -310,21 +317,52 @@ public class ReportImageFragment extends Fragment {
                 break;
 
             case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException ie) {
-                    Log.e(TAG, "can't create file", ie);
+                if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE )
+                        != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        Toast.makeText(getContext(), "ไม่ได้รับการอนุญาติให้เก็บรูปลง sdcard ได้", Toast.LENGTH_LONG).show();
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                REQUEST_FOR_WRITE_EXTERNAL_STORAGE);
+                    } else {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_FOR_WRITE_EXTERNAL_STORAGE);
+                    }
+                    return;
                 }
-                if (photoFile != null) {
-                    intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024*1024);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            Uri.fromFile(photoFile));
-                    intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-                }
+                captureImageFromCamera();
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_FOR_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                captureImageFromCamera();
+            }
+        }
+    }
+
+    private void captureImageFromCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ie) {
+            Log.e(TAG, "can't create file", ie);
+        }
+        if (photoFile != null) {
+
+            Uri photoURI = FileProvider.getUriForFile(getContext(), "org.cm.podd.report.fileprovider", photoFile);
+
+            intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024*1024);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                    photoURI);
+            intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
     }
 
