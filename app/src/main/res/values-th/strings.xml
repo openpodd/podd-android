@@ -343,5 +343,6 @@
     <string name="action_search">search</string>
     <string name="home_menu_follow_items">ติดตาม</string>
     <string name="no_record_data_available">ไม่พบรายการ</string>
+    <string name="press_add_button_to_add_new_record">กดปุ่ม + เพื่อเพิ่มรายการ</string>
 
 </resources>

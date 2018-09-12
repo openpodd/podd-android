@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -29,7 +30,7 @@ import org.cm.podd.report.util.StyleUtil
  * Created by pphetra on 21/8/2018 AD.
  */
 class RecordActivity : AppCompatActivity() {
-    val TAG = "RecordActivity"
+    val tag = "RecordActivity"
 
     private var recordSpecId: Long = -1
     private var recordSpec: RecordSpec? = null
@@ -46,13 +47,13 @@ class RecordActivity : AppCompatActivity() {
 
     var hasChildRecordSpec = false
 
-    private val REQUEST_NEW_REPORT: Int = 1
+    private val requestNewReport: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.record_activity)
 
-        empty_view.typeface = StyleUtil.getDefaultTypeface(assets, Typeface.NORMAL);
+        empty_view.typeface = StyleUtil.getDefaultTypeface(assets, Typeface.NORMAL)
 
         recordSpecDataSource = RecordSpecDataSource.getInstance(this)
         reportDataSource = ReportDataSource(this)
@@ -70,7 +71,7 @@ class RecordActivity : AppCompatActivity() {
 
         firebaseContext = FirebaseContext.getInstance(PreferenceContext.getInstance(applicationContext))
         firebaseContext.auth(this) { success ->
-            Log.d(TAG, "login $success")
+            Log.d(tag, "login $success")
             recordDataSource = firebaseContext.recordDataSource(recordSpec!!, parentReportGuid)
 
             recordDataSource?.subscribe(recordDatas) { type: RecordDataSource.Event, position: Int ->
@@ -121,22 +122,29 @@ class RecordActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = recordSpec!!.name
 
+        if (parentRecord != null) {
+            addNewRecord.visibility = View.VISIBLE
+            empty_view.setText(getString(R.string.press_add_button_to_add_new_record) + " " + recordSpec?.name)
+        } else {
+            addNewRecord.visibility = View.GONE
+        }
+
         addNewRecord.setOnClickListener{ _ ->
             if (parentReportGuid != null) {
                 val preloadFormData = parentRecord?.formData ?: "{}"
                 startActivityForResult(
                         ReportActivity.followReportFromRecord(this, parentReportGuid, recordSpec!!.typeId, preloadFormData),
-                        REQUEST_NEW_REPORT)
+                        requestNewReport)
             } else {
                 startActivityForResult(
                         ReportActivity.newReportIntent(this, recordSpec!!.typeId, false),
-                        REQUEST_NEW_REPORT)
+                        requestNewReport)
             }
         }
     }
 
     private fun zoomInRecord(record: RecordData) {
-        Log.d(TAG, "record --> $record.name was zoomin")
+        Log.d(tag, "record --> $record.name was zoomin")
         val specs = recordSpecDataSource.findByParentId(recordSpecId)
 
         // fix
@@ -148,7 +156,7 @@ class RecordActivity : AppCompatActivity() {
     }
 
     private fun selectRecord(record: RecordData) {
-        Log.d(TAG, "record --> $record.name was selected")
+        Log.d(tag, "record --> $record.name was selected")
     }
 
     interface RecordListAdapterListener {
@@ -160,8 +168,8 @@ class RecordActivity : AppCompatActivity() {
     inner class RecordListAdapter(var items: List<RecordData>)
         : RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
 
-        val view_type_footer = 1
-        val view_type_content = 0
+        private val viewTypeFooter = 1
+        private val viewTypeContent = 0
 
         var filteredItems: List<RecordData> = items
         var listener: RecordListAdapterListener? = null
@@ -170,6 +178,7 @@ class RecordActivity : AppCompatActivity() {
             val header: TextView = card.header
             val subHeader: TextView = card.subheader
             val nextBtn: ImageButton = card.nextBtn
+            val container: View = card.container
 
             init {
                 header.typeface = StyleUtil.getDefaultTypeface(card.context.assets, Typeface.NORMAL)
@@ -182,19 +191,17 @@ class RecordActivity : AppCompatActivity() {
             }
         }
 
-        inner class FooterViewHolder(view: View): RecyclerView.ViewHolder(view) {
-
-        }
+        inner class FooterViewHolder(view: View): RecyclerView.ViewHolder(view)
 
         override fun getItemViewType(position: Int): Int {
             if (position == filteredItems.size) {
-                return view_type_footer
+                return viewTypeFooter
             }
-            return view_type_content
+            return viewTypeContent
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            if (viewType == view_type_content) {
+            if (viewType == viewTypeContent) {
                 return RecordViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_list_item, parent, false))
             }
             return FooterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_footer_item, parent, false))
@@ -204,7 +211,7 @@ class RecordActivity : AppCompatActivity() {
             Log.d("debug", "onbind at $position")
             if (holder != null) {
                 when (holder.itemViewType) {
-                    view_type_content -> {
+                    viewTypeContent -> {
                         val item = filteredItems[position]
                         val contentHolder = holder as RecordViewHolder
                         contentHolder.header.text = item.header
@@ -214,8 +221,9 @@ class RecordActivity : AppCompatActivity() {
                         } else {
                             contentHolder.nextBtn.visibility = View.GONE
                         }
+                        contentHolder.container.setBackgroundColor(Color.parseColor(if (item.color != "") item.color else "#FFFFFF"))
                     }
-                    view_type_footer -> {
+                    viewTypeFooter -> {
                         // do nothing
                     }
                 }
