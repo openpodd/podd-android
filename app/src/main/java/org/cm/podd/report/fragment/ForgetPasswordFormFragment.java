@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -216,7 +215,7 @@ public class ForgetPasswordFormFragment extends Fragment {
             data.put("androidId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
             data.put("brand", Build.BRAND);
             data.put("model", Build.MODEL);
-            data.put("deviceId", ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+            data.put("deviceId", Settings.Secure.getString(context.getContentResolver(), ANDROID_ID));
         } catch (JSONException e) {
             e.printStackTrace();
         }
