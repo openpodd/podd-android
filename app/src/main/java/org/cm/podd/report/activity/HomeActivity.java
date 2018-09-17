@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -124,6 +125,8 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     GoogleCloudMessaging gcm;
     String regid;
+
+    BroadcastReceiver networkStateBroadcastReceiver;
 
 
     private BroadcastReceiver recordSpecReceiver = new BroadcastReceiver() {
@@ -380,8 +383,24 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         Intent getAreaIntent = new Intent(this, SyncAdministrationAreaService.class);
         startService(getAreaIntent);
+
+        registerConnectivityChanged();
+
+
     }
 
+    private void registerConnectivityChanged() {
+        networkStateBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Intent submitIntent = new Intent(context, DataSubmitService.class);
+                context.startService(submitIntent);
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkStateBroadcastReceiver, intentFilter);
+    }
 
 
     private void updateRecordMenu() {
@@ -781,6 +800,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         notificationDataSource.close();
         unregisterReceiver(mNotificationReceiver);
         unregisterReceiver(recordSpecReceiver);
+        unregisterReceiver(networkStateBroadcastReceiver);
         super.onDestroy();
     }
 

@@ -17,12 +17,12 @@
 package org.cm.podd.report.service;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.WakefulBroadcastReceiver;
 
-public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
+public class GcmBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -30,7 +30,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         ComponentName comp = new ComponentName(context.getPackageName(),
                 GcmIntentService.class.getName());
         // Start the service, keeping the device awake while it is launching.
-        startWakefulService(context, (intent.setComponent(comp)));
+        GcmIntentService.enqueueWork(context, intent.setComponent(comp));
         setResultCode(Activity.RESULT_OK);
     }
 }

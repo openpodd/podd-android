@@ -23,7 +23,7 @@ import android.net.ConnectivityManager;
 import android.util.Log;
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
-    private static final String TAG = "ConnectivityChangeReceiever";
+    private static final String TAG = "ConnectivityChgReceive";
 
     @Override
     public void onReceive(Context context, Intent intent) {

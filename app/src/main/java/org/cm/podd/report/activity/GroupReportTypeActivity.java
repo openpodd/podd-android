@@ -57,7 +57,6 @@ import org.cm.podd.report.util.StyleUtil;
 public class GroupReportTypeActivity extends AppCompatActivity {
 
     public static final String TAG = "GroupReportTypeActivity";
-    private Typeface typeface;
     private ExpandableListView listView;
     private ReportTypeDataSource dataSource;
     private ReportDataSource reportDataSource;
@@ -91,12 +90,12 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         reportDataSource = new ReportDataSource(this);
         reportQueueDataSource = new ReportQueueDataSource(this);
 
-        typeface = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
+        Typeface typeface = StyleUtil.getDefaultTypeface(getAssets(), Typeface.NORMAL);
         setContentView(R.layout.activity_group_report_type);
-        testCheckbox = (CheckBox) findViewById(R.id.test_checkbox);
+        testCheckbox = findViewById(R.id.test_checkbox);
         testCheckbox.setTypeface(typeface);
 
-        final LinearLayout testLayout = (LinearLayout) findViewById(R.id.test_section);
+        final LinearLayout testLayout = findViewById(R.id.test_section);
         testCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -110,11 +109,11 @@ public class GroupReportTypeActivity extends AppCompatActivity {
             }
         });
 
-        Toolbar topBar = (Toolbar) findViewById(R.id.toolbar_top);
+        Toolbar topBar = findViewById(R.id.toolbar_top);
         setSupportActionBar(topBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        listView = (ExpandableListView) findViewById(R.id.report_type_list_view);
+        listView = findViewById(R.id.report_type_list_view);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -131,7 +130,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupIndex, int childIndex, long id) {
                 ReportType item = (ReportType) adapter.getChild(groupIndex, childIndex);
-                Log.d(TAG, String.format("select report type = %d", item.getId(), testCheckbox.isChecked()));
+                Log.d(TAG, String.format("select report type = %d", item.getId()));
                 Intent intent = ReportActivity.newReportIntent(GroupReportTypeActivity.this, item.getId(), testCheckbox.isChecked());
                 startActivity(intent);
                 return true;

@@ -7,18 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-import org.cm.podd.report.db.FollowAlertDataSource;
-import org.cm.podd.report.db.ReportDataSource;
-
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 
-public class FollowAlertReceiver extends WakefulBroadcastReceiver {
+public class FollowAlertReceiver extends BroadcastReceiver {
     public static final String TAG = "FollowAlertReceiver";
 
     @Override
@@ -28,12 +21,11 @@ public class FollowAlertReceiver extends WakefulBroadcastReceiver {
         if (action != null && action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
             Log.d(TAG, "ACTION_BOOT_COMPLETED");
             Intent rescheduleIntent = new Intent(context, FollowAlertRescheduleService.class);
-            startWakefulService(context, rescheduleIntent);
+            FollowAlertRescheduleService.enqueueWork(context, rescheduleIntent);
         } else {
             ComponentName comp = new ComponentName(context.getPackageName(),
                     FollowAlertService.class.getName());
-            // Start the service, keeping the device awake while it is launching.
-            startWakefulService(context, (intent.setComponent(comp)));
+            FollowAlertService.enqueueWork(context, intent.setComponent(comp));
             setResultCode(Activity.RESULT_OK);
         }
     }

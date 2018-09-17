@@ -17,11 +17,11 @@
 
 package org.cm.podd.report.service;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import org.cm.podd.report.db.FollowAlertDataSource;
@@ -29,12 +29,17 @@ import org.cm.podd.report.db.FollowAlertDataSource;
 /**
  * Created by pphetra on 8/16/15 AD.
  */
-public class FollowAlertRescheduleService extends Service {
+public class FollowAlertRescheduleService extends JobIntentService {
 
     public static final String TAG = "FollowAlertReschedule";
+    static final int JOB_ID = 800;
+
+    static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, FollowAlertRescheduleService.class, JOB_ID, work);
+    }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Context context = getApplicationContext();
         FollowAlertDataSource followAlertDataSource = new FollowAlertDataSource(context);
         Cursor triggers = followAlertDataSource.getUnDone();
@@ -49,14 +54,5 @@ public class FollowAlertRescheduleService extends Service {
 
             FollowAlertReceiver.scheduleNotificationAlert(context, date, reportId, reportType, message, requestCode);
         }
-
-        FollowAlertReceiver.completeWakefulIntent(intent);
-        stopSelf();
-        return START_NOT_STICKY;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

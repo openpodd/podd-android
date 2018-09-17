@@ -16,7 +16,6 @@
  */
 package org.cm.podd.report.service;
 
-import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -24,6 +23,8 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -36,19 +37,20 @@ import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.util.SharedPrefUtil;
 
-public class GcmIntentService extends IntentService {
+public class GcmIntentService extends JobIntentService {
 
     public static final int NOTIFICATION_ID = 1;
+    static final int JOB_ID = 700;
     private static final String TAG = "GcmIntentService";
 
     private NotificationManager mNotificationManager;
 
-    public GcmIntentService() {
-        super(GcmIntentService.class.getSimpleName());
+    static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, GcmIntentService.class, JOB_ID, work);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
@@ -127,9 +129,8 @@ public class GcmIntentService extends IntentService {
 
             }
         }
-        // Release the wake lock provided by the WakefulBroadcastReceiver.
-        GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
+
 
     private void sendNotification(long id, String title, String content) {
         mNotificationManager = (NotificationManager)
