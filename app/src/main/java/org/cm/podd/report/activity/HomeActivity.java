@@ -386,7 +386,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
         registerConnectivityChanged();
 
-
     }
 
     private void registerConnectivityChanged() {
@@ -394,7 +393,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
             @Override
             public void onReceive(Context context, Intent intent) {
                 Intent submitIntent = new Intent(context, DataSubmitService.class);
-                context.startService(submitIntent);
+                DataSubmitService.enqueueWork(context, submitIntent);
             }
         };
         IntentFilter intentFilter = new IntentFilter();

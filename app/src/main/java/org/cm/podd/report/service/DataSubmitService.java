@@ -16,13 +16,15 @@
  */
 package org.cm.podd.report.service;
 
-import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -44,7 +46,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
-import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -69,8 +70,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class DataSubmitService extends IntentService {
+public class DataSubmitService extends JobIntentService {
 
+    static final int JOB_ID = 300;
     private static final String TAG = "DataSubmitService";
     private static final String S3IMAGE_URL_PREFIX = "https://s3-ap-southeast-1.amazonaws.com/" + BuildConfig.BUCKET_NAME + "/";
     public static final String ACTION_REPORT_STATUS_CHANGE = "podd.report_status_change";
@@ -79,13 +81,12 @@ public class DataSubmitService extends IntentService {
     SharedPrefUtil sharedPrefUtil;
     private static SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
 
-
-    public DataSubmitService() {
-        super(DataSubmitService.class.getSimpleName());
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, DataSubmitService.class, JOB_ID, work);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         sharedPrefUtil = new SharedPrefUtil(getApplicationContext());
 
         HttpURLConnection conn = null;

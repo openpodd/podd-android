@@ -167,13 +167,17 @@
 
         <service
             android:name=".service.DataSubmitService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false" />
+
         <service
             android:name=".service.SyncReportTypeService"
             android:exported="false" />
+
         <service
             android:name=".service.UploadProfileService"
             android:exported="false" />
+
         <service
             android:name=".service.AdministrationAreaService"
             android:exported="false" />
