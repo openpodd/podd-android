@@ -1283,8 +1283,7 @@ public class ReportActivity extends AppCompatActivity
 
     private void broadcastReportSubmission() {
         // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+        DataSubmitService.enqueueWork(this, new Intent(DataSubmitService.ACTION_REPORT_SUBMIT));
     }
 
 }

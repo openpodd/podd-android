@@ -28,7 +28,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
@@ -546,8 +545,7 @@ public class ReportImageFragment extends Fragment {
             reportQueueDataSource.addImageQueue(reportId);
 
             // Broadcasts the Intent to network receiver, and prepare queue for sending
-            Intent intent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
-            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+            DataSubmitService.enqueueWork(getContext(), new Intent(DataSubmitService.ACTION_REPORT_SUBMIT));
         }
 
         // send event hit
