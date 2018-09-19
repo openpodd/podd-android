@@ -18,20 +18,27 @@ package org.cm.podd.report.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,6 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -73,6 +81,8 @@ public class SettingActivity extends AppCompatActivity {
     public static final String TAG = "SettingActivity";
     private static final int REQ_CODE_PICK_IMAGE = 1;
     private static final int REQ_CODE_TAKE_IMAGE = 2;
+    private static final int REQUEST_FOR_WRITE_EXTERNAL_STORAGE_AND_CAPTURE_CAMERA = 21;
+    private static final int REQUEST_FOR_WRITE_EXTERNAL_STORAGE_FOR_GALLERY = 22;
 
     SharedPrefUtil sharedPrefUtil;
     ImageView profileImageView;
@@ -179,6 +189,7 @@ public class SettingActivity extends AppCompatActivity {
             photoPickerIntent = new Intent("com.android.camera.action.CROP");
             // indicate taken image type and Uri
             photoPickerIntent.setDataAndType(mCurrentPhotoUri, "image/*");
+            photoPickerIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         photoPickerIntent.putExtra("crop", "true");
         photoPickerIntent.putExtra("aspectX", 1);
@@ -193,7 +204,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private Uri getImageUri() {
-        return Uri.fromFile(createImageFile());
+        return FileProvider.getUriForFile(this, "org.cm.podd.report.fileprovider", createImageFile());
     }
 
     private File createImageFile() {
@@ -370,21 +381,76 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void onMediaChoiceRequest(int requestCode) {
+        int forwardCode = 0;
+
         switch (requestCode) {
             case REQ_CODE_PICK_IMAGE:
-                mCurrentPhotoUri = null;
-                cropImage();
+                forwardCode = REQUEST_FOR_WRITE_EXTERNAL_STORAGE_FOR_GALLERY;
                 break;
 
             case REQ_CODE_TAKE_IMAGE:
-                mCurrentPhotoUri = getImageUri();
-                Intent photoTakerIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                photoTakerIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
-                photoTakerIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                photoTakerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                startActivityForResult(photoTakerIntent, REQ_CODE_TAKE_IMAGE);
+                forwardCode = REQUEST_FOR_WRITE_EXTERNAL_STORAGE_AND_CAPTURE_CAMERA;
                 break;
         }
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, "ไม่ได้รับการอนุญาติให้เก็บรูปลง sdcard ได้", Toast.LENGTH_LONG).show();
+
+            }
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    forwardCode);
+        } else {
+            switch (requestCode) {
+                case REQ_CODE_PICK_IMAGE:
+                    pickImageFromGallery();
+                    break;
+                case REQ_CODE_TAKE_IMAGE:
+                    captureImageFromCamera();
+                    break;
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("xxx", "onRequestPermissionsResult" + requestCode);
+        if (requestCode == REQUEST_FOR_WRITE_EXTERNAL_STORAGE_AND_CAPTURE_CAMERA) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                captureImageFromCamera();
+            }
+        }
+
+        if (requestCode == REQUEST_FOR_WRITE_EXTERNAL_STORAGE_FOR_GALLERY) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImageFromGallery();
+            }
+        }
+    }
+
+    private void pickImageFromGallery() {
+        mCurrentPhotoUri = null;
+        cropImage();
+    }
+
+    private void captureImageFromCamera() {
+        mCurrentPhotoUri = getImageUri();
+        Intent photoTakerIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        photoTakerIntent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 1024 * 1024);
+        photoTakerIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        photoTakerIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            photoTakerIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                photoTakerIntent.setClipData(ClipData.newRawUri("", mCurrentPhotoUri));
+            }
+        }
+        startActivityForResult(photoTakerIntent, REQ_CODE_TAKE_IMAGE);
     }
 
     /**
