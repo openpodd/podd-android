@@ -72,15 +72,18 @@ class RecordActivity : AppCompatActivity() {
         firebaseContext = FirebaseContext.getInstance(PreferenceContext.getInstance(applicationContext))
         firebaseContext.auth(this) { success ->
             Log.d(tag, "login $success")
-            recordDataSource = firebaseContext.recordDataSource(recordSpec!!, parentReportGuid)
+            if (recordSpec != null && firebaseContext != null) {
+                recordDataSource = firebaseContext.recordDataSource(recordSpec!!, parentReportGuid)
 
-            recordDataSource?.subscribe(recordDatas) { type: RecordDataSource.Event, position: Int ->
-                when (type) {
-                    RecordDataSource.Event.ADD -> recordAdapter.notifyItemInserted(position)
-                    RecordDataSource.Event.CHANGE -> recordAdapter.notifyItemChanged(position)
-                    RecordDataSource.Event.REMOVE -> recordAdapter.notifyItemRemoved(position)
+                recordDataSource?.subscribe(recordDatas) { type: RecordDataSource.Event, position: Int ->
+                    when (type) {
+                        RecordDataSource.Event.ADD -> recordAdapter.notifyItemInserted(position)
+                        RecordDataSource.Event.CHANGE -> recordAdapter.notifyItemChanged(position)
+                        RecordDataSource.Event.REMOVE -> recordAdapter.notifyItemRemoved(position)
+                    }
                 }
             }
+
         }
 
         recycleView.layoutManager = LinearLayoutManager(this)
