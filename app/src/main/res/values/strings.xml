@@ -346,4 +346,5 @@
     <string name="home_menu_follow_items">Follow</string>
     <string name="no_record_data_available">No Records Found</string>
     <string name="press_add_button_to_add_new_record">Press + for add new record of</string>
+    <string name="invitation_code_must_be_numeric">Invitation Code should be numeric.</string>
 </resources>

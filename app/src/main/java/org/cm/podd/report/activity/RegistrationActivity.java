@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.RegistrationFormFragment;
@@ -80,11 +81,14 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void submitCode() {
         String inviteCode = inviteCodeText.getText().toString();
+
         if (inviteCode.length() > 0) {
-            if (RequestDataUtil.hasNetworkConnection(this)) {
-                new InviteCodeTask().execute(new String[]{inviteCode} );
+            if (! inviteCode.matches("([0-9]{6,8})")) {
+                Toast.makeText(this, R.string.invitation_code_must_be_numeric, Toast.LENGTH_LONG).show();
             } else {
-                 /* alert when hasNetworkConnection */
+                if (RequestDataUtil.hasNetworkConnection(this)) {
+                    new InviteCodeTask().execute(new String[]{inviteCode} );
+                }
             }
         } else {
             Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
