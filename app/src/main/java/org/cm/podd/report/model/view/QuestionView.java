@@ -28,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -93,7 +94,19 @@ public class QuestionView extends LinearLayout {
         addView(titleView);
 
         if (question.getDataType() == DataType.DATE) {
-            calendarView = new DatePicker(context);
+            calendarView = new DatePicker(context) {
+                @Override
+                public boolean onInterceptTouchEvent(MotionEvent ev) {
+                    if (ev.getActionMasked() == MotionEvent.ACTION_DOWN)
+                    {
+                        ViewParent p = getParent();
+                        if (p != null)
+                            p.requestDisallowInterceptTouchEvent(true);
+                    }
+
+                    return false;
+                }
+            };
             calendarView.setCalendarViewShown(true);
             calendarView.setSpinnersShown(false);
             calendarView.setLayoutParams(params);
