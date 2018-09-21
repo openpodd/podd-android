@@ -13,7 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.db.ReportDataSource;
@@ -156,6 +159,15 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
         reportDataInterface.setDate(date);
 
         Region region = (Region) mRegionsSpinner.getSelectedItem();
+        if (region == null) {
+            SpinnerAdapter adapter = mRegionsSpinner.getAdapter();
+            if (adapter.getCount() > 0) {
+                region = (Region) adapter.getItem(0);
+            } else {
+                String username = sharedPrefUtil.getUserName();
+                Crashlytics.log("AdministrationArea in ReportLocationFragment is empty!!, username=" + username);
+            }
+        }
         reportDataInterface.setRegionId(region.getId());
     }
 
