@@ -745,10 +745,11 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
                 });
                 alertDialogBuilder.show();
             } else if (intent.getAction() != null && intent.getAction().equals(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW)) {
-                Intent reportIntent = new Intent(this, ReportActivity.class);
-                reportIntent.putExtra("reportType", intent.getLongExtra("reportType", 0));
-                reportIntent.putExtra("reportId", intent.getLongExtra("reportId", -99));
+                Intent reportIntent = ReportActivity.followReportIntent(this,
+                        intent.getLongExtra("reportId", -99),
+                        intent.getLongExtra("reportType", 0));
                 reportIntent.putExtra("follow", intent.getBooleanExtra("follow", true));
+                intent.setAction(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW);
                 startActivity(reportIntent);
             }
         }
