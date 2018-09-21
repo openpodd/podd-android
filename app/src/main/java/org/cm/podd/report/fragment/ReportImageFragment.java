@@ -86,6 +86,7 @@ public class ReportImageFragment extends Fragment {
     private static final String TAG = "ReportImageFragment";
     private static final int MAX_IMAGE_GUIDE = 4;
     private static final int REQUEST_FOR_WRITE_EXTERNAL_STORAGE = 20;
+    private static final int REQUEST_FOR_READ_EXTERNAL_STORAGE = 21;
 
     private long reportId;
 
@@ -312,9 +313,15 @@ public class ReportImageFragment extends Fragment {
     private void onMediaChoiceRequest(int requestCode) {
         switch (requestCode) {
             case CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE:
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(Intent.createChooser(photoPickerIntent, "Select File"), CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
+                if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(
+                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_FOR_READ_EXTERNAL_STORAGE);
+                } else {
+                    pickImageFromGallery();
+                }
                 break;
 
             case CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE:
@@ -323,11 +330,13 @@ public class ReportImageFragment extends Fragment {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         Toast.makeText(getContext(), "ไม่ได้รับการอนุญาติให้เก็บรูปลง sdcard ได้", Toast.LENGTH_LONG).show();
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        requestPermissions(
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 REQUEST_FOR_WRITE_EXTERNAL_STORAGE);
                     } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQUEST_FOR_WRITE_EXTERNAL_STORAGE);
+                        requestPermissions(
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                REQUEST_FOR_WRITE_EXTERNAL_STORAGE);
                     }
                     return;
                 }
@@ -342,6 +351,11 @@ public class ReportImageFragment extends Fragment {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 captureImageFromCamera();
+            }
+        } else if (requestCode == REQUEST_FOR_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImageFromGallery();
             }
         }
     }
@@ -370,6 +384,12 @@ public class ReportImageFragment extends Fragment {
             }
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
+    }
+
+    private void pickImageFromGallery() {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(Intent.createChooser(photoPickerIntent, "Select File"), CHOOSE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
     private void deleteImages() {
