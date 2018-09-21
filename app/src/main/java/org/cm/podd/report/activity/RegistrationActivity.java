@@ -177,7 +177,9 @@ public class RegistrationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         StyleUtil.setActionBarTitle(this, getString(R.string.title_activity_registration));
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 //        actionBar.setLogo(R.drawable.arrow_left_with_pad);
         return true;
     }
