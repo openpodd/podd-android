@@ -166,6 +166,7 @@ public class FormIterator implements Serializable, ScriptEngineInterface {
     private void setPageDataToExpressionEngine(Page page) {
         HashMap<String, Object> data = new HashMap<String, Object>();
         page.getData(data, true);
+        getExpressionEngine();
         assignDataToExpressionEngine(data.entrySet());
     }
 
