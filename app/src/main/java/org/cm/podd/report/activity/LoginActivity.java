@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
 import org.cm.podd.report.R;
@@ -525,6 +527,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = params[1];
             // authenticate and get access token
             String reqData = null;
+            Crashlytics.setString("username", username);
             try {
                 JSONObject json = new JSONObject();
                 json.put("username", username);
@@ -539,9 +542,8 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-            super.onPostExecute(resp);
             JSONObject obj = resp.getJsonObject();
-            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK) {
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_OK && obj != null) {
                 try {
                     String token = obj.getString("token");
 
@@ -553,21 +555,29 @@ public class LoginActivity extends AppCompatActivity {
                     new ConfigTask().execute((Void[]) null);
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
+                    error(resp);
                 }
 
             } else {
-                // alert error
-                hideProgressDialog();
+                error(resp);
+            }
+        }
 
-                if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                    Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea)
-                            .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
-                } else {
-                    Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT, R.id.errorArea)
-                            .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
-                }
+        private void error(RequestDataUtil.ResponseObject resp) {
+            JSONObject obj = resp.getJsonObject();
+            if (obj == null) {
+                Crashlytics.log("login return null json??, statusCode = " + resp.getStatusCode());
+            }
+            // alert error
+            hideProgressDialog();
 
+            if (resp.getStatusCode() == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                Crouton.makeText(LoginActivity.this, getString(R.string.http_server_error), Style.ALERT, R.id.errorArea)
+                        .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
+            } else {
+                Crouton.makeText(LoginActivity.this, getString(R.string.login_error), Style.ALERT, R.id.errorArea)
+                        .setConfiguration(new Configuration.Builder().setDuration(2000).build()).show();
             }
         }
     }
@@ -590,8 +600,6 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
-            super.onPostExecute(resp);
-
             JSONObject obj = resp.getJsonObject();
 
             if (obj == null)
