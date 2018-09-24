@@ -282,5 +282,10 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        db.enableWriteAheadLogging();
+        super.onConfigure(db);
+    }
 }
 
