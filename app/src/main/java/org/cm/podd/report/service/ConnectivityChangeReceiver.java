@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
@@ -32,8 +33,9 @@ public class ConnectivityChangeReceiver extends BroadcastReceiver {
             return;
         }
         Log.i(TAG, "Receiving braodcast action " + intent.getAction());
+        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
 
-        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()) {
+        if ( activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             Log.d(TAG, "NetworkConnected - Start sending data");
             Intent submitIntent = new Intent(context, DataSubmitService.class);
             context.startService(submitIntent);
