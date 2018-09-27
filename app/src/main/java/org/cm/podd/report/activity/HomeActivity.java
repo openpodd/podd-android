@@ -85,7 +85,6 @@ import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.service.SyncAdministrationAreaService;
 import org.cm.podd.report.service.SyncRecordSpecService;
-import org.cm.podd.report.service.SyncReportStateService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -160,6 +159,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
     private int[] activeIcons;
     private int[] defaultIcons;
+    private ConnectivityChangeReceiver localChangeConnectivityReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +167,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         setContentView(R.layout.activity_home);
 
         updateUserStatus();
-        startSyncReportStateService();
 
         final Context context = this;
         mMenuTitles = new String[] {
@@ -361,8 +360,9 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
         View drawerHeader = findViewById(R.id.drawer_header);
         FontUtil.overrideFonts(this, drawerHeader);
 
+        localChangeConnectivityReceiver = new ConnectivityChangeReceiver();
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
-                new ConnectivityChangeReceiver(),
+                localChangeConnectivityReceiver,
                 new IntentFilter(DataSubmitService.ACTION_REPORT_SUBMIT));
 
 
@@ -798,6 +798,7 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
     @Override
     protected void onDestroy() {
         notificationDataSource.close();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(localChangeConnectivityReceiver);
         unregisterReceiver(mNotificationReceiver);
         unregisterReceiver(recordSpecReceiver);
         unregisterReceiver(networkStateBroadcastReceiver);
@@ -1081,11 +1082,6 @@ public class HomeActivity extends AppCompatActivity implements ReportListFragmen
 
             return RequestDataUtil.get(ENDPOINT, "", accessToken);
         }
-    }
-
-    private void startSyncReportStateService() {
-        Intent intent = new Intent(this, SyncReportStateService.class);
-        startService(intent);
     }
 
 }

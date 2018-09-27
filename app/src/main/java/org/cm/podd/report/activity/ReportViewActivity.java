@@ -31,6 +31,7 @@ import org.cm.podd.report.fragment.ReportInfoFragment;
 import org.cm.podd.report.fragment.ReportStateFragment;
 import org.cm.podd.report.model.FeedItem;
 import org.cm.podd.report.service.ReportService;
+import org.cm.podd.report.service.SyncReportStateService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.json.JSONException;
@@ -161,6 +162,7 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
         tracker.send(new HitBuilders.AppViewBuilder().build());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        startSyncReportStateService();
     }
 
     private void refreshViewRefresh(){
@@ -312,4 +314,8 @@ public class ReportViewActivity extends AppCompatActivity implements ReportInfoF
         return super.onOptionsItemSelected(item);
     }
 
+    private void startSyncReportStateService() {
+        Intent intent = new Intent(this, SyncReportStateService.class);
+        startService(intent);
+    }
 }
