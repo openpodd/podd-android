@@ -58,21 +58,18 @@ import java.util.Date;
  * A fragment representing a list of Items.
  * <p />
  * <p />
- * Activities containing this fragment MUST implement the {@link OnReportSelectListener}
  * interface.
  */
 public class ReportListFragment extends ListFragment {
 
     private static final String TAG = "ReportListFragment";
     public static final int REQUEST_FOR_EDIT = 1;
-    OnReportSelectListener mListener;
 
     private ActionMode mMode;
 
     ReportDataSource reportDataSource;
     ReportTypeDataSource reportTypeDataSource;
     ReportQueueDataSource reportQueueDataSource;
-    private ReportCursorAdapter adapter;
 
     private boolean skipRefreshAdapter = false;
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -112,16 +109,21 @@ public class ReportListFragment extends ListFragment {
                     if (isReportItemSubmit(position)) {
                         // uncheck item on submitted report
                         getListView().setItemChecked(position, false);
+                        return true;
 
                     } else {
                         // uncheck all except the one selected
                         for (int i = 0; i < getListView().getAdapter().getCount(); i++) {
                             if (i != position) {
                                 getListView().setItemChecked(i, false);
+                            } else {
+                                getListView().setItemChecked(i, true);
                             }
                         }
+
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(
                                 new ActionModeCallback(getActivity()));
+                        return true;
                     }
                 }
                 return false;
@@ -154,6 +156,9 @@ public class ReportListFragment extends ListFragment {
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
+        if (mMode != null) {
+            mMode.finish();
+        }
     }
 
     @Override
@@ -161,9 +166,9 @@ public class ReportListFragment extends ListFragment {
 
         View view = inflater.inflate(R.layout.fragment_report_list, null);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        ListView listView = view.findViewById(android.R.id.list);
 
-        TextView emptyText = (TextView) view.findViewById(R.id.empty);
+        TextView emptyText = view.findViewById(R.id.empty);
 
         emptyText.setTypeface(StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL));
         emptyText.setText(R.string.no_report_found_msg);
@@ -171,7 +176,7 @@ public class ReportListFragment extends ListFragment {
 
         emptyText.setVisibility(View.GONE);
 
-        FloatingActionButton fabAdd = (FloatingActionButton) view.findViewById(R.id.addNewRecord);
+        FloatingActionButton fabAdd = view.findViewById(R.id.addNewRecord);
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,20 +202,8 @@ public class ReportListFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnReportSelectListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     @Override
@@ -233,7 +226,7 @@ public class ReportListFragment extends ListFragment {
         if (mMode == null) {
             Report report = reportDataSource.getById(reportId);
             Log.d(TAG, "onReportSelect " + reportId + " type = " + report.getType());
-            if (report.getNegative() == report.TRUE) {
+            if (report.getNegative() == Report.TRUE) {
 
                 Intent intent = ReportActivity.editReportIntent(getActivity(), report);
 
@@ -246,8 +239,6 @@ public class ReportListFragment extends ListFragment {
                 }
                 startActivityForResult(intent, REQUEST_FOR_EDIT);
 
-            } else {
-                // do nothing
             }
         } else {
             if (isReportItemSubmit(position)) {
@@ -290,8 +281,7 @@ public class ReportListFragment extends ListFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        for (int i = 0; i < ids.length; i++) {
-                            long id = ids[i];
+                        for (long id : ids) {
                             Report report = reportDataSource.getById(id);
                             int draft = report.getDraft();
                             int submit = report.getSubmit();
@@ -328,22 +318,8 @@ public class ReportListFragment extends ListFragment {
     }
 
     private void refreshAdapter() {
-        adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
+        ReportCursorAdapter adapter = new ReportCursorAdapter(getActivity(), reportDataSource.getAllWithTypeName());
         setListAdapter(adapter);
-    }
-
-    /**
-    * This interface must be implemented by activities that contain this
-    * fragment to allow an interaction in this fragment to be communicated
-    * to the activity and potentially other fragments contained in that
-    * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
-    */
-    public interface OnReportSelectListener {
-
     }
 
     private void follow(final long reportId, final long reportType) {
@@ -394,7 +370,7 @@ public class ReportListFragment extends ListFragment {
 
         long now;
 
-        public ReportCursorAdapter(Context context, Cursor cursor) {
+        ReportCursorAdapter(Context context, Cursor cursor) {
             super(context, cursor);
             now = new Date().getTime();
         }
@@ -407,8 +383,7 @@ public class ReportListFragment extends ListFragment {
         @Override
         public int getItemViewType(int position) {
             Cursor cursor = (Cursor) getItem(position);
-            int followFlag = cursor.getInt(cursor.getColumnIndex("follow_flag"));
-            return followFlag;
+            return cursor.getInt(cursor.getColumnIndex("follow_flag"));
         }
 
         @Override
@@ -422,21 +397,21 @@ public class ReportListFragment extends ListFragment {
                 retView = inflater.inflate(R.layout.report_list_item, parent, false);
 
                 holder = new ViewHolder();
-                holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
-                holder.typeText = (TextView) retView.findViewById(R.id.report_type);
+                holder.statusImage = retView.findViewById(R.id.report_status);
+                holder.typeText = retView.findViewById(R.id.report_type);
                 // update fontface
                 holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.dateText = (TextView) retView.findViewById(R.id.report_date);
+                holder.dateText = retView.findViewById(R.id.report_date);
                 // update fontface
                 holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
+                holder.draftText = retView.findViewById(R.id.report_draft);
                 // update fontface
                 holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
-                holder.followText = (TextView) retView.findViewById(R.id.report_follow);
+                holder.queueImage = retView.findViewById(R.id.report_queue);
+                holder.followText = retView.findViewById(R.id.report_follow);
                 holder.followText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
                 // cache drawable
@@ -445,30 +420,30 @@ public class ReportListFragment extends ListFragment {
                 holder.follow = context.getResources().getDrawable(R.drawable.ic_follow_flag);
                 holder.testReport = context.getResources().getDrawable(R.drawable.ic_test_flag);
 
-                holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
-                holder.sendReportStateIcon = (ImageView) retView.findViewById(R.id.report_send_state_icon);
+                holder.sendReportState = retView.findViewById(R.id.report_send_state);
+                holder.sendReportStateIcon = retView.findViewById(R.id.report_send_state_icon);
             } else {
                 retView = inflater.inflate(R.layout.report_list_follow_item, parent, false);
                 holder = new ViewHolder();
-                holder.statusImage = (ImageView) retView.findViewById(R.id.report_status);
-                holder.typeText = (TextView) retView.findViewById(R.id.report_type);
+                holder.statusImage = retView.findViewById(R.id.report_status);
+                holder.typeText = retView.findViewById(R.id.report_type);
                 // update fontface
                 holder.typeText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.dateText = (TextView) retView.findViewById(R.id.report_date);
+                holder.dateText = retView.findViewById(R.id.report_date);
                 // update fontface
                 holder.dateText.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.draftText = (TextView) retView.findViewById(R.id.report_draft);
+                holder.draftText = retView.findViewById(R.id.report_draft);
                 // update fontface
                 holder.draftText.setTypeface(StyleUtil.getSecondTypeface(context.getAssets(), Typeface.NORMAL));
 
-                holder.queueImage = (ImageView) retView.findViewById(R.id.report_queue);
+                holder.queueImage = retView.findViewById(R.id.report_queue);
                 // cache drawable
                 holder.follow = context.getResources().getDrawable(R.drawable.ic_follow_flag);
-                holder.sendReportState = (TextView) retView.findViewById(R.id.report_send_state);
+                holder.sendReportState = retView.findViewById(R.id.report_send_state);
 
-                holder.sendReportStateIcon = (ImageView) retView.findViewById(R.id.report_send_state_icon);
+                holder.sendReportStateIcon = retView.findViewById(R.id.report_send_state_icon);
             }
 
 
@@ -526,9 +501,7 @@ public class ReportListFragment extends ListFragment {
                 holder.followText.setVisibility(View.GONE);
                 if ((draft == Report.FALSE || submit == Report.TRUE ) && follow != Report.TRUE) {
                     long until = cursor.getLong(cursor.getColumnIndex("follow_until"));
-                    Log.d(TAG, String.format("now = %d, until = %d", now, until));
                     if (until > now) {
-                        Log.d(TAG, String.format("follow button should display"));
                         final long id = cursor.getLong(cursor.getColumnIndex("_id"));
                         final long type = cursor.getLong(cursor.getColumnIndex("type"));
                         holder.followText.setVisibility(View.VISIBLE);
@@ -629,7 +602,7 @@ public class ReportListFragment extends ListFragment {
      */
     private final class ActionModeCallback implements ActionMode.Callback {
         Context context;
-        public ActionModeCallback(Context context) {
+        ActionModeCallback(Context context) {
             this.context = context;
         }
 
@@ -643,11 +616,10 @@ public class ReportListFragment extends ListFragment {
             // on pre honeycomb (<11), cab title background is action bar background (red in drme)
             TextView tv = new TextView(getActivity());
             tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            tv.setText("cab");
+            tv.setText("");
             tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             tv.setBackgroundColor(context.getResources().getColor(R.color.action_bar_bg));
             mode.setCustomView(tv);
-
             getListView().setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
             return true;
@@ -657,7 +629,7 @@ public class ReportListFragment extends ListFragment {
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             int selected = getListView().getCheckedItemCount();
             TextView title = ((TextView) mode.getCustomView());
-            title.setText(getString(R.string.title_report_item_selected, new Object[]{selected}));
+            title.setText(getString(R.string.title_report_item_selected, selected));
             title.setTypeface(StyleUtil.getDefaultTypeface(context.getAssets(), Typeface.NORMAL));
             return false;
         }
@@ -687,5 +659,5 @@ public class ReportListFragment extends ListFragment {
                     return false;
             }
         }
-    };
+    }
 }

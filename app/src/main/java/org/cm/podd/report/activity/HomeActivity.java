@@ -97,7 +97,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class HomeActivity extends AppCompatActivity implements ReportListFragment.OnReportSelectListener, NotificationInterface {
+public class HomeActivity extends AppCompatActivity implements NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
