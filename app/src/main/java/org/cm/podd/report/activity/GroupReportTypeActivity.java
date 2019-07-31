@@ -25,7 +25,6 @@ import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -161,9 +160,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
     }
 
     private void broadcastReportSubmission() {
-        // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+        DataSubmitService.enqueueWork(this, new Intent(DataSubmitService.ACTION_REPORT_SUBMIT));
     }
 
     @Override

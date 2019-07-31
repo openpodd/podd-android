@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -223,9 +222,7 @@ public class ReportTypeActivity extends AppCompatActivity implements AdapterView
     }
 
     private void broadcastReportSubmission() {
-        // Broadcasts the Intent to network receiver
-        Intent networkIntent = new Intent(DataSubmitService.ACTION_REPORT_SUBMIT);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(networkIntent);
+        DataSubmitService.enqueueWork(this, new Intent(DataSubmitService.ACTION_REPORT_SUBMIT));
     }
 
     private void startSyncReportType() {

@@ -1,0 +1,1 @@
+./gradlew assembleServer_production --no-daemon
