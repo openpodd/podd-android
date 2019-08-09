@@ -170,8 +170,9 @@ public class ReportInfoFragment extends Fragment{
             createdByView.setText("********");
 
             String telephone = report.getString("createdByTelephone");
-            createdByTelephoneView.setText(linkify(telephone, "tel:" + telephone));
-            createdByTelephoneView.setMovementMethod(LinkMovementMethod.getInstance());
+            createdByTelephoneView.setText("********");
+//            createdByTelephoneView.setText(linkify(telephone, "tel:" + telephone));
+//            createdByTelephoneView.setMovementMethod(LinkMovementMethod.getInstance());
 
             String projectTelephone = report.getString("createdByProjectMobileNumber");
             createdByProjectTelephoneView.setText(linkify(projectTelephone, "tel:" + projectTelephone));

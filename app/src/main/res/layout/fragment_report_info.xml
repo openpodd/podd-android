@@ -209,6 +209,7 @@
                                     android:id="@+id/report_view_reporter_telephone"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:text="********"
                                     android:textSize="18sp"
                                     android:padding="2dp" />
                             </LinearLayout>
