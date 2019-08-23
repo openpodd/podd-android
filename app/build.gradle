@@ -2,9 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
+def suppLibVersion = '28.0.0'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     useLibrary 'org.apache.http.legacy'
     dexOptions {
         jumboMode = true
@@ -13,8 +14,8 @@ android {
     defaultConfig {
         applicationId "org.cm.podd.report"
         minSdkVersion 15
-        targetSdkVersion 26
-        versionCode 82
+        targetSdkVersion 28
+        versionCode 85
         versionName "2.1.0"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
@@ -85,20 +86,20 @@ dependencies {
     implementation files('libs/aws-android-sdk-2.1.5-s3.jar')
     implementation files('libs/mpandroidchartlibrary-1-7-4.jar')
     implementation 'org.mozilla:rhino:1.7R4'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:' + suppLibVersion
+    implementation 'com.android.support:design:' + suppLibVersion
     implementation "com.google.android.gms:play-services-base:$play_service_version"
     implementation "com.google.android.gms:play-services-location:$play_service_version"
     implementation "com.google.android.gms:play-services-analytics:16.0.3"
     implementation "com.google.android.gms:play-services-maps:$play_service_version"
     implementation "com.google.android.gms:play-services-gcm:$play_service_version"
-    implementation 'com.android.support:cardview-v7:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:cardview-v7:' + suppLibVersion
+    implementation 'com.android.support:recyclerview-v7:' + suppLibVersion
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'me.dm7.barcodescanner:zxing:1.8.2'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:support-v4:' + suppLibVersion
     implementation 'com.google.firebase:firebase-core:16.0.3'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.0.3'

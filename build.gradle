@@ -15,6 +15,9 @@ buildscript {
         maven {
             url 'https://maven.fabric.io/public'
         }
+        maven {
+            url "https://s3.amazonaws.com/repo.commonsware.com"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
