@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateUtil {
     public final static Locale TH_LOCALE = new Locale("th", "TH");
@@ -62,11 +63,9 @@ public class DateUtil {
 
     private static String formatTime(Date date) {
         Locale defaultLocale = Locale.getDefault();
-        if (defaultLocale.getLanguage().equals(TH_LOCALE.getLanguage())) {
-            return new SimpleDateFormat("HH:mm").format(date);
-        } else {
-            return new SimpleDateFormat("hh:mm a").format(date);
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sdf.setTimeZone(TimeZone.getDefault());
+        return sdf.format(date);
     }
 
     public static Date fromJsonDateString(String dateStr) {

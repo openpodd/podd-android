@@ -1,8 +1,8 @@
 package org.cm.podd.report.service;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -99,8 +99,8 @@ public class FilterService extends IntentService {
                         feedItem.setItemId(item.getLong("id"));
                         feedItem.setType("report");
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                Locale.getDefault());
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                         feedItem.setDate(formatter.parse(item.getString("date")));
                         feedItem.setState(item.getInt("state"));
                         feedItem.setStateCode(item.getString("stateCode"));
@@ -245,7 +245,6 @@ public class FilterService extends IntentService {
         Date currentLocalTime = calendar.getTime();
         DateFormat date = new SimpleDateFormat("Z", Locale.getDefault());
         String offset = date.format(currentLocalTime);
-
         return offset.substring(2, 3);
     }
 }

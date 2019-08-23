@@ -207,7 +207,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             }
 
             // time ago
-            Date date = DateUtil.fromJsonDateString(report.getString("date"));
+            Date date = feedItem.getDate();
             String dateStr = DateUtil.formatLocaleDateTime(date);
             viewHolder.getTimeagoView().setText(dateStr);
             // form data explanation

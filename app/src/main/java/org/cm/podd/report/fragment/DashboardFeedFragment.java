@@ -150,7 +150,7 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
                     feedItemDataSource.clear();
                     setRefreshing(true);
-                    FilterService.doQuery(container.getContext(), "negative:true AND testFlag: false AND date:last 15 days ", null);
+                    FilterService.doQuery(container.getContext(), "negative:true AND testFlag: false AND date:last 15 days ", "0");
                 } else {
                     refreshAdapter();
                     onRefreshComplete();

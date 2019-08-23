@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created by siriwat on 2/19/15.
@@ -194,6 +196,12 @@ public class FeedItemDataSource {
         return feedItem;
     }
 
+    private java.util.Date convertTimeInMillisecToDate(long d) {
+        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        calendar.setTimeInMillis(d);
+        return calendar.getTime();
+    }
+
     public FeedItem loadByCursor(Cursor cursor) {
         FeedItem feedItem = new FeedItem();
 
@@ -203,7 +211,7 @@ public class FeedItemDataSource {
             feedItem.setId(cursor.getLong(COLUMN_ID));
             feedItem.setItemId(jsonObject.getLong("id"));
             feedItem.setType("report");
-            feedItem.setDate(new Date(cursor.getLong(COLUMN_DATE)));
+            feedItem.setDate(convertTimeInMillisecToDate(cursor.getLong(COLUMN_DATE)));
             feedItem.setDetail(cursor.getString(COLUMN_DETAIL));
             feedItem.setExplanation(cursor.getString(COLUMN_EXPLANATION));
             feedItem.setFlag(cursor.getString(COLUMN_FLAG));
