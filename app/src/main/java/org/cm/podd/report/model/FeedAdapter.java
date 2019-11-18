@@ -248,21 +248,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
             getViewHolderHashMap().put(feedItem.getItemId(), viewHolder);
 
-            ImageView profileImageView = viewHolder.getProfileImageView();
-            String profileImageUrl;
-            try {
-                profileImageUrl = report.getString("createdByThumbnailUrl");
-                if (!profileImageUrl.isEmpty()) {
-                    Picasso.with(viewHolder.getContext())
-                            .load(profileImageUrl)
-                            .placeholder(R.drawable.avatar)
-                            .fit()
-                            .centerCrop()
-                            .into(profileImageView);
-                }
-            } catch (JSONException e) {
-            }
-
             try {
                 viewHolder.getCommentCountView().setText(report.getString("commentCount") + " " + viewHolder.getContext().getString(R.string.messages));
             } catch (JSONException e) {
