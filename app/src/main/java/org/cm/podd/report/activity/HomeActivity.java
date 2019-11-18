@@ -17,12 +17,14 @@
 
 package org.cm.podd.report.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,8 +36,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -100,6 +104,7 @@ import java.util.Map;
 public class HomeActivity extends AppCompatActivity implements NotificationInterface {
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private final static int MY_LOCATION_REQUEST_CODE = 9001;
     public static final String RECEIVE_MESSAGE_ACTION = "podd.receive_message_action";
     public static final String TAG = "HomeActivity";
     private static final String APP_TITLE = "ผ่อดีดี";
@@ -697,6 +702,34 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
             setNotificationCount();
             refreshDrawerMenu();
             supportInvalidateOptionsMenu();
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_LOCATION_REQUEST_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.location_not_grant)
+                        .setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // do nothting
+                            }
+                        });
+                builder.show();
+            }
         }
     }
 

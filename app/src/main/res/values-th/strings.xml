@@ -345,5 +345,5 @@
     <string name="no_record_data_available">ไม่พบรายการ</string>
     <string name="press_add_button_to_add_new_record">กดปุ่ม + เพื่อเพิ่มรายการ</string>
     <string name="invitation_code_must_be_numeric">กรุณาใส่รหัสพื้นที่เป็นตัวเลข</string>
-
+    <string name="location.not.grant">การไม่อนุญาติให้เข้าถึงตำแหน่ง อาจจะมีผลต่อการรายงานบางประเภท</string>
 </resources>
