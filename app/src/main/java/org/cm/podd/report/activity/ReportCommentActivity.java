@@ -392,11 +392,11 @@ public class ReportCommentActivity extends AppCompatActivity {
             createdAtTextView.setTypeface(face);
             createdAtTextView.setText(getString(R.string.comment_date) + " " + DateUtil.formatLocaleDateTime(date));
 
-
             CircleImageView avatarCreatedByView = (CircleImageView) view.findViewById(R.id.profile_image);
 
             if (!comment.getAvatarCreatedBy().equals("null")) {
-                Picasso.with(getContext()).load(comment.getAvatarCreatedBy()).into(avatarCreatedByView);
+                // never show profile image
+                // Picasso.with(getContext()).load(comment.getAvatarCreatedBy()).into(avatarCreatedByView);
             }
             return view;
         }
