@@ -210,7 +210,7 @@ class RecordActivity : AppCompatActivity() {
             return FooterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_footer_item, parent, false))
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             Log.d("debug", "onbind at $position")
             if (holder != null) {
                 when (holder.itemViewType) {
