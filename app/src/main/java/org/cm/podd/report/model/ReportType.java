@@ -17,6 +17,11 @@
 
 package org.cm.podd.report.model;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
+import java.util.Objects;
+
 /**
  * Created by pphetra on 10/10/14 AD.
  */
@@ -138,5 +143,27 @@ public class ReportType {
 
     public int getIsFollowAction() {
         return this.isFollowAction;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReportType that = (ReportType) o;
+        return id == that.id &&
+                version == that.version &&
+                nextVersion == that.nextVersion &&
+                Double.compare(that.weight, weight) == 0 &&
+                followable == that.followable &&
+                followDay == that.followDay &&
+                isFollowAction == that.isFollowAction &&
+                name.equals(that.name) &&
+                definition.equals(that.definition);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, version, definition, nextVersion, weight, followable, followDay, isFollowAction);
     }
 }

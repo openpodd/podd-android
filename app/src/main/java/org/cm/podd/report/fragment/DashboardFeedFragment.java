@@ -9,6 +9,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+
+import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -132,6 +135,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         View rootView = inflater.inflate(R.layout.fragment_dashboard_feed, container, false);
         rootView.setTag(TAG);
 
+        sharedPrefUtil = new SharedPrefUtil(getContext());
+
         // set fragmentView to let super class know what to do next.
         mFragmentView = rootView;
 
@@ -150,7 +155,8 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
                 if (RequestDataUtil.hasNetworkConnection(getActivity())) {
                     feedItemDataSource.clear();
                     setRefreshing(true);
-                    FilterService.doQuery(container.getContext(), "negative:true AND testFlag: false AND date:last 15 days ", "0");
+                    String query = "negative:true AND testFlag: false AND date:last 15 days " + getFilterReportTypeQueryString();
+                    FilterService.doQuery(container.getContext(), query, "0");
                 } else {
                     refreshAdapter();
                     onRefreshComplete();
@@ -175,6 +181,15 @@ public class DashboardFeedFragment extends SwipeRefreshFragment implements FeedA
         mRefreshListener.onRefresh();
 
         return wrappedView;
+    }
+
+    private String getFilterReportTypeQueryString() {
+        String types = sharedPrefUtil.getFilterReportType();
+        ArrayList<String> bag = new ArrayList<String>();
+        for (String type : types.split(",")) {
+            bag.add("\"" + type + "\"");
+        }
+        return "typeName:(" + TextUtils.join(" OR ", bag) + ")";
     }
 
     public void onRefresh() {

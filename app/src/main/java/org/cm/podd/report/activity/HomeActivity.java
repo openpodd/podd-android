@@ -619,17 +619,25 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
         if (id == R.id.action_settings) {
             showSetting();
             return true;
-        }
-        if (id == R.id.action_new_event) {
+        } else if (id == R.id.action_new_event) {
             newReport();
             return true;
+        } else if (id == R.id.action_feed_report_filter) {
+            showFeedReportType();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     private void showSetting() {
         Intent intent = new Intent(this, SettingActivity.class);
         startActivityForResult(intent, 0);
+    }
+
+    private void showFeedReportType() {
+        Intent intent = new Intent(this, FeedFilterReportTypeActivity.class);
+        startActivityForResult(intent, 1);
     }
 
     private void showChangePassword() {

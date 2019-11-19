@@ -53,6 +53,7 @@ public class SharedPrefUtil {
     public static final String LANGUAGE = "language";
     public static final String REPORT_TYPE_CATEGORY = "report_type_category";
     private static final String DEFAULT_ADMINISTRATION_AREA_ID = "default_administration_area_id";
+    public static final String FILTER_REPORT_TYPE = "filter_report_type";
 
     private SharedPreferences sharedPrefs;
     private String customTitle;
@@ -320,6 +321,17 @@ public class SharedPrefUtil {
         } else {
             return (HashMap<Long, String>) ObjectSerializerHelper.stringToObject(dump);
         }
+    }
+
+    private String defaultFilterReportType = "สัตว์ป่วย/ตาย,สัตว์กัด,อาหารปลอดภัย,คุ้มครองผู้บริโภค,ปัญหาสิ่งแวดล้อม,ภัยธรรมชาติ,โรคในคน,จุดหรือกิจกรรมเสี่ยงต่อภัยสุขภาพ";
+    public String getFilterReportType() {
+        return sharedPrefs.getString(FILTER_REPORT_TYPE, defaultFilterReportType);
+    }
+
+    public void setFilterReportType(String value) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(FILTER_REPORT_TYPE, value);
+        editor.commit();
     }
 
 }
