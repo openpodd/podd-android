@@ -1,17 +1,21 @@
 package org.cm.podd.report.service;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
@@ -19,17 +23,22 @@ import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.util.SharedPrefUtil;
 
-public class PoddGcmListenerService extends GcmListenerService {
+import java.util.Map;
 
-    private static final String TAG = "poddGcmListenerServ";
+public class FcmMessagingService extends FirebaseMessagingService {
+    public static final String TAG = "FcmMessagingService";
     public static final int NOTIFICATION_ID = 1;
 
     @Override
-    public void onMessageReceived(String from, Bundle bundle) {
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        String from = remoteMessage.getFrom();
+        Log.d(TAG, "fcm remoteMessage: " + from);
+
+        Map bundle = remoteMessage.getData();
 
         if (!bundle.isEmpty()) {
-            String payload = bundle.getString("message");
-            String payloadType = bundle.getString("type");
+            String payload = (String) bundle.get("message");
+            String payloadType = (String) bundle.get("type");
 
             SharedPrefUtil pref = new SharedPrefUtil(getApplicationContext());
             if (pref.isUserLoggedIn() && payloadType != null) {
@@ -96,6 +105,13 @@ public class PoddGcmListenerService extends GcmListenerService {
             Log.e(TAG, "bundle is empty");
         }
 
+        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+//        }
+//
+//        RemoteMessage.Notification noti = remoteMessage.getNotification();
+//        sendNotification(remoteMessage.getSentTime(), noti.getTitle(), noti.getBody());
     }
 
     private void sendNotification(long id, String title, String content) {
@@ -128,6 +144,28 @@ public class PoddGcmListenerService extends GcmListenerService {
                         .setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
+
+        String channelId = "fcm_notification_channel_id";
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            mNotificationManager.createNotificationChannel(channel);
+
+            channel.enableLights(true);
+            // Sets the notification light color for notifications posted to this
+            // channel, if the device supports this feature.
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+            // add channel
+            mBuilder.setChannelId(channelId);
+        }
+
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
+
 }

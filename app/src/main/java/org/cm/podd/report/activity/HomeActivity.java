@@ -65,7 +65,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.BuildConfig;
@@ -127,11 +127,7 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
     private boolean sendScreenViewAnalytic = true;
     private SharedPrefUtil sharedPrefUtil;
 
-    GoogleCloudMessaging gcm;
-    String regid;
-
     BroadcastReceiver networkStateBroadcastReceiver;
-
 
     private BroadcastReceiver recordSpecReceiver = new BroadcastReceiver() {
         @Override
@@ -684,14 +680,20 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
             }
             sendScreenViewAnalytic = true;
 
-            // Check device for Play Services APK. If check succeeds, proceed with
-            //  GCM registration.
+            // Check device for Play Services APK. If check succeeds, proceed with FCM registration.
             if (checkPlayServices()) {
-                gcm = GoogleCloudMessaging.getInstance(this);
-                regid = getRegistrationId();
 
-                if (regid.isEmpty()) {
-                    registerInBackground();
+                // Get current gcm-or-fcm token stored in device
+                String regid = getRegistrationId();
+
+                // Get valid fcm token from firebase
+                String fcmRegId = FirebaseInstanceId.getInstance().getToken();
+                Log.d(TAG, "New fcm token: " + fcmRegId);
+
+                // Current token must be a valid token, otherwise register token with server
+                if (regid.isEmpty() || !regid.equals(fcmRegId)) {
+                    Log.d(TAG, "Current token is not valid");
+                    registerInBackground(fcmRegId);
                 }
             } else {
                 Log.i(TAG, "No valid Google Play Services APK found.");
@@ -890,31 +892,8 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
      * Stores the registration ID and app versionCode in the application's
      * shared preferences.
      */
-    private void registerInBackground() {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg;
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(HomeActivity.this);
-                    }
-                    regid = gcm.register(BuildConfig.GCM_SERVICE_ID);
-                    msg = "Device registered, registration ID=" + regid;
-
-                    new RegisterTask().execute((Void[]) null);
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                }
-                return msg;
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-                Log.e(TAG, msg);
-            }
-        }.execute(null, null, null);
+    private void registerInBackground(final String fcmRegId) {
+        new RegisterTask().execute(new String[]{fcmRegId});
     }
 
     /**
@@ -1054,17 +1033,19 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
     /**
      * Post gcm register id
      */
-    public class RegisterTask extends AsyncTask<Void, Void, RequestDataUtil.ResponseObject> {
+    public class RegisterTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        String regid;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected RequestDataUtil.ResponseObject doInBackground(Void... params) {
-            // authenticate and get access token
-            String reqData = regid;
-            return RequestDataUtil.registerDeviceId(reqData, sharedPrefUtil.getAccessToken());
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            regid = params[0];
+            // send registration token to server and authenticate with user access token
+            return RequestDataUtil.registerDeviceId(regid, sharedPrefUtil.getAccessToken());
         }
 
         @Override
@@ -1075,6 +1056,8 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
             if (obj != null) {
                 // Persist the regID - no need to register again.
                 storeRegistrationId(regid);
+                Log.d(TAG, "Device registered, registration ID=" + regid);
+
             }
 
         }

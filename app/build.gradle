@@ -92,7 +92,6 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:$play_service_version"
     implementation "com.google.android.gms:play-services-analytics:16.0.3"
     implementation "com.google.android.gms:play-services-maps:$play_service_version"
-    implementation "com.google.android.gms:play-services-gcm:$play_service_version"
     implementation 'com.android.support:cardview-v7:' + suppLibVersion
     implementation 'com.android.support:recyclerview-v7:' + suppLibVersion
     implementation 'de.hdodenhof:circleimageview:2.1.0'
@@ -103,6 +102,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.3'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.0.3'
+    implementation "com.google.firebase:firebase-messaging:17.0.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
     implementation "org.jetbrains.anko:anko-common:$anko_version"
