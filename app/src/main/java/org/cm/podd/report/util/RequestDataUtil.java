@@ -255,7 +255,7 @@ public class RequestDataUtil extends Service {
 
             JSONObject data = new JSONObject();
             try {
-                data.put("gcmRegId", deviceId);
+                data.put("fcmRegId", deviceId);
             } catch (JSONException e) {
                 Log.e(TAG, "Error while create json object", e);
             }
