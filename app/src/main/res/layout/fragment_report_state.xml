@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="org.cm.podd.report.fragment.ReportStateFragment">
 
 
@@ -54,7 +53,7 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="15dp"
@@ -68,7 +67,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="0dp"
-                        android:padding="4dp"></Spinner>
+                        android:padding="4dp"/>
 
                     <LinearLayout
                         android:id="@+id/flag_read_only"
@@ -97,7 +96,7 @@
                             android:textColor="@color/black"/>
 
                     </LinearLayout>
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
         </LinearLayout>
 

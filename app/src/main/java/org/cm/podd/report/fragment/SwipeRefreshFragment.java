@@ -18,18 +18,14 @@ package org.cm.podd.report.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Subclass of {@link android.support.v4.app.ListFragment} which provides automatic support for
- * providing the 'swipe-to-refresh' UX gesture by wrapping the the content view in a
- * {@link android.support.v4.widget.SwipeRefreshLayout}.
- */
+import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 abstract public class SwipeRefreshFragment extends Fragment {
 
     protected SwipeRefreshLayout mSwipeRefreshLayout;

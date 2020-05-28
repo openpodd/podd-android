@@ -11,12 +11,13 @@ import android.opengl.GLES10;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.squareup.picasso.Picasso;
 
@@ -51,8 +52,8 @@ public class ImageActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_image);
 
-        mImageView = (ZoomableImageView) findViewById(R.id.image_view);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mImageView = findViewById(R.id.image_view);
+        mProgressBar = findViewById(R.id.progressBar);
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
@@ -135,6 +136,7 @@ public class ImageActivity extends AppCompatActivity {
             cursor.moveToFirst();
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             imageFilePath = cursor.getString(idx);
+            cursor.close();
         }
         return imageFilePath;
     }
@@ -214,7 +216,7 @@ public class ImageActivity extends AppCompatActivity {
             // This way the image always stays inside bounding gl limit
             float scaleWidth = maxSize / (float) src.getWidth() ;
             float scaleHeight = maxSize / (float) src.getHeight();
-            float scale = (scaleWidth <= scaleHeight) ? scaleWidth : scaleHeight;
+            float scale = Math.min(scaleWidth, scaleHeight);
             Log.d(TAG, "bitmap scale = " + scale);
 
             // Resize bitmap
@@ -233,8 +235,8 @@ public class ImageActivity extends AppCompatActivity {
             String filePath = params[1];
 
             URL thumb_u;
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
+            InputStream inputStream;
+            OutputStream outputStream;
 
             try {
                 thumb_u = new URL(url);
@@ -243,16 +245,12 @@ public class ImageActivity extends AppCompatActivity {
                 outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
                 int bufferSize = 1024;
                 byte[] buffer = new byte[bufferSize];
-                int len = 0;
+                int len;
                 while ((len = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, len);
                 }
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
+                outputStream.close();
+                inputStream.close();
             } catch (MalformedURLException e) {
                 Log.e(TAG, "Malformed URL", e);
                 return false;

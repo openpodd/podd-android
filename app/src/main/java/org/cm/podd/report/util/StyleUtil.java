@@ -19,9 +19,10 @@ package org.cm.podd.report.util;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
 

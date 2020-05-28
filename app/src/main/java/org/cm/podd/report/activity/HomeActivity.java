@@ -33,20 +33,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,11 +47,29 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.Picasso;
 
 import org.cm.podd.report.BuildConfig;
@@ -96,7 +100,6 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -683,18 +686,24 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
             // Check device for Play Services APK. If check succeeds, proceed with FCM registration.
             if (checkPlayServices()) {
 
-                // Get current gcm-or-fcm token stored in device
-                String regid = getRegistrationId();
+                // Get current fcm token stored in device
+                final String regId = sharedPrefUtil.getFCMRegId();
+                Log.d(TAG, "stored fcm token: " + regId);
 
                 // Get valid fcm token from firebase
-                String fcmRegId = FirebaseInstanceId.getInstance().getToken();
-                Log.d(TAG, "New fcm token: " + fcmRegId);
+                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        String fcmRegId = task.getResult().getToken();
+                        Log.d(TAG, "up-to-date fcm token: " + fcmRegId);
 
-                // Current token must be a valid token, otherwise register token with server
-                if (regid.isEmpty() || !regid.equals(fcmRegId)) {
-                    Log.d(TAG, "Current token is not valid");
-                    registerInBackground(fcmRegId);
-                }
+                        // Current token must be a valid token, otherwise register token with server
+                        if (regId.isEmpty() || !regId.equals(fcmRegId)) {
+                            Log.d(TAG, "Current token is not valid");
+                            registerInBackground(fcmRegId);
+                        }
+                    }
+                });
             } else {
                 Log.i(TAG, "No valid Google Play Services APK found.");
 
@@ -737,6 +746,7 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
 
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         // handle intent result from notification
         Bundle extras = intent.getExtras();
         if (extras != null) {
@@ -750,16 +760,16 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
 
         if (intent != null) {
             // Alert when register or login by code success
-            Boolean registerSuccess = intent.getStringExtra("register")!= null && intent.getStringExtra("register").equalsIgnoreCase("success");
-            Boolean forgetPasswordSuccess = intent.getStringExtra("forgetPassword")!=  null && intent.getStringExtra("forgetPassword").equalsIgnoreCase("success");
+            Boolean registerSuccess = intent.getStringExtra("register") != null && intent.getStringExtra("register").equalsIgnoreCase("success");
+            Boolean forgetPasswordSuccess = intent.getStringExtra("forgetPassword") != null && intent.getStringExtra("forgetPassword").equalsIgnoreCase("success");
 
             if (registerSuccess) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
                 alertDialogBuilder.setTitle(getString(R.string.title_activity_registration));
                 alertDialogBuilder.setMessage(getString(R.string.register_success) + "\n\n"
-                                + getString(R.string.username) + ": " + sharedPrefUtil.getUserName() + "\n"
-                                + getString(R.string.password) + ": " + sharedPrefUtil.getDisplayPassword() + "\n\n"
-                                + getString(R.string.register_warning_success) + "\n"
+                        + getString(R.string.username) + ": " + sharedPrefUtil.getUserName() + "\n"
+                        + getString(R.string.password) + ": " + sharedPrefUtil.getDisplayPassword() + "\n\n"
+                        + getString(R.string.register_warning_success) + "\n"
                 );
                 alertDialogBuilder.setPositiveButton(getString(R.string.start_app), new DialogInterface.OnClickListener() {
                     @Override
@@ -862,31 +872,6 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
     }
 
     /**
-     * Gets the current registration ID for application on GCM service.
-     * If result is empty, the app needs to register.
-     *
-     * @return registration ID, or empty string if there is no existing
-     *         registration ID.
-     */
-    private String getRegistrationId() {
-        String registrationId = sharedPrefUtil.getGCMRegId();
-        if (registrationId.isEmpty()) {
-            Log.i(TAG, "Registration not found.");
-            return "";
-        }
-        // Check if app was updated; if so, it must clear the registration ID
-        // since the existing regID is not guaranteed to work with the new
-        // app version.
-        int registeredVersion = sharedPrefUtil.getGCMVersion();
-        int currentVersion = BuildConfig.VERSION_CODE;
-        if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
-            return "";
-        }
-        return registrationId;
-    }
-
-    /**
      * Registers the application with GCM servers asynchronously.
      * <p>
      * Stores the registration ID and app versionCode in the application's
@@ -894,17 +879,6 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
      */
     private void registerInBackground(final String fcmRegId) {
         new RegisterTask().execute(new String[]{fcmRegId});
-    }
-
-    /**
-     * Stores the registration ID and app versionCode in the application's
-     * {@code SharedPreferences}.
-     *
-     * @param regId registration ID
-     */
-    private void storeRegistrationId(String regId) {
-        int appVersion = BuildConfig.VERSION_CODE;
-        sharedPrefUtil.setGCMData(regId, appVersion);
     }
 
     @Override
@@ -1034,7 +1008,7 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
      * Post gcm register id
      */
     public class RegisterTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
-        String regid;
+        String regId;
 
         @Override
         protected void onPreExecute() {
@@ -1043,9 +1017,9 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
 
         @Override
         protected RequestDataUtil.ResponseObject doInBackground(String... params) {
-            regid = params[0];
+            regId = params[0];
             // send registration token to server and authenticate with user access token
-            return RequestDataUtil.registerDeviceId(regid, sharedPrefUtil.getAccessToken());
+            return RequestDataUtil.registerDeviceId(regId, sharedPrefUtil.getAccessToken());
         }
 
         @Override
@@ -1055,11 +1029,9 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
 
             if (obj != null) {
                 // Persist the regID - no need to register again.
-                storeRegistrationId(regid);
-                Log.d(TAG, "Device registered, registration ID=" + regid);
-
+                sharedPrefUtil.setFCMRegId(regId);
+                Log.d(TAG, "Device registered, registration ID=" + regId);
             }
-
         }
     }
 

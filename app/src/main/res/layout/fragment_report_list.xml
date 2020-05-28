@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView android:id="@id/android:list"
+        <ListView android:id="@android:id/list"
             android:background="@color/ColorBackgroundFeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,7 +27,7 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addNewRecord"
         app:srcCompat="@drawable/ic_add_white_24dp"
         app:fabSize="auto"

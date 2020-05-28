@@ -7,16 +7,16 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import android.util.Log
 import android.view.*
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.record_activity.*
 import kotlinx.android.synthetic.main.record_list_item.view.*
 import org.cm.podd.report.R
@@ -126,10 +126,10 @@ class RecordActivity : AppCompatActivity() {
         supportActionBar?.title = recordSpec!!.name
 
         if (parentRecord != null) {
-            addNewRecord.visibility = View.VISIBLE
+            addNewRecord.show()
             empty_view.setText(getString(R.string.press_add_button_to_add_new_record) + " " + recordSpec?.name)
         } else {
-            addNewRecord.visibility = View.GONE
+            addNewRecord.hide()
         }
 
         addNewRecord.setOnClickListener{ _ ->

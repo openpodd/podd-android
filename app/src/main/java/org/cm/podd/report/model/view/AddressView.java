@@ -260,7 +260,6 @@ public class AddressView extends LinearLayout {
                         value = match.group(1);
                         editView.setText(value);
                     }
-
                 }
 
                 if (readonly) {

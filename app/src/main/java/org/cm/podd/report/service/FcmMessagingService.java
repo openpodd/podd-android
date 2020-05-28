@@ -1,17 +1,18 @@
 package org.cm.podd.report.service;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -21,13 +22,17 @@ import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.json.JSONObject;
 
 import java.util.Map;
 
 public class FcmMessagingService extends FirebaseMessagingService {
     public static final String TAG = "FcmMessagingService";
     public static final int NOTIFICATION_ID = 1;
+    public static final String DEFAULT_CHANNEL_ID = "podd.channel.default";
+
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -104,14 +109,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
         } else {
             Log.e(TAG, "bundle is empty");
         }
-
-        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
-//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//        }
-//
-//        RemoteMessage.Notification noti = remoteMessage.getNotification();
-//        sendNotification(remoteMessage.getSentTime(), noti.getTitle(), noti.getBody());
     }
 
     private void sendNotification(long id, String title, String content) {
@@ -134,7 +131,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("PODD Notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
@@ -144,28 +141,41 @@ public class FcmMessagingService extends FirebaseMessagingService {
                         .setAutoCancel(true);
 
         mBuilder.setContentIntent(contentIntent);
-
-        String channelId = "fcm_notification_channel_id";
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            mNotificationManager.createNotificationChannel(channel);
-
-            channel.enableLights(true);
-            // Sets the notification light color for notifications posted to this
-            // channel, if the device supports this feature.
-            channel.setLightColor(Color.RED);
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-
-            // add channel
-            mBuilder.setChannelId(channelId);
-        }
-
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
+    @Override
+    public void onNewToken(@NonNull String s) {
+        Log.d(TAG, "onNewToken: " + s);
+        new RegisterTask().execute(new String[]{s});
+    }
+
+    public class RegisterTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        String regId;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            regId = params[0];
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
+            // send registration token to server and authenticate with user access token
+            return RequestDataUtil.registerDeviceId(regId, sharedPrefUtil.getAccessToken());
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            JSONObject obj = resp.getJsonObject();
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
+            if (obj != null) {
+                // Persist the regID - no need to register again.
+                sharedPrefUtil.setFCMRegId(regId);
+                Log.d(TAG, "Device registered, registration ID=" + regId);
+            }
+        }
+    }
 }

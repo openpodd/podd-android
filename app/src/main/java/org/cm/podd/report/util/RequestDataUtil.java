@@ -235,7 +235,6 @@ public class RequestDataUtil extends Service {
         JSONObject jsonObj = null;
         int statusCode = 0;
 
-        //SharedPreferences settings = PoddApplication.getAppContext().getSharedPreferences("PoddPrefsFile", 0);
         String serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL);
 
         String reqUrl = serverUrl + "/gcm/";

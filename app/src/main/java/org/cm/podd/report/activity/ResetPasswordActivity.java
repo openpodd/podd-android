@@ -1,19 +1,15 @@
 package org.cm.podd.report.activity;
 
-import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.ResetPasswordFragment;
-import org.cm.podd.report.util.SharedPrefUtil;
-import org.cm.podd.report.util.StyleUtil;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
