@@ -694,14 +694,20 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
                 FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
                     public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        String fcmRegId = task.getResult().getToken();
-                        Log.d(TAG, "up-to-date fcm token: " + fcmRegId);
 
-                        // Current token must be a valid token, otherwise register token with server
-                        if (regId.isEmpty() || !regId.equals(fcmRegId)) {
-                            Log.d(TAG, "Current token is not valid");
-                            registerInBackground(fcmRegId);
+                        if (task.isSuccessful()) {
+                            String fcmRegId = task.getResult().getToken();
+                            Log.d(TAG, "up-to-date fcm token: " + fcmRegId);
+
+                            // Current token must be a valid token, otherwise register token with server
+                            if (regId.isEmpty() || !regId.equals(fcmRegId)) {
+                                Log.d(TAG, "Current token is not valid");
+                                registerInBackground(fcmRegId);
+                            }
+                        } else {
+                            Log.e(TAG, "get firebase instanceid fail!!!", task.getException());
                         }
+
                     }
                 });
             } else {
