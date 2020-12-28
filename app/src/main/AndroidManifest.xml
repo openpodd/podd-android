@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.cm.podd.report">
+
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.screen.portrait" />
@@ -12,16 +14,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- use to receive gcm -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
-    <permission
-        android:name="org.cm.podd.report.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="org.cm.podd.report.permission.C2D_MESSAGE" />
 
     <application
         android:name=".PoddApplication"
@@ -32,25 +27,26 @@
         android:theme="@style/Theme.Podd">
         <activity android:name=".activity.FeedFilterReportTypeActivity"></activity>
 
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="@string/google_maps_key"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="podd.channel.default" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="org.cm.podd.report.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"/>
         </provider>
 
         <activity
@@ -145,8 +141,8 @@
         <activity
             android:name=".activity.WebContentActivity"
             android:label="@string/title_activity_web_content"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.cm.podd.report.activity.HomeActivity" />
@@ -167,7 +163,6 @@
 
         <receiver android:name=".service.ConnectivityChangeReceiver">
             <intent-filter>
-
                 <!-- <action android:name="android.net.wifi.STATE_CHANGE" /> -->
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
@@ -175,35 +170,29 @@
 
         <service
             android:name=".service.DataSubmitService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
         <service
             android:name=".service.SyncReportTypeService"
             android:exported="false" />
+
         <service
             android:name=".service.UploadProfileService"
             android:exported="false" />
+
         <service
             android:name=".service.AdministrationAreaService"
             android:exported="false" />
 
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="org.cm.podd.report" />
-            </intent-filter>
-        </receiver>
-
         <service
-            android:name=".service.PoddGcmListenerService"
+            android:name=".service.FcmMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <service
             android:name=".service.FilterService"
             android:exported="false" />
@@ -228,10 +217,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ReportViewActivity" />
         </activity>
+
         <activity
             android:name=".activity.RegistrationActivity"
             android:label="@string/title_activity_registration"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".activity.ForgetPasswordActivity"
             android:label="@string/title_activity_forget_password"
@@ -239,12 +230,14 @@
 
         <service
             android:name=".service.FollowAlertService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <service android:name=".service.FollowAlertRescheduleService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".service.FollowAlertRescheduleService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            />
+
         <service
             android:name=".service.SyncAdministrationAreaService"
             android:exported="false" />
@@ -261,22 +254,27 @@
         <service
             android:name=".service.SyncReportStateService"
             android:exported="false" />
-        <service
-            android:name=".service.SyncRecordSpecService"
-            android:exported="false" />
+
+        <service android:name=".service.SyncRecordSpecService"
+            android:exported="false"/>
 
         <activity
             android:name=".activity.QRConfigActivity"
             android:label="@string/title_activity_qrconfig" />
+
         <activity android:name=".activity.ResetPasswordActivity" />
+
         <activity android:name=".activity.RecordActivity">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/searchable"/>
 
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action
+                    android:name="android.intent.action.SEARCH"/>
+
             </intent-filter>
+
         </activity>
     </application>
 

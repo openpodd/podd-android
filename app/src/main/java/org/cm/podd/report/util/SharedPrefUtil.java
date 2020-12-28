@@ -43,6 +43,7 @@ public class SharedPrefUtil {
     public static final String ADMIN_AREA = "admin_area";
     public static final String GCM_REGISTRATION_ID = "gcm_registration_id";
     public static final String GCM_APP_VERSION = "gcm_app_version";
+    public static final String FCM_REGISTRATION_ID = "fcm_registration_id";
     public static final String PROFILE_IMAGE_FILE_PATH = "profile_image_file_path";
     public static final String IS_VOLUNTEER = "is_volunteer";
     public static final String CAN_SET_FLAG = "can_set_flag";
@@ -144,6 +145,8 @@ public class SharedPrefUtil {
 
     public String getGCMRegId() { return sharedPrefs.getString(GCM_REGISTRATION_ID, ""); }
 
+    public String getFCMRegId() { return sharedPrefs.getString(FCM_REGISTRATION_ID, ""); }
+
     public int getGCMVersion() { return sharedPrefs.getInt(GCM_APP_VERSION, 0); }
 
     public void setGCMData(String regId, int appVersion) {
@@ -151,6 +154,12 @@ public class SharedPrefUtil {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(SharedPrefUtil.GCM_REGISTRATION_ID, regId);
         editor.putInt(SharedPrefUtil.GCM_APP_VERSION, appVersion);
+        editor.commit();
+    }
+
+    public void setFCMRegId(String regId) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString(FCM_REGISTRATION_ID, regId);
         editor.commit();
     }
 

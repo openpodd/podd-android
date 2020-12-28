@@ -16,9 +16,14 @@
  */
 package org.cm.podd.report;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.support.multidex.MultiDexApplication;
+import android.graphics.Color;
+import android.os.Build;
+
+import androidx.multidex.MultiDexApplication;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -29,6 +34,8 @@ import org.cm.podd.report.util.SharedPrefUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
+
+import static org.cm.podd.report.service.FcmMessagingService.DEFAULT_CHANNEL_ID;
 
 public class PoddApplication extends MultiDexApplication {
 
@@ -91,9 +98,33 @@ public class PoddApplication extends MultiDexApplication {
         setLanguage(lang);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+        createMessageChannel();
     }
 
     public static Context getAppContext() {
         return PoddApplication.context;
+    }
+
+
+    public void createMessageChannel() {
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID,
+                    "ข่าวสารจากผ่อดีดี",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager mNotificationManager = (NotificationManager)
+                    this.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.createNotificationChannel(channel);
+
+            channel.enableLights(true);
+            // Sets the notification light color for notifications posted to this
+            // channel, if the device supports this feature.
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        }
     }
 }

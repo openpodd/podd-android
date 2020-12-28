@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -138,7 +138,7 @@ public class ReportTypeActivity extends AppCompatActivity implements AdapterView
 //        actionBar.setHomeAsUpIndicator(0);
 //        actionBar.setLogo(R.drawable.arrow_left_with_pad);
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Inflate the menu; this adds items to the action bar if it is present.

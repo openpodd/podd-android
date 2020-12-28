@@ -2,8 +2,9 @@ package org.cm.podd.report.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -45,7 +46,7 @@ public class SyncAdministrationAreaService extends IntentService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(setIdIntent);
 
                 } else {
-                    Log.e(TAG, "server return failure case");
+                    Log.e(TAG, "no default administration area for this user");
                 }
 
             } catch (JSONException je) {

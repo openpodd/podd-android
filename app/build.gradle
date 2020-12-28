@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
-def suppLibVersion = '28.0.0'
 
 android {
     compileSdkVersion 28
@@ -13,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId "org.cm.podd.report"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
-        versionCode 87
-        versionName "2.1.0"
+        versionCode 92
+        versionName "2.1.1"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
@@ -24,11 +23,12 @@ android {
         testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
         resValue("string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: ""))
         vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // keystore password
     // https://stackoverflow.com/questions/47109799/save-keystore-password-in-android-studio-3
+    // these variables should be setting in ~/.gradle/gradle.properties
     signingConfigs {
         release {
             storeFile file(PODD_RELEASE_STORE_FILE)
@@ -77,38 +77,37 @@ dependencies {
         exclude group: 'com.google.android', module: 'support-v4'
     }
 
-    implementation 'com.android.support:support-annotations:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 
     implementation files('libs/aws-android-sdk-2.1.5-core.jar')
     implementation files('libs/aws-android-sdk-2.1.5-s3.jar')
     implementation files('libs/mpandroidchartlibrary-1-7-4.jar')
     implementation 'org.mozilla:rhino:1.7R4'
-    implementation 'com.android.support:appcompat-v7:' + suppLibVersion
-    implementation 'com.android.support:design:' + suppLibVersion
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation "com.google.android.gms:play-services-base:$play_service_version"
-    implementation "com.google.android.gms:play-services-location:$play_service_version"
-    implementation "com.google.android.gms:play-services-analytics:16.0.3"
-    implementation "com.google.android.gms:play-services-maps:$play_service_version"
-    implementation "com.google.android.gms:play-services-gcm:$play_service_version"
-    implementation 'com.android.support:cardview-v7:' + suppLibVersion
-    implementation 'com.android.support:recyclerview-v7:' + suppLibVersion
+    implementation "com.google.android.gms:play-services-location:17.0.0"
+    implementation "com.google.android.gms:play-services-analytics:17.0.0"
+    implementation "com.google.android.gms:play-services-maps:17.0.0"
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'me.dm7.barcodescanner:zxing:1.8.2'
-    implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.android.support:support-v4:' + suppLibVersion
-    implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-auth:16.0.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.firebase:firebase-core:17.4.2'
+    implementation 'com.google.firebase:firebase-database:19.3.0'
+    implementation 'com.google.firebase:firebase-auth:19.3.1'
+    implementation 'com.google.firebase:firebase-messaging:20.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
     implementation "org.jetbrains.anko:anko-common:$anko_version"
-    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 }
 repositories {
     mavenCentral()

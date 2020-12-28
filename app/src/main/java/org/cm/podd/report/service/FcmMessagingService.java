@@ -6,30 +6,44 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.util.Log;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
+import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
+import org.json.JSONObject;
 
-public class PoddGcmListenerService extends GcmListenerService {
+import java.util.Map;
 
-    private static final String TAG = "poddGcmListenerServ";
+public class FcmMessagingService extends FirebaseMessagingService {
+    public static final String TAG = "FcmMessagingService";
     public static final int NOTIFICATION_ID = 1;
+    public static final String DEFAULT_CHANNEL_ID = "podd.channel.default";
+
 
     @Override
-    public void onMessageReceived(String from, Bundle bundle) {
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        String from = remoteMessage.getFrom();
+        Log.d(TAG, "fcm remoteMessage: " + from);
+
+        Map bundle = remoteMessage.getData();
 
         if (!bundle.isEmpty()) {
-            String payload = bundle.getString("message");
-            String payloadType = bundle.getString("type");
+            String payload = (String) bundle.get("message");
+            String payloadType = (String) bundle.get("type");
 
             SharedPrefUtil pref = new SharedPrefUtil(getApplicationContext());
             if (pref.isUserLoggedIn() && payloadType != null) {
@@ -95,7 +109,6 @@ public class PoddGcmListenerService extends GcmListenerService {
         } else {
             Log.e(TAG, "bundle is empty");
         }
-
     }
 
     private void sendNotification(long id, String title, String content) {
@@ -118,7 +131,7 @@ public class PoddGcmListenerService extends GcmListenerService {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("PODD Notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
@@ -129,5 +142,40 @@ public class PoddGcmListenerService extends GcmListenerService {
 
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
+    @Override
+    public void onNewToken(@NonNull String s) {
+        Log.d(TAG, "onNewToken: " + s);
+        new RegisterTask().execute(new String[]{s});
+    }
+
+    public class RegisterTask extends AsyncTask<String, Void, RequestDataUtil.ResponseObject> {
+        String regId;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected RequestDataUtil.ResponseObject doInBackground(String... params) {
+            regId = params[0];
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
+            // send registration token to server and authenticate with user access token
+            return RequestDataUtil.registerDeviceId(regId, sharedPrefUtil.getAccessToken());
+        }
+
+        @Override
+        protected void onPostExecute(RequestDataUtil.ResponseObject resp) {
+            super.onPostExecute(resp);
+            JSONObject obj = resp.getJsonObject();
+            SharedPrefUtil sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
+            if (obj != null) {
+                // Persist the regID - no need to register again.
+                sharedPrefUtil.setFCMRegId(regId);
+                Log.d(TAG, "Device registered, registration ID=" + regId);
+            }
+        }
     }
 }
