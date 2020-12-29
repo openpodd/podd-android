@@ -118,6 +118,8 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
+import static android.content.Intent.ACTION_DEFAULT;
+
 public class ReportActivity extends AppCompatActivity
         implements ReportNavigationInterface, ReportDataInterface,
         QuestionView.SoftKeyActionHandler, GoogleApiClient.ConnectionCallbacks,
@@ -358,7 +360,6 @@ public class ReportActivity extends AppCompatActivity
                     reportId = reportDataSource.createFollowReport(reportType, parentReportGuid, preloadFormData);
                     follow = true;
                     break;
-
             }
 
             Form form = reportTypeDataSource.getForm(reportType);

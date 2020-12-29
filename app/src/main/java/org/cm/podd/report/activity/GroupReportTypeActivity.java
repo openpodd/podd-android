@@ -48,6 +48,7 @@ import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.cm.podd.report.util.SharedPrefUtil;
 import org.cm.podd.report.util.StyleUtil;
 
 /**
@@ -63,6 +64,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
     private ReportQueueDataSource reportQueueDataSource;
     private GroupReportTypeAdapter adapter;
     private CheckBox testCheckbox;
+    private SharedPrefUtil sharedPrefUtil;
 
     ProgressDialog progress;
 
@@ -85,6 +87,8 @@ public class GroupReportTypeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPrefUtil = new SharedPrefUtil((getApplicationContext()));
 
         dataSource = new ReportTypeDataSource(this);
         reportDataSource = new ReportDataSource(this);
@@ -158,6 +162,17 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         progress.setTitle(getString(R.string.update_report_type));
         registerReceiver(mSyncReceiver, new IntentFilter(SyncReportTypeService.SYNC));
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!sharedPrefUtil.isUserLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void broadcastReportSubmission() {

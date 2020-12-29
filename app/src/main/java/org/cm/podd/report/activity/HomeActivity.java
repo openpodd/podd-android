@@ -81,11 +81,13 @@ import org.cm.podd.report.db.FollowAlertDataSource;
 import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.RecordSpecDataSource;
 import org.cm.podd.report.db.ReportDataSource;
+import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.fragment.DashboardFeedFragment;
 import org.cm.podd.report.fragment.NotificationInterface;
 import org.cm.podd.report.fragment.NotificationListFragment;
 import org.cm.podd.report.fragment.ReportListFragment;
 import org.cm.podd.report.model.RecordSpec;
+import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.ConnectivityChangeReceiver;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.FollowAlertScheduleService;
@@ -100,8 +102,11 @@ import org.cm.podd.report.util.StyleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
+
+import static android.content.Intent.ACTION_DEFAULT;
 
 
 public class HomeActivity extends AppCompatActivity implements NotificationInterface {
@@ -810,6 +815,25 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
                 reportIntent.putExtra("follow", intent.getBooleanExtra("follow", true));
                 intent.setAction(FollowAlertService.ORG_CM_PODD_REPORT_FOLLOW);
                 startActivity(reportIntent);
+            } else if (intent.getAction() != null && intent.getAction().equals(ACTION_DEFAULT)) {
+                Uri uri = intent.getData();
+                String lastPathSegment = uri.getLastPathSegment();
+                if (lastPathSegment.equals("sickdeath")) {
+
+                    ReportTypeDataSource ds = new ReportTypeDataSource(this);
+                    List<ReportType> all = ds.getAll();
+                    long id = 0;
+                    for (ReportType rt : all) {
+                        if (rt.getName().contains("สัตว์ป่วย")) {
+                            id = rt.getId();
+                        }
+                    }
+                    ds.close();
+                    if (id != 0) {
+                        Intent newReportIntent = ReportActivity.newReportIntent(this, id, false);
+                        startActivity(newReportIntent);
+                    }
+                }
             }
         }
 
