@@ -50,7 +50,7 @@ class PreferenceContext private constructor(context: Context) {
     val username: String
 
     init {
-        serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL)
+        serverUrl = settings.getString("serverUrl", BuildConfig.SERVER_URL)!!
         accessToken = sharedPrefUtil.accessToken
         appContext = context
         username = sharedPrefUtil.userName

@@ -70,6 +70,13 @@
                 <data android:scheme="podd"
                     android:host="create.report" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="podd.page.link" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.ReportActivity"

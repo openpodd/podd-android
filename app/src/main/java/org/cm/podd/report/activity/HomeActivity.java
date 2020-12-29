@@ -65,9 +65,13 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.Picasso;
@@ -818,8 +822,8 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
             } else if (intent.getAction() != null && intent.getAction().equals(ACTION_DEFAULT)) {
                 Uri uri = intent.getData();
                 String lastPathSegment = uri.getLastPathSegment();
+                /* direct android schema link */
                 if (lastPathSegment.equals("sickdeath")) {
-
                     ReportTypeDataSource ds = new ReportTypeDataSource(this);
                     List<ReportType> all = ds.getAll();
                     long id = 0;
@@ -832,6 +836,45 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
                     if (id != 0) {
                         Intent newReportIntent = ReportActivity.newReportIntent(this, id, false);
                         startActivity(newReportIntent);
+                    }
+                } else {
+                    // firebase deeplink
+                    String host = intent.getData().getHost();
+                    if (host.equals("podd.page.link")) {
+                        FirebaseDynamicLinks.getInstance()
+                            .getDynamicLink(intent)
+                                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                                    @Override
+                                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                                        // Get deep link from result (may be null if no link is found)
+                                        Uri deepLink = null;
+                                        if (pendingDynamicLinkData != null) {
+                                            deepLink = pendingDynamicLinkData.getLink();
+                                        }
+
+                                        String reportType = deepLink.getQueryParameter("reportType");
+                                        ReportTypeDataSource ds = new ReportTypeDataSource(HomeActivity.this);
+                                        List<ReportType> all = ds.getAll();
+                                        long id = 0;
+                                        for (ReportType rt : all) {
+                                            if (rt.getName().contains(reportType)) {
+                                                id = rt.getId();
+                                            }
+                                        }
+                                        ds.close();
+                                        if (id != 0) {
+                                            Intent newReportIntent = ReportActivity.newReportIntent(HomeActivity.this, id, false);
+                                            startActivity(newReportIntent);
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(this, new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "getDynamicLink:onFailure", e);
+                                    }
+                                });
+
                     }
                 }
             }
