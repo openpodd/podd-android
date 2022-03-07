@@ -99,6 +99,7 @@ import org.cm.podd.report.service.FollowAlertService;
 import org.cm.podd.report.service.ReportService;
 import org.cm.podd.report.service.SyncAdministrationAreaService;
 import org.cm.podd.report.service.SyncRecordSpecService;
+import org.cm.podd.report.service.SyncAreaService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.SharedPrefUtil;
@@ -394,6 +395,8 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
         registerReceiver(recordSpecReceiver, new IntentFilter(SyncRecordSpecService.SYNC));
         startSyncRecordSpec();
 
+        startSyncArea();
+
         Intent getAreaIntent = new Intent(this, SyncAdministrationAreaService.class);
         startService(getAreaIntent);
 
@@ -438,6 +441,11 @@ public class HomeActivity extends AppCompatActivity implements NotificationInter
 
     private void startSyncRecordSpec() {
         Intent intent = new Intent(this, SyncRecordSpecService.class);
+        startService(intent);
+    }
+
+    private void startSyncArea() {
+        Intent intent = new Intent(this, SyncAreaService.class);
         startService(intent);
     }
 

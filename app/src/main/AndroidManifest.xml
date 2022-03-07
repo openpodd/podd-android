@@ -270,6 +270,9 @@
         <service android:name=".service.SyncRecordSpecService"
             android:exported="false"/>
 
+        <service android:name=".service.SyncAreaService"
+            android:exported="false"/>
+
         <activity
             android:name=".activity.QRConfigActivity"
             android:label="@string/title_activity_qrconfig" />
