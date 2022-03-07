@@ -267,10 +267,9 @@
         Your registration detail: \n\n
         Firstname %1$s \n\n
         Lastname %2$s \n\n
-        Identification number %3$s \n\n
-        Telephone number %4$s \n\n
-        Email %5$s \n\n
-        Authority %6$s \n\n
+        Telephone number %3$s \n\n
+        Email %4$s \n\n
+        Authority %5$s \n\n
     </string>
     <string name="telephone_error">Incorrect telephone number</string>
     <string name="email_error">Incorrect email</string>
@@ -287,7 +286,7 @@
 
     <string name="first_name_required">First name *</string>
     <string name="last_name_required">Last name *</string>
-    <string name="serial_number_required">Identification number *</string>
+    <string name="serial_number_required">Identification number</string>
     <string name="telephone_required">Mobile number *</string>
 
     <string name="invite_code">Invitation code</string>

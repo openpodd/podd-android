@@ -149,7 +149,10 @@ public class RegistrationFormFragment extends Fragment {
 
         boolean firstNameValid = firstName.length() > 0;
         boolean lastNameValid = lastName.length() > 0;
-        boolean serialNumberValid = Pattern.compile(SERIAL_NUMBER_PATTERN).matcher(serialNumber).matches();
+        boolean serialNumberValid = true;
+        if ((serialNumber != null) && (serialNumber.length() > 0)) {
+            serialNumberValid = Pattern.compile(SERIAL_NUMBER_PATTERN).matcher(serialNumber).matches();
+        }
         boolean telephoneValid = Pattern.compile(TELEPHONE_PATTERN).matcher(telephone).matches();
         boolean emailValid = email.length() == 0 || Pattern.compile(EMAIL_PATTERN).matcher(email).matches();
 
@@ -235,9 +238,7 @@ public class RegistrationFormFragment extends Fragment {
                     try {
                         JSONObject obj = resp.getJsonObject();
                         String detail = obj.getString("detail");
-                        if (detail.contains("serialNumber")) {
-                            Crouton.makeText(getActivity(), getString(R.string.serial_number_same_error), Style.ALERT, R.id.errorArea).show();
-                        } else if (detail.contains("telephone")) {
+                        if (detail.contains("telephone")) {
                             Crouton.makeText(getActivity(), getString(R.string.telephone_same_error), Style.ALERT, R.id.errorArea).show();
                         } else {
                             Crouton.makeText(getActivity(), getString(R.string.register_submit_error), Style.ALERT, R.id.errorArea).show();
