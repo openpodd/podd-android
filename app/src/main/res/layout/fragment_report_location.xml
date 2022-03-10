@@ -32,8 +32,30 @@
             style="@style/ReportTextLabel"
             android:text="@string/report_area"/>
 
+        <RadioGroup
+            android:id="@+id/area_radio_group"
+            android:paddingTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <RadioButton
+                android:id="@+id/radioInArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ในพื้นที่ที่สังกัด"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/radioOutArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="นอกพื้นที่สังกัด" />
+
+        </RadioGroup>
+
         <Spinner
             android:id="@+id/regions_parent_spinner"
+            android:paddingTop="10dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 
@@ -41,6 +63,16 @@
             android:id="@+id/regions_spinner"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+
+        <AutoCompleteTextView
+            android:id="@+id/report_area"
+            android:layout_marginTop="10dp"
+            android:hint="พิมพ์ชื่ออปท.ที่ต้องการรายงาน"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditTextFlat"
+            android:background="@drawable/edit_text_box"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
