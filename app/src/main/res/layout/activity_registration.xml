@@ -45,6 +45,22 @@
                 android:padding="5dp"
                 android:layout_marginBottom="15dp"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/optional_by_name"
+                android:textSize="20dp"
+                android:layout_marginBottom="15dp"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/EditTextFlat"
+                android:background="@drawable/edit_text_box"
+                android:padding="5dp"
+                android:layout_marginBottom="15dp"/>
+
             <Button
                 android:id="@+id/invite_code_submit"
                 android:layout_width="match_parent"

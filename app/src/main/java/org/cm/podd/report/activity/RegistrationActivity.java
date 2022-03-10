@@ -6,18 +6,23 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-
 import org.cm.podd.report.R;
 import org.cm.podd.report.fragment.RegistrationFormFragment;
+import org.cm.podd.report.model.Area;
+import org.cm.podd.report.model.view.AreaSearchAdapter;
+import org.cm.podd.report.service.SyncAreaService;
 import org.cm.podd.report.util.FontUtil;
 import org.cm.podd.report.util.RequestDataUtil;
 import org.cm.podd.report.util.StyleUtil;
@@ -25,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -35,6 +41,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
     Fragment mCurrentFragment;
     EditText inviteCodeText;
+    AutoCompleteTextView areaText;
+    Area selectedArea;
 
     ProgressDialog pd;
     public void showProgressDialog() {
@@ -68,7 +76,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        inviteCodeText = (EditText) findViewById(R.id.invite_code);
+        inviteCodeText = findViewById(R.id.invite_code);
         findViewById(R.id.invite_code_submit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +86,24 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         FontUtil.overrideFonts(this, this.findViewById(R.id.invite_content).getRootView());
+
+        try {
+            ArrayList<Area> areas = SyncAreaService.getArea(getApplicationContext());
+            final AreaSearchAdapter adapter = new AreaSearchAdapter(this, android.R.layout.two_line_list_item, areas);
+
+            areaText = findViewById(R.id.area);
+            areaText.setThreshold(1);//will start working from first character
+            areaText.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
+            areaText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    selectedArea = (Area) parent.getItemAtPosition(position);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void submitCode() {
@@ -88,12 +114,32 @@ public class RegistrationActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.invitation_code_must_be_numeric, Toast.LENGTH_LONG).show();
             } else {
                 if (RequestDataUtil.hasNetworkConnection(this)) {
-                    new InviteCodeTask().execute(new String[]{inviteCode} );
+                    new InviteCodeTask().execute(inviteCode);
                 }
             }
         } else {
-            Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
-            return;
+            if (selectedArea != null) {
+                mCurrentFragment = new RegistrationFormFragment();
+
+                bundle = new Bundle();
+                bundle.putString("GroupInviteCode", "");
+                bundle.putString("GroupName", "");
+
+                bundle.putInt("authorityId", selectedArea.getAuthorityId());
+                bundle.putString("authorityName", selectedArea.getAuthorityName());
+
+                mCurrentFragment.setArguments(bundle);
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.form_content, mCurrentFragment, mCurrentFragment.getClass().getSimpleName())
+                        .commit();
+
+                findViewById(R.id.invite_content).setVisibility(View.GONE);
+                findViewById(R.id.form_content).setVisibility(View.VISIBLE);
+            } else {
+                Crouton.makeText(this, getString(R.string.form_data_require_error), Style.ALERT, R.id.errorArea).show();
+            }
         }
     }
 

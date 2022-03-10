@@ -148,7 +148,7 @@
     <string name="no_volunteer">No volunteers found</string>
 
     <!-- dashboard card -->
-    <string name="fail_refresh_dashboard">Error, please try agian</string>
+    <string name="fail_refresh_dashboard">Error, please try again</string>
     <string name="empty_report">No reports found</string>
     <string name="try_again">Try again</string>
 
@@ -267,9 +267,10 @@
         Your registration detail: \n\n
         Firstname %1$s \n\n
         Lastname %2$s \n\n
-        Telephone number %3$s \n\n
-        Email %4$s \n\n
-        Authority %5$s \n\n
+        NationalId %3$s \n\n
+        Telephone number %4$s \n\n
+        Email %5$s \n\n
+        Authority %6$s \n\n
     </string>
     <string name="telephone_error">Incorrect telephone number</string>
     <string name="email_error">Incorrect email</string>
@@ -347,4 +348,5 @@
     <string name="press_add_button_to_add_new_record">Press + for add new record of</string>
     <string name="invitation_code_must_be_numeric">Invitation Code should be numeric.</string>
     <string name="location_not_grant">Disable location service may effect some report.</string>
+    <string name="optional_by_name">or select existing area</string>
 </resources>

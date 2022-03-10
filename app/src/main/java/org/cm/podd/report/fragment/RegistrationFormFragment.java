@@ -43,6 +43,8 @@ import static android.provider.Settings.Secure.ANDROID_ID;
 public class RegistrationFormFragment extends Fragment {
     private String groupInviteCode;
     private String groupName;
+    private int authorityId;
+    private String authorityName;
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -53,7 +55,7 @@ public class RegistrationFormFragment extends Fragment {
     private Pattern pattern;
     private Matcher matcher;
 
-    SharedPrefUtil sharedPrefUtil;
+    private SharedPrefUtil sharedPrefUtil;
     private boolean isUserLoggedIn;
     private boolean isSubmit = false;
 
@@ -76,19 +78,25 @@ public class RegistrationFormFragment extends Fragment {
 
         groupInviteCode = getArguments().getString("GroupInviteCode");
         groupName = getArguments().getString("GroupName");
+        authorityId = getArguments().getInt("authorityId");
+        authorityName = getArguments().getString("authorityName");
 
         View view = inflater.inflate(R.layout.fragment_form_registration, container, false);
 
         Typeface face = StyleUtil.getDefaultTypeface(getActivity().getAssets(), Typeface.NORMAL);
 
-        firstNameEditText = (EditText) view.findViewById(R.id.first_name);
-        lastNameEditText = (EditText) view.findViewById(R.id.last_name);
-        serialNumberEditText = (EditText) view.findViewById(R.id.serial_number);
-        telephoneEditText = (EditText) view.findViewById(R.id.telephone);
-        emailEditText = (EditText) view.findViewById(R.id.email);
+        firstNameEditText = view.findViewById(R.id.first_name);
+        lastNameEditText = view.findViewById(R.id.last_name);
+        serialNumberEditText = view.findViewById(R.id.serial_number);
+        telephoneEditText = view.findViewById(R.id.telephone);
+        emailEditText = view.findViewById(R.id.email);
 
-        EditText textAuthorityName = (EditText) view.findViewById(R.id.invite_code);
-        textAuthorityName.setText(groupName);
+        EditText textAuthorityName = view.findViewById(R.id.invite_code);
+        if (groupName != null && groupName.length() > 0) {
+            textAuthorityName.setText(groupName);
+        } else {
+            textAuthorityName.setText(authorityName);
+        }
         textAuthorityName.setTypeface(face);
 
         view.findViewById(R.id.register_submit).setOnClickListener(new View.OnClickListener() {

@@ -1,12 +1,17 @@
 package org.cm.podd.report.service;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.cm.podd.report.model.Area;
 import org.cm.podd.report.util.RequestDataUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -17,6 +22,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SyncAreaService extends IntentService {
 
@@ -55,8 +62,6 @@ public class SyncAreaService extends IntentService {
                 OutputStreamWriter writer = new OutputStreamWriter(fos);
                 writer.write(resp.getRawData());
                 writer.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -76,10 +81,9 @@ public class SyncAreaService extends IntentService {
                     line = reader.readLine();
                 }
                 inputStreamReader.close();
+                return stringBuilder.toString().replace("\n", "");
             } catch (IOException e) {
                 Log.e(TAG, "Could not read md5", e);
-            } finally {
-                return stringBuilder.toString().replace("\n", "");
             }
         } catch (FileNotFoundException fne) {
             // do nothing
@@ -106,5 +110,28 @@ public class SyncAreaService extends IntentService {
             }
         }
         return "";
+    }
+
+    public static ArrayList<Area> getArea(Context context) throws IOException, JSONException {
+
+        FileInputStream fis = context.openFileInput("area.json");
+        InputStreamReader inputStreamReader =
+                new InputStreamReader(fis, StandardCharsets.UTF_8);
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String line = reader.readLine();
+        while (line != null) {
+            stringBuilder.append(line).append('\n');
+            line = reader.readLine();
+        }
+        inputStreamReader.close();
+
+        ArrayList<Area> results = new ArrayList<>();
+        JSONArray array = new JSONArray(stringBuilder.toString());
+        for (int i = 0; i != array.length(); ++i) {
+            JSONObject item = array.getJSONObject(i);
+            results.add(Area.fromJson(item));
+        }
+        return results;
     }
 }
