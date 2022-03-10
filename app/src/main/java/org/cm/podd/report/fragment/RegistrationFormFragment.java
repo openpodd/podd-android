@@ -44,7 +44,6 @@ public class RegistrationFormFragment extends Fragment {
     private String groupInviteCode;
     private String groupName;
     private int authorityId;
-    private String authorityName;
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -65,6 +64,7 @@ public class RegistrationFormFragment extends Fragment {
 
     private static final String EMAIL_PATTERN =
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private EditText textAuthorityName;
 
     public RegistrationFormFragment() {
     }
@@ -79,7 +79,7 @@ public class RegistrationFormFragment extends Fragment {
         groupInviteCode = getArguments().getString("GroupInviteCode");
         groupName = getArguments().getString("GroupName");
         authorityId = getArguments().getInt("authorityId");
-        authorityName = getArguments().getString("authorityName");
+        String authorityName = getArguments().getString("authorityName");
 
         View view = inflater.inflate(R.layout.fragment_form_registration, container, false);
 
@@ -91,7 +91,7 @@ public class RegistrationFormFragment extends Fragment {
         telephoneEditText = view.findViewById(R.id.telephone);
         emailEditText = view.findViewById(R.id.email);
 
-        EditText textAuthorityName = view.findViewById(R.id.invite_code);
+        textAuthorityName = view.findViewById(R.id.invite_code);
         if (groupName != null && groupName.length() > 0) {
             textAuthorityName.setText(groupName);
         } else {
@@ -117,12 +117,13 @@ public class RegistrationFormFragment extends Fragment {
         String serialNumber = serialNumberEditText.getText().toString();
         String telephone = telephoneEditText.getText().toString();
         String email = emailEditText.getText().toString().equalsIgnoreCase("")? "-": emailEditText.getText().toString();
+        String authorityName = textAuthorityName.getText().toString();
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle(R.string.confirm_data_title);
         alertDialogBuilder.setMessage(getString(
                 R.string.registration_data_detail, firstName, lastName, serialNumber,
-                telephone, email, groupName)
+                telephone, email, authorityName )
         );
         alertDialogBuilder.setPositiveButton(R.string.yes_choice, new DialogInterface.OnClickListener() {
             @Override
@@ -208,6 +209,7 @@ public class RegistrationFormFragment extends Fragment {
                 json.put("telephone", telephoneEditText.getText().toString());
                 json.put("email", emailEditText.getText().toString());
                 json.put("group", groupInviteCode);
+                json.put("authorityId", authorityId);
                 reqData = json.toString();
 
             } catch (JSONException e) {
