@@ -30,10 +30,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +46,7 @@ import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.db.ReportTypeDataSource;
 import org.cm.podd.report.model.GroupReportTypeAdapter;
+import org.cm.podd.report.model.PinReportTypeAdapter;
 import org.cm.podd.report.model.ReportType;
 import org.cm.podd.report.service.DataSubmitService;
 import org.cm.podd.report.service.SyncReportTypeService;
@@ -59,10 +62,12 @@ public class GroupReportTypeActivity extends AppCompatActivity {
 
     public static final String TAG = "GroupReportTypeActivity";
     private ExpandableListView listView;
+    private ListView pinListView;
     private ReportTypeDataSource dataSource;
     private ReportDataSource reportDataSource;
     private ReportQueueDataSource reportQueueDataSource;
     private GroupReportTypeAdapter adapter;
+    private PinReportTypeAdapter pinAdapter;
     private CheckBox testCheckbox;
     private SharedPrefUtil sharedPrefUtil;
 
@@ -74,6 +79,8 @@ public class GroupReportTypeActivity extends AppCompatActivity {
             progress.hide();
             adapter = new GroupReportTypeAdapter(GroupReportTypeActivity.this, dataSource.getAllWithNoFollowAction());
             listView.setAdapter(adapter);
+            pinAdapter = new PinReportTypeAdapter(GroupReportTypeActivity.this, dataSource.getAllPinWithNoFollowAction());
+            pinListView.setAdapter(pinAdapter);
         }
     };
 
@@ -118,6 +125,7 @@ public class GroupReportTypeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         listView = findViewById(R.id.report_type_list_view);
+        pinListView = findViewById(R.id.pin_report_type_list_view);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -155,6 +163,18 @@ public class GroupReportTypeActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        pinAdapter = new PinReportTypeAdapter(this, dataSource.getAllPinWithNoFollowAction());
+        pinListView.setAdapter(pinAdapter);
+        pinListView.setOnItemClickListener( new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ReportType item = (ReportType) pinAdapter.getItem(i);
+                Log.d(TAG, String.format("select pin report type = %d", item.getId()));
+                Intent intent = ReportActivity.newReportIntent(GroupReportTypeActivity.this, item.getId(), testCheckbox.isChecked());
+                startActivity(intent);
             }
         });
 

@@ -191,6 +191,20 @@ public class ReportTypeDataSource {
         }
         return results;
     }
+    public List<ReportType> getAllPinWithNoFollowAction() {
+        SharedPrefUtil sharedPrefUtil = new SharedPrefUtil(context);
+        HashMap<Long, String> categoryMap = sharedPrefUtil.getCategoryMap();
+
+        ArrayList<ReportType> results = new ArrayList<>();
+        for (ReportType rt : getAll()) {
+            String catCode = categoryMap.get(rt.getId());
+
+            if (! rt.isFollowAction() && catCode.equals("pin")) {
+                results.add(rt);
+            }
+        }
+        return results;
+    }
 
     private Form parseForm(String name) {
         AssetManager assetManager = context.getAssets();

@@ -54,6 +54,10 @@ public class GroupReportTypeAdapter extends BaseExpandableListAdapter {
                         environmentReportTypes.add(type);
                         foundGroupInCatCode = true;
                         break;
+                    case "pin":
+                        // do nothing, all pinned report types will be used in PinReportTypeAdapter
+                        foundGroupInCatCode = true;
+                        break;
                 }
             }
 
