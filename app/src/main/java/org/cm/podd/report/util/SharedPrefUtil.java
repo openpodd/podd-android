@@ -332,7 +332,7 @@ public class SharedPrefUtil {
         }
     }
 
-    private String defaultFilterReportType = "สัตว์ป่วย/ตาย,สัตว์กัด,อาหารปลอดภัย,คุ้มครองผู้บริโภค,ปัญหาสิ่งแวดล้อม,ภัยธรรมชาติ,โรคในคน,จุดหรือกิจกรรมเสี่ยงต่อภัยสุขภาพ";
+    private String defaultFilterReportType = "สัตว์ป่วย/ตาย,สัตว์กัด,อาหารปลอดภัย,คุ้มครองผู้บริโภค,ปัญหาสิ่งแวดล้อม,ภัยธรรมชาติ,โรคในคน,จุดหรือกิจกรรมเสี่ยงต่อภัยสุขภาพ,เฝ้าระวังโรค COVID-19,สาธารณภัย";
     public String getFilterReportType() {
         return sharedPrefs.getString(FILTER_REPORT_TYPE, defaultFilterReportType);
     }
