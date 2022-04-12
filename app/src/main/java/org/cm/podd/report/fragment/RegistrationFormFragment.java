@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
@@ -50,6 +51,7 @@ public class RegistrationFormFragment extends Fragment {
     private EditText serialNumberEditText;
     private EditText telephoneEditText;
     private EditText emailEditText;
+    private Button registerSubmitButton;
 
     private Pattern pattern;
     private Matcher matcher;
@@ -99,7 +101,8 @@ public class RegistrationFormFragment extends Fragment {
         }
         textAuthorityName.setTypeface(face);
 
-        view.findViewById(R.id.register_submit).setOnClickListener(new View.OnClickListener() {
+        registerSubmitButton = view.findViewById(R.id.register_submit);
+        registerSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 submitRegister();
@@ -136,6 +139,7 @@ public class RegistrationFormFragment extends Fragment {
                 } else {
                      /* alert when hasNetworkConnection */
                 }
+                registerSubmitButton.setEnabled(!isSubmit);
             }
         });
 
@@ -301,6 +305,7 @@ public class RegistrationFormFragment extends Fragment {
                 administrationAreaDataSource.initNewData(obj.getJSONArray("administrationAreas").toString());
 
                 isUserLoggedIn = sharedPrefUtil.isUserLoggedIn();
+                registerSubmitButton.setEnabled(!isSubmit);
 
                 // goto report home
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
