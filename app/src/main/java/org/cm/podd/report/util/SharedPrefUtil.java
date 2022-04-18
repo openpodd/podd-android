@@ -55,6 +55,7 @@ public class SharedPrefUtil {
     public static final String REPORT_TYPE_CATEGORY = "report_type_category";
     private static final String DEFAULT_ADMINISTRATION_AREA_ID = "default_administration_area_id";
     public static final String FILTER_REPORT_TYPE = "filter_report_type";
+    public static final String DOMAIN_ID = "domain_id";
 
     private SharedPreferences sharedPrefs;
     private String customTitle;
@@ -341,6 +342,16 @@ public class SharedPrefUtil {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString(FILTER_REPORT_TYPE, value);
         editor.commit();
+    }
+
+    public void setDomainId(long id) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putLong(DOMAIN_ID, id);
+        editor.commit();
+    }
+
+    public long getDomainId() {
+        return sharedPrefs.getLong(DOMAIN_ID, 1);
     }
 
 }

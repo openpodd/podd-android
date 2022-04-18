@@ -162,6 +162,7 @@ public class ReportActivity extends AppCompatActivity
 
     private Date reportDate;
     private long reportRegionId;
+    private long reportDomainId = -1;
     private String remark;
     private int reportSubmit = 0;
 
@@ -940,7 +941,7 @@ public class ReportActivity extends AppCompatActivity
         if (action != ReportDataInterface.CANCEL_ACTION) {
             if (reportSubmit == 0) {
 
-                reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark, followActionName);
+                reportDataSource.updateReport(reportId, reportDate, reportRegionId, remark, followActionName, reportDomainId);
 
                 if (action == ReportDataInterface.CONFIRM_ACTION) {
                     submitReportToServer(report);
@@ -1288,4 +1289,8 @@ public class ReportActivity extends AppCompatActivity
         DataSubmitService.enqueueWork(this, new Intent(DataSubmitService.ACTION_REPORT_SUBMIT));
     }
 
+    @Override
+    public void setDomainId(long domainId) {
+        this.reportDomainId = domainId;
+    }
 }

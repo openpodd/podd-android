@@ -56,6 +56,8 @@ public class Report {
 
     private String actionName;
 
+    private long domainId;
+
     public Report(long id, long type, Date date, int negative, int draft, int submit) {
         this.id = id;
         this.type = type;
@@ -257,4 +259,13 @@ public class Report {
     public void setActionName(String actionName) {
         this.actionName = actionName;
     }
+
+    public long getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(long domainId) {
+        this.domainId = domainId;
+    }
+
 }

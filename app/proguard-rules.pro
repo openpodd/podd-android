@@ -124,4 +124,5 @@
 }
 
 -keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 -keep public class * extends java.lang.Exception

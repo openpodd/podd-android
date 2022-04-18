@@ -67,6 +67,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
 
     private AutoCompleteTextView areaText;
     private long areaId;
+    private long domainId;
     private boolean outArea = false;
 
 
@@ -172,7 +173,9 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
             areaText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    areaId = ((Area) parent.getItemAtPosition(position)).getAreaId();
+                    Area area = ((Area) parent.getItemAtPosition(position));
+                    areaId = area.getAreaId();
+                    domainId = area.getDomainId();
                 }
             });
             areaText.setTypeface(face);
@@ -220,6 +223,7 @@ public class ReportLocationFragment extends Fragment implements ReportNavigation
 
         if (outArea) {
             reportDataInterface.setRegionId(areaId);
+            reportDataInterface.setDomainId(domainId);
         } else {
             Region region = (Region) mRegionsSpinner.getSelectedItem();
             if (region == null) {

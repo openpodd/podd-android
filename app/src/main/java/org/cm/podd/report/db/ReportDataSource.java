@@ -234,6 +234,7 @@ public class ReportDataSource {
             startDate = new Date(t);
         }
         long regionId = cursor.getLong(cursor.getColumnIndex("region_id"));
+        long domainId = cursor.getLong(cursor.getColumnIndex("domain_id"));
         String remark = cursor.getString(cursor.getColumnIndex("remark"));
         String guid = cursor.getString(cursor.getColumnIndex("guid"));
         int testReport = cursor.getInt(cursor.getColumnIndex("test_report"));
@@ -257,6 +258,7 @@ public class ReportDataSource {
         report.setParentGuid(parentGuid);
         report.setTestReport(testReport);
         report.setActionName(actionName);
+        report.setDomainId(domainId);
 
         report.setReportTypeVersion(cursor.getInt(cursor.getColumnIndex("version")));
         return report;
@@ -392,7 +394,7 @@ public class ReportDataSource {
         return image;
     }
 
-    public void updateReport(long reportId, Date reportDate, long regionId, String remark, String followActionName) {
+    public void updateReport(long reportId, Date reportDate, long regionId, String remark, String followActionName, long domainId) {
         SQLiteDatabase db = reportDatabaseHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("region_id", regionId);
@@ -401,6 +403,7 @@ public class ReportDataSource {
         }
         values.put("remark", remark);
         values.put("action_name", followActionName);
+        values.put("domain_id", domainId);
         db.update("report", values, "_id = ?", new String[]{Long.toString(reportId)});
         db.close();
     }

@@ -27,7 +27,7 @@ import android.util.Log;
  */
 public class ReportDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "podd";
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
 
     private static final String CREATE_TABLE = "create table report"
             + "("
@@ -279,6 +279,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE report_type ADD COLUMN is_follow_action INTEGER");
                 db.execSQL(CREATE_TABLE_RECORD_SPEC);
             case 16:
+            case 17:
+                db.execSQL("ALTER TABLE report ADD COLUMN domain_id INTEGER");
         }
     }
 

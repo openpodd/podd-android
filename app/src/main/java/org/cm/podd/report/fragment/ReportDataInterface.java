@@ -47,4 +47,6 @@ public interface ReportDataInterface {
 
     public String getIncidentDateLabel();
 
+    public void setDomainId(long domainId);
+
 }

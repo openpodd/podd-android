@@ -47,6 +47,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.cm.podd.report.BuildConfig;
 import org.cm.podd.report.PoddApplication;
+import org.cm.podd.report.db.NotificationDataSource;
 import org.cm.podd.report.db.ReportDataSource;
 import org.cm.podd.report.db.ReportQueueDataSource;
 import org.cm.podd.report.model.Queue;
@@ -216,6 +217,11 @@ public class DataSubmitService extends JobIntentService {
             HttpPost post = new HttpPost(http);
             post.setHeader("Content-type", "application/json");
             post.setHeader("Authorization", "Token " + sharedPrefUtil.getAccessToken());
+            if (report.getDomainId() != -1) {
+                if (sharedPrefUtil.getDomainId() != report.getDomainId()) {
+                    post.setHeader("CROSS_DOMAIN", Long.toString(report.getDomainId()));
+                }
+            }
 
             SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
             SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -276,6 +282,19 @@ public class DataSubmitService extends JobIntentService {
                 Log.e(TAG, "error " + EntityUtils.toString(response.getEntity()));
             }
             success = statusCode == 201;
+
+            InputStream in = entity.getContent();
+            String rawData = FileUtil.convertInputStreamToString(in);
+            JSONObject jsonObj = new JSONObject(rawData);
+            if (jsonObj.has("is_authority_active")) {
+                boolean isActive = jsonObj.getBoolean("is_authority_active");
+                if (!isActive) {
+                    NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
+                    notificationDataSource.save("พื้นที่การรายงาน", "พื้นที่ อปท. ที่ท่านส่งแจ้งเหตุยังไม่ได้เปิดใช้งานระบบผ่อดีดี ทำให้จะยังคงไม่ได้รับการตอบสนองเหตุในทันที และจะส่งการแจ้งเตือนไปยังจังหวัดที่อปท.นั้นสังกัด");
+                    notificationDataSource.close();
+                }
+            }
+
             entity.consumeContent();
 
         } finally {

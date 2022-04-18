@@ -18,6 +18,8 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.cm.podd.report.R;
 import org.cm.podd.report.activity.HomeActivity;
 import org.cm.podd.report.db.AdministrationAreaDataSource;
@@ -235,6 +237,9 @@ public class RegistrationFormFragment extends Fragment {
 
                     sharedPrefUtil.setAccessToken(token);
                     sharedPrefUtil.setUserName(username);
+                    if (obj.has("domain")) {
+                        sharedPrefUtil.setDomainId(obj.getLong("domain"));
+                    }
                     sharedPrefUtil.setDisplayPassword(password);
 
                     // get configuration

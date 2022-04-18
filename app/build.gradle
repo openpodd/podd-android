@@ -12,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId "org.cm.podd.report"
-        minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 94
-        versionName "2.1.2"
+        minSdkVersion 19
+        targetSdkVersion 30
+        versionCode 101
+        versionName "2.2.0"
         buildConfigField "String", "GCM_SERVICE_ID", "\"124985974076\""
         buildConfigField "String", "BUCKET_NAME", "\"podd-dev\""
         buildConfigField "boolean", "REAL_SUBMIT", "true"
@@ -42,6 +42,7 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+            ext.alwaysUpdateBuildId = false
         }
 
         release {
@@ -56,6 +57,7 @@ android {
         server_production {
             dimension "prod"
             buildConfigField "String", "SERVER_URL", "\"https://api.cmonehealth.org\""
+//            buildConfigField "String", "SERVER_URL", "\"http://localhost:8000\""
             buildConfigField "String", "BUCKET_NAME", "\"podd\""
         }
     }

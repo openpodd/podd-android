@@ -13,6 +13,7 @@ public class Area {
     private String districtName;
     private int authorityId;
     private String authorityName;
+    private int domainId;
 
     public static Area fromJson(JSONObject object) throws JSONException {
         Area area = new Area();
@@ -23,6 +24,7 @@ public class Area {
         area.districtName = object.getString("di_name");
         area.authorityId = object.getInt("id");
         area.authorityName = object.getString("name");
+        area.domainId = object.getInt("domain_id");
         return area;
     }
 
@@ -100,5 +102,13 @@ public class Area {
     @Override
     public String toString() {
         return getAuthorityName();
+    }
+
+    public int getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(int domainId) {
+        this.domainId = domainId;
     }
 }
