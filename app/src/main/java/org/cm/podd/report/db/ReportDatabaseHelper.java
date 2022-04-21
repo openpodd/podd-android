@@ -49,7 +49,8 @@ public class ReportDatabaseHelper extends SQLiteOpenHelper {
             + "  follow_flag INTEGER,"  // 1 -> follow case
             + "  follow_until INTEGER,"
             + "  test_report INTEGER,"
-            + "  action_name TEXT"
+            + "  action_name TEXT,"
+            + "  domain_id INTEGER"
             + ")";
 
     private static final String CREATE_TABLE_IMAGE = "create table report_image"
