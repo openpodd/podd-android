@@ -290,7 +290,7 @@ public class DataSubmitService extends JobIntentService {
                 boolean isActive = jsonObj.getBoolean("is_authority_active");
                 if (!isActive) {
                     NotificationDataSource notificationDataSource = new NotificationDataSource(getApplicationContext());
-                    notificationDataSource.save("พื้นที่การรายงาน", "พื้นที่ อปท. ที่ท่านส่งแจ้งเหตุยังไม่ได้เปิดใช้งานระบบผ่อดีดี ทำให้จะยังคงไม่ได้รับการตอบสนองเหตุในทันที และจะส่งการแจ้งเตือนไปยังจังหวัดที่อปท.นั้นสังกัด");
+                    notificationDataSource.save("พื้นที่การรายงาน", "<p>พื้นที่ อปท. ที่ท่านส่งแจ้งเหตุยังไม่ได้มีการใช้งานระบบผ่อดีดี ทำให้จะยังคงไม่ได้รับการตอบสนองเหตุในทันที และจะส่งการแจ้งเตือนไปยังจังหวัดที่อปท.นั้นสังกัด</p>");
                     notificationDataSource.close();
                 }
             }
