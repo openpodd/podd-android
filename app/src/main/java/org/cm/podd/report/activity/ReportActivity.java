@@ -523,17 +523,13 @@ public class ReportActivity extends AppCompatActivity
 
         if (currentFragment != null) {
             if (currentFragment.equals(ReportLocationFragment.class.getName())) {
-                currentFragment = "dynamicForm";
+                currentFragment = ReportImageFragment.class.getName();
                 showHideDisableMask(false); // delegate readonly function to dynamic form
             } else if (currentFragment.equals(MapLocationFragment.class.getName())) {
                 currentFragment = null;
                 showHideDisableMask(false);
             } else if (currentFragment.equals(ReportImageFragment.class.getName())) {
-                if (isForceLocation()) {
-                    currentFragment = MapLocationFragment.class.getName();
-                } else {
-                    currentFragment = null;
-                }
+                currentFragment = "dynamicForm";
                 showHideDisableMask(false);
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
                 currentFragment = ReportLocationFragment.class.getName();
@@ -542,7 +538,11 @@ public class ReportActivity extends AppCompatActivity
                 showHideDisableMask(reportSubmit == 1);
             } else if (currentFragment.equals("dynamicForm")) {
                 if (!formIterator.previousPage()) {
-                    currentFragment = ReportImageFragment.class.getName();
+                    if (isForceLocation()) {
+                        currentFragment = MapLocationFragment.class.getName();
+                    } else {
+                        currentFragment = null;
+                    }
                     showHideDisableMask(false);
                 }
             }
@@ -600,28 +600,18 @@ public class ReportActivity extends AppCompatActivity
                 }
                 fragment = mapLocationFragment;
             } else {
-                fragment = ReportImageFragment.newInstance(reportId);
+                fragment = getPageFragment(formIterator.getCurrentPage());
             }
             showHideDisableMask(false);
 
         } else {
 
-            if (currentFragment.equals(ReportLocationFragment.class.getName())) {
-                fragment = ReportConfirmFragment.newInstance(reportId);
+            if (currentFragment.equals(ReportImageFragment.class.getName())) {
+                fragment = ReportLocationFragment.newInstance(reportId);
                 showHideDisableMask(false);
 
-            } else if (currentFragment.equals(MapLocationFragment.class.getName())) {
-
-                // save customlocation
-                if (mapLocationFragment != null && mapLocationFragment.isUserChangePosition()) {
-                    LatLng lng = mapLocationFragment.getCustomPosition();
-                    currentLatitude = lng.latitude;
-                    currentLongitude = lng.longitude;
-                    Log.d(TAG, "custom location = " + currentLatitude + "," + currentLongitude);
-                    reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
-                }
-
-                fragment = ReportImageFragment.newInstance(reportId);
+            } else if (currentFragment.equals(ReportLocationFragment.class.getName())) {
+                fragment = ReportConfirmFragment.newInstance(reportId);
                 showHideDisableMask(false);
 
             } else if (currentFragment.equals(ReportConfirmFragment.class.getName())) {
@@ -647,7 +637,16 @@ public class ReportActivity extends AppCompatActivity
                 // we are at last page
                 // so we skip to ReportConfirmFragment
                 //if (currentFragment.equals(ReportLocationFragment.class.getName())) {
-                if (currentFragment.equals(ReportImageFragment.class.getName())) {
+                if (currentFragment.equals(MapLocationFragment.class.getName())) {
+
+                    // save customlocation
+                    if (mapLocationFragment != null && mapLocationFragment.isUserChangePosition()) {
+                        LatLng lng = mapLocationFragment.getCustomPosition();
+                        currentLatitude = lng.latitude;
+                        currentLongitude = lng.longitude;
+                        Log.d(TAG, "custom location = " + currentLatitude + "," + currentLongitude);
+                        reportDataSource.updateLocation(reportId, currentLatitude, currentLongitude);
+                    }
                     // no-op
                     fragment = getPageFragment(formIterator.getCurrentPage());
                     showHideDisableMask(false); // delegate readonly function to dynamic form
@@ -658,7 +657,7 @@ public class ReportActivity extends AppCompatActivity
 
                     boolean validatePass = formIterator.validatePage();
                     if (validatePass) {
-                        fragment = ReportLocationFragment.newInstance(reportId);
+                        fragment = ReportImageFragment.newInstance(reportId);
                         isDynamicForm = false;
                         showHideDisableMask(reportSubmit == 1);
                     } else {
@@ -670,7 +669,7 @@ public class ReportActivity extends AppCompatActivity
 
                         if (!notifyValidationErrors()) { // display error and return result
                             // no error and no page to go
-                            fragment = ReportLocationFragment.newInstance(reportId);
+                            fragment = ReportImageFragment.newInstance(reportId);
                             isDynamicForm = false;
                             showHideDisableMask(isDoneSubmit());
                         } else {
